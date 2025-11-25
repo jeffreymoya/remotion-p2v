@@ -1,0 +1,109 @@
+{
+  "defaultProvider": "pexels",
+  "providers": {
+    "pexels": {
+      "name": "pexels",
+      "enabled": true,
+      "apiKey": "${PEXELS_API_KEY}",
+      "baseUrl": "https://api.pexels.com/v1",
+      "videoBaseUrl": "https://api.pexels.com/videos",
+      "rateLimit": {
+        "requestsPerMinute": 200,
+        "requestsPerMonth": 20000
+      },
+      "searchDefaults": {
+        "orientation": "landscape",
+        "size": "large",
+        "perPage": 20,
+        "minWidth": 1920,
+        "minHeight": 1080
+      },
+      "videoDefaults": {
+        "orientation": "landscape",
+        "size": "large",
+        "perPage": 15,
+        "minWidth": 1920,
+        "minHeight": 1080,
+        "minDuration": 5
+      }
+    },
+    "unsplash": {
+      "name": "unsplash",
+      "enabled": true,
+      "apiKey": "${UNSPLASH_ACCESS_KEY}",
+      "baseUrl": "https://api.unsplash.com",
+      "rateLimit": {
+        "requestsPerHour": 50
+      },
+      "searchDefaults": {
+        "orientation": "landscape",
+        "perPage": 20,
+        "orderBy": "relevant"
+      }
+    },
+    "pixabay": {
+      "name": "pixabay",
+      "enabled": true,
+      "apiKey": "${PIXABAY_API_KEY}",
+      "baseUrl": "https://pixabay.com/api",
+      "videoBaseUrl": "https://pixabay.com/api/videos",
+      "rateLimit": {
+        "requestsPerMinute": 100
+      },
+      "searchDefaults": {
+        "imageType": "photo",
+        "orientation": "horizontal",
+        "minWidth": 1920,
+        "minHeight": 1080,
+        "perPage": 20,
+        "safeSearch": true
+      },
+      "videoDefaults": {
+        "videoType": "film",
+        "orientation": "horizontal",
+        "minWidth": 1920,
+        "minHeight": 1080,
+        "perPage": 20
+      }
+    }
+  },
+  "fallbackOrder": ["pexels", "pixabay", "unsplash"],
+  "qualityScoring": {
+    "enabled": true,
+    "weights": {
+      "resolution": 0.3,
+      "aspectRatioMatch": 0.25,
+      "relevance": 0.25,
+      "popularity": 0.2
+    },
+    "minQualityScore": 0.5
+  },
+  "deduplication": {
+    "enabled": true,
+    "similarityThreshold": 0.85,
+    "checkPreviousProjects": false
+  },
+  "download": {
+    "maxConcurrent": 5,
+    "timeoutMs": 30000,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000
+  },
+  "aspectRatios": {
+    "16:9": {
+      "width": 1920,
+      "height": 1080,
+      "orientation": "landscape"
+    },
+    "9:16": {
+      "width": 1080,
+      "height": 1920,
+      "orientation": "portrait"
+    }
+  },
+  "caching": {
+    "enabled": true,
+    "ttlSeconds": 86400,
+    "cacheSearchResults": true
+  }
+}

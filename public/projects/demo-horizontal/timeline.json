@@ -1,0 +1,83 @@
+{
+  "shortTitle": "Demo Horizontal (16:9)",
+  "aspectRatio": "16:9",
+  "durationSeconds": 45,
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 15000,
+      "imageUrl": "demo-bg-1",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 15000,
+      "endMs": 30000,
+      "imageUrl": "demo-bg-2",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 30000,
+      "endMs": 45000,
+      "imageUrl": "demo-bg-3",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 10000,
+      "text": "Testing 16:9 Horizontal Format",
+      "position": "center"
+    },
+    {
+      "startMs": 10000,
+      "endMs": 20000,
+      "text": "With Background Music Support",
+      "position": "center"
+    },
+    {
+      "startMs": 20000,
+      "endMs": 30000,
+      "text": "And Video Clips",
+      "position": "center"
+    },
+    {
+      "startMs": 30000,
+      "endMs": 45000,
+      "text": "Long-form Ready!",
+      "position": "bottom"
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 22500,
+      "audioUrl": "demo-voice-1"
+    },
+    {
+      "startMs": 22500,
+      "endMs": 45000,
+      "audioUrl": "demo-voice-2"
+    }
+  ],
+  "videoClips": [
+    {
+      "startMs": 10000,
+      "endMs": 20000,
+      "videoUrl": "demo-clip-1",
+      "enterTransition": "fade",
+      "exitTransition": "blur"
+    }
+  ],
+  "backgroundMusic": [
+    {
+      "startMs": 0,
+      "endMs": 45000,
+      "musicUrl": "demo-music-bgm",
+      "volume": 0.15
+    }
+  ]
+}

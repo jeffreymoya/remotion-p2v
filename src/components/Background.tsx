@@ -7,7 +7,7 @@ import {
 } from "remotion";
 import { FPS, IMAGE_HEIGHT, IMAGE_WIDTH } from "../lib/constants";
 import { BackgroundElement } from "../lib/types";
-import { calculateBlur, getImagePath } from "../lib/utils";
+import { calculateBlur } from "../lib/utils";
 
 const EXTRA_SCALE = 0.2;
 
@@ -52,7 +52,7 @@ export const Background: React.FC<{
   return (
     <AbsoluteFill>
       <Img
-        src={staticFile(getImagePath(project, item.imageUrl))}
+        src={staticFile(`projects/${project}/images/${item.imageUrl}.png`)}
         style={{
           width: imgWidth * imgScale,
           height: imgHeight * imgScale,

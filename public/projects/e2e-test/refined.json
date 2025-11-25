@@ -1,0 +1,29 @@
+{
+  "refinedTopic": {
+    "title": "Master Your Money: The Complete Guide to Financial Freedom in Your 20s, 30s, and 40s",
+    "description": "Transform your financial life with this comprehensive 12-minute masterclass covering budgeting fundamentals, debt elimination strategies, smart investing for beginners, retirement planning, emergency funds, and wealth-building techniques specifically tailored for young professionals and families navigating today's economic landscape.",
+    "category": "how-to",
+    "targetAudience": "Ages 20-40, professionals, students, families",
+    "keyTopics": [
+      "Understanding personal cash flow and budgeting basics",
+      "The debt avalanche vs debt snowball method",
+      "Introduction to index fund investing and compound interest",
+      "Building a 3-6 month emergency fund",
+      "Retirement accounts (401k, IRA, Roth IRA)",
+      "Side hustles and passive income streams",
+      "Common financial mistakes to avoid"
+    ],
+    "engagementHooks": [
+      "Opening with a relatable financial struggle story",
+      "Visual breakdown of compound interest over 30 years",
+      "Real-world budget examples for different income levels",
+      "Quick wins viewers can implement immediately"
+    ],
+    "videoFormat": "12 minutes",
+    "aspectRatio": "16:9"
+  },
+  "metadata": {
+    "refinedAt": "2025-11-25T02:42:00.000Z",
+    "refinedBy": "ai-provider"
+  }
+}

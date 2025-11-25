@@ -6,7 +6,7 @@ import { FPS, INTRO_DURATION } from "../lib/constants";
 import { loadFont } from "@remotion/google-fonts/BreeSerif";
 import { Background } from "./Background";
 import Subtitle from "./Subtitle";
-import { calculateFrameTiming, getAudioPath } from "../lib/utils";
+import { calculateFrameTiming } from "../lib/utils";
 
 export const aiVideoSchema = z.object({
   timeline: TimelineSchema.nullable(),
@@ -105,7 +105,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
             durationInFrames={duration}
             premountFor={3 * FPS}
           >
-            <Audio src={staticFile(getAudioPath(id, element.audioUrl))} />
+            <Audio src={staticFile(`projects/${id}/audio/${element.audioUrl}.mp3`)} />
           </Sequence>
         );
       })}

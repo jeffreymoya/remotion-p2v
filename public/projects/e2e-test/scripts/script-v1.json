@@ -1,0 +1,93 @@
+{
+  "title": "Master Your Money: The Complete Guide to Financial Freedom",
+  "durationSeconds": 720,
+  "aspectRatio": "16:9",
+  "segments": [
+    {
+      "id": "intro",
+      "text": "Imagine waking up one day and realizing that money stress is completely gone from your life. No more anxiety about bills, no more living paycheck to paycheck, and actual savings in the bank. Sound impossible? It's not. In the next 12 minutes, you'll learn the exact strategies that transformed my financial life from twenty thousand dollars in debt to complete financial freedom.",
+      "duration": 30,
+      "visualCues": ["person waking up peacefully", "bills and receipts", "growing money plant", "transformation montage"]
+    },
+    {
+      "id": "problem",
+      "text": "Most people in their twenties and thirties are financially stressed. Student loans, credit card debt, rent that keeps climbing, and meanwhile everyone on social media seems to be thriving. The truth is, 78% of Americans live paycheck to paycheck. But here's what nobody tells you: financial freedom isn't about how much you make, it's about what you do with what you have.",
+      "duration": 35,
+      "visualCues": ["stressed person at laptop", "debt statistics", "social media comparison", "budget spreadsheet"]
+    },
+    {
+      "id": "cashflow",
+      "text": "Let's start with the foundation: understanding your cash flow. This is simpler than it sounds. Every month, you have money coming in and money going out. Write down your after-tax income. Now track every expense for 30 days. Yes, every coffee, every subscription, every impulse purchase. This isn't about judgment, it's about awareness. Most people are shocked to discover they spend 40% more than they think they do.",
+      "duration": 40,
+      "visualCues": ["income vs expenses chart", "expense tracking app", "coffee purchase", "subscription services icons"]
+    },
+    {
+      "id": "budget",
+      "text": "Once you know where your money goes, create a budget using the 50-30-20 rule. 50% for needs like rent and groceries, 30% for wants like entertainment and dining out, and 20% for savings and debt repayment. If your numbers don't fit, don't panic. Start where you are. Even saving 5% is progress. The key is making it automatic. Set up automatic transfers on payday, so you never see the money you're supposed to save.",
+      "duration": 45,
+      "visualCues": ["50-30-20 pie chart", "rent and groceries", "entertainment activities", "automatic transfer animation"]
+    },
+    {
+      "id": "debt",
+      "text": "Now let's tackle debt. There are two proven strategies: the debt avalanche and the debt snowball. The avalanche method saves you the most money by paying off the highest interest rate first. The snowball method builds momentum by knocking out the smallest debt first. I used the snowball method because seeing that first credit card hit zero gave me the motivation to keep going. Choose the method that fits your personality, but choose one and stick with it.",
+      "duration": 50,
+      "visualCues": ["debt avalanche diagram", "debt snowball visualization", "credit card balance reaching zero", "motivation concept"]
+    },
+    {
+      "id": "emergency",
+      "text": "While you're paying off debt, start building an emergency fund. Start with one thousand dollars. Just one thousand. This prevents you from adding new debt when life happens, and life always happens. A car repair, medical bill, or job loss won't derail your progress if you have a cushion. Once the debt is gone, grow that fund to cover 3 to 6 months of expenses. This is your financial safety net.",
+      "duration": 45,
+      "visualCues": ["emergency fund jar", "car breakdown", "medical bills", "safety net visualization"]
+    },
+    {
+      "id": "investing",
+      "text": "Here's where it gets exciting: investing. The secret to building wealth isn't complex stock picking or risky crypto. It's boring index funds and the magic of compound interest. If you invest just 500 dollars per month starting at age 25, with an average 7% return, you'll have over 1.2 million dollars by age 65. That's the power of time and consistency. Start with your employer's 401k, especially if they match contributions. That match is literally free money.",
+      "duration": 55,
+      "visualCues": ["index fund concept", "compound interest graph over 40 years", "401k contribution", "money growing visualization"]
+    },
+    {
+      "id": "retirement",
+      "text": "Let's talk retirement accounts. You have options: traditional 401k, Roth 401k, traditional IRA, and Roth IRA. Here's the simple version: if your employer offers a 401k match, contribute enough to get the full match. Then max out a Roth IRA if you qualify. Roth means you pay taxes now but withdraw tax-free in retirement. For most people in their twenties and thirties, this is the better deal because your tax rate is likely lower now than it will be later.",
+      "duration": 50,
+      "visualCues": ["retirement account types comparison", "employer match concept", "Roth IRA benefits", "tax comparison chart"]
+    },
+    {
+      "id": "income",
+      "text": "You can only cut expenses so far. Eventually, you need to increase income. The fastest path is asking for a raise at your current job. Document your achievements, research market rates, and have the conversation. If that doesn't work, consider a side hustle. Not some scammy multi-level marketing scheme, but real skills you can monetize. Freelancing, consulting, teaching online. In the gig economy, there's never been a better time to diversify your income streams.",
+      "duration": 50,
+      "visualCues": ["salary negotiation", "side hustle examples", "freelancing platforms", "multiple income streams"]
+    },
+    {
+      "id": "mistakes",
+      "text": "Let's cover the biggest mistakes to avoid. Number one: lifestyle inflation. Just because you got a raise doesn't mean you need a new car. Number two: not having insurance. Health, disability, and term life insurance protect you from catastrophic financial loss. Number three: emotional spending. Learn to pause before purchases. Wait 24 hours before buying anything over 50 dollars. Number four: ignoring your credit score. It affects your interest rates on everything.",
+      "duration": 55,
+      "visualCues": ["luxury car temptation", "insurance policies", "pause before purchase concept", "credit score meter"]
+    },
+    {
+      "id": "mindset",
+      "text": "The most important part of financial freedom isn't the spreadsheets or strategies, it's your mindset. Money is a tool, not the goal. The goal is freedom, security, and options. Freedom to take a career risk. Security to help your family. Options to say no to things you don't want. Every financial decision you make today is either buying you more freedom or less. Choose wisely.",
+      "duration": 40,
+      "visualCues": ["mindset concept", "freedom visualization", "family security", "decision-making crossroads"]
+    },
+    {
+      "id": "action",
+      "text": "Here's your action plan for the next 30 days. Week one: track every expense and calculate your net worth. Week two: create a budget and set up automatic savings transfers. Week three: list all debts and choose your payoff strategy. Week four: open a retirement account or increase your contribution by 1%. Small consistent actions compound over time, just like your investments will.",
+      "duration": 45,
+      "visualCues": ["30-day calendar", "expense tracker", "budget setup", "retirement account opening"]
+    },
+    {
+      "id": "outro",
+      "text": "You now have everything you need to start building real wealth. It won't happen overnight, but I promise you, if you follow these principles consistently, your financial life will transform. Remember: it's not about being perfect, it's about making progress. Start today. Future you will thank you. If this video helped you, hit that like button and subscribe for more financial freedom content. See you in the next video.",
+      "duration": 40,
+      "visualCues": ["transformation timeline", "progress concept", "future self visualization", "call to action graphics"]
+    }
+  ],
+  "metadata": {
+    "totalSegments": 13,
+    "totalWords": 1056,
+    "estimatedReadingTime": 720,
+    "targetAudience": "ages 20-40",
+    "tone": "conversational, encouraging, practical",
+    "generatedAt": "2025-11-25T02:43:00.000Z"
+  }
+}

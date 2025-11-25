@@ -1,0 +1,84 @@
+{
+  "defaultProvider": "google",
+  "providers": {
+    "google": {
+      "name": "google",
+      "enabled": true,
+      "apiKey": "${GOOGLE_TTS_API_KEY}",
+      "defaultVoice": {
+        "languageCode": "en-US",
+        "name": "en-US-Neural2-J",
+        "ssmlGender": "MALE"
+      },
+      "voices": {
+        "male-casual": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-J",
+          "ssmlGender": "MALE"
+        },
+        "female-casual": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-F",
+          "ssmlGender": "FEMALE"
+        },
+        "male-professional": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-D",
+          "ssmlGender": "MALE"
+        },
+        "female-professional": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-C",
+          "ssmlGender": "FEMALE"
+        }
+      },
+      "audioConfig": {
+        "audioEncoding": "MP3",
+        "speakingRate": 1.0,
+        "pitch": 0.0,
+        "volumeGainDb": 0.0
+      }
+    },
+    "elevenlabs": {
+      "name": "elevenlabs",
+      "enabled": false,
+      "apiKey": "${ELEVENLABS_API_KEY}",
+      "defaultVoice": {
+        "voiceId": "21m00Tcm4TlvDq8ikWAM",
+        "stability": 0.5,
+        "similarityBoost": 0.75,
+        "style": 0.0,
+        "useSpeakerBoost": true
+      },
+      "voices": {
+        "rachel": {
+          "voiceId": "21m00Tcm4TlvDq8ikWAM",
+          "stability": 0.5,
+          "similarityBoost": 0.75
+        },
+        "domi": {
+          "voiceId": "AZnzlk1XvdvUeBnXmlld",
+          "stability": 0.5,
+          "similarityBoost": 0.75
+        },
+        "bella": {
+          "voiceId": "EXAVITQu4vr4xnSDxMaL",
+          "stability": 0.5,
+          "similarityBoost": 0.75
+        }
+      },
+      "modelId": "eleven_multilingual_v2",
+      "outputFormat": "mp3_44100_128"
+    }
+  },
+  "fallbackOrder": ["google", "elevenlabs"],
+  "retryConfig": {
+    "maxRetries": 3,
+    "retryDelayMs": 1000,
+    "backoffMultiplier": 2
+  },
+  "caching": {
+    "enabled": true,
+    "ttlSeconds": 2592000
+  }
+}

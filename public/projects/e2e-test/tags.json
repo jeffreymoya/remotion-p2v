@@ -1,0 +1,73 @@
+{
+  "segments": [
+    {
+      "id": "intro",
+      "tags": ["person waking up", "peaceful morning", "money plant", "transformation"],
+      "primaryTag": "financial transformation"
+    },
+    {
+      "id": "problem",
+      "tags": ["stressed person", "laptop work", "debt statistics", "social media"],
+      "primaryTag": "financial stress"
+    },
+    {
+      "id": "cashflow",
+      "tags": ["chart graph", "expense tracking", "coffee shop", "subscriptions"],
+      "primaryTag": "cash flow management"
+    },
+    {
+      "id": "budget",
+      "tags": ["pie chart", "groceries shopping", "entertainment", "savings"],
+      "primaryTag": "budgeting"
+    },
+    {
+      "id": "debt",
+      "tags": ["debt payment", "credit card", "financial freedom", "motivation"],
+      "primaryTag": "debt elimination"
+    },
+    {
+      "id": "emergency",
+      "tags": ["emergency fund", "car repair", "medical bills", "safety net"],
+      "primaryTag": "emergency savings"
+    },
+    {
+      "id": "investing",
+      "tags": ["stock market", "index funds", "compound interest", "retirement planning"],
+      "primaryTag": "investment growth"
+    },
+    {
+      "id": "retirement",
+      "tags": ["retirement account", "401k", "IRA", "tax savings"],
+      "primaryTag": "retirement planning"
+    },
+    {
+      "id": "income",
+      "tags": ["salary negotiation", "side hustle", "freelancing", "multiple income"],
+      "primaryTag": "income growth"
+    },
+    {
+      "id": "mistakes",
+      "tags": ["luxury car", "insurance", "credit score", "financial mistakes"],
+      "primaryTag": "avoid mistakes"
+    },
+    {
+      "id": "mindset",
+      "tags": ["mindset", "freedom", "family security", "life choices"],
+      "primaryTag": "financial mindset"
+    },
+    {
+      "id": "action",
+      "tags": ["calendar", "expense tracker", "budget planner", "action plan"],
+      "primaryTag": "action steps"
+    },
+    {
+      "id": "outro",
+      "tags": ["transformation", "progress", "future planning", "success"],
+      "primaryTag": "financial freedom"
+    }
+  ],
+  "metadata": {
+    "totalTags": 52,
+    "extractedAt": "2025-11-25T02:44:00.000Z"
+  }
+}

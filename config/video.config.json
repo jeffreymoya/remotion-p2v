@@ -1,0 +1,108 @@
+{
+  "defaultAspectRatio": "16:9",
+  "aspectRatios": {
+    "16:9": {
+      "width": 1920,
+      "height": 1080,
+      "name": "landscape",
+      "description": "YouTube horizontal (default)",
+      "fps": 30
+    },
+    "9:16": {
+      "width": 1080,
+      "height": 1920,
+      "name": "portrait",
+      "description": "YouTube Shorts, TikTok, Instagram Reels",
+      "fps": 30
+    }
+  },
+  "duration": {
+    "targetSeconds": 720,
+    "minSeconds": 600,
+    "maxSeconds": 900
+  },
+  "rendering": {
+    "defaultQuality": "draft",
+    "qualities": {
+      "draft": {
+        "codec": "h264",
+        "crf": 28,
+        "preset": "ultrafast",
+        "audioBitrate": "128k"
+      },
+      "medium": {
+        "codec": "h264",
+        "crf": 23,
+        "preset": "medium",
+        "audioBitrate": "192k"
+      },
+      "high": {
+        "codec": "h264",
+        "crf": 18,
+        "preset": "slow",
+        "audioBitrate": "320k"
+      },
+      "production": {
+        "codec": "h264",
+        "crf": 15,
+        "preset": "veryslow",
+        "audioBitrate": "320k"
+      }
+    },
+    "concurrency": 4,
+    "timeoutMinutes": 60
+  },
+  "intro": {
+    "enabled": true,
+    "durationMs": 1000,
+    "titleAnimation": "fade",
+    "backgroundColor": "#FFD700"
+  },
+  "transitions": {
+    "defaultEnter": "fade",
+    "defaultExit": "fade",
+    "durationMs": 500,
+    "available": ["fade", "blur", "none"]
+  },
+  "text": {
+    "position": "bottom",
+    "maxCharactersPerLine": 40,
+    "maxLines": 2,
+    "fontSize": 48,
+    "fontFamily": "Inter",
+    "fontWeight": 700,
+    "color": "#FFFFFF",
+    "strokeColor": "#000000",
+    "strokeWidth": 2,
+    "backgroundColor": "rgba(0, 0, 0, 0.7)",
+    "padding": 20
+  },
+  "animations": {
+    "background": {
+      "defaultType": "zoom",
+      "alternateDirection": true,
+      "types": {
+        "zoom": {
+          "scaleFrom": 1.0,
+          "scaleTo": 1.2,
+          "easingFunction": "easeInOut"
+        },
+        "pan": {
+          "enabled": false
+        }
+      }
+    },
+    "text": {
+      "wordAnimation": "scale",
+      "scaleFrom": 0.8,
+      "scaleTo": 1.0,
+      "durationMs": 200
+    }
+  },
+  "validation": {
+    "checkAssetExists": true,
+    "checkAudioSync": true,
+    "checkTimelineGaps": true,
+    "maxGapMs": 100
+  }
+}

@@ -1,11 +1,46 @@
 import { staticFile } from "remotion";
 import { BackgroundElement, Timeline } from "./types";
-import { FPS, INTRO_DURATION } from "./constants";
+import { FPS, INTRO_DURATION, DEFAULT_ASPECT_RATIO } from "./constants";
+
+/**
+ * Normalizes a legacy timeline by adding default values for new optional fields.
+ * This ensures backward compatibility with timelines created before schema extension.
+ */
+export const normalizeTimeline = (timeline: Timeline): Timeline => {
+  const normalized = { ...timeline };
+
+  // Add default aspect ratio if not present
+  if (!normalized.aspectRatio) {
+    normalized.aspectRatio = DEFAULT_ASPECT_RATIO;
+  }
+
+  // Calculate duration from elements if not provided
+  if (!normalized.durationSeconds && timeline.elements && timeline.elements.length > 0) {
+    const lastElement = timeline.elements[timeline.elements.length - 1];
+    normalized.durationSeconds = lastElement.endMs / 1000;
+  }
+
+  // Initialize optional arrays if not present
+  if (!normalized.videoClips) {
+    normalized.videoClips = [];
+  }
+
+  if (!normalized.backgroundMusic) {
+    normalized.backgroundMusic = [];
+  }
+
+  return normalized;
+};
 
 export const loadTimelineFromFile = async (filename: string) => {
   const res = await fetch(staticFile(filename));
   const json = await res.json();
-  const timeline = json as Timeline;
+  let timeline = json as Timeline;
+
+  // Normalize legacy timelines
+  timeline = normalizeTimeline(timeline);
+
+  // Sort elements by start time
   timeline.elements.sort((a, b) => a.startMs - b.startMs);
 
   const lengthMs =
@@ -59,11 +94,3 @@ export const calculateBlur = ({
   return 0;
 };
 
-export const getTimelinePath = (proj: string) =>
-  `content/${proj}/timeline.json`;
-
-export const getImagePath = (proj: string, uid: string) =>
-  `content/${proj}/images/${uid}.png`;
-
-export const getAudioPath = (proj: string, uid: string) =>
-  `content/${proj}/audio/${uid}.mp3`;

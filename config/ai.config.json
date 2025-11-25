@@ -1,0 +1,35 @@
+{
+  "defaultProvider": "gemini-cli",
+  "language": "en",
+  "providers": {
+    "codex": {
+      "name": "codex",
+      "cliCommand": "codex",
+      "defaultModel": "gpt-4-turbo-preview",
+      "temperature": 0.7,
+      "maxTokens": 8000,
+      "enabled": true
+    },
+    "claude-code": {
+      "name": "claude-code",
+      "cliCommand": "claude",
+      "defaultModel": "claude-3-5-sonnet-20241022",
+      "temperature": 0.7,
+      "maxTokens": 4000,
+      "enabled": true
+    },
+    "gemini-cli": {
+      "name": "gemini-cli",
+      "cliCommand": "gemini",
+      "defaultModel": "gemini-1.5-flash",
+      "temperature": 0.7,
+      "maxTokens": 8000,
+      "enabled": true
+    }
+  },
+  "fallbackOrder": [
+    "gemini-cli",
+    "claude-code",
+    "codex"
+  ]
+}

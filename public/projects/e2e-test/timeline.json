@@ -1,0 +1,157 @@
+{
+  "shortTitle": "Master Your Money - E2E Test",
+  "aspectRatio": "16:9",
+  "durationSeconds": 360,
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 30000,
+      "imageUrl": "segment-1",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 30000,
+      "endMs": 65000,
+      "imageUrl": "segment-2",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 65000,
+      "endMs": 105000,
+      "imageUrl": "segment-3",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 105000,
+      "endMs": 150000,
+      "imageUrl": "segment-4",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 150000,
+      "endMs": 200000,
+      "imageUrl": "segment-5",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 200000,
+      "endMs": 245000,
+      "imageUrl": "segment-6",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 245000,
+      "endMs": 290000,
+      "imageUrl": "segment-7",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "startMs": 290000,
+      "endMs": 330000,
+      "imageUrl": "segment-8",
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 30000,
+      "text": "Introduction: The Path to Financial Freedom",
+      "position": "bottom"
+    },
+    {
+      "startMs": 30000,
+      "endMs": 65000,
+      "text": "Understanding the Financial Stress Problem",
+      "position": "bottom"
+    },
+    {
+      "startMs": 65000,
+      "endMs": 105000,
+      "text": "Mastering Cash Flow Management",
+      "position": "bottom"
+    },
+    {
+      "startMs": 105000,
+      "endMs": 150000,
+      "text": "The 50-30-20 Budget Rule",
+      "position": "bottom"
+    },
+    {
+      "startMs": 150000,
+      "endMs": 200000,
+      "text": "Debt Elimination Strategies",
+      "position": "bottom"
+    },
+    {
+      "startMs": 200000,
+      "endMs": 245000,
+      "text": "Building Your Emergency Fund",
+      "position": "bottom"
+    },
+    {
+      "startMs": 245000,
+      "endMs": 290000,
+      "text": "The Power of Index Fund Investing",
+      "position": "bottom"
+    },
+    {
+      "startMs": 290000,
+      "endMs": 330000,
+      "text": "Understanding Retirement Accounts",
+      "position": "bottom"
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 30000,
+      "audioUrl": "segment-1"
+    },
+    {
+      "startMs": 30000,
+      "endMs": 65000,
+      "audioUrl": "segment-2"
+    },
+    {
+      "startMs": 65000,
+      "endMs": 105000,
+      "audioUrl": "segment-3"
+    },
+    {
+      "startMs": 105000,
+      "endMs": 150000,
+      "audioUrl": "segment-4"
+    },
+    {
+      "startMs": 150000,
+      "endMs": 200000,
+      "audioUrl": "segment-5"
+    },
+    {
+      "startMs": 200000,
+      "endMs": 245000,
+      "audioUrl": "segment-6"
+    },
+    {
+      "startMs": 245000,
+      "endMs": 290000,
+      "audioUrl": "segment-7"
+    },
+    {
+      "startMs": 290000,
+      "endMs": 330000,
+      "audioUrl": "segment-8"
+    }
+  ],
+  "videoClips": [],
+  "backgroundMusic": []
+}

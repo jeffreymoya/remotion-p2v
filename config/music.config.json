@@ -1,0 +1,68 @@
+{
+  "enabled": false,
+  "defaultSource": "pixabay",
+  "sources": {
+    "pixabay": {
+      "name": "pixabay",
+      "enabled": true,
+      "apiKey": "${PIXABAY_API_KEY}",
+      "baseUrl": "https://pixabay.com/api",
+      "searchDefaults": {
+        "perPage": 20,
+        "minDuration": 120,
+        "maxDuration": 900
+      },
+      "genres": [
+        "ambient",
+        "cinematic",
+        "corporate",
+        "documentary",
+        "upbeat",
+        "calm",
+        "inspiring"
+      ]
+    },
+    "local": {
+      "name": "local",
+      "enabled": true,
+      "libraryPath": "${MUSIC_LIBRARY_PATH}",
+      "allowedExtensions": [".mp3", ".wav", ".m4a"],
+      "scanOnStartup": true
+    }
+  },
+  "selection": {
+    "defaultGenre": "ambient",
+    "moodMatching": {
+      "enabled": true,
+      "aiProvider": "gemini-cli"
+    },
+    "durationMatching": {
+      "enabled": true,
+      "allowLooping": true,
+      "fadeInMs": 2000,
+      "fadeOutMs": 3000
+    }
+  },
+  "audio": {
+    "volumeDucking": {
+      "enabled": true,
+      "duckVolumePercent": 20,
+      "fadeMs": 500
+    },
+    "normalization": {
+      "enabled": true,
+      "targetLufs": -16
+    },
+    "defaultVolume": 0.3
+  },
+  "download": {
+    "maxConcurrent": 3,
+    "timeoutMs": 60000,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000
+  },
+  "caching": {
+    "enabled": true,
+    "ttlSeconds": 604800
+  }
+}
