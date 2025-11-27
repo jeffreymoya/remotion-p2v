@@ -8,6 +8,10 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // Fallback to .env
 import { getProjectPaths } from '../../src/lib/paths';
 
 export interface SelectedTopic {

@@ -8,6 +8,10 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // Fallback to .env
 import { ConfigManager } from '../lib/config';
 import { getProjectPaths, ensureProjectDirs } from '../../src/lib/paths';
 import { AIProviderFactory } from '../services/ai';

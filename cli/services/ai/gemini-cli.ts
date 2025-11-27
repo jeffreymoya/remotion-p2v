@@ -4,13 +4,17 @@ import { AIProviderConfig, CompletionOptions } from '../../lib/types';
 /**
  * Gemini CLI provider
  * Uses the `gemini` CLI tool for headless automation
+ *
+ * Note: Gemini CLI uses its own internal model configuration.
+ * The command does not accept model parameters - it relies on
+ * models configured in the Gemini CLI settings (e.g., gemini-2.5-flash-lite).
  */
 export class GeminiCLIProvider extends BaseCLIProvider {
   constructor(config?: Partial<AIProviderConfig>) {
     super({
       name: 'gemini-cli',
       cliCommand: 'gemini',
-      defaultModel: 'gemini-1.5-flash',
+      // Note: defaultModel removed - Gemini CLI uses its own configured models
       temperature: 0.7,
       maxTokens: 8000,
       ...config,

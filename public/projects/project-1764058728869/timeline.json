@@ -1,0 +1,613 @@
+{
+  "shortTitle": "The Rockstar Dilemma: How Genius and Controversy Forged Gaming's Biggest Empire",
+  "aspectRatio": "16:9",
+  "durationSeconds": 404,
+  "elements": [
+    {
+      "imageUrl": "20c0d553c883eced146bf63357870d48.jpg",
+      "startMs": 0,
+      "endMs": 12250,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "b98357f194c10f6dce8ecb68184678c3.0",
+      "startMs": 12250,
+      "endMs": 24500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "b3bcf81ba6c5c3f53e7279769a1279e0.0",
+      "startMs": 24500,
+      "endMs": 44500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "41cff4b0790823f7006eeafd65abafb9.0",
+      "startMs": 44500,
+      "endMs": 64500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "5a6167e02459e0826e062ae01aabcc05.jpeg",
+      "startMs": 64500,
+      "endMs": 84500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "cd375a1aef9355c9480cefd0e71402f5.jpeg",
+      "startMs": 84500,
+      "endMs": 104500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "20c0d553c883eced146bf63357870d48.jpg",
+      "startMs": 104500,
+      "endMs": 124500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "f307e0b2f10d3952749d0c57bae90a92.jpg",
+      "startMs": 124500,
+      "endMs": 144500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "5b021feed223d315113c9dfbd1c5eacc.jpeg",
+      "startMs": 144500,
+      "endMs": 163500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "114c4311950ea8f50fa069a6bc9f4d51.jpeg",
+      "startMs": 163500,
+      "endMs": 182500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "5b57c0351d5908149b3bedec9c5c79b5.jpeg",
+      "startMs": 182500,
+      "endMs": 201500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "00699c820e55d495edb39fc3c2635a42.jpg",
+      "startMs": 201500,
+      "endMs": 219833.33333333334,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "3505bc943aa80d1f1647ba40a4cd0a88.0",
+      "startMs": 219833.33333333334,
+      "endMs": 238166.66666666666,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "aec7fedca4eb7d34f912424c91d06c4a.0",
+      "startMs": 238166.66666666666,
+      "endMs": 256500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "ecd231bddcbf3ee5b03f7b8583be9346.0",
+      "startMs": 256500,
+      "endMs": 276666.6666666667,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "cd35eb18e7ee513c5b58171dd27789ca.0",
+      "startMs": 276666.6666666667,
+      "endMs": 296833.3333333333,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "896b470c55b9e9d01ee699cd6cd770cc.0",
+      "startMs": 296833.3333333333,
+      "endMs": 317000,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "b3bcf81ba6c5c3f53e7279769a1279e0.0",
+      "startMs": 317000,
+      "endMs": 336166.6666666667,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "997da3023bf504a1bf112ac67f962924.0",
+      "startMs": 336166.6666666667,
+      "endMs": 355333.3333333333,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "68f7c15820c62b2b70d5e0b6bca1b70e.0",
+      "startMs": 355333.3333333333,
+      "endMs": 374500,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "75a8696db37ed0954c1944fe49053fa3.0",
+      "startMs": 374500,
+      "endMs": 389250,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    },
+    {
+      "imageUrl": "1816676bac046edfda89ae2d4ed5f8d0.jpg",
+      "startMs": 389250,
+      "endMs": 404000,
+      "enterTransition": "fade",
+      "exitTransition": "fade"
+    }
+  ],
+  "text": [
+    {
+      "text": "What if the most important video game\ncompany of all time was built on a",
+      "position": "bottom",
+      "startMs": 0,
+      "endMs": 6125
+    },
+    {
+      "text": "foundation of genius, rebellion, and\nscandal? They created the single most",
+      "position": "bottom",
+      "startMs": 6125,
+      "endMs": 12250
+    },
+    {
+      "text": "profitable entertainment product in\nhistory. This is the story of how",
+      "position": "bottom",
+      "startMs": 12250,
+      "endMs": 18375
+    },
+    {
+      "text": "Rockstar Games built an empire... and\nthe dilemma at its very core.",
+      "position": "bottom",
+      "startMs": 18375,
+      "endMs": 24500
+    },
+    {
+      "text": "To understand Rockstar, you have to go\nback to 2001. Gaming was still seen by",
+      "position": "bottom",
+      "startMs": 24500,
+      "endMs": 31166.666666666668
+    },
+    {
+      "text": "many as a toy. Then, Grand Theft Auto\nIII arrived. It wasn't just a step",
+      "position": "bottom",
+      "startMs": 31166.666666666668,
+      "endMs": 37833.333333333336
+    },
+    {
+      "text": "forward; it was a quantum leap. For the\nfirst time, we had a living, breathing",
+      "position": "bottom",
+      "startMs": 37833.333333333336,
+      "endMs": 44500
+    },
+    {
+      "text": "3D city that felt truly open. Liberty\nCity wasn't a level; it was a place. You",
+      "position": "bottom",
+      "startMs": 44500,
+      "endMs": 51166.66666666667
+    },
+    {
+      "text": "could follow traffic laws, or you could\ncause mayhem. You could follow the",
+      "position": "bottom",
+      "startMs": 51166.66666666667,
+      "endMs": 57833.333333333336
+    },
+    {
+      "text": "story, or create your own. Rockstar\ndidn't just create a game; they created",
+      "position": "bottom",
+      "startMs": 57833.333333333336,
+      "endMs": 64500
+    },
+    {
+      "text": "a genre. The open-world sandbox became\nthe new standard, the benchmark against",
+      "position": "bottom",
+      "startMs": 64500,
+      "endMs": 71166.66666666667
+    },
+    {
+      "text": "which all other ambitious games would be\nmeasured. This was the moment gaming",
+      "position": "bottom",
+      "startMs": 71166.66666666667,
+      "endMs": 77833.33333333334
+    },
+    {
+      "text": "grew up, kicking and screaming, into the\nmainstream.",
+      "position": "bottom",
+      "startMs": 77833.33333333334,
+      "endMs": 84500
+    },
+    {
+      "text": "But how do they make their worlds feel\nso… real? The secret is a philosophy of",
+      "position": "bottom",
+      "startMs": 84500,
+      "endMs": 90500
+    },
+    {
+      "text": "obsessive detail, powered by their\nproprietary R.A.G.E. engine—the Rockstar",
+      "position": "bottom",
+      "startMs": 90500,
+      "endMs": 96500
+    },
+    {
+      "text": "Advanced Game Engine. This isn't just\nabout pretty graphics. It's about",
+      "position": "bottom",
+      "startMs": 96500,
+      "endMs": 102500
+    },
+    {
+      "text": "simulation. It's the advanced physics\nfrom the Euphoria engine that makes",
+      "position": "bottom",
+      "startMs": 102500,
+      "endMs": 108500
+    },
+    {
+      "text": "every character fall and stumble\nuniquely. It’s the AI that gives NPCs",
+      "position": "bottom",
+      "startMs": 108500,
+      "endMs": 114500
+    },
+    {
+      "text": "their own daily schedules in Saint\nDenis. It's the way mud cakes onto",
+      "position": "bottom",
+      "startMs": 114500,
+      "endMs": 120500
+    },
+    {
+      "text": "Arthur Morgan’s boots, or the way a\ncar’s frame realistically deforms in a",
+      "position": "bottom",
+      "startMs": 120500,
+      "endMs": 126500
+    },
+    {
+      "text": "crash. They don't just build a set; they\nbuild a world with rules and systems,",
+      "position": "bottom",
+      "startMs": 126500,
+      "endMs": 132500
+    },
+    {
+      "text": "and then let it run. This relentless\npursuit of fidelity is what separates a",
+      "position": "bottom",
+      "startMs": 132500,
+      "endMs": 138500
+    },
+    {
+      "text": "Rockstar world from almost any other.",
+      "position": "bottom",
+      "startMs": 138500,
+      "endMs": 144500
+    },
+    {
+      "text": "Of course, you can't push boundaries\nwithout courting controversy. Rockstar",
+      "position": "bottom",
+      "startMs": 144500,
+      "endMs": 150200
+    },
+    {
+      "text": "didn't just court it; they seemed to\nthrive on it. Games like Manhunt, with",
+      "position": "bottom",
+      "startMs": 150200,
+      "endMs": 155900
+    },
+    {
+      "text": "its brutal executions, sparked moral\npanic and were banned in several",
+      "position": "bottom",
+      "startMs": 155900,
+      "endMs": 161600
+    },
+    {
+      "text": "countries. But the defining scandal was\n'Hot Coffee.' Hidden within the code of",
+      "position": "bottom",
+      "startMs": 161600,
+      "endMs": 167300
+    },
+    {
+      "text": "GTA: San Andreas was a crude,\ninaccessible sex mini-game. When hackers",
+      "position": "bottom",
+      "startMs": 167300,
+      "endMs": 173000
+    },
+    {
+      "text": "unlocked it, all hell broke loose. It\nled to a media firestorm, congressional",
+      "position": "bottom",
+      "startMs": 173000,
+      "endMs": 178700
+    },
+    {
+      "text": "hearings, and forced a change in the\ngame's rating. Instead of backing down,",
+      "position": "bottom",
+      "startMs": 178700,
+      "endMs": 184400
+    },
+    {
+      "text": "Rockstar cultivated an outlaw brand. The\ncontroversies, whether intentional or",
+      "position": "bottom",
+      "startMs": 184400,
+      "endMs": 190100
+    },
+    {
+      "text": "not, cemented their image as the\nrebellious bad boys of gaming, selling",
+      "position": "bottom",
+      "startMs": 190100,
+      "endMs": 195800
+    },
+    {
+      "text": "an adult fantasy that was\nunapologetically provocative.",
+      "position": "bottom",
+      "startMs": 195800,
+      "endMs": 201500
+    },
+    {
+      "text": "The controversies, however, weren't just\non the screen. As the worlds got more",
+      "position": "bottom",
+      "startMs": 201500,
+      "endMs": 207000
+    },
+    {
+      "text": "detailed, the pressure on the developers\nintensified. Reports of 'crunch",
+      "position": "bottom",
+      "startMs": 207000,
+      "endMs": 212500
+    },
+    {
+      "text": "culture'—periods of intense, mandatory\novertime stretching into 100-hour work",
+      "position": "bottom",
+      "startMs": 212500,
+      "endMs": 218000
+    },
+    {
+      "text": "weeks—began to surface, particularly\naround the development of Red Dead",
+      "position": "bottom",
+      "startMs": 218000,
+      "endMs": 223500
+    },
+    {
+      "text": "Redemption 2. This wasn't a story about\nexplicit content; this was about the",
+      "position": "bottom",
+      "startMs": 223500,
+      "endMs": 229000
+    },
+    {
+      "text": "human cost of creating these\nmasterpieces. The allegations sparked a",
+      "position": "bottom",
+      "startMs": 229000,
+      "endMs": 234500
+    },
+    {
+      "text": "massive, industry-wide reckoning over\nworking conditions. It presented a deep,",
+      "position": "bottom",
+      "startMs": 234500,
+      "endMs": 240000
+    },
+    {
+      "text": "uncomfortable question for players: can\nwe, and should we, separate the art from",
+      "position": "bottom",
+      "startMs": 240000,
+      "endMs": 245500
+    },
+    {
+      "text": "the conditions under which it was made?\nThe Rockstar Dilemma was no longer just",
+      "position": "bottom",
+      "startMs": 245500,
+      "endMs": 251000
+    },
+    {
+      "text": "about their games; it was about their\nethics.",
+      "position": "bottom",
+      "startMs": 251000,
+      "endMs": 256500
+    },
+    {
+      "text": "Yet, while the external image was one of\nscandal and crunch, the storytelling",
+      "position": "bottom",
+      "startMs": 256500,
+      "endMs": 262550
+    },
+    {
+      "text": "inside the games was evolving\ndramatically. GTA's genius was its",
+      "position": "bottom",
+      "startMs": 262550,
+      "endMs": 268600
+    },
+    {
+      "text": "sharp, biting satire of American\nconsumerism, media, and politics. It was",
+      "position": "bottom",
+      "startMs": 268600,
+      "endMs": 274650
+    },
+    {
+      "text": "loud, cynical, and hilarious. But then\ncame Red Dead Redemption. The story of",
+      "position": "bottom",
+      "startMs": 274650,
+      "endMs": 280700
+    },
+    {
+      "text": "John Marston wasn't satire; it was a\nsomber, cinematic tragedy about the end",
+      "position": "bottom",
+      "startMs": 280700,
+      "endMs": 286750
+    },
+    {
+      "text": "of an era. And with Red Dead Redemption\n2, Rockstar achieved their magnum opus",
+      "position": "bottom",
+      "startMs": 286750,
+      "endMs": 292800
+    },
+    {
+      "text": "of narrative. Arthur Morgan’s journey of\nself-reflection and his search for",
+      "position": "bottom",
+      "startMs": 292800,
+      "endMs": 298850
+    },
+    {
+      "text": "redemption in a dying world is one of\nthe most poignant, emotionally complex",
+      "position": "bottom",
+      "startMs": 298850,
+      "endMs": 304900
+    },
+    {
+      "text": "character arcs in any medium. They\nproved they could do more than just mock",
+      "position": "bottom",
+      "startMs": 304900,
+      "endMs": 310950
+    },
+    {
+      "text": "the world; they could break your heart\nwith it.",
+      "position": "bottom",
+      "startMs": 310950,
+      "endMs": 317000
+    },
+    {
+      "text": "So what is Rockstar's legacy? They are,\nwithout question, an empire. GTA V alone",
+      "position": "bottom",
+      "startMs": 317000,
+      "endMs": 322750
+    },
+    {
+      "text": "has sold over 200 million copies, making\nit the single most financially",
+      "position": "bottom",
+      "startMs": 322750,
+      "endMs": 328500
+    },
+    {
+      "text": "successful entertainment product of all\ntime. Period. Not just in games. But",
+      "position": "bottom",
+      "startMs": 328500,
+      "endMs": 334250
+    },
+    {
+      "text": "with that success comes immense\npressure. A decade has passed since",
+      "position": "bottom",
+      "startMs": 334250,
+      "endMs": 340000
+    },
+    {
+      "text": "their last Grand Theft Auto, and the\nexpectations for GTA VI are",
+      "position": "bottom",
+      "startMs": 340000,
+      "endMs": 345750
+    },
+    {
+      "text": "astronomical. Can they revolutionize the\nindustry *again*? Can they deliver a",
+      "position": "bottom",
+      "startMs": 345750,
+      "endMs": 351500
+    },
+    {
+      "text": "world that feels as groundbreaking today\nas Liberty City did in 2001? And can",
+      "position": "bottom",
+      "startMs": 351500,
+      "endMs": 357250
+    },
+    {
+      "text": "they do it while fostering a healthier,\nmore sustainable culture? The entire",
+      "position": "bottom",
+      "startMs": 357250,
+      "endMs": 363000
+    },
+    {
+      "text": "world is waiting for the answer. The\nbillion-dollar question is whether they",
+      "position": "bottom",
+      "startMs": 363000,
+      "endMs": 368750
+    },
+    {
+      "text": "can solve their own dilemma.",
+      "position": "bottom",
+      "startMs": 368750,
+      "endMs": 374500
+    },
+    {
+      "text": "Rockstar's history is a paradox: a story\nof groundbreaking art and troubling",
+      "position": "bottom",
+      "startMs": 374500,
+      "endMs": 380400
+    },
+    {
+      "text": "controversy. It's the ultimate case\nstudy in creative ambition. So what do",
+      "position": "bottom",
+      "startMs": 380400,
+      "endMs": 386300
+    },
+    {
+      "text": "you think is their true legacy? Let us\nknow in the comments below, and if you",
+      "position": "bottom",
+      "startMs": 386300,
+      "endMs": 392200
+    },
+    {
+      "text": "enjoyed this deep dive, make sure to\nsubscribe and hit that bell for more",
+      "position": "bottom",
+      "startMs": 392200,
+      "endMs": 398100
+    },
+    {
+      "text": "stories from behind the screen.",
+      "position": "bottom",
+      "startMs": 398100,
+      "endMs": 404000
+    }
+  ],
+  "audio": [
+    {
+      "audioUrl": "segment-1",
+      "startMs": 0,
+      "endMs": 24500
+    },
+    {
+      "audioUrl": "segment-2",
+      "startMs": 24500,
+      "endMs": 84500
+    },
+    {
+      "audioUrl": "segment-3",
+      "startMs": 84500,
+      "endMs": 144500
+    },
+    {
+      "audioUrl": "segment-4",
+      "startMs": 144500,
+      "endMs": 201500
+    },
+    {
+      "audioUrl": "segment-5",
+      "startMs": 201500,
+      "endMs": 256500
+    },
+    {
+      "audioUrl": "segment-6",
+      "startMs": 256500,
+      "endMs": 317000
+    },
+    {
+      "audioUrl": "segment-7",
+      "startMs": 317000,
+      "endMs": 374500
+    },
+    {
+      "audioUrl": "segment-8",
+      "startMs": 374500,
+      "endMs": 404000
+    }
+  ]
+}

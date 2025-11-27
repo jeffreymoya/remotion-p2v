@@ -8,7 +8,7 @@
       "defaultModel": "gpt-4-turbo-preview",
       "temperature": 0.7,
       "maxTokens": 8000,
-      "enabled": true
+      "enabled": false
     },
     "claude-code": {
       "name": "claude-code",
@@ -16,20 +16,18 @@
       "defaultModel": "claude-3-5-sonnet-20241022",
       "temperature": 0.7,
       "maxTokens": 4000,
-      "enabled": true
+      "enabled": false
     },
     "gemini-cli": {
       "name": "gemini-cli",
       "cliCommand": "gemini",
-      "defaultModel": "gemini-1.5-flash",
+      "_comment": "Gemini CLI uses its own internal model config (e.g., gemini-2.5-flash-lite). No defaultModel needed.",
       "temperature": 0.7,
       "maxTokens": 8000,
       "enabled": true
     }
   },
   "fallbackOrder": [
-    "gemini-cli",
-    "claude-code",
-    "codex"
+    "gemini-cli"
   ]
 }

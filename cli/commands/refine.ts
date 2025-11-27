@@ -7,6 +7,10 @@
  */
 
 import * as fs from 'fs/promises';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // Fallback to .env
 import { ConfigManager } from '../lib/config';
 import { getProjectPaths } from '../../src/lib/paths';
 import { refineTopicPrompt } from '../../config/prompts';

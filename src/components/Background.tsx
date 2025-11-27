@@ -52,7 +52,7 @@ export const Background: React.FC<{
   return (
     <AbsoluteFill>
       <Img
-        src={staticFile(`projects/${project}/images/${item.imageUrl}.png`)}
+        src={staticFile(`projects/${project}/assets/images/${item.imageUrl}`)}
         style={{
           width: imgWidth * imgScale,
           height: imgHeight * imgScale,

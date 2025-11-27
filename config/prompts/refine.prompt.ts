@@ -40,7 +40,20 @@ Requirements:
 - Focus on evergreen content that stays relevant
 - Ensure the topic can sustain ${Math.floor(vars.minDuration / 60)}-${Math.floor(vars.maxDuration / 60)} minutes of quality content
 - Use storytelling, examples, and practical insights
-- Avoid clickbait - be authentic but compelling`;
+- Avoid clickbait - be authentic but compelling
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "refinedTitle": "Your compelling YouTube title here",
+  "refinedDescription": "3-4 sentences explaining what the video will cover",
+  "targetAudience": "Specific demographic description with interests and pain points",
+  "keyAngles": ["First key angle or subtopic", "Second angle", "Third angle", "Optional fourth", "Optional fifth"],
+  "hooks": ["First attention-grabbing hook", "Second hook", "Optional third hook"],
+  "suggestedDuration": 720,
+  "reasoning": "Explanation of your choices and strategy"
+}
+
+IMPORTANT: Field names must be EXACTLY as shown (camelCase). Arrays must contain 3-5 strings for keyAngles and 2-3 strings for hooks.`;
 };
 
 /**
@@ -61,5 +74,18 @@ Your task:
 5. Recommend optimal duration for maximum retention
 6. Explain the viral potential and audience psychology
 
-Balance viral appeal with authenticity and value.`;
+Balance viral appeal with authenticity and value.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "refinedTitle": "Your highly clickable title here",
+  "refinedDescription": "3-4 sentences that create curiosity and urgency",
+  "targetAudience": "Specific demographic description",
+  "keyAngles": ["First viral angle", "Second angle", "Third angle"],
+  "hooks": ["First hook that stops the scroll", "Second hook"],
+  "suggestedDuration": 720,
+  "reasoning": "Explanation of viral potential and audience psychology"
+}
+
+IMPORTANT: Field names must be EXACTLY as shown (camelCase). Arrays must contain 3-5 strings for keyAngles and 2-3 strings for hooks.`;
 };

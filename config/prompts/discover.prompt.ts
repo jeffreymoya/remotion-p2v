@@ -33,7 +33,22 @@ Your task:
    - Give a score (0-100) indicating video potential
    - Provide reasoning for why this topic is good for video
 
-Return the top ${vars.limit} topics ranked by score (highest first).`;
+Return the top ${vars.limit} topics ranked by score (highest first).
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "topics": [
+    {
+      "title": "Compelling YouTube title here",
+      "description": "2-3 sentences explaining what the video would cover",
+      "category": "technology",
+      "score": 85,
+      "reasoning": "Why this topic is good for video"
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "topics" array containing objects with these exact field names.`;
 };
 
 /**
@@ -55,5 +70,20 @@ Your task:
    - Give a score (0-100) based on relevance and engagement potential
    - Explain why this topic fits the ${vars.niche} niche
 
-Return the top ${vars.limit} topics ranked by score.`;
+Return the top ${vars.limit} topics ranked by score.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "topics": [
+    {
+      "title": "Title appealing to ${vars.niche} enthusiasts",
+      "description": "2-3 sentences about the video content",
+      "category": "relevant category",
+      "score": 85,
+      "reasoning": "Why this topic fits the ${vars.niche} niche"
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "topics" array containing objects with these exact field names.`;
 };

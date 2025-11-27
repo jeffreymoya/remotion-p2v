@@ -7,7 +7,11 @@
  */
 
 import * as fs from 'fs/promises';
+import * as dotenv from 'dotenv';
 import { z } from 'zod';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // Fallback to .env
 import { ConfigManager } from '../lib/config';
 import { ensureProjectDirs } from '../../src/lib/paths';
 import { GoogleTrendsService } from '../services/trends';

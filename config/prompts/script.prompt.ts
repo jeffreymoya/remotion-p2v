@@ -43,7 +43,18 @@ Requirements:
 - Include speaking notes for each segment (tone, pacing, emphasis)
 - Estimate duration for each segment in milliseconds
 
-Return as JSON with array of segments.`;
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "segments": [
+    {
+      "text": "The script text for this segment (what the narrator says)",
+      "speakingNotes": "Optional notes about tone, pacing, emphasis",
+      "estimatedDurationMs": 15000
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "segments" array. Each segment needs "text" (required), "speakingNotes" (optional), and "estimatedDurationMs" (required, in milliseconds).`;
 };
 
 /**
@@ -63,7 +74,20 @@ Requirements:
 - Target duration: ${vars.targetDuration} seconds
 - Include timing estimates for each step
 
-Make it beginner-friendly and actionable.`;
+Make it beginner-friendly and actionable.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "segments": [
+    {
+      "text": "The tutorial step text (what the narrator says)",
+      "speakingNotes": "Optional notes about demonstrations or emphasis",
+      "estimatedDurationMs": 15000
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "segments" array. Each segment needs "text" (required), "speakingNotes" (optional), and "estimatedDurationMs" (required, in milliseconds).`;
 };
 
 /**
@@ -84,5 +108,18 @@ Requirements:
 - Target duration: ${vars.targetDuration} seconds
 - Include pacing notes for dramatic effect
 
-Tell a story that educates and entertains.`;
+Tell a story that educates and entertains.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "segments": [
+    {
+      "text": "The narrative text for this part of the story",
+      "speakingNotes": "Optional notes about tone, pacing, dramatic pauses",
+      "estimatedDurationMs": 15000
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "segments" array. Each segment needs "text" (required), "speakingNotes" (optional), and "estimatedDurationMs" (required, in milliseconds).`;
 };

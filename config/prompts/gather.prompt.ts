@@ -25,7 +25,19 @@ export const extractVisualTagsPrompt = (vars: GatherPromptVariables): string => 
 
 "${vars.segmentText}"
 
-Return ONLY relevant visual tags (objects, scenes, concepts) as JSON.`;
+Return ONLY relevant visual tags (objects, scenes, concepts) as JSON.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "tags": [
+    {
+      "tag": "visual keyword or scene",
+      "confidence": 0.95
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "tags" array. Each tag needs "tag" (string) and "confidence" (number between 0 and 1).`;
 };
 
 /**
@@ -43,7 +55,19 @@ Focus on:
 - Camera angles and movements
 - Symbolic or metaphorical visuals
 
-Return ${vars.minTags || 3}-${vars.maxTags || 5} cinematic tags as JSON.`;
+Return ${vars.minTags || 3}-${vars.maxTags || 5} cinematic tags as JSON.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "tags": [
+    {
+      "tag": "cinematic keyword or atmosphere",
+      "confidence": 0.95
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "tags" array. Each tag needs "tag" (string) and "confidence" (number between 0 and 1).`;
 };
 
 /**
@@ -60,7 +84,19 @@ Provide:
 - Establishing shots and transitions
 - Visual metaphors or symbolism
 
-Return ${vars.minTags || 3}-${vars.maxTags || 5} B-roll suggestions as JSON with descriptions.`;
+Return ${vars.minTags || 3}-${vars.maxTags || 5} B-roll suggestions as JSON with descriptions.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "tags": [
+    {
+      "tag": "B-roll scene description",
+      "confidence": 0.95
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "tags" array. Each tag needs "tag" (string describing the B-roll) and "confidence" (number between 0 and 1).`;
 };
 
 /**
@@ -80,5 +116,17 @@ Requirements:
 - Make descriptions specific and vivid
 - Ensure images would complement the narration
 
-Return as JSON array with detailed prompts suitable for DALL-E or Midjourney.`;
+Return as JSON array with detailed prompts suitable for DALL-E or Midjourney.
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "tags": [
+    {
+      "tag": "Detailed image prompt with composition, lighting, and mood",
+      "confidence": 0.95
+    }
+  ]
+}
+
+IMPORTANT: The response must have a "tags" array. Each tag needs "tag" (string with detailed image prompt) and "confidence" (number between 0 and 1).`;
 };

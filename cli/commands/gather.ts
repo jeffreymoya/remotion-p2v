@@ -8,6 +8,10 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config(); // Fallback to .env
 import { ConfigManager } from '../lib/config';
 import { getProjectPaths, ensureProjectDirs } from '../../src/lib/paths';
 import { AIProviderFactory } from '../services/ai';
@@ -87,7 +91,7 @@ async function main(projectId?: string) {
     // Initialize services
     const aiProvider = await AIProviderFactory.getProviderWithFallback();
     const stockSearch = await MediaServiceFactory.getStockMediaSearch();
-    const downloader = MediaServiceFactory.getMediaDownloader('cache/media');
+    const downloader = MediaServiceFactory.getMediaDownloader();
     const ttsProvider = await TTSProviderFactory.getTTSProvider();
     const musicService = musicConfig.enabled ? await MusicServiceFactory.getMusicService() : null;
 
@@ -146,10 +150,16 @@ async function main(projectId?: string) {
 
       // 3. Download images
       for (const image of rankedImages) {
-        const localPath = await downloader.downloadImage(image);
+        const cachePath = await downloader.downloadImage(image);
+
+        // Copy from cache to project assets directory
+        const filename = path.basename(cachePath);
+        const projectImagePath = path.join(paths.assetsImages, filename);
+        await fs.copyFile(cachePath, projectImagePath);
+
         manifest.images.push({
           id: image.id,
-          path: localPath,
+          path: projectImagePath,
           source: image.source,
           tags: image.tags,
         });
@@ -158,7 +168,7 @@ async function main(projectId?: string) {
       // 4. Generate TTS audio for segment
       console.log(`[GATHER]   → Generating TTS audio...`);
       const ttsResult = await ttsProvider.generateAudio(segment.text);
-      const audioPath = path.join(paths.audio, `${segmentId}.mp3`);
+      const audioPath = path.join(paths.assetsAudio, `${segmentId}.mp3`);
       await fs.writeFile(audioPath, ttsResult.audioBuffer);
 
       manifest.audio.push({
@@ -180,7 +190,7 @@ async function main(projectId?: string) {
 
       if (musicTrack) {
         console.log(`[GATHER]   → Found music: ${musicTrack.title}`);
-        const musicPath = path.join(paths.music, 'background.mp3');
+        const musicPath = path.join(paths.assetsMusic, 'background.mp3');
 
         if (musicTrack.source === 'local') {
           // Copy from local library

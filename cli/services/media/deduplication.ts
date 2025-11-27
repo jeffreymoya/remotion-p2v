@@ -17,7 +17,7 @@ export function deduplicateImages(images: StockImage[]): StockImage[] {
     const key = `${image.source}:${image.id}`;
 
     if (!seen.has(key)) {
-      seen.add(key, image);
+      seen.set(key, image);
     } else {
       // If duplicate, keep higher resolution version
       const existing = seen.get(key)!;
