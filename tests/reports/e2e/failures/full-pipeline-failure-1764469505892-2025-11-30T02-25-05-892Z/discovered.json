@@ -1,0 +1,15 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "The Science of Weather Forecasting: How We Predict Tomorrow",
+      "description": "Ever wondered how meteorologists accurately predict tomorrow's weather? This video breaks down the complex science behind weather forecasting, explaining the complex models and data that shape our daily forecasts.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T02:25:05.872Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T02:25:05.872Z",
+  "totalCount": 1
+}

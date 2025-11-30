@@ -176,12 +176,26 @@ async function main(projectId?: string, options?: { auto?: boolean; index?: numb
 
 // Parse CLI args
 const args = process.argv.slice(2);
-const projectIdIndex = args.indexOf('--project');
-const projectId = projectIdIndex !== -1 ? args[projectIdIndex + 1] : undefined;
 
-const autoMode = args.includes('--auto');
+// Support both positional and named arguments for project ID
+const projectIdIndex = args.indexOf('--project');
+let projectId: string | undefined;
+let topicIndexValue: number | undefined;
+
+if (projectIdIndex !== -1) {
+  // Named argument: --project <id>
+  projectId = args[projectIdIndex + 1];
+} else if (args.length > 0 && !args[0].startsWith('--')) {
+  // Positional argument: <project-id> [index]
+  projectId = args[0];
+  if (args.length > 1 && !args[1].startsWith('--')) {
+    topicIndexValue = parseInt(args[1], 10);
+  }
+}
+
+const autoMode = args.includes('--auto') || topicIndexValue !== undefined;
 const indexArg = args.indexOf('--index');
-const index = indexArg !== -1 ? parseInt(args[indexArg + 1], 10) : undefined;
+const index = indexArg !== -1 ? parseInt(args[indexArg + 1], 10) : topicIndexValue;
 
 // Run if called directly
 if (require.main === module) {

@@ -24,8 +24,7 @@ export class GeminiCLIProvider extends BaseCLIProvider {
   /**
    * Build Gemini CLI command
    *
-   * Correct format: gemini --output-format json --sandbox --prompt '<prompt>'
-   * No model parameter or other flags needed
+   * Correct format: gemini --yolo --model gemini-2.5-flash-lite --output-format json '<prompt>'
    */
   protected buildCommand(
     prompt: string,
@@ -37,9 +36,10 @@ export class GeminiCLIProvider extends BaseCLIProvider {
 
     const parts = [
       'gemini',
+      '--yolo',
+      '--model gemini-2.5-flash-lite',
       '--output-format json',
-      '--sandbox',
-      `--prompt '${escapedPrompt}'`,
+      `'${escapedPrompt}'`,
     ];
 
     // Redirect output to file
@@ -148,15 +148,26 @@ Correct format example:
         const responseText = wrapper.response;
 
         // Try to extract JSON from the response
-        // Remove markdown code blocks if present
-        const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/) ||
-                         responseText.match(/([\[\{][\s\S]*[\]\}])/);
+        // Remove markdown code blocks if present (```json ... ``` or ``` ... ```)
+        let jsonText = responseText;
 
-        if (!jsonMatch) {
-          throw new Error('No JSON found in response');
+        // First try to extract from markdown code blocks
+        const codeBlockMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (codeBlockMatch) {
+          jsonText = codeBlockMatch[1].trim();
+        } else {
+          // If no code blocks, try to find JSON object/array
+          const jsonMatch = responseText.match(/([\[\{][\s\S]*[\]\}])/);
+          if (jsonMatch) {
+            jsonText = jsonMatch[1].trim();
+          }
         }
 
-        data = JSON.parse(jsonMatch[1].trim());
+        // Clean up any potential issues
+        // Remove any leading/trailing whitespace and normalize line breaks
+        jsonText = jsonText.trim().replace(/\r\n/g, '\n');
+
+        data = JSON.parse(jsonText);
       } catch (parseError) {
         throw new Error(`Failed to parse JSON from Gemini response: ${parseError}`);
       }

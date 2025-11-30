@@ -10,12 +10,14 @@ import { logger } from '../../utils/logger';
 export class PixabayService {
   private apiKey: string;
   private baseUrl = 'https://pixabay.com/api';
+  private timeoutMs: number;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, timeoutMs: number = 30000) {
     if (!apiKey) {
       throw new Error('Pixabay API key is required');
     }
     this.apiKey = apiKey;
+    this.timeoutMs = timeoutMs;
   }
 
   /**
@@ -33,7 +35,7 @@ export class PixabayService {
           image_type: 'photo',
           orientation: options.orientation === '16:9' ? 'horizontal' : 'vertical',
         },
-        timeout: 10000,
+        timeout: this.timeoutMs,
       });
 
       const images: StockImage[] = response.data.hits.map((image: any) => ({
@@ -69,7 +71,7 @@ export class PixabayService {
           q: query,
           per_page: options.perTag ?? 10,
         },
-        timeout: 10000,
+        timeout: this.timeoutMs,
       });
 
       const videos: StockVideo[] = response.data.hits.map((video: any) => {
@@ -113,7 +115,7 @@ export class PixabayService {
           q: mood,
           per_page: 20,
         },
-        timeout: 10000,
+        timeout: this.timeoutMs,
       });
 
       let tracks: MusicTrack[] = response.data.hits.map((track: any) => ({
@@ -142,7 +144,7 @@ export class PixabayService {
   /**
    * Handle API errors with appropriate logging and fallback
    */
-  private handleError(error: unknown, method: string, query: string): never {
+  private handleError<T>(error: unknown, method: string, query: string): T {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
       const status = axiosError.response?.status;
@@ -167,7 +169,7 @@ export class PixabayService {
 
       if (status === 404 || (axiosError.response?.data as any)?.hits?.length === 0) {
         logger.warn(`No Pixabay results for query: ${query}`);
-        return [] as any; // Return empty array for no results
+        return [] as T; // Return empty array for no results
       }
 
       logger.error(`Pixabay ${method} error:`, { status, message, query });

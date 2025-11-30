@@ -9,6 +9,7 @@ export * from './stock-search';
 export * from './quality';
 export * from './deduplication';
 export * from './downloader';
+export * from './aspect-processor';
 
 import { PexelsService } from './pexels';
 import { UnsplashService } from './unsplash';
@@ -33,17 +34,17 @@ export class MediaServiceFactory {
       return this.searchInstance;
     }
 
-    // Load API keys from config
+    // Load API keys and config
     const config = await ConfigManager.loadStockAssetsConfig();
 
-    const pexelsKey = process.env.PEXELS_API_KEY || config.pexels?.apiKey;
+    const pexelsKey = process.env.PEXELS_API_KEY || config.providers?.pexels?.apiKey;
     // Support all common Unsplash env names (Access Key == App ID)
     const unsplashKey =
       process.env.UNSPLASH_API_KEY ||
       process.env.UNSPLASH_ACCESS_KEY ||
       process.env.UNSPLASH_APP_ID ||
-      config.unsplash?.apiKey;
-    const pixabayKey = process.env.PIXABAY_API_KEY || config.pixabay?.apiKey;
+      config.providers?.unsplash?.apiKey;
+    const pixabayKey = process.env.PIXABAY_API_KEY || config.providers?.pixabay?.apiKey;
 
     if (!pexelsKey && !unsplashKey && !pixabayKey) {
       throw new Error(
@@ -51,11 +52,14 @@ export class MediaServiceFactory {
       );
     }
 
+    // Get search timeout from config (default 30s)
+    const searchTimeoutMs = config.download?.timeoutMs ?? 30000;
+
     if (pexelsKey) logger.info('Initialized Pexels service');
     if (unsplashKey) logger.info('Initialized Unsplash service');
     if (pixabayKey) logger.info('Initialized Pixabay service');
 
-    this.searchInstance = new StockMediaSearch(pexelsKey, unsplashKey, pixabayKey);
+    this.searchInstance = new StockMediaSearch(pexelsKey, unsplashKey, pixabayKey, searchTimeoutMs);
     return this.searchInstance;
   }
 

@@ -18,12 +18,30 @@ const ElementAnimationSchema = TimelineElementSchema.extend({
   to: z.number(),
 });
 
+// Media metadata schema for aspect-fit information
+const MediaMetadataSchema = z.object({
+  width: z.number().positive(),
+  height: z.number().positive(),
+  duration: z.number().positive().optional(), // Videos only
+  mode: z.enum(['crop', 'letterbox']).optional(),
+  scale: z.number().positive().optional(),
+  cropX: z.number().optional(),
+  cropY: z.number().optional(),
+  cropWidth: z.number().optional(),
+  cropHeight: z.number().optional(),
+}).optional();
+
 const BackgroundElementSchema = TimelineElementSchema.extend({
-  imageUrl: z.string(),
+  imageUrl: z.string().optional(),
+  videoUrl: z.string().optional(),
   enterTransition: BackgroundTransitionTypeSchema.optional(),
   exitTransition: BackgroundTransitionTypeSchema.optional(),
   animations: z.array(ElementAnimationSchema).optional(),
-});
+  mediaMetadata: MediaMetadataSchema,
+}).refine(
+  (data) => data.imageUrl || data.videoUrl,
+  { message: "BackgroundElement must have either imageUrl or videoUrl" }
+);
 
 const TextElementSchema = TimelineElementSchema.extend({
   text: z.string(),
@@ -33,6 +51,15 @@ const TextElementSchema = TimelineElementSchema.extend({
     z.literal("center"),
   ]),
   animations: z.array(ElementAnimationSchema).optional(),
+  words: z.array(z.object({
+    text: z.string(),
+    startMs: z.number(),
+    endMs: z.number(),
+    emphasis: z.object({
+      level: z.enum(['none', 'med', 'high']),
+      tone: z.enum(['warm', 'intense']).optional()
+    }).optional()
+  })).optional(),
 });
 
 const AudioElementSchema = TimelineElementSchema.extend({
@@ -74,6 +101,7 @@ export type BackgroundTransitionType = z.infer<
 
 export type TimelineElement = z.infer<typeof TimelineElementSchema>;
 export type ElementAnimation = z.infer<typeof ElementAnimationSchema>;
+export type MediaMetadata = z.infer<typeof MediaMetadataSchema>;
 export type BackgroundElement = z.infer<typeof BackgroundElementSchema>;
 export type TextElement = z.infer<typeof TextElementSchema>;
 export type AudioElement = z.infer<typeof AudioElementSchema>;
@@ -86,6 +114,7 @@ export {
   BackgroundTransitionTypeSchema,
   TimelineElementSchema,
   ElementAnimationSchema,
+  MediaMetadataSchema,
   BackgroundElementSchema,
   TextElementSchema,
   AudioElementSchema,

@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "How GPS *Actually* Works: The 20,000 km/h Satellites Above Your Head",
+      "description": "You use it every day, but how does it really work? This video breaks down the incredible science of the Global Positioning System, from Einstein's theory of relativity to the network of atomic clocks in space that makes it all possible.",
+      "source": "google-trends",
+      "trendScore": 92,
+      "category": "technology",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "The University That Changed America: 3 Alabama Discoveries You Don't Know",
+      "description": "Explore groundbreaking research and historical events from the University of Alabama that have had a national impact, far from the football field. We'll uncover stories of science, social change, and innovation.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "history",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "The Lost Colony of Roanoke: America's Oldest Unsolved Mystery",
+      "description": "In 1590, over 100 English settlers vanished from their new colony without a trace, leaving behind only a single cryptic clue. We dive into the compelling theories, from assimilation to massacre, to try and solve this 400-year-old mystery.",
+      "source": "google-trends",
+      "trendScore": 89,
+      "category": "history",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "The Primal Brain of a Superfan: The Science of Why We Hate the Other Team",
+      "description": "Why do sports rivalries (like UNLV vs. Nevada) get so intense? This video dives into the neuroscience and psychology of tribalism, in-group/out-group bias, and what happens in our brains when our team wins or loses.",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "science",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "The Hidden History of the Grand Ole Opry: Nashville's Musical Empire",
+      "description": "Go behind the curtain of America's most famous country music stage. This video explores the cultural impact of the Grand Ole Opry, from its humble beginnings to its status as a global icon that shaped modern music.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "The Crisis of the High School Superstar: The Immense Psychological Pressure on Teen Athletes",
+      "description": "Long before they turn pro, high school athletes are facing immense pressure to perform from coaches, parents, and now, big-money brands. This video examines the psychological toll of early stardom and the mental health challenges in youth sports.",
+      "source": "google-trends",
+      "trendScore": 84,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "The Secret Psychology of Pro Wrestling: How Athletes Like Liv Morgan Master Mass Manipulation",
+      "description": "It's more than just a show. We break down the psychological tactics used by professional wrestlers to captivate millions, analyzing performance theory, storytelling, and the art of audience manipulation.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "The New Millionaire Class: How College Kids Became Pro Athletes Overnight",
+      "description": "The world of college sports has been turned upside down by NIL (Name, Image, Likeness) deals. We explain how this system works, the ethical debates, and the long-term impact on the future of sports and education.",
+      "source": "google-trends",
+      "trendScore": 80,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "How to Get Into a Top University: A Former Admissions Officer Explains",
+      "description": "We deconstruct what it really takes to get into a competitive school like the University of Alabama. A former admissions officer reveals how to craft the perfect application, write a standout essay, and what they're *really* looking for.",
+      "source": "google-trends",
+      "trendScore": 78,
+      "category": "how-to",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "The Science of a Super-Athlete: Training Tech Used by the Pros",
+      "description": "Explore the cutting-edge technology and scientific principles behind the training of elite athletes. From advanced motion capture to data-driven nutrition and recovery, see how science is creating a new breed of athlete.",
+      "source": "google-trends",
+      "trendScore": 75,
+      "category": "technology",
+      "discoveredAt": "2025-11-30T01:14:09.940Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T01:14:09.940Z",
+  "totalCount": 10
+}

@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "Dopamine Overload: How We Got Hooked & How to Break Free",
+      "description": "Investigate how modern life, from social media to constant connectivity, exploits our brain's reward system. Discover strategies to manage the 'addiction economy' and regain control over your attention and well-being.",
+      "source": "google-trends",
+      "trendScore": 94,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "Webb Telescope's Stunning Discoveries: Glimpses of the Early Universe",
+      "description": "Explore the most breathtaking images and discoveries from the James Webb Space Telescope, revealing insights into the universe's origins and distant galaxies. Understand the science behind these observations and what they tell us about our place in the cosmos.",
+      "source": "google-trends",
+      "trendScore": 93,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "The Future of AI: How Generative Models Are Reshaping Creativity",
+      "description": "Explore the revolutionary impact of AI on creative fields, from art and music to writing and design. Understand how generative AI tools are empowering creators and what this means for the future of work and innovation.",
+      "source": "google-trends",
+      "trendScore": 92,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "Unmask Your Brain: Cognitive Biases That Trick You Daily",
+      "description": "Delve into common psychological traps like confirmation bias and the availability heuristic that unconsciously shape your judgment. Learn practical strategies to identify and overcome these biases for sharper decision-making.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "Codes & Secrets: The Fascinating History of Cryptography",
+      "description": "Trace the evolution of secret communication from ancient ciphers to the complex encryption securing our digital world. Understand the ingenious methods developed to protect information throughout history.",
+      "source": "google-trends",
+      "trendScore": 89,
+      "category": "History",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "Boost Your Focus: The Ultimate Guide to the Pomodoro Technique",
+      "description": "Learn how to supercharge your work and study habits with the Pomodoro Technique, a time management method using focused work intervals. This video provides practical steps to implement and optimize this system for peak productivity.",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "How-to",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "Your Inner World: The Astonishing Power of Your Gut Microbiome",
+      "description": "Explore the vital, often-overlooked ecosystem of microbes living within your body. Learn how the microbiome impacts digestion, immunity, mental health, and overall well-being.",
+      "source": "google-trends",
+      "trendScore": 87,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "Color Psychology: How the Hues Around You Affect Your Mind",
+      "description": "Discover the science of how colors impact our emotions, perceptions, and daily choices, from marketing strategies to personal preferences. Understand the subtle power of color in our environment and how to use it effectively.",
+      "source": "google-trends",
+      "trendScore": 86,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "The Silk Road: The Ancient Superhighway That Connected the World",
+      "description": "Journey through the historical significance of the Silk Road, understanding its profound influence on global trade, cultural exchange, and the spread of ideas across continents. Discover its lasting legacy on our interconnected modern world.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "History",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "Beyond the Hype: What is the Metaverse, Really?",
+      "description": "Demystify the concept of the metaverse, separating the futuristic promises from the current technological realities. This video will explore its potential applications, challenges, and what it might mean for our digital future.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T02:27:32.819Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T02:27:32.819Z",
+  "totalCount": 10
+}

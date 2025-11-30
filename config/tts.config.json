@@ -7,29 +7,41 @@
       "apiKey": "${GOOGLE_TTS_API_KEY}",
       "defaultVoice": {
         "languageCode": "en-US",
-        "name": "en-US-Neural2-J",
+        "name": "en-US-Chirp3-HD-Algieba",
         "ssmlGender": "MALE"
       },
       "voices": {
         "male-casual": {
           "languageCode": "en-US",
-          "name": "en-US-Neural2-J",
+          "name": "en-US-Chirp3-HD-Algieba",
           "ssmlGender": "MALE"
         },
         "female-casual": {
           "languageCode": "en-US",
-          "name": "en-US-Neural2-F",
+          "name": "en-US-Chirp3-HD-Bellatrix",
           "ssmlGender": "FEMALE"
         },
         "male-professional": {
           "languageCode": "en-US",
-          "name": "en-US-Neural2-D",
+          "name": "en-US-Chirp3-HD-Canopus",
           "ssmlGender": "MALE"
         },
         "female-professional": {
           "languageCode": "en-US",
-          "name": "en-US-Neural2-C",
+          "name": "en-US-Chirp3-HD-Deneb",
           "ssmlGender": "FEMALE"
+        },
+        "neural2-fallback-male": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-J",
+          "ssmlGender": "MALE",
+          "_comment": "Fallback voice in case Chirp3 is unavailable"
+        },
+        "neural2-fallback-female": {
+          "languageCode": "en-US",
+          "name": "en-US-Neural2-F",
+          "ssmlGender": "FEMALE",
+          "_comment": "Fallback voice in case Chirp3 is unavailable"
         }
       },
       "audioConfig": {
@@ -42,6 +54,7 @@
     "elevenlabs": {
       "name": "elevenlabs",
       "enabled": false,
+      "_comment": "ElevenLabs provider is not yet implemented. Only Google TTS is currently supported. The fallback order will skip ElevenLabs during provider initialization.",
       "apiKey": "${ELEVENLABS_API_KEY}",
       "defaultVoice": {
         "voiceId": "21m00Tcm4TlvDq8ikWAM",
@@ -77,6 +90,7 @@
     "retryDelayMs": 1000,
     "backoffMultiplier": 2
   },
+  "timeoutMs": 60000,
   "caching": {
     "enabled": true,
     "ttlSeconds": 2592000

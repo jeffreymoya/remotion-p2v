@@ -94,3 +94,11 @@ export const calculateBlur = ({
   return 0;
 };
 
+/**
+ * Converts milliseconds to frames based on FPS.
+ * Used for word-level subtitle timing.
+ */
+export const msToFrame = (ms: number, fps: number): number => {
+  return Math.floor((ms * fps) / 1000);
+};
+

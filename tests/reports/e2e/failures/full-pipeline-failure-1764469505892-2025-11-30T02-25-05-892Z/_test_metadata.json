@@ -1,0 +1,20 @@
+{
+  "projectId": "test-full-pipeline-test-1764469476954-52b0b716",
+  "reason": "full-pipeline-failure-1764469505892",
+  "createdAt": "2025-11-30T02:24:36.956Z",
+  "preservedAt": "2025-11-30T02:25:05.900Z",
+  "stage": "discover",
+  "paths": {
+    "root": "/tmp/remotion-p2v-test-1764469476954-52b0b716",
+    "discovered": "/tmp/remotion-p2v-test-1764469476954-52b0b716/discovered.json",
+    "selected": "/tmp/remotion-p2v-test-1764469476954-52b0b716/selected.json",
+    "refined": "/tmp/remotion-p2v-test-1764469476954-52b0b716/refined.json",
+    "scripts": "/tmp/remotion-p2v-test-1764469476954-52b0b716/scripts",
+    "assets": "/tmp/remotion-p2v-test-1764469476954-52b0b716/assets",
+    "images": "/tmp/remotion-p2v-test-1764469476954-52b0b716/assets/images",
+    "videos": "/tmp/remotion-p2v-test-1764469476954-52b0b716/assets/videos",
+    "audio": "/tmp/remotion-p2v-test-1764469476954-52b0b716/assets/audio",
+    "music": "/tmp/remotion-p2v-test-1764469476954-52b0b716/assets/music",
+    "timeline": "/tmp/remotion-p2v-test-1764469476954-52b0b716/timeline.json"
+  }
+}

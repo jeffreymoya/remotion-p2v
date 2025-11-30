@@ -1,0 +1,20 @@
+{
+  "projectId": "test-full-pipeline-test-1764465443094-119d541d",
+  "reason": "full-pipeline-failure-1764465508280",
+  "createdAt": "2025-11-30T01:17:23.096Z",
+  "preservedAt": "2025-11-30T01:18:28.289Z",
+  "stage": "discover",
+  "paths": {
+    "root": "/tmp/remotion-p2v-test-1764465443094-119d541d",
+    "discovered": "/tmp/remotion-p2v-test-1764465443094-119d541d/discovered.json",
+    "selected": "/tmp/remotion-p2v-test-1764465443094-119d541d/selected.json",
+    "refined": "/tmp/remotion-p2v-test-1764465443094-119d541d/refined.json",
+    "scripts": "/tmp/remotion-p2v-test-1764465443094-119d541d/scripts",
+    "assets": "/tmp/remotion-p2v-test-1764465443094-119d541d/assets",
+    "images": "/tmp/remotion-p2v-test-1764465443094-119d541d/assets/images",
+    "videos": "/tmp/remotion-p2v-test-1764465443094-119d541d/assets/videos",
+    "audio": "/tmp/remotion-p2v-test-1764465443094-119d541d/assets/audio",
+    "music": "/tmp/remotion-p2v-test-1764465443094-119d541d/assets/music",
+    "timeline": "/tmp/remotion-p2v-test-1764465443094-119d541d/timeline.json"
+  }
+}

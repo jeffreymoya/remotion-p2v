@@ -68,7 +68,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
             durationInFrames={duration}
             premountFor={3 * FPS}
           >
-            <Background project={id} item={element} />
+            <Background project={id} item={element} timeline={timeline} />
           </Sequence>
         );
       })}
@@ -77,7 +77,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
         const { startFrame, duration } = calculateFrameTiming(
           element.startMs,
           element.endMs,
-          { addIntroOffset: true },
+          {},
         );
 
         return (
@@ -86,7 +86,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
             from={startFrame}
             durationInFrames={duration}
           >
-            <Subtitle key={index} text={element.text} />
+            <Subtitle key={index} textElement={element} />
           </Sequence>
         );
       })}
@@ -95,7 +95,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
         const { startFrame, duration } = calculateFrameTiming(
           element.startMs,
           element.endMs,
-          { addIntroOffset: true },
+          {},
         );
 
         return (

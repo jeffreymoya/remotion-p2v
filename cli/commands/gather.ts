@@ -16,12 +16,12 @@ import { ConfigManager } from '../lib/config';
 import { getProjectPaths, ensureProjectDirs } from '../../src/lib/paths';
 import { AIProviderFactory } from '../services/ai';
 import { MediaServiceFactory } from '../services/media';
-import { TTSProviderFactory } from '../services/tts';
+import { TTSProviderFactory, generateWithFallback } from '../services/tts';
 import { MusicServiceFactory } from '../services/music';
 import { deduplicateImages, deduplicateVideos } from '../services/media/deduplication';
 import { rankByQuality } from '../services/media/quality';
 import { z } from 'zod';
-import { extractVisualTagsPrompt } from '../../config/prompts';
+import { extractVisualTagsPrompt, emphasisTaggingPrompt } from '../../config/prompts';
 
 export interface AssetTag {
   tag: string;
@@ -29,10 +29,32 @@ export interface AssetTag {
   confidence: number;
 }
 
+export interface EmphasisData {
+  wordIndex: number;
+  level: 'med' | 'high';
+  tone?: 'warm' | 'intense';
+}
+
 export interface AssetManifest {
-  images: Array<{ id: string; path: string; source: string; tags: string[] }>;
-  videos: Array<{ id: string; path: string; source: string; tags: string[] }>;
-  audio: Array<{ id: string; path: string; segmentId: string; durationMs: number }>;
+  images: Array<{ id: string; path: string; source: string; tags: string[]; metadata?: any }>;
+  videos: Array<{
+    id: string;
+    path: string;
+    source: string;
+    tags: string[];
+    width: number;
+    height: number;
+    duration: number;
+    metadata?: any;
+  }>;
+  audio: Array<{
+    id: string;
+    path: string;
+    segmentId: string;
+    durationMs: number;
+    wordTimestamps?: Array<{ word: string; startMs: number; endMs: number }>;
+    emphasis?: EmphasisData[];
+  }>;
   music: Array<{ id: string; path: string; source: string; genre: string }>;
 }
 
@@ -49,6 +71,78 @@ const TagExtractionSchema = z.object({
     confidence: z.number().min(0).max(1),
   })),
 });
+
+const EmphasisSchema = z.object({
+  emphases: z.array(z.object({
+    wordIndex: z.number().int().nonnegative(),
+    level: z.enum(['med', 'high']),
+    tone: z.enum(['warm', 'intense']).optional(),
+  }))
+});
+
+// Alternative schema for prompts that return "emphasisTags" instead of "emphases"
+const EmphasisResponseSchema = z.object({
+  emphasisTags: z.array(z.object({
+    wordIndex: z.number().int().nonnegative(),
+    level: z.enum(['med', 'high']),
+    tone: z.enum(['warm', 'intense']).optional(),
+  }))
+});
+
+/**
+ * Validates and enforces emphasis constraints
+ * - Total emphasis count ≤ 20% of word count
+ * - High emphasis count ≤ 5% of word count
+ * - No consecutive high-emphasis words (enforce 2+ word gap)
+ */
+function validateEmphasisConstraints(
+  emphases: EmphasisData[],
+  wordCount: number
+): EmphasisData[] {
+  if (emphases.length === 0) return emphases;
+
+  const maxTotal = Math.ceil(wordCount * 0.20); // 20% total
+  const maxHigh = Math.ceil(wordCount * 0.05);  // 5% high
+
+  // Sort by wordIndex
+  const sorted = [...emphases].sort((a, b) => a.wordIndex - b.wordIndex);
+
+  // Filter out emphases exceeding 20% total cap
+  let filtered = sorted.slice(0, maxTotal);
+
+  // Enforce high emphasis cap (5%)
+  const highEmphases = filtered.filter(e => e.level === 'high');
+  if (highEmphases.length > maxHigh) {
+    // Keep first maxHigh high-emphasis words, convert rest to med
+    const keptHigh = new Set(highEmphases.slice(0, maxHigh).map(e => e.wordIndex));
+    filtered = filtered.map(e => {
+      if (e.level === 'high' && !keptHigh.has(e.wordIndex)) {
+        return { ...e, level: 'med' as const };
+      }
+      return e;
+    });
+  }
+
+  // Enforce 2-word gap between high-emphasis words (at least 2 words in between)
+  const finalFiltered: EmphasisData[] = [];
+  let lastHighIndex = -4; // Start at -4 so first word can be high (0 - (-4) = 4 >= 3)
+
+  for (const emphasis of filtered) {
+    if (emphasis.level === 'high') {
+      if (emphasis.wordIndex - lastHighIndex >= 3) {
+        finalFiltered.push(emphasis);
+        lastHighIndex = emphasis.wordIndex;
+      } else {
+        // Too close to previous high, convert to med
+        finalFiltered.push({ ...emphasis, level: 'med' });
+      }
+    } else {
+      finalFiltered.push(emphasis);
+    }
+  }
+
+  return finalFiltered;
+}
 
 async function main(projectId?: string) {
   try {
@@ -92,7 +186,6 @@ async function main(projectId?: string) {
     const aiProvider = await AIProviderFactory.getProviderWithFallback();
     const stockSearch = await MediaServiceFactory.getStockMediaSearch();
     const downloader = MediaServiceFactory.getMediaDownloader();
-    const ttsProvider = await TTSProviderFactory.getTTSProvider();
     const musicService = musicConfig.enabled ? await MusicServiceFactory.getMusicService() : null;
 
     const allTags: AssetTag[] = [];
@@ -130,58 +223,183 @@ async function main(projectId?: string) {
 
       console.log(`[GATHER]   → Extracted ${tagResult.tags.length} tags: ${tagResult.tags.map(t => t.tag).join(', ')}`);
 
-      // 2. Search stock images
-      const imageResults = await stockSearch.searchImages(
-        tagResult.tags.map(t => t.tag),
-        {
-          perTag: stockConfig.perTag || 10,
-          orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+      // 2. Search stock videos FIRST (Wave 2A.3)
+      let videoAcquired = false;
+      try {
+        console.log(`[GATHER]   → Searching for videos...`);
+        const videoResults = await stockSearch.searchVideos(
+          tagResult.tags.map(t => t.tag),
+          {
+            perTag: stockConfig.providers?.pexels?.videoDefaults?.perPage || 5,
+            orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+            minDuration: stockConfig.providers?.pexels?.videoDefaults?.minDuration || 5,
+          }
+        );
+
+        // Deduplicate and rank by quality
+        const uniqueVideos = deduplicateVideos(videoResults);
+        const rankedVideos = rankByQuality(uniqueVideos, {
+          aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+          minQuality: stockConfig.qualityScoring?.minVideoQualityScore || 0.7,
+        }).slice(0, 3); // Top 3 videos per segment
+
+        console.log(`[GATHER]   → Found ${rankedVideos.length} videos (quality threshold: ${stockConfig.qualityScoring?.minVideoQualityScore || 0.7})`);
+
+        // Download videos if quality threshold met
+        if (rankedVideos.length > 0) {
+          const topVideo = rankedVideos[0];
+
+          // Calculate quality score to check threshold
+          const qualityScore = rankByQuality([topVideo], {
+            aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+            minQuality: 0,
+          });
+
+          if (qualityScore.length > 0) {
+            console.log(`[GATHER]   → Downloading top ${Math.min(3, rankedVideos.length)} video(s)...`);
+
+            // Track videos added for THIS segment
+            const videosBeforeSegment = manifest.videos.length;
+
+            for (const video of rankedVideos) {
+              try {
+                const { path: cachePath, metadata } = await downloader.downloadVideo(video);
+                const filename = path.basename(cachePath);
+                const projectVideoPath = path.join(paths.assetsVideos, filename);
+                await fs.copyFile(cachePath, projectVideoPath);
+
+                manifest.videos.push({
+                  id: video.id,
+                  path: projectVideoPath,
+                  source: video.source,
+                  tags: video.tags,
+                  width: video.width,
+                  height: video.height,
+                  duration: video.duration,
+                  metadata: metadata,
+                });
+
+                console.log(`[GATHER]   → Downloaded video: ${video.id} (${video.width}x${video.height}, ${video.duration}s)`);
+              } catch (downloadError: any) {
+                console.warn(`[GATHER]   ⚠ Failed to download video ${video.id}: ${downloadError.message}`);
+              }
+            }
+
+            // Check if THIS segment acquired videos (not global count)
+            const segmentVideoCount = manifest.videos.length - videosBeforeSegment;
+            if (segmentVideoCount > 0) {
+              videoAcquired = true;
+              console.log(`[GATHER]   ✓ Acquired ${segmentVideoCount} video(s) for this segment, skipping image search`);
+            }
+          }
         }
-      );
+      } catch (videoError: any) {
+        console.warn(`[GATHER]   ⚠ Video search failed: ${videoError.message}`);
+        console.log(`[GATHER]   → Falling back to image search`);
+      }
 
-      // Deduplicate and rank
-      const uniqueImages = deduplicateImages(imageResults);
-      const rankedImages = rankByQuality(uniqueImages, {
-        aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-        minQuality: stockConfig.minQuality || 0.6,
-      }).slice(0, 5); // Top 5 images per segment
+      // 3. Fall back to image search if video acquisition failed
+      if (!videoAcquired) {
+        console.log(`[GATHER]   → Searching for images (video fallback)...`);
+        const imageResults = await stockSearch.searchImages(
+          tagResult.tags.map(t => t.tag),
+          {
+            perTag: stockConfig.providers?.pexels?.searchDefaults?.perPage || 10,
+            orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+          }
+        );
 
-      console.log(`[GATHER]   → Found ${rankedImages.length} images`);
+        // Deduplicate and rank
+        const uniqueImages = deduplicateImages(imageResults);
+        const rankedImages = rankByQuality(uniqueImages, {
+          aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+          minQuality: stockConfig.qualityScoring?.minQualityScore || 0.6,
+        }).slice(0, 5); // Top 5 images per segment
 
-      // 3. Download images
-      for (const image of rankedImages) {
-        const cachePath = await downloader.downloadImage(image);
+        console.log(`[GATHER]   → Found ${rankedImages.length} images`);
 
-        // Copy from cache to project assets directory
-        const filename = path.basename(cachePath);
-        const projectImagePath = path.join(paths.assetsImages, filename);
-        await fs.copyFile(cachePath, projectImagePath);
+        // Download images
+        for (const image of rankedImages) {
+          try {
+            const { path: cachePath, metadata } = await downloader.downloadImage(image);
 
-        manifest.images.push({
-          id: image.id,
-          path: projectImagePath,
-          source: image.source,
-          tags: image.tags,
-        });
+            // Copy from cache to project assets directory
+            const filename = path.basename(cachePath);
+            const projectImagePath = path.join(paths.assetsImages, filename);
+            await fs.copyFile(cachePath, projectImagePath);
+
+            manifest.images.push({
+              id: image.id,
+              path: projectImagePath,
+              source: image.source,
+              tags: image.tags,
+              metadata: metadata,
+            });
+          } catch (downloadError: any) {
+            console.warn(`[GATHER]   ⚠ Failed to download image ${image.id}: ${downloadError.message}`);
+          }
+        }
       }
 
       // 4. Generate TTS audio for segment
       console.log(`[GATHER]   → Generating TTS audio...`);
-      const ttsResult = await ttsProvider.generateAudio(segment.text);
+      const { audio: ttsResult, provider: ttsProviderUsed } = await generateWithFallback(segment.text);
       const audioPath = path.join(paths.assetsAudio, `${segmentId}.mp3`);
       await fs.writeFile(audioPath, ttsResult.audioBuffer);
+      console.log(`[GATHER]   → TTS generated using ${ttsProviderUsed}`);
+
+      // 5. Detect emphasis for segment (Wave 2A.4)
+      let emphasisData: EmphasisData[] = [];
+      try {
+        console.log(`[GATHER]   → Detecting emphasis...`);
+        const emphasisPrompt = emphasisTaggingPrompt(segment.text);
+
+        // Try to get emphasis from AI
+        const emphasisResult = await aiProvider.structuredComplete(
+          emphasisPrompt,
+          EmphasisResponseSchema
+        );
+
+        // Convert emphasisTags to emphases format
+        const rawEmphases: EmphasisData[] = emphasisResult.emphasisTags.map(tag => ({
+          wordIndex: tag.wordIndex,
+          level: tag.level,
+          tone: tag.tone,
+        }));
+
+        // Count words in segment
+        const wordCount = segment.text.split(/\s+/).filter(w => w.length > 0).length;
+
+        // Validate and enforce constraints
+        emphasisData = validateEmphasisConstraints(rawEmphases, wordCount);
+
+        const highCount = emphasisData.filter(e => e.level === 'high').length;
+        const medCount = emphasisData.filter(e => e.level === 'med').length;
+        console.log(`[GATHER]   → Emphasis detected: ${emphasisData.length} total (${highCount} high, ${medCount} med) from ${wordCount} words`);
+      } catch (error: any) {
+        // Graceful degradation: continue without emphasis if detection fails
+        console.warn(`[GATHER]   ⚠ Emphasis detection failed: ${error.message}`);
+        console.log(`[GATHER]   → Continuing without emphasis data`);
+        emphasisData = [];
+      }
 
       manifest.audio.push({
         id: segmentId,
         path: audioPath,
         segmentId,
         durationMs: ttsResult.durationMs,
+        wordTimestamps: ttsResult.timestamps?.map(ts => ({
+          word: ts.word,
+          startMs: ts.startMs,
+          endMs: ts.endMs,
+        })),
+        emphasis: emphasisData.length > 0 ? emphasisData : undefined,
       });
 
       console.log(`[GATHER]   → Generated audio: ${ttsResult.durationMs}ms`);
     }
 
-    // 5. Download background music if enabled
+    // 6. Download background music if enabled
     if (musicService && musicConfig.enabled) {
       console.log('[GATHER] Searching for background music...');
 

@@ -77,6 +77,11 @@
     "backgroundColor": "rgba(0, 0, 0, 0.7)",
     "padding": 20
   },
+  "emphasis": {
+    "none": { "fontFamily": "Bree Serif", "fontSize": 48, "color": "#FFFFFF", "fontWeight": 400 },
+    "med": { "fontFamily": "Bree Serif", "fontSize": 52, "color": "#FFBF00", "fontWeight": 600 },
+    "high": { "fontFamily": "Bebas Neue", "fontSize": 58, "color": "#FFD700", "fontWeight": 700 }
+  },
   "animations": {
     "background": {
       "defaultType": "zoom",

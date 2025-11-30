@@ -8,6 +8,9 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { StockImage, StockVideo, MusicTrack, MediaDownloadError, MediaCacheEntry } from '../../lib/media-types';
 import { logger } from '../../utils/logger';
+import { processAspectRatio, CropConfig } from './aspect-processor';
+import { ConfigManager } from '../../lib/config';
+import { withRetry } from './timeout-wrapper';
 
 export class MediaDownloader {
   private cacheDir: string;
@@ -17,17 +20,70 @@ export class MediaDownloader {
   }
 
   /**
-   * Download a stock image with caching
+   * Download a stock image with caching and calculate aspect-fit metadata
    */
-  async downloadImage(image: StockImage): Promise<string> {
-    return this.downloadMedia(image, image.downloadUrl);
+  async downloadImage(image: StockImage): Promise<{ path: string; metadata: any }> {
+    const localPath = await this.downloadMedia(image, image.downloadUrl);
+
+    // Load crop config
+    const stockConfig = await ConfigManager.loadStockAssetsConfig();
+    const cropConfig: CropConfig = stockConfig.cropConfig || {
+      safePaddingPercent: 10,
+      maxAspectDelta: 0.3,
+      targetWidth: 1920,
+      targetHeight: 1080,
+    };
+
+    // Calculate aspect-fit metadata
+    const cropResult = processAspectRatio(image.width, image.height, cropConfig);
+
+    return {
+      path: localPath,
+      metadata: {
+        width: image.width,
+        height: image.height,
+        mode: cropResult.mode,
+        scale: cropResult.scale,
+        cropX: cropResult.x,
+        cropY: cropResult.y,
+        cropWidth: cropResult.width,
+        cropHeight: cropResult.height,
+      },
+    };
   }
 
   /**
-   * Download a stock video with caching
+   * Download a stock video with caching and calculate aspect-fit metadata
    */
-  async downloadVideo(video: StockVideo): Promise<string> {
-    return this.downloadMedia(video, video.downloadUrl);
+  async downloadVideo(video: StockVideo): Promise<{ path: string; metadata: any }> {
+    const localPath = await this.downloadMedia(video, video.downloadUrl);
+
+    // Load crop config
+    const stockConfig = await ConfigManager.loadStockAssetsConfig();
+    const cropConfig: CropConfig = stockConfig.cropConfig || {
+      safePaddingPercent: 10,
+      maxAspectDelta: 0.3,
+      targetWidth: 1920,
+      targetHeight: 1080,
+    };
+
+    // Calculate aspect-fit metadata
+    const cropResult = processAspectRatio(video.width, video.height, cropConfig);
+
+    return {
+      path: localPath,
+      metadata: {
+        width: video.width,
+        height: video.height,
+        duration: video.duration,
+        mode: cropResult.mode,
+        scale: cropResult.scale,
+        cropX: cropResult.x,
+        cropY: cropResult.y,
+        cropWidth: cropResult.width,
+        cropHeight: cropResult.height,
+      },
+    };
   }
 
   /**
@@ -46,25 +102,42 @@ export class MediaDownloader {
       return cachePath;
     }
 
-    // Download
+    // Download with retry logic
     logger.info(`Downloading music track: ${track.title}`);
+
+    // Load retry config from stock-assets config
+    const stockConfig = await ConfigManager.loadStockAssetsConfig();
+    const retryConfig = {
+      maxRetries: stockConfig.download?.retryAttempts ?? 3,
+      retryDelayMs: stockConfig.download?.retryDelayMs ?? 1000,
+      backoffMultiplier: 2,
+      exponentialBackoff: true,
+    };
+    const timeoutMs = 60000; // Music files need longer timeout
+
     try {
-      const response = await axios.get(track.url, {
-        responseType: 'arraybuffer',
-        timeout: 60000, // 60 second timeout for music files
-      });
+      await withRetry(
+        async () => {
+          const response = await axios.get(track.url, {
+            responseType: 'arraybuffer',
+            timeout: timeoutMs,
+          });
 
-      // Save to cache
-      await fs.ensureDir(this.cacheDir);
-      await fs.writeFile(cachePath, response.data);
+          // Save to cache
+          await fs.ensureDir(this.cacheDir);
+          await fs.writeFile(cachePath, response.data);
 
-      // Save metadata
-      await this.saveMusicMetadata(cacheKey, track);
+          // Save metadata
+          await this.saveMusicMetadata(cacheKey, track);
+        },
+        retryConfig,
+        `Download music track: ${track.title}`
+      );
 
       return cachePath;
     } catch (error: any) {
       throw new MediaDownloadError(
-        `Failed to download music track: ${error.message}`,
+        `Failed to download music track after ${retryConfig.maxRetries} retries: ${error.message}`,
         track.url,
         error
       );
@@ -95,25 +168,42 @@ export class MediaDownloader {
       }
     }
 
-    // Download
+    // Download with retry logic
     logger.info(`Downloading media: ${media.id} from ${media.source}`);
+
+    // Load retry config from stock-assets config
+    const stockConfig = await ConfigManager.loadStockAssetsConfig();
+    const retryConfig = {
+      maxRetries: stockConfig.download?.retryAttempts ?? 3,
+      retryDelayMs: stockConfig.download?.retryDelayMs ?? 1000,
+      backoffMultiplier: 2,
+      exponentialBackoff: true,
+    };
+    const timeoutMs = stockConfig.download?.timeoutMs ?? 30000;
+
     try {
-      const response = await axios.get(downloadUrl, {
-        responseType: 'arraybuffer',
-        timeout: 30000, // 30 second timeout
-      });
+      await withRetry(
+        async () => {
+          const response = await axios.get(downloadUrl, {
+            responseType: 'arraybuffer',
+            timeout: timeoutMs,
+          });
 
-      // Save to cache
-      await fs.ensureDir(this.cacheDir);
-      await fs.writeFile(cachePath, response.data);
+          // Save to cache
+          await fs.ensureDir(this.cacheDir);
+          await fs.writeFile(cachePath, response.data);
 
-      // Save metadata
-      await this.saveMetadata(cacheKey, media, cachePath);
+          // Save metadata
+          await this.saveMetadata(cacheKey, media, cachePath);
+        },
+        retryConfig,
+        `Download ${media.id} from ${media.source}`
+      );
 
       return cachePath;
     } catch (error: any) {
       throw new MediaDownloadError(
-        `Failed to download media from ${media.source}: ${error.message}`,
+        `Failed to download media from ${media.source} after ${retryConfig.maxRetries} retries: ${error.message}`,
         downloadUrl,
         error
       );
@@ -138,9 +228,9 @@ export class MediaDownloader {
       const batchResults = await Promise.allSettled(
         batch.map(media => {
           if ('photographer' in media) {
-            return this.downloadImage(media);
+            return this.downloadImage(media as StockImage);
           } else {
-            return this.downloadVideo(media);
+            return this.downloadVideo(media as StockVideo);
           }
         })
       );
@@ -148,7 +238,7 @@ export class MediaDownloader {
       // Collect successful downloads
       for (const result of batchResults) {
         if (result.status === 'fulfilled') {
-          results.push(result.value);
+          results.push(result.value.path);
         } else {
           logger.error('Download failed:', result.reason);
         }

@@ -76,7 +76,8 @@
       "relevance": 0.25,
       "popularity": 0.2
     },
-    "minQualityScore": 0.5
+    "minQualityScore": 0.5,
+    "minVideoQualityScore": 0.7
   },
   "deduplication": {
     "enabled": true,
@@ -100,6 +101,12 @@
       "height": 1920,
       "orientation": "portrait"
     }
+  },
+  "cropConfig": {
+    "safePaddingPercent": 10,
+    "maxAspectDelta": 0.3,
+    "targetWidth": 1920,
+    "targetHeight": 1080
   },
   "caching": {
     "enabled": true,

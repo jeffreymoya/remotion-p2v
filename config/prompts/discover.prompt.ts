@@ -48,7 +48,11 @@ CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra te
   ]
 }
 
-IMPORTANT: The response must have a "topics" array containing objects with these exact field names.`;
+IMPORTANT REQUIREMENTS:
+- The response MUST have a "topics" array containing objects with these exact field names
+- The "topics" array MUST contain EXACTLY ${vars.limit} items
+- Each item must have: title, description, category, score, reasoning
+- Do NOT return fewer than ${vars.limit} topics`;
 };
 
 /**

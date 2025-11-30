@@ -55,6 +55,7 @@ const StockAssetsConfigSchema = z.object({
     enabled: z.boolean().default(true),
     weights: z.record(z.number()).optional(),
     minQualityScore: z.number().default(0.5),
+    minVideoQualityScore: z.number().default(0.7),
   }).optional(),
   deduplication: z.object({
     enabled: z.boolean().default(true),

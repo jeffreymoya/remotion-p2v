@@ -9,7 +9,7 @@
 
 Using this template you can create high quality **AI videos for TikTok or Instagram**.
 
-It includes a CLI that will generate a story script, images and voiceover using OpenAI and ElevenLabs.
+It includes a CLI that will generate a story script, images and voiceover using OpenAI and Google Text-to-Speech (TTS). _Note: ElevenLabs TTS support is planned but not yet implemented._
 
 ## Getting started
 
@@ -35,6 +35,50 @@ npx remotion render
 
 Or check out the [Remotion docs](/docs/render/). There are lots of ways to render.
 
+## Pipeline Architecture
+
+The video generation pipeline consists of 7 stages that can be run individually or together:
+
+### The 7 Stages
+
+1. **Discover** (`npm run discover`) - Fetch trending topics from Google Trends
+2. **Curate** (`npm run curate`) - Select and refine a topic (interactive web UI or auto-select)
+3. **Refine** (`npm run refine`) - Enhance topic with additional details for target audience
+4. **Script** (`npm run script`) - Generate video script with segments and timing
+5. **Gather** (`npm run gather`) - Fetch media assets (images/videos) and generate TTS audio with word-level timing
+6. **Build Timeline** (`npm run build:timeline`) - Assemble timeline.json from all assets
+7. **Render** (`npm run render:project`) - Generate final video file
+
+### Running the Full Pipeline
+
+To run all 7 stages automatically:
+
+```console
+npm run gen
+```
+
+This executes the complete end-to-end pipeline for automated video generation.
+
+### Running Individual Stages
+
+For more control over the generation process, run stages individually:
+
+```console
+# Stage 1: Discover topics
+npm run discover
+
+# Get the latest project ID
+PROJECT_ID=$(ls -t public/projects/ | head -1)
+
+# Stages 2-7: Run with project ID
+npm run curate -- --project "$PROJECT_ID" --auto
+npm run refine -- --project "$PROJECT_ID"
+npm run script -- --project "$PROJECT_ID"
+npm run gather -- --project "$PROJECT_ID"
+npm run build:timeline -- --project "$PROJECT_ID"
+npm run render:project -- --project "$PROJECT_ID"
+```
+
 ## Creating a new story
 
 You can easily create your own videos using provided CLI.
@@ -47,32 +91,28 @@ Create .env file with following env vars (you can also find them in .env.example
 
 ```
 OPENAI_API_KEY=
-ELEVENLABS_API_KEY=
+GOOGLE_TTS_API_KEY=
 ```
 
 If you don't create an env file, you will be prompted for these variables when using CLI.
 
 **Select voice**
 
-In [`generateVoice()`](cli/service.ts) replace the voice id from ElevenLabs with the one you like. You can use their API for this. Alternatively, you can open any voice on their website and extract the Voice ID from the url (id comes after `voiceId=`).
-
-```console
-https://elevenlabs.io/app/voice-library?voiceId=aTxZrSrp47xsP6Ot4Kgd
-```
+Google TTS voices can be configured in `config/tts.config.json`. The default voice is `en-US-Neural2-J` (male, casual). You can choose from various Google TTS voices including Neural2 and WaveNet options. See the [Google TTS documentation](https://cloud.google.com/text-to-speech/docs/voices) for available voices.
 
 **Generate story timeline**
+
+For automated end-to-end generation:
 
 ```console
 npm run gen
 ```
 
-You will be prompted to enter story title and topic.
+This runs the complete 7-stage pipeline automatically, from topic discovery to final video rendering.
 
-Title can be a vague one or long and detailed. Short title on the first slide will be generated based on it.
+For interactive development with more control over each stage, see the [Pipeline Architecture](#pipeline-architecture) section above.
 
-Topic can be e.g. History, Interesting facts, ELI5 etc.
-
-After you enter title and topic, CLI will generate text, images and audio with timestamps, and combine all those into a timeline that van be used by this template to render a video.
+The pipeline will generate a script, fetch matching media assets, create TTS audio with word-level timing, assemble everything into a timeline, and render the final video.
 
 ## Technical overview
 
@@ -85,6 +125,27 @@ Elements define slide backgrounds and include enter/exit transitions (e.g. blur)
 Text and audio are self explanatory. The only special thing about them is that they are synced.
 
 You can customize the generation of the timeline in [`createTimeLineFromStoryWithDetails()`](cli/timeline.ts) function.
+
+## Feature Status
+
+Current implementation status of planned features:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| TTS (Neural2-F) | ✅ Implemented | google-tts.ts |
+| TTS (Chirp3) | 📋 Planned | Not yet available |
+| Image Search | ✅ Implemented | Pexels, Unsplash, Pixabay |
+| Video Search | 📋 Planned | Schema ready, not used |
+| Phrase-Based Subtitles | ✅ Implemented | 14-char chunks |
+| Word-Level Timing | 📋 Planned | Requires TTS timestamp changes |
+| Emphasis Tagging | 📋 Planned | Needs LLM integration |
+| 16:9 Aspect Ratio | ✅ Implemented | Default in config |
+| Crop-to-Fill | 📋 Planned | Background.tsx needs refactor |
+| Music Ducking | ✅ Implemented | Enabled in config |
+
+**Legend**: ✅ Implemented | 📋 Planned | ⚠️ Partial | ❌ Deprecated
+
+For detailed implementation status, see [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
 
 ## Deploying on a remote server
 

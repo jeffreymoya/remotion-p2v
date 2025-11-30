@@ -1,52 +1,100 @@
 import type React from "react";
-import { AbsoluteFill, interpolate, useVideoConfig } from "remotion";
-import { fitText } from "@remotion/layout-utils";
-import { makeTransform, scale, translateY } from "@remotion/animation-utils";
-import { loadFont } from "@remotion/google-fonts/BreeSerif";
+import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import videoConfig from "../../config/video.config.json";
+import { bebasNeue, breeSerif } from "../lib/fonts";
 
-export const Word: React.FC<{
-  enterProgress: number;
+interface WordProps {
   text: string;
-  stroke: boolean;
-}> = ({ enterProgress, text, stroke }) => {
-  const { fontFamily } = loadFont();
-  const { width } = useVideoConfig();
-  const desiredFontSize = 120;
+  startFrame: number;
+  endFrame: number;
+  currentFrame: number;
+  emphasis: { level: "none" | "med" | "high"; tone?: string };
+  fps: number;
+}
 
-  const fittedText = fitText({
-    fontFamily,
-    text,
-    withinWidth: width * 0.8,
+/**
+ * Map config font names to loaded Google Fonts
+ */
+function getFontFamily(configFontName: string): string {
+  const fontMap: Record<string, string> = {
+    "Bebas Neue": bebasNeue.fontFamily,
+    "Bree Serif": breeSerif.fontFamily,
+  };
+  return fontMap[configFontName] || configFontName;
+}
+
+/**
+ * Get emphasis styling configuration based on the emphasis level
+ */
+function getEmphasisStyle(level: "none" | "med" | "high") {
+  const emphasisConfig = videoConfig.emphasis;
+  return emphasisConfig[level];
+}
+
+export const Word: React.FC<WordProps> = ({
+  text,
+  startFrame,
+  endFrame,
+  currentFrame,
+  emphasis,
+  fps,
+}) => {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+
+  // Only show word when it's within its time range
+  const isVisible = currentFrame >= startFrame && currentFrame < endFrame;
+
+  if (!isVisible) {
+    return null;
+  }
+
+  // Calculate frames since word started appearing
+  const framesSinceStart = currentFrame - startFrame;
+
+  // Get emphasis styling
+  const emphasisStyle = getEmphasisStyle(emphasis.level);
+
+  // Animation configuration from video.config.json
+  const animConfig = videoConfig.animations.text;
+  const animationDurationMs = animConfig.durationMs; // 200ms
+  const animationDurationFrames = (animationDurationMs / 1000) * fps;
+
+  // Spring animation for pop effect
+  const popProgress = spring({
+    frame: framesSinceStart,
+    fps,
+    config: {
+      damping: 200,
+    },
+    durationInFrames: animationDurationFrames,
   });
 
-  const fontSize = Math.min(desiredFontSize, fittedText.fontSize);
+  // Scale animation: 0.8 -> 1.0
+  const scale = interpolate(
+    popProgress,
+    [0, 1],
+    [animConfig.scaleFrom, animConfig.scaleTo]
+  );
+
+  // Y offset animation: 10px -> 0px
+  const yOffset = interpolate(popProgress, [0, 1], [10, 0]);
 
   return (
-    <AbsoluteFill
+    <span
       style={{
-        justifyContent: "center",
-        alignItems: "center",
-        top: undefined,
-        bottom: 350,
-        height: 150,
+        display: "inline-block",
+        fontFamily: getFontFamily(emphasisStyle.fontFamily),
+        fontSize: emphasisStyle.fontSize,
+        color: emphasisStyle.color,
+        fontWeight: emphasisStyle.fontWeight,
+        transform: `scale(${scale}) translateY(${yOffset}px)`,
+        textTransform: "uppercase",
+        whiteSpace: "nowrap",
+        transformOrigin: "center center",
       }}
     >
-      <div
-        style={{
-          fontSize,
-          color: "white",
-          WebkitTextStroke: stroke ? "20px black" : undefined,
-          transform: makeTransform([
-            scale(interpolate(enterProgress, [0, 1], [0.8, 1])),
-            translateY(interpolate(enterProgress, [0, 1], [50, 0])),
-          ]),
-          fontFamily,
-          textTransform: "uppercase",
-          textAlign: "center",
-        }}
-      >
-        {text}
-      </div>
-    </AbsoluteFill>
+      {text}
+    </span>
   );
 };

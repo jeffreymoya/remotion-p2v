@@ -9,12 +9,14 @@ import { logger } from '../../utils/logger';
 export class GoogleTTSProvider implements TTSProvider {
   name = 'google-tts';
   private client: TextToSpeechClient;
+  private config: any;
 
-  constructor(apiKey?: string) {
+  constructor(apiKey?: string, config?: any) {
     // Initialize client with API key if provided, otherwise use default credentials
     this.client = new TextToSpeechClient(
       apiKey ? { apiKey } : undefined
     );
+    this.config = config;
   }
 
   /**
@@ -22,7 +24,23 @@ export class GoogleTTSProvider implements TTSProvider {
    */
   async generateAudio(text: string, options?: TTSOptions): Promise<TTSResult> {
     try {
-      const voiceName = options?.voice ?? 'en-US-Neural2-F'; // Female neural voice
+      // Get voice from options, or from config
+      const defaultVoice = this.config?.defaultVoice || {
+        languageCode: 'en-US',
+        name: 'en-US-Chirp3-HD-Algieba',
+        ssmlGender: 'MALE'
+      };
+
+      const voiceName = options?.voice ?? defaultVoice.name;
+      const languageCode = defaultVoice.languageCode || 'en-US';
+
+      // Get audio config from config or use defaults
+      const audioConfigDefaults = this.config?.audioConfig || {
+        audioEncoding: 'MP3',
+        speakingRate: 1.0,
+        pitch: 0.0,
+        volumeGainDb: 0.0
+      };
 
       // Add SSML marks for word-level timing
       const ssmlText = this.addSSMLMarks(text);
@@ -32,13 +50,14 @@ export class GoogleTTSProvider implements TTSProvider {
       const request: protos.google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
         input: { ssml: ssmlText },
         voice: {
-          languageCode: 'en-US',
+          languageCode,
           name: voiceName,
         },
         audioConfig: {
           audioEncoding: 'MP3' as any,
-          speakingRate: options?.speed ?? 1.0,
-          pitch: options?.pitch ?? 0.0,
+          speakingRate: options?.speed ?? audioConfigDefaults.speakingRate ?? 1.0,
+          pitch: options?.pitch ?? audioConfigDefaults.pitch ?? 0.0,
+          volumeGainDb: audioConfigDefaults.volumeGainDb ?? 0.0,
         },
         enableTimePointData: ['SSML_MARK' as any],
       };

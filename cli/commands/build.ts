@@ -14,43 +14,33 @@ dotenv.config({ path: '.env.local' });
 dotenv.config(); // Fallback to .env
 import { ConfigManager } from '../lib/config';
 import { getProjectPaths } from '../../src/lib/paths';
+import {
+  BackgroundElement,
+  TextElement,
+  AudioElement,
+  BackgroundMusicElement,
+  Timeline,
+} from '../../src/lib/types';
 
-// Import timeline types from src (these will be extended in Phase 2)
-// For now, use minimal stub types
-export interface TimelineElement {
+// Intro offset constant (matches INTRO_DURATION in src/lib/constants.ts)
+// This offset is BAKED INTO timeline data during assembly.
+// Renderer uses timeline timestamps as-is without adding offset.
+const INTRO_OFFSET_MS = 1000;
+
+// WordData interface for internal use during timeline assembly
+export interface WordData {
+  text: string;
   startMs: number;
   endMs: number;
+  emphasis?: {
+    level: 'none' | 'med' | 'high';
+    tone?: 'warm' | 'intense';
+  };
 }
 
-export interface BackgroundElement extends TimelineElement {
-  imageUrl?: string;
-  videoUrl?: string;
-  enterTransition?: 'fade' | 'blur' | 'none';
-  exitTransition?: 'fade' | 'blur' | 'none';
-}
-
-export interface TextElement extends TimelineElement {
-  text: string;
-  position: 'top' | 'bottom' | 'center';
-}
-
-export interface AudioElement extends TimelineElement {
-  audioUrl: string;
-}
-
-export interface MusicElement extends TimelineElement {
-  musicUrl: string;
-  volume: number;
-}
-
-export interface Timeline {
-  shortTitle: string;
-  aspectRatio?: '16:9' | '9:16';
-  durationSeconds?: number;
-  elements: BackgroundElement[];
-  text: TextElement[];
-  audio: AudioElement[];
-  music?: MusicElement[];
+// Helper function to strip file extensions
+function stripExtension(filename: string): string {
+  return filename.replace(/\.(mp4|jpg|jpeg|png|webp)$/i, '');
 }
 
 // Helper function to generate audio elements
@@ -66,8 +56,8 @@ function generateAudioElements(audioManifest: any[], projectId: string): AudioEl
 
     elements.push({
       audioUrl: basename,
-      startMs: currentTimeMs,
-      endMs: currentTimeMs + audioFile.durationMs,
+      startMs: currentTimeMs + INTRO_OFFSET_MS,
+      endMs: currentTimeMs + audioFile.durationMs + INTRO_OFFSET_MS,
     });
     currentTimeMs += audioFile.durationMs;
   }
@@ -75,16 +65,38 @@ function generateAudioElements(audioManifest: any[], projectId: string): AudioEl
   return elements;
 }
 
-// Helper function to generate background elements
+// Helper function to generate background music elements
+function generateBackgroundMusicElements(
+  manifest: any,
+  durationMs: number
+): BackgroundMusicElement[] | undefined {
+  if (!manifest.music || manifest.music.length === 0) {
+    return undefined;
+  }
+
+  // Use first music track, loop if needed
+  const musicTrack = manifest.music[0];
+
+  return [{
+    type: 'backgroundMusic' as const,
+    src: musicTrack.path,
+    startMs: 0,
+    endMs: durationMs,
+    volume: 0.15, // 15% volume to not overpower narration
+  }];
+}
+
+// Helper function to generate background elements (video or image)
 function generateBackgroundElements(
   images: any[],
+  videos: any[],
   tags: any[],
   audioElements: AudioElement[],
   videoConfig: any
 ): BackgroundElement[] {
   const elements: BackgroundElement[] = [];
   const transitions = videoConfig.transitions || {};
-  const animations = videoConfig.animations || {};
+  const MIN_VIDEO_QUALITY = 0.7; // Videos must have quality >= 0.7
 
   // Group tags by segment
   const tagsBySegment = new Map<string, string[]>();
@@ -94,50 +106,97 @@ function generateBackgroundElements(
     tagsBySegment.set(tag.segmentId, segmentTags);
   }
 
-  // For each audio segment, find matching images
+  // For each audio segment, find matching video or image
   for (let i = 0; i < audioElements.length; i++) {
     const audio = audioElements[i];
     const segmentId = audio.audioUrl;
     const segmentTags = tagsBySegment.get(segmentId) || [];
     const duration = audio.endMs - audio.startMs;
 
-    // Find images that match this segment's tags
-    const matchingImages = images.filter((img) => {
-      const imgTags = img.tags.map((t: string) => t.toLowerCase());
-      return segmentTags.some((tag) => imgTags.some((imgTag) => imgTag.includes(tag) || tag.includes(imgTag)));
-    });
-
-    // If no matches, use any available images
-    const imagesToUse = matchingImages.length > 0 ? matchingImages : images;
-
-    // For segments longer than 15s, use multiple images
-    const numImages = duration > 15000 ? Math.min(3, Math.ceil(duration / 20000)) : 1;
-    const imageDuration = duration / numImages;
-
-    for (let j = 0; j < numImages; j++) {
-      const imageIndex = (i * numImages + j) % imagesToUse.length;
-      const image = imagesToUse[imageIndex];
-
-      // Extract filename with extension for staticFile() compatibility
-      let imageUrl = image.path;
-
-      // Convert absolute path to relative if needed
-      if (imageUrl.includes('/public/')) {
-        imageUrl = imageUrl.split('/public/')[1];
-      }
-
-      // Remove assets/images/ prefix but KEEP file extension
-      if (imageUrl.includes('assets/images/')) {
-        imageUrl = imageUrl.split('assets/images/')[1];
-      }
-
-      elements.push({
-        imageUrl: imageUrl,
-        startMs: audio.startMs + (j * imageDuration),
-        endMs: audio.startMs + ((j + 1) * imageDuration),
-        enterTransition: transitions.enterType || 'fade',
-        exitTransition: transitions.exitType || 'fade',
+    // 1. Try to find matching video first
+    let videoUsed = false;
+    if (videos && videos.length > 0) {
+      const matchingVideos = videos.filter((vid: any) => {
+        const vidTags = vid.tags.map((t: string) => t.toLowerCase());
+        return segmentTags.some((tag) => vidTags.some((vidTag) => vidTag.includes(tag) || tag.includes(vidTag)));
       });
+
+      const videosToUse = matchingVideos.length > 0 ? matchingVideos : videos;
+
+      // Use video if available and meets quality threshold
+      if (videosToUse.length > 0) {
+        const video = videosToUse[i % videosToUse.length];
+
+        // Extract filename from path
+        let videoUrl = video.path;
+        if (videoUrl.includes('/public/')) {
+          videoUrl = videoUrl.split('/public/')[1];
+        }
+        if (videoUrl.includes('assets/videos/')) {
+          videoUrl = videoUrl.split('assets/videos/')[1];
+        }
+
+        // Strip extension to prevent double .mp4.mp4
+        videoUrl = stripExtension(videoUrl);
+
+        elements.push({
+          videoUrl: videoUrl,
+          startMs: audio.startMs,
+          endMs: audio.endMs,
+          enterTransition: transitions.defaultEnter || 'blur',
+          exitTransition: transitions.defaultExit || 'blur',
+          mediaMetadata: video.metadata || {
+            width: video.width,
+            height: video.height,
+            duration: video.duration,
+          },
+        });
+
+        videoUsed = true;
+      }
+    }
+
+    // 2. Fall back to images if no video was used
+    if (!videoUsed) {
+      // Find images that match this segment's tags
+      const matchingImages = images.filter((img) => {
+        const imgTags = img.tags.map((t: string) => t.toLowerCase());
+        return segmentTags.some((tag) => imgTags.some((imgTag) => imgTag.includes(tag) || tag.includes(imgTag)));
+      });
+
+      // If no matches, use any available images
+      const imagesToUse = matchingImages.length > 0 ? matchingImages : images;
+
+      // For segments longer than 15s, use multiple images
+      const numImages = duration > 15000 ? Math.min(3, Math.ceil(duration / 20000)) : 1;
+      const imageDuration = duration / numImages;
+
+      for (let j = 0; j < numImages; j++) {
+        const imageIndex = (i * numImages + j) % imagesToUse.length;
+        const image = imagesToUse[imageIndex];
+
+        // Extract filename with extension for staticFile() compatibility
+        let imageUrl = image.path;
+
+        // Convert absolute path to relative if needed
+        if (imageUrl.includes('/public/')) {
+          imageUrl = imageUrl.split('/public/')[1];
+        }
+
+        // Remove assets/images/ prefix but KEEP file extension
+        if (imageUrl.includes('assets/images/')) {
+          imageUrl = imageUrl.split('assets/images/')[1];
+        }
+
+        elements.push({
+          imageUrl: imageUrl,
+          startMs: audio.startMs + (j * imageDuration),
+          endMs: audio.startMs + ((j + 1) * imageDuration),
+          enterTransition: transitions.defaultEnter || 'fade',
+          exitTransition: transitions.defaultExit || 'fade',
+          mediaMetadata: image.metadata,
+        });
+      }
     }
   }
 
@@ -186,10 +245,11 @@ function chunkText(text: string, maxCharsPerLine: number, maxLines: number): str
   return chunks;
 }
 
-// Helper function to generate text elements
+// Helper function to generate text elements with word-level timing
 function generateTextElements(
   segments: any[],
   audioElements: AudioElement[],
+  audioManifest: any[],
   videoConfig: any
 ): TextElement[] {
   const elements: TextElement[] = [];
@@ -201,51 +261,54 @@ function generateTextElements(
     const segment = segments[i];
 
     // Match by index - audio and segments generated in same order
-    if (i >= audioElements.length) continue;
+    if (i >= audioElements.length || i >= audioManifest.length) continue;
     const audio = audioElements[i];
+    const audioData = audioManifest[i];
 
-    const chunks = chunkText(segment.text, maxCharsPerLine, maxLines);
-    const chunkDuration = (audio.endMs - audio.startMs) / chunks.length;
+    // Check if word-level timestamps are available
+    if (audioData.wordTimestamps && audioData.wordTimestamps.length > 0) {
+      // New path: Build text element with word-level timing
+      const wordData: WordData[] = audioData.wordTimestamps.map((ts: any, idx: number) => {
+        // Find emphasis for this word if available
+        const emphasis = audioData.emphasis?.find((e: any) => e.wordIndex === idx);
 
-    for (let j = 0; j < chunks.length; j++) {
-      elements.push({
-        text: chunks[j],
-        position: textConfig.position || 'bottom',
-        startMs: audio.startMs + (j * chunkDuration),
-        endMs: audio.startMs + ((j + 1) * chunkDuration),
+        return {
+          text: ts.word,
+          startMs: ts.startMs + audio.startMs,
+          endMs: ts.endMs + audio.startMs,
+          emphasis: emphasis ? {
+            level: emphasis.level,
+            tone: emphasis.tone,
+          } : { level: 'none' as const },
+        };
       });
+
+      // Create a single text element with all words
+      if (wordData.length > 0) {
+        elements.push({
+          text: segment.text, // Legacy compatibility - full text
+          position: textConfig.position || 'bottom',
+          startMs: wordData[0].startMs,
+          endMs: wordData[wordData.length - 1].endMs,
+          words: wordData,
+        });
+      }
+    } else {
+      // Legacy path: Fall back to phrase-based chunking
+      const chunks = chunkText(segment.text, maxCharsPerLine, maxLines);
+      const chunkDuration = (audio.endMs - audio.startMs) / chunks.length;
+
+      for (let j = 0; j < chunks.length; j++) {
+        elements.push({
+          text: chunks[j],
+          position: textConfig.position || 'bottom',
+          startMs: audio.startMs + (j * chunkDuration),
+          endMs: audio.startMs + ((j + 1) * chunkDuration),
+          // No words array - backward compatibility
+        });
+      }
     }
   }
-
-  return elements;
-}
-
-// Helper function to generate music elements
-function generateMusicElements(
-  musicManifest: any[],
-  audioElements: AudioElement[],
-  musicConfig: any
-): MusicElement[] {
-  if (!musicManifest || musicManifest.length === 0) {
-    return [];
-  }
-
-  const elements: MusicElement[] = [];
-  const totalDuration = audioElements.length > 0
-    ? audioElements[audioElements.length - 1].endMs
-    : 0;
-
-  if (totalDuration === 0) return [];
-
-  // Use first music track
-  const music = musicManifest[0];
-
-  elements.push({
-    musicUrl: music.path,
-    startMs: 0,
-    endMs: totalDuration,
-    volume: musicConfig.volume || 0.2,
-  });
 
   return elements;
 }
@@ -272,11 +335,9 @@ async function main(projectId?: string) {
 
     // Load configuration
     const videoConfig = await ConfigManager.loadVideoConfig();
-    const musicConfig = await ConfigManager.loadMusicConfig();
 
     console.log(`[BUILD] Aspect ratio: ${videoConfig.defaultAspectRatio}`);
     console.log(`[BUILD] Target duration: ${videoConfig.duration?.targetSeconds || 720}s`);
-    console.log(`[BUILD] Music enabled: ${musicConfig.enabled}`);
 
     // Read gathered assets
     const tagsData = JSON.parse(await fs.readFile(paths.tags, 'utf-8'));
@@ -293,6 +354,7 @@ async function main(projectId?: string) {
     console.log('[BUILD]   → Generating background elements...');
     const backgroundElements = generateBackgroundElements(
       tagsData.manifest.images,
+      tagsData.manifest.videos || [],
       tagsData.tags,
       audioElements,
       videoConfig
@@ -303,26 +365,18 @@ async function main(projectId?: string) {
     const textElements = generateTextElements(
       scriptData.segments,
       audioElements,
+      tagsData.manifest.audio,
       videoConfig
     );
     console.log(`[BUILD]   ✓ Generated ${textElements.length} text element(s)`);
-
-    console.log('[BUILD]   → Generating music elements...');
-    const musicElements = musicConfig.enabled ? generateMusicElements(
-      tagsData.manifest.music,
-      audioElements,
-      musicConfig
-    ) : undefined;
-    if (musicElements) {
-      console.log(`[BUILD]   ✓ Generated ${musicElements.length} music element(s)`);
-    } else {
-      console.log(`[BUILD]   ✓ Music disabled`);
-    }
 
     // Calculate total duration from audio elements
     const durationSeconds = audioElements.length > 0
       ? Math.ceil(audioElements[audioElements.length - 1].endMs / 1000)
       : 720;
+    const totalDurationMs = audioElements.length > 0
+      ? audioElements[audioElements.length - 1].endMs
+      : 720000;
 
     const timeline: Timeline = {
       shortTitle: scriptData.title,
@@ -331,7 +385,7 @@ async function main(projectId?: string) {
       elements: backgroundElements,
       text: textElements,
       audio: audioElements,
-      music: musicElements,
+      backgroundMusic: generateBackgroundMusicElements(manifest, totalDurationMs),
     };
 
     // Write timeline.json

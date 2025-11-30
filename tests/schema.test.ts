@@ -62,7 +62,7 @@ test('TimelineSchema accepts optional fields', () => {
 });
 
 // Test BackgroundElement Schema
-test('BackgroundElementSchema validates correctly', () => {
+test('BackgroundElementSchema validates correctly with imageUrl', () => {
   const validElement = {
     type: 'background' as const,
     startMs: 0,
@@ -74,6 +74,103 @@ test('BackgroundElementSchema validates correctly', () => {
 
   const result = BackgroundElementSchema.safeParse(validElement);
   assert.ok(result.success, 'Valid background element should validate');
+});
+
+test('BackgroundElementSchema validates with videoUrl only', () => {
+  const videoElement = {
+    startMs: 0,
+    endMs: 5000,
+    videoUrl: 'test-video',
+    enterTransition: 'fade' as const,
+    exitTransition: 'fade' as const,
+  };
+
+  const result = BackgroundElementSchema.safeParse(videoElement);
+  assert.ok(result.success, 'Background element with videoUrl only should validate');
+});
+
+test('BackgroundElementSchema validates with both imageUrl and videoUrl', () => {
+  const dualElement = {
+    startMs: 0,
+    endMs: 5000,
+    imageUrl: 'test-image',
+    videoUrl: 'test-video',
+    enterTransition: 'blur' as const,
+  };
+
+  const result = BackgroundElementSchema.safeParse(dualElement);
+  assert.ok(result.success, 'Background element with both imageUrl and videoUrl should validate');
+});
+
+test('BackgroundElementSchema rejects element without imageUrl or videoUrl', () => {
+  const emptyElement = {
+    startMs: 0,
+    endMs: 5000,
+    enterTransition: 'fade' as const,
+  };
+
+  const result = BackgroundElementSchema.safeParse(emptyElement);
+  assert.ok(!result.success, 'Background element without imageUrl or videoUrl should be rejected');
+  if (!result.success) {
+    assert.ok(
+      result.error.message.includes('imageUrl or videoUrl'),
+      'Error message should mention required fields'
+    );
+  }
+});
+
+test('BackgroundElementSchema validates with mediaMetadata', () => {
+  const elementWithMetadata = {
+    startMs: 0,
+    endMs: 5000,
+    videoUrl: 'test-video',
+    mediaMetadata: {
+      width: 1920,
+      height: 1080,
+      duration: 10,
+      mode: 'crop' as const,
+      scale: 1.2,
+      cropX: 0,
+      cropY: 100,
+      cropWidth: 1920,
+      cropHeight: 880,
+    },
+  };
+
+  const result = BackgroundElementSchema.safeParse(elementWithMetadata);
+  assert.ok(result.success, 'Background element with complete mediaMetadata should validate');
+});
+
+test('BackgroundElementSchema validates with partial mediaMetadata', () => {
+  const elementWithPartialMetadata = {
+    startMs: 0,
+    endMs: 5000,
+    imageUrl: 'test-image',
+    mediaMetadata: {
+      width: 1024,
+      height: 1792,
+      mode: 'letterbox' as const,
+    },
+  };
+
+  const result = BackgroundElementSchema.safeParse(elementWithPartialMetadata);
+  assert.ok(result.success, 'Background element with partial mediaMetadata should validate');
+});
+
+test('BackgroundElementSchema rejects invalid metadata mode', () => {
+  const invalidModeElement = {
+    startMs: 0,
+    endMs: 5000,
+    videoUrl: 'test-video',
+    mediaMetadata: {
+      width: 1920,
+      height: 1080,
+      mode: 'stretch', // Invalid mode
+    },
+  };
+
+  const result = BackgroundElementSchema.safeParse(invalidModeElement);
+  assert.ok(!result.success, 'Background element with invalid mode should be rejected');
 });
 
 // Test TextElement Schema
@@ -88,6 +185,46 @@ test('TextElementSchema validates correctly', () => {
 
   const result = TextElementSchema.safeParse(validElement);
   assert.ok(result.success, 'Valid text element should validate');
+});
+
+// Test TextElement with optional words field
+test('TextElementSchema validates with words array', () => {
+  const validElement = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 3000,
+    text: 'Hello world',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Hello',
+        startMs: 1000,
+        endMs: 1500,
+      },
+      {
+        text: 'world',
+        startMs: 1500,
+        endMs: 2000,
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(validElement);
+  assert.ok(result.success, 'Text element with words array should validate');
+});
+
+test('TextElementSchema validates without words field (backward compatibility)', () => {
+  const validElement = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 3000,
+    text: 'Hello world',
+    position: 'bottom' as const,
+    // No words field - should still validate
+  };
+
+  const result = TextElementSchema.safeParse(validElement);
+  assert.ok(result.success, 'Text element without words field should validate (backward compatibility)');
 });
 
 // Test AudioElement Schema
@@ -224,6 +361,278 @@ test('Demo timeline files validate correctly', async () => {
 
     assert.ok(result.success, `Timeline for ${projectId} should validate: ${result.success ? 'OK' : result.error.message}`);
   }
+});
+
+// Test Emphasis Schema Validation
+test('EmphasisSchema validates correctly with all valid levels', () => {
+  const textWithEmphasis = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 4000,
+    text: 'High medium none',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'High',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'high' as const, tone: 'intense' as const },
+      },
+      {
+        text: 'medium',
+        startMs: 1500,
+        endMs: 2000,
+        emphasis: { level: 'med' as const, tone: 'warm' as const },
+      },
+      {
+        text: 'none',
+        startMs: 2000,
+        endMs: 2500,
+        emphasis: { level: 'none' as const },
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithEmphasis);
+  assert.ok(result.success, 'Text element with all valid emphasis levels should validate');
+});
+
+test('EmphasisSchema validates without tone (tone is optional)', () => {
+  const textWithEmphasisNoTone = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 2000,
+    text: 'Test',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Test',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'high' as const }, // No tone field
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithEmphasisNoTone);
+  assert.ok(result.success, 'Emphasis without tone should validate (tone is optional)');
+});
+
+test('EmphasisSchema rejects invalid emphasis level', () => {
+  const textWithInvalidLevel = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 2000,
+    text: 'Test',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Test',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'super-high' }, // Invalid level
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithInvalidLevel);
+  assert.ok(!result.success, 'Invalid emphasis level should be rejected');
+});
+
+test('EmphasisSchema rejects invalid tone', () => {
+  const textWithInvalidTone = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 2000,
+    text: 'Test',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Test',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'high' as const, tone: 'super-intense' }, // Invalid tone
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithInvalidTone);
+  assert.ok(!result.success, 'Invalid emphasis tone should be rejected');
+});
+
+test('EmphasisSchema validates warm and intense tones', () => {
+  const textWithValidTones = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 3000,
+    text: 'Warm and intense',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Warm',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'med' as const, tone: 'warm' as const },
+      },
+      {
+        text: 'intense',
+        startMs: 1500,
+        endMs: 2000,
+        emphasis: { level: 'high' as const, tone: 'intense' as const },
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithValidTones);
+  assert.ok(result.success, 'Valid emphasis tones (warm, intense) should validate');
+});
+
+// Test Backward Compatibility with Old Schema Format
+test('Timeline validates with old schema format (no words, no emphasis)', () => {
+  const oldFormatTimeline = {
+    shortTitle: 'Old Format Timeline',
+    aspectRatio: '9:16' as const,
+    durationSeconds: 30,
+    elements: [
+      {
+        type: 'background' as const,
+        startMs: 0,
+        endMs: 5000,
+        imageUrl: 'test-image',
+        enterTransition: 'fade' as const,
+        exitTransition: 'fade' as const,
+      },
+    ],
+    text: [
+      {
+        type: 'text' as const,
+        startMs: 1000,
+        endMs: 4000,
+        text: 'Old format text',
+        position: 'bottom' as const,
+        // No words array, no emphasis
+      },
+    ],
+    audio: [
+      {
+        type: 'audio' as const,
+        startMs: 0,
+        endMs: 5000,
+        audioUrl: 'test-audio',
+      },
+    ],
+    videoClips: [],
+    backgroundMusic: [],
+  };
+
+  const result = TimelineSchema.safeParse(oldFormatTimeline);
+  assert.ok(result.success, 'Old schema format should validate (backward compatibility)');
+});
+
+test('Timeline validates with new word-level schema format', () => {
+  const newFormatTimeline = {
+    shortTitle: 'New Format Timeline',
+    aspectRatio: '16:9' as const,
+    durationSeconds: 30,
+    elements: [],
+    text: [
+      {
+        type: 'text' as const,
+        startMs: 1000,
+        endMs: 4000,
+        text: 'New format text with words',
+        position: 'center' as const,
+        words: [
+          {
+            text: 'New',
+            startMs: 1000,
+            endMs: 1300,
+            emphasis: { level: 'high' as const, tone: 'intense' as const },
+          },
+          {
+            text: 'format',
+            startMs: 1300,
+            endMs: 1600,
+            emphasis: { level: 'med' as const },
+          },
+          {
+            text: 'text',
+            startMs: 1600,
+            endMs: 1900,
+          },
+          {
+            text: 'with',
+            startMs: 1900,
+            endMs: 2100,
+          },
+          {
+            text: 'words',
+            startMs: 2100,
+            endMs: 2400,
+            emphasis: { level: 'med' as const, tone: 'warm' as const },
+          },
+        ],
+      },
+    ],
+    audio: [],
+    videoClips: [],
+    backgroundMusic: [],
+  };
+
+  const result = TimelineSchema.safeParse(newFormatTimeline);
+  assert.ok(result.success, 'New word-level schema format should validate');
+});
+
+test('Words field is truly optional (can be undefined or missing)', () => {
+  const textWithoutWords = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 2000,
+    text: 'Test without words',
+    position: 'bottom' as const,
+  };
+
+  const textWithUndefinedWords = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 2000,
+    text: 'Test with undefined words',
+    position: 'bottom' as const,
+    words: undefined,
+  };
+
+  const result1 = TextElementSchema.safeParse(textWithoutWords);
+  const result2 = TextElementSchema.safeParse(textWithUndefinedWords);
+
+  assert.ok(result1.success, 'Text element without words field should validate');
+  assert.ok(result2.success, 'Text element with undefined words should validate');
+});
+
+test('Emphasis field is truly optional in word objects', () => {
+  const textWithMixedEmphasis = {
+    type: 'text' as const,
+    startMs: 1000,
+    endMs: 3000,
+    text: 'Mixed emphasis',
+    position: 'center' as const,
+    words: [
+      {
+        text: 'Mixed',
+        startMs: 1000,
+        endMs: 1500,
+        emphasis: { level: 'high' as const },
+      },
+      {
+        text: 'emphasis',
+        startMs: 1500,
+        endMs: 2000,
+        // No emphasis field - should be valid
+      },
+    ],
+  };
+
+  const result = TextElementSchema.safeParse(textWithMixedEmphasis);
+  assert.ok(result.success, 'Words without emphasis field should validate (emphasis is optional)');
 });
 
 console.log('\n✅ All schema tests passed!');

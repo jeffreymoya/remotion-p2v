@@ -140,7 +140,15 @@ async function main(projectId?: string) {
 // Parse CLI args
 const args = process.argv.slice(2);
 const projectIdIndex = args.indexOf('--project');
-const projectId = projectIdIndex !== -1 ? args[projectIdIndex + 1] : undefined;
+let projectId: string | undefined;
+
+if (projectIdIndex !== -1) {
+  // Named argument: --project <id>
+  projectId = args[projectIdIndex + 1];
+} else if (args.length > 0 && !args[0].startsWith('--')) {
+  // Positional argument: <project-id>
+  projectId = args[0];
+}
 
 // Run if called directly
 if (require.main === module) {

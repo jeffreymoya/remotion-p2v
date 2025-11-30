@@ -14,17 +14,22 @@ import {
   MediaAsset
 } from '../../lib/media-types';
 import { logger } from '../../utils/logger';
+import { withTimeout } from './timeout-wrapper';
 
 export class StockMediaSearch {
   private pexelsService?: PexelsService;
   private unsplashService?: UnsplashService;
   private pixabayService?: PixabayService;
+  private timeoutMs: number;
 
   constructor(
     pexelsApiKey?: string,
     unsplashApiKey?: string,
-    pixabayApiKey?: string
+    pixabayApiKey?: string,
+    timeoutMs: number = 30000
   ) {
+    this.timeoutMs = timeoutMs;
+
     // Initialize only services with valid API keys
     if (pexelsApiKey) {
       this.pexelsService = new PexelsService(pexelsApiKey);
@@ -33,7 +38,7 @@ export class StockMediaSearch {
       this.unsplashService = new UnsplashService(unsplashApiKey);
     }
     if (pixabayApiKey) {
-      this.pixabayService = new PixabayService(pixabayApiKey);
+      this.pixabayService = new PixabayService(pixabayApiKey, timeoutMs);
     }
 
     if (!this.pexelsService && !this.unsplashService && !this.pixabayService) {
@@ -129,7 +134,11 @@ export class StockMediaSearch {
   private async searchPexelsImages(tag: string, options: ImageSearchOptions): Promise<StockImage[]> {
     if (!this.pexelsService) return [];
     try {
-      return await this.pexelsService.searchImages(tag, options);
+      return await withTimeout(
+        this.pexelsService.searchImages(tag, options),
+        this.timeoutMs,
+        `Pexels image search for "${tag}"`
+      );
     } catch (error: any) {
       // Graceful degradation - log error and continue
       logger.warn(`Pexels image search failed: ${error.message}`);
@@ -140,7 +149,11 @@ export class StockMediaSearch {
   private async searchUnsplashImages(tag: string, options: ImageSearchOptions): Promise<StockImage[]> {
     if (!this.unsplashService) return [];
     try {
-      return await this.unsplashService.searchImages(tag, options);
+      return await withTimeout(
+        this.unsplashService.searchImages(tag, options),
+        this.timeoutMs,
+        `Unsplash image search for "${tag}"`
+      );
     } catch (error: any) {
       logger.warn(`Unsplash image search failed: ${error.message}`);
       return [];
@@ -160,7 +173,11 @@ export class StockMediaSearch {
   private async searchPexelsVideos(tag: string, options: VideoSearchOptions): Promise<StockVideo[]> {
     if (!this.pexelsService) return [];
     try {
-      return await this.pexelsService.searchVideos(tag, options);
+      return await withTimeout(
+        this.pexelsService.searchVideos(tag, options),
+        this.timeoutMs,
+        `Pexels video search for "${tag}"`
+      );
     } catch (error: any) {
       logger.warn(`Pexels video search failed: ${error.message}`);
       return [];

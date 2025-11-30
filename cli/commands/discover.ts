@@ -46,7 +46,7 @@ const FilteredTopicsSchema = z.object({
   })),
 });
 
-async function main(options: { geo?: string; limit?: number } = {}) {
+async function main(options: { projectId?: string; geo?: string; limit?: number } = {}) {
   try {
     console.log('[DISCOVER] Starting topic discovery...');
 
@@ -57,11 +57,11 @@ async function main(options: { geo?: string; limit?: number } = {}) {
     console.log(`[DISCOVER] Using AI provider: ${aiConfig.defaultProvider}`);
     console.log(`[DISCOVER] Target region: ${geo}`);
 
-    // Create project directory
-    const projectId = `project-${Date.now()}`;
+    // Use provided project ID or create new one
+    const projectId = options.projectId || `project-${Date.now()}`;
     const paths = ensureProjectDirs(projectId);
 
-    console.log(`[DISCOVER] Created project: ${projectId}`);
+    console.log(`[DISCOVER] ${options.projectId ? 'Using' : 'Created'} project: ${projectId}`);
 
     // Step 1: Fetch trending topics from Google Trends
     console.log('[DISCOVER] Fetching trending topics from Google Trends...');
@@ -141,7 +141,11 @@ const args = process.argv.slice(2);
 const geoIndex = args.indexOf('--geo');
 const limitIndex = args.indexOf('--limit');
 
+// Check if first argument is a project ID (doesn't start with --)
+const projectId = args.length > 0 && !args[0].startsWith('--') ? args[0] : undefined;
+
 const options = {
+  projectId,
   geo: geoIndex !== -1 ? args[geoIndex + 1] : undefined,
   limit: limitIndex !== -1 ? parseInt(args[limitIndex + 1], 10) : undefined,
 };

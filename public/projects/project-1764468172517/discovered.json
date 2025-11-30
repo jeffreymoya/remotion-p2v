@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "The Bear Bryant Method: Leadership Lessons from a Football Legend",
+      "description": "Beyond the wins and losses, what made Bear Bryant one of the most iconic coaches in history? This video explores his psychological tactics, leadership philosophy, and the lasting cultural impact he had on college football and beyond.",
+      "source": "google-trends",
+      "trendScore": 95,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "The Risky Business of Offence: Why Controversial Comedy Thrives",
+      "description": "From Lenny Bruce to today's edgiest comics, what is the psychological appeal of controversial humor? We'll analyze the fine line between a joke that lands and one that backfires, exploring the social science behind laughter, taboos, and cancel culture.",
+      "source": "google-trends",
+      "trendScore": 92,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "The Hollywood Comeback: Deconstructing the Career Second Act",
+      "description": "How do public figures reinvent themselves after years away from the spotlight? Using iconic career resurgences like Josh Brolin's as case studies, this video breaks down the strategy, psychology, and cultural shifts that allow for a successful 'second act.'",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "The Ghost in the Machine: How Music Producers Shape the Hits You Love",
+      "description": "You know the singer, but do you know the producer? This video pulls back the curtain on the art and science of music production, exploring how sonic architects like Danny Wolf build a song from the ground up and define an entire generation's sound.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "how-to",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "The Ultimate Glue Guy: The Hidden Psychology of What Makes Great Teams Work",
+      "description": "Superstars get the glory, but championships are often won by the unsung heroes. We dive into the psychology of the 'glue guy'—the selfless player like Kevon Looney who does the dirty work—and explore why every successful organization, in sports and in business, needs one.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "Born or Made? The Science of Raising a Superstar",
+      "description": "Can you engineer a prodigy? This video examines the 'nature vs. nurture' debate through the lens of families who have produced multiple elite athletes, like the Ball family. We explore the psychological pressures, training regimens, and genetic factors involved.",
+      "source": "google-trends",
+      "trendScore": 80,
+      "category": "science",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "How Women's Wrestling Fought for the Main Event",
+      "description": "Just a decade ago, women's wrestling was a sideshow. Today, athletes like Nikki Bella and Stephanie Vaquer headline major events. This video explores the cultural shift, the key figures who broke barriers, and the business decisions that transformed an industry.",
+      "source": "google-trends",
+      "trendScore": 78,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "Beyond the WWE: The Secret World of International Pro Wrestling",
+      "description": "Think you know pro wrestling? This journey takes you to the vibrant wrestling cultures of Mexico (Lucha Libre) and Japan (Puroresu), exploring the worlds of international stars like Stephanie Vaquer. Discover the unique styles and deep-rooted traditions.",
+      "source": "google-trends",
+      "trendScore": 75,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "Moneyball on Ice: How Data Conquered the NHL",
+      "description": "The game is faster than ever, but the real revolution is happening off the ice. We break down how advanced analytics and data science are changing player recruitment, game strategy, and how fans understand the sport of hockey, looking at players like Morgan Geekie.",
+      "source": "google-trends",
+      "trendScore": 72,
+      "category": "technology",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "The Hallmark Effect: The Science of Why We Love 'Comfort TV'",
+      "description": "Why are predictable, low-stakes movies starring actors like Kristoffer Polaha so incredibly popular? This video explores the psychology behind 'comfort media,' examining how familiar plots and guaranteed happy endings affect our brains and provide a much-needed escape.",
+      "source": "google-trends",
+      "trendScore": 70,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T02:03:45.725Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T02:03:45.725Z",
+  "totalCount": 10
+}
