@@ -1,10 +1,15 @@
 import { Composition, getStaticFiles } from "remotion";
 import { AIVideo, aiVideoSchema } from "./components/AIVideo";
-import { FPS, INTRO_DURATION, DIMENSIONS, DEFAULT_ASPECT_RATIO } from "./lib/constants";
+import { FPS, INTRO_DURATION_MS, DIMENSIONS, DEFAULT_ASPECT_RATIO } from "./lib/constants";
 import { loadTimelineFromFile } from "./lib/utils";
+import videoConfig from "../config/video.config.json";
 
 export const RemotionRoot: React.FC = () => {
   const staticFiles = getStaticFiles();
+
+  const defaultAspectRatio = (videoConfig.defaultAspectRatio || DEFAULT_ASPECT_RATIO) as keyof typeof DIMENSIONS;
+  const compositionFps = videoConfig.aspectRatios?.[defaultAspectRatio]?.fps ?? FPS;
+  const introDurationFrames = Math.round((INTRO_DURATION_MS / 1000) * compositionFps);
 
   // Extract project IDs from public/projects/{projectId}/timeline.json
   const timelines = staticFiles
@@ -22,10 +27,10 @@ export const RemotionRoot: React.FC = () => {
         <Composition
           id={projectId}
           component={AIVideo}
-          fps={FPS}
+          fps={compositionFps}
           // Dimensions will be calculated dynamically based on timeline's aspect ratio
-          width={DIMENSIONS[DEFAULT_ASPECT_RATIO].width}
-          height={DIMENSIONS[DEFAULT_ASPECT_RATIO].height}
+          width={DIMENSIONS[defaultAspectRatio].width}
+          height={DIMENSIONS[defaultAspectRatio].height}
           schema={aiVideoSchema}
           defaultProps={{
             timeline: null,
@@ -33,14 +38,14 @@ export const RemotionRoot: React.FC = () => {
           calculateMetadata={async ({ props }) => {
             // Use new path structure: projects/{projectId}/timeline.json
             const timelinePath = `projects/${projectId}/timeline.json`;
-            const { lengthFrames, timeline } = await loadTimelineFromFile(timelinePath);
+            const { lengthFrames, timeline } = await loadTimelineFromFile(timelinePath, compositionFps);
 
             // Get dimensions based on timeline's aspect ratio (normalized with default)
             const aspectRatio = timeline.aspectRatio || DEFAULT_ASPECT_RATIO;
             const dimensions = DIMENSIONS[aspectRatio];
 
             return {
-              durationInFrames: lengthFrames + INTRO_DURATION,
+              durationInFrames: lengthFrames + introDurationFrames,
               width: dimensions.width,
               height: dimensions.height,
               props: {

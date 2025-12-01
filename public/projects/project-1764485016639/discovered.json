@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "AI Video Editing Masterclass: Boost Your Workflow",
+      "description": "Unlock AI's power for video editing. Learn essential techniques and tools to automate tasks, enhance footage, and create professional videos faster than ever.",
+      "source": "google-trends",
+      "trendScore": 95,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "Is the PS5 Pro the Ultimate Gaming Upgrade? A Deep Dive",
+      "description": "We analyze the PS5 Pro's technical specs and new features, comparing it to the current PS5. Decide if this gaming console upgrade is your next must-have tech.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "The Science of Habit Formation: Build Good Habits That Stick",
+      "description": "Understand the psychological principles behind habit formation. This video provides actionable strategies and scientific insights to help you create lasting positive habits and break bad ones.",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "Quantum Computing Explained: The Future is Here",
+      "description": "Demystify quantum computing. We break down the core concepts and explore its potential to revolutionize fields like medicine, AI, and materials science.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "The Human Brain: Unlocking the Secrets of Memory",
+      "description": "Dive deep into neuroscience to explore how our brains form, store, and retrieve memories. Understand the latest research and fascinating facts about this complex organ.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "The Future of Renewable Energy: Solar, Wind, and Beyond",
+      "description": "Explore the cutting edge of green technology. We examine the latest advancements in solar, wind, and other renewable energy sources, and their potential to power our future.",
+      "source": "google-trends",
+      "trendScore": 80,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "The History of the Internet: How It Changed the World",
+      "description": "From ARPANET to the World Wide Web, trace the incredible journey of the internet. Discover the key innovations and people who shaped the digital age.",
+      "source": "google-trends",
+      "trendScore": 78,
+      "category": "History",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "The Elemental Power of Silver: From Ancient Medicine to Modern Tech",
+      "description": "Discover the incredible properties of the element silver. We explore its historical uses in medicine and currency, and its vital role in advanced technologies like electronics.",
+      "source": "google-trends",
+      "trendScore": 75,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "DIY Smart Home: Automate Your House Affordably",
+      "description": "Learn to transform your home into a smart haven without breaking the bank. This guide covers simple DIY projects and affordable tech solutions for lighting, security, and more.",
+      "source": "google-trends",
+      "trendScore": 75,
+      "category": "How-to",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "The Psychology of Color: How It Affects Your Mind",
+      "description": "Discover the hidden power of colors. This video explores how different hues impact our emotions, perceptions, and even our purchasing decisions, with real-world examples.",
+      "source": "google-trends",
+      "trendScore": 70,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T06:44:26.708Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T06:44:26.708Z",
+  "totalCount": 10
+}

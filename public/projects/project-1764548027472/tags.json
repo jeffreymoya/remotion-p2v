@@ -1,0 +1,5415 @@
+{
+  "tags": [
+    {
+      "tag": "American Football Quarterback",
+      "segmentId": "segment-1",
+      "confidence": 0.98
+    },
+    {
+      "tag": "Dynamic Sports Action",
+      "segmentId": "segment-1",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Athlete Focus",
+      "segmentId": "segment-1",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Sports Leadership",
+      "segmentId": "segment-1",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Football quarterback",
+      "segmentId": "segment-2",
+      "confidence": 0.98
+    },
+    {
+      "tag": "Athlete running",
+      "segmentId": "segment-2",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Heisman Trophy",
+      "segmentId": "segment-2",
+      "confidence": 0.99
+    },
+    {
+      "tag": "Dynamic action",
+      "segmentId": "segment-2",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Stadium crowd",
+      "segmentId": "segment-2",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Quarterback",
+      "segmentId": "segment-3",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Throwing motion",
+      "segmentId": "segment-3",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Athlete",
+      "segmentId": "segment-3",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Sports action",
+      "segmentId": "segment-3",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Velocity",
+      "segmentId": "segment-3",
+      "confidence": 0.8
+    },
+    {
+      "tag": "American football",
+      "segmentId": "segment-4",
+      "confidence": 0.98
+    },
+    {
+      "tag": "Quarterback",
+      "segmentId": "segment-4",
+      "confidence": 0.97
+    },
+    {
+      "tag": "Football player",
+      "segmentId": "segment-4",
+      "confidence": 0.96
+    },
+    {
+      "tag": "Stadium",
+      "segmentId": "segment-4",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Celebration",
+      "segmentId": "segment-4",
+      "confidence": 0.8
+    },
+    {
+      "tag": "Heroic pose",
+      "segmentId": "segment-5",
+      "confidence": 0.97
+    },
+    {
+      "tag": "Team connection",
+      "segmentId": "segment-5",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Energetic movement",
+      "segmentId": "segment-5",
+      "confidence": 0.96
+    },
+    {
+      "tag": "Inspiration",
+      "segmentId": "segment-5",
+      "confidence": 0.96
+    },
+    {
+      "tag": "Joyful celebration",
+      "segmentId": "segment-5",
+      "confidence": 0.97
+    },
+    {
+      "tag": "Journey",
+      "segmentId": "segment-6",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Stormy weather",
+      "segmentId": "segment-6",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Perseverance",
+      "segmentId": "segment-6",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Obstacles",
+      "segmentId": "segment-6",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Chessboard",
+      "segmentId": "segment-7",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Lightbulb moment",
+      "segmentId": "segment-7",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Crossroads decision",
+      "segmentId": "segment-7",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Abstract thinking",
+      "segmentId": "segment-7",
+      "confidence": 0.85
+    },
+    {
+      "tag": "American football field",
+      "segmentId": "segment-8",
+      "confidence": 0.98
+    },
+    {
+      "tag": "Athlete",
+      "segmentId": "segment-8",
+      "confidence": 0.95
+    },
+    {
+      "tag": "Fashion",
+      "segmentId": "segment-8",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Mentorship",
+      "segmentId": "segment-8",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Inspiration",
+      "segmentId": "segment-8",
+      "confidence": 0.8
+    },
+    {
+      "tag": "Quarterback",
+      "segmentId": "segment-9",
+      "confidence": 0.98
+    },
+    {
+      "tag": "Sports Action",
+      "segmentId": "segment-9",
+      "confidence": 0.9
+    },
+    {
+      "tag": "Triumphant Athlete",
+      "segmentId": "segment-9",
+      "confidence": 0.85
+    },
+    {
+      "tag": "Inspirational Sports",
+      "segmentId": "segment-9",
+      "confidence": 0.8
+    },
+    {
+      "tag": "football player",
+      "segmentId": "segment-10",
+      "confidence": 0.95
+    },
+    {
+      "tag": "leadership",
+      "segmentId": "segment-10",
+      "confidence": 0.9
+    },
+    {
+      "tag": "innovation",
+      "segmentId": "segment-10",
+      "confidence": 0.85
+    },
+    {
+      "tag": "courage",
+      "segmentId": "segment-10",
+      "confidence": 0.8
+    },
+    {
+      "tag": "dynamic action",
+      "segmentId": "segment-10",
+      "confidence": 0.75
+    }
+  ],
+  "manifest": {
+    "images": [],
+    "videos": [
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "151295",
+        "libraryId": "8e0083db-75be-42c6-bb29-4e5a797d0575",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/cd5ebe31fa98ed93060b050d5dcef9f3.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2023/02/19/151295-800360305_large.mp4",
+        "tags": [
+          "woman",
+          "wake up",
+          "bed",
+          "sleep",
+          "pose",
+          "morning",
+          "Heroic pose",
+          "Team connection",
+          "Energetic movement",
+          "Inspiration",
+          "Joyful celebration"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 21,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 21,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "86332",
+        "libraryId": "1870ba71-0f53-4005-9a38-4a4367b02685",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/c3b3bed0dc15ddaab15c67ffcc2966e5.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/08/25/86332-592491755_large.mp4",
+        "tags": [
+          "woman",
+          "model",
+          "blonde",
+          "sing",
+          "girl",
+          "pose",
+          "posing",
+          "female",
+          "face",
+          "beauty",
+          "portrait",
+          "Heroic pose",
+          "Team connection",
+          "Energetic movement",
+          "Inspiration",
+          "Joyful celebration"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 15,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 15,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "185790",
+        "libraryId": "8900ab0d-1e47-42d2-879a-caeb653a86aa",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/9d0a70875b76ca13da447e393ed83451.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2023/10/20/185790-876545922_large.mp4",
+        "tags": [
+          "woman",
+          "model",
+          "lights",
+          "colorful",
+          "female",
+          "pose",
+          "fashion",
+          "Heroic pose",
+          "Team connection",
+          "Energetic movement",
+          "Inspiration",
+          "Joyful celebration"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 8,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 8,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "203974",
+        "libraryId": "784986d5-b0b7-4da5-99ff-ae5e6c412236",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/342c7863aef6dfdf74f759534c6c09f6.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2024/03/12/203974-923133846_large.mp4",
+        "tags": [
+          "boats",
+          "travel",
+          "journey",
+          "road trip",
+          "coast",
+          "ocean",
+          "beach",
+          "trip",
+          "vacation",
+          "sea",
+          "europe",
+          "italy",
+          "travel destinations",
+          "Journey",
+          "Stormy weather",
+          "Perseverance",
+          "Obstacles"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 14,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 14,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "57993",
+        "libraryId": "0e7d3a11-3f1b-4897-b4e5-7fbb907ae630",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/119883324bbb85ccb65a80f9251d557c.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/12/01/57993-487499986_large.mp4",
+        "tags": [
+          "road",
+          "beautiful wallpaper",
+          "highway",
+          "drive",
+          "car",
+          "alps",
+          "aerial",
+          "asphalt",
+          "aerial view",
+          "autumn",
+          "background",
+          "colorful",
+          "dolomites",
+          "fall",
+          "foliage",
+          "forest",
+          "hill",
+          "italy",
+          "journey",
+          "landscape",
+          "Journey",
+          "Stormy weather",
+          "Perseverance",
+          "Obstacles"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 13,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 13,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "11490",
+        "libraryId": "f10e9c3a-e38d-4d2b-8046-2f8d6d3e379a",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/004179f315faba88880eb0196ab553f7.mp4",
+        "source": "pixabay",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2017/08/20/11490-230853032_large.mp4",
+        "tags": [
+          "car",
+          "driving",
+          "sunset",
+          "sunlight",
+          "lens",
+          "flare",
+          "drone",
+          "aerial",
+          "above",
+          "top view",
+          "travel",
+          "croatia",
+          "island",
+          "forest",
+          "road",
+          "street",
+          "transportation",
+          "vehicle",
+          "drive",
+          "journey",
+          "cinematic",
+          "smooth",
+          "motion",
+          "lifestyle",
+          "freedom",
+          "countryside",
+          "adventure",
+          "summer",
+          "trip",
+          "vacation",
+          "landscape",
+          "Journey",
+          "Stormy weather",
+          "Perseverance",
+          "Obstacles"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "duration": 11,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944
+        }
+      },
+      {
+        "id": "24375453-86f6-415e-96bc-f94e68b386f8",
+        "libraryId": "24375453-86f6-415e-96bc-f94e68b386f8",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/838ec38933b10e911c56975c77ff1066f591fc2dc0b7b64cfc0efb5257f8ec51.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/10/06/91087-629483817_large.mp4",
+        "tags": [
+          "veil",
+          "wave",
+          "wind",
+          "cloth",
+          "water",
+          "loop",
+          "abstract",
+          "effect",
+          "feminine",
+          "tenderness",
+          "pattern",
+          "fluid",
+          "screen",
+          "transparent",
+          "transparency",
+          "circle",
+          "animation",
+          "music",
+          "dance",
+          "artificial",
+          "intelligence",
+          "ethics",
+          "deepfake"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 30,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 30
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "8900ab0d-1e47-42d2-879a-caeb653a86aa",
+        "libraryId": "8900ab0d-1e47-42d2-879a-caeb653a86aa",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/b58fad16f5bbc32f012b667ed8d52f2c3e59fecfa63320a9c9753589c1ebfdf0.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2023/10/20/185790-876545922_large.mp4",
+        "tags": [
+          "woman",
+          "model",
+          "lights",
+          "colorful",
+          "female",
+          "pose",
+          "fashion",
+          "heroic",
+          "team",
+          "connection",
+          "energetic",
+          "movement",
+          "inspiration",
+          "joyful",
+          "celebration"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 8,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 8
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "libraryId": "bf1962a4-5942-4d21-9355-06c66f296f41",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/02/20/32620-392669772_large.mp4",
+        "tags": [
+          "baseball",
+          "sport",
+          "intro",
+          "background",
+          "motion",
+          "graphics",
+          "football",
+          "sports",
+          "olympics",
+          "softball",
+          "game",
+          "recreation",
+          "coaching",
+          "field",
+          "player",
+          "athlete",
+          "bat",
+          "helmet",
+          "ball",
+          "glove",
+          "play",
+          "competition",
+          "athletic",
+          "action",
+          "mitt",
+          "quarterback",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 12.03,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 12.03
+        }
+      },
+      {
+        "id": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "libraryId": "21aef739-4096-4e31-b88c-71b2b254e567",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2021/07/18/81945-577442929_large.mp4",
+        "tags": [
+          "mountains",
+          "parachute",
+          "paragliding",
+          "sport",
+          "adventure",
+          "nature",
+          "freedom",
+          "flight",
+          "skydiving",
+          "landscape",
+          "wind",
+          "outdoors",
+          "quarterback",
+          "football",
+          "player",
+          "sports",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 11.35,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 11.35
+        }
+      },
+      {
+        "id": "cf44352b-767a-4d19-8311-2d965244361e",
+        "libraryId": "cf44352b-767a-4d19-8311-2d965244361e",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/videos/411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742.mp4",
+        "source": "local-library",
+        "provider": "pixabay",
+        "sourceUrl": "https://cdn.pixabay.com/video/2020/09/16/50109-459915579_large.mp4",
+        "tags": [
+          "tennis",
+          "match",
+          "sport",
+          "ball",
+          "game",
+          "trainer",
+          "player",
+          "athletic",
+          "leisure",
+          "athlete",
+          "training",
+          "wimbledon",
+          "sports",
+          "court",
+          "equipment",
+          "competition",
+          "quarterback",
+          "football",
+          "athleticism",
+          "determination"
+        ],
+        "width": 3840,
+        "height": 2160,
+        "duration": 18.42,
+        "metadata": {
+          "width": 3840,
+          "height": 2160,
+          "mode": "crop",
+          "scale": 0.5555555555555556,
+          "cropX": 192,
+          "cropY": 108,
+          "cropWidth": 3456,
+          "cropHeight": 1944,
+          "duration": 18.42
+        }
+      }
+    ],
+    "audio": [
+      {
+        "id": "segment-1",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-1.mp3",
+        "segmentId": "segment-1",
+        "durationMs": 29000,
+        "wordTimestamps": [
+          {
+            "word": "**(Intro",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "Music",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "Fades)**",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "Imagine",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "a",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "quarterback",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "who",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "didn't",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "just",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "play",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "the",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "game,",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "but",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "rewrote",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "its",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "very",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "rules.",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "A",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "player",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "who",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "combined",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "raw",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "athleticism",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "with",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "a",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "brilliant,",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "unconventional",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "mind.",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "Today,",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "we're",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "diving",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "deep",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "into",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "the",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "revolutionary",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "career",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "of",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "Cam",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "Newton",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "and",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "uncovering",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "'The",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "Cam",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "Newton",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "Code':",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "How",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "his",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "unique",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "approach",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "to",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "leadership,",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "biomechanics,",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "and",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "mental",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "fortitude",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "changed",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "sports",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "forever.",
+            "startMs": 28500,
+            "endMs": 29000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 10,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 19,
+            "level": "med"
+          },
+          {
+            "wordIndex": 34,
+            "level": "med"
+          },
+          {
+            "wordIndex": 35,
+            "level": "med"
+          },
+          {
+            "wordIndex": 41,
+            "level": "med"
+          },
+          {
+            "wordIndex": 47,
+            "level": "med"
+          },
+          {
+            "wordIndex": 48,
+            "level": "med"
+          },
+          {
+            "wordIndex": 51,
+            "level": "med"
+          },
+          {
+            "wordIndex": 54,
+            "level": "high",
+            "tone": "intense"
+          }
+        ]
+      },
+      {
+        "id": "segment-2",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-2.mp3",
+        "segmentId": "segment-2",
+        "durationMs": 43500,
+        "wordTimestamps": [
+          {
+            "word": "Before",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "the",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "NFL,",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "before",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "the",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "MVP,",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "there",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "was",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "a",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "phenomenon.",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "Cam",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "Newton",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "burst",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "onto",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "the",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "scene,",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "a",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "dual-threat",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "quarterback",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "with",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "a",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "Heisman",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "trophy",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "and",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "a",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "national",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "championship",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "to",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "his",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "name.",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "His",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "style",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "was",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "raw,",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "electrifying,",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "and",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "frankly,",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "unlike",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "anything",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "seen",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "before",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "at",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "the",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "collegiate",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "level.",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "He",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "wasn't",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "just",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "a",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "passer",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "or",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "a",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "runner;",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "he",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "was",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "an",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "athletic",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "marvel,",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "shattering",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "expectations",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "and",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "redefining",
+            "startMs": 30500,
+            "endMs": 31000
+          },
+          {
+            "word": "what",
+            "startMs": 31000,
+            "endMs": 31500
+          },
+          {
+            "word": "a",
+            "startMs": 31500,
+            "endMs": 32000
+          },
+          {
+            "word": "quarterback",
+            "startMs": 32000,
+            "endMs": 32500
+          },
+          {
+            "word": "could",
+            "startMs": 32500,
+            "endMs": 33000
+          },
+          {
+            "word": "be.",
+            "startMs": 33000,
+            "endMs": 33500
+          },
+          {
+            "word": "This",
+            "startMs": 33500,
+            "endMs": 34000
+          },
+          {
+            "word": "early",
+            "startMs": 34000,
+            "endMs": 34500
+          },
+          {
+            "word": "brilliance",
+            "startMs": 34500,
+            "endMs": 35000
+          },
+          {
+            "word": "was",
+            "startMs": 35000,
+            "endMs": 35500
+          },
+          {
+            "word": "just",
+            "startMs": 35500,
+            "endMs": 36000
+          },
+          {
+            "word": "the",
+            "startMs": 36000,
+            "endMs": 36500
+          },
+          {
+            "word": "first",
+            "startMs": 36500,
+            "endMs": 37000
+          },
+          {
+            "word": "chapter",
+            "startMs": 37000,
+            "endMs": 37500
+          },
+          {
+            "word": "of",
+            "startMs": 37500,
+            "endMs": 38000
+          },
+          {
+            "word": "a",
+            "startMs": 38000,
+            "endMs": 38500
+          },
+          {
+            "word": "much",
+            "startMs": 38500,
+            "endMs": 39000
+          },
+          {
+            "word": "larger",
+            "startMs": 39000,
+            "endMs": 39500
+          },
+          {
+            "word": "story",
+            "startMs": 39500,
+            "endMs": 40000
+          },
+          {
+            "word": "–",
+            "startMs": 40000,
+            "endMs": 40500
+          },
+          {
+            "word": "the",
+            "startMs": 40500,
+            "endMs": 41000
+          },
+          {
+            "word": "blueprint",
+            "startMs": 41000,
+            "endMs": 41500
+          },
+          {
+            "word": "for",
+            "startMs": 41500,
+            "endMs": 42000
+          },
+          {
+            "word": "his",
+            "startMs": 42000,
+            "endMs": 42500
+          },
+          {
+            "word": "revolutionary",
+            "startMs": 42500,
+            "endMs": 43000
+          },
+          {
+            "word": "approach.",
+            "startMs": 43000,
+            "endMs": 43500
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 3,
+            "level": "med"
+          },
+          {
+            "wordIndex": 6,
+            "level": "med"
+          },
+          {
+            "wordIndex": 11,
+            "level": "med"
+          },
+          {
+            "wordIndex": 12,
+            "level": "med"
+          },
+          {
+            "wordIndex": 18,
+            "level": "med"
+          },
+          {
+            "wordIndex": 19,
+            "level": "med"
+          },
+          {
+            "wordIndex": 22,
+            "level": "med"
+          },
+          {
+            "wordIndex": 27,
+            "level": "med"
+          },
+          {
+            "wordIndex": 35,
+            "level": "med"
+          },
+          {
+            "wordIndex": 59,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 62,
+            "level": "med"
+          },
+          {
+            "wordIndex": 74,
+            "level": "high"
+          }
+        ]
+      },
+      {
+        "id": "segment-3",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-3.mp3",
+        "segmentId": "segment-3",
+        "durationMs": 34500,
+        "wordTimestamps": [
+          {
+            "word": "Let's",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "break",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "down",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "the",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "mechanics.",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "Newton's",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "throwing",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "motion",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "wasn't",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "textbook,",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "but",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "it",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "was",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "incredibly",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "effective.",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "His",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "unique",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "biomechanics,",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "leveraging",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "his",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "entire",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "athletic",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "frame,",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "generated",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "an",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "arm",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "that",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "could",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "deliver",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "with",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "exceptional",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "velocity",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "and",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "precision.",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "This",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "wasn't",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "just",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "about",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "strength;",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "it",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "was",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "about",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "efficiency",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "and",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "power",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "transfer,",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "a",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "masterclass",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "in",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "athletic",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "innovation",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "that",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "allowed",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "him",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "to",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "make",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "throws",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "others",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "couldn't",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "even",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "attempt,",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "pushing",
+            "startMs": 30500,
+            "endMs": 31000
+          },
+          {
+            "word": "the",
+            "startMs": 31000,
+            "endMs": 31500
+          },
+          {
+            "word": "boundaries",
+            "startMs": 31500,
+            "endMs": 32000
+          },
+          {
+            "word": "of",
+            "startMs": 32000,
+            "endMs": 32500
+          },
+          {
+            "word": "the",
+            "startMs": 32500,
+            "endMs": 33000
+          },
+          {
+            "word": "traditional",
+            "startMs": 33000,
+            "endMs": 33500
+          },
+          {
+            "word": "quarterback's",
+            "startMs": 33500,
+            "endMs": 34000
+          },
+          {
+            "word": "capabilities.",
+            "startMs": 34000,
+            "endMs": 34500
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 4,
+            "level": "med"
+          },
+          {
+            "wordIndex": 5,
+            "level": "med"
+          },
+          {
+            "wordIndex": 13,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 17,
+            "level": "med"
+          },
+          {
+            "wordIndex": 30,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 31,
+            "level": "med"
+          },
+          {
+            "wordIndex": 33,
+            "level": "med"
+          },
+          {
+            "wordIndex": 44,
+            "level": "med"
+          },
+          {
+            "wordIndex": 47,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 50,
+            "level": "med"
+          },
+          {
+            "wordIndex": 68,
+            "level": "med"
+          }
+        ]
+      },
+      {
+        "id": "segment-4",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-4.mp3",
+        "segmentId": "segment-4",
+        "durationMs": 35500,
+        "wordTimestamps": [
+          {
+            "word": "In",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "2015,",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "all",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "those",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "elements",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "coalesced",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "into",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "something",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "extraordinary:",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "an",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "MVP",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "season.",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "Cam",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "Newton",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "wasn't",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "just",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "a",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "good",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "quarterback;",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "he",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "was",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "the",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "best",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "player",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "in",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "the",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "league.",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "He",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "commanded",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "the",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "offense",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "with",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "unparalleled",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "flair,",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "leading",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "the",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "Carolina",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "Panthers",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "to",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "a",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "Super",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "Bowl",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "appearance.",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "It",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "was",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "a",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "season",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "where",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "his",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "confidence,",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "his",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "talent,",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "and",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "his",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "charisma",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "were",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "on",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "full",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "display,",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "a",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "testament",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "to",
+            "startMs": 30500,
+            "endMs": 31000
+          },
+          {
+            "word": "the",
+            "startMs": 31000,
+            "endMs": 31500
+          },
+          {
+            "word": "power",
+            "startMs": 31500,
+            "endMs": 32000
+          },
+          {
+            "word": "of",
+            "startMs": 32000,
+            "endMs": 32500
+          },
+          {
+            "word": "his",
+            "startMs": 32500,
+            "endMs": 33000
+          },
+          {
+            "word": "revolutionary",
+            "startMs": 33000,
+            "endMs": 33500
+          },
+          {
+            "word": "style",
+            "startMs": 33500,
+            "endMs": 34000
+          },
+          {
+            "word": "when",
+            "startMs": 34000,
+            "endMs": 34500
+          },
+          {
+            "word": "everything",
+            "startMs": 34500,
+            "endMs": 35000
+          },
+          {
+            "word": "clicked.",
+            "startMs": 35000,
+            "endMs": 35500
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 1,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 8,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 10,
+            "level": "med"
+          },
+          {
+            "wordIndex": 12,
+            "level": "med"
+          },
+          {
+            "wordIndex": 13,
+            "level": "med"
+          },
+          {
+            "wordIndex": 18,
+            "level": "med"
+          },
+          {
+            "wordIndex": 22,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 36,
+            "level": "med"
+          },
+          {
+            "wordIndex": 37,
+            "level": "med"
+          },
+          {
+            "wordIndex": 40,
+            "level": "med"
+          }
+        ]
+      },
+      {
+        "id": "segment-5",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-5.mp3",
+        "segmentId": "segment-5",
+        "durationMs": 35500,
+        "wordTimestamps": [
+          {
+            "word": "But",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "'The",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "Cam",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "Newton",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "Code'",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "is",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "more",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "than",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "just",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "stats",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "and",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "arm",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "strength.",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "It's",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "about",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "leadership.",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "Cam's",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "style",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "was",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "never",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "conventional.",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "He",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "led",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "with",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "infectious",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "energy,",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "a",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "unique",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "sense",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "of",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "self,",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "and",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "a",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "deep",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "connection",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "to",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "his",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "teammates",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "and",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "the",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "fans.",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "His",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "'Superman'",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "celebration",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "wasn't",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "just",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "a",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "touchdown",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "gesture;",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "it",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "was",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "a",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "declaration",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "of",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "his",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "presence,",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "a",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "symbol",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "of",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "joy",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "and",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "confidence",
+            "startMs": 30500,
+            "endMs": 31000
+          },
+          {
+            "word": "that",
+            "startMs": 31000,
+            "endMs": 31500
+          },
+          {
+            "word": "resonated",
+            "startMs": 31500,
+            "endMs": 32000
+          },
+          {
+            "word": "far",
+            "startMs": 32000,
+            "endMs": 32500
+          },
+          {
+            "word": "beyond",
+            "startMs": 32500,
+            "endMs": 33000
+          },
+          {
+            "word": "the",
+            "startMs": 33000,
+            "endMs": 33500
+          },
+          {
+            "word": "field,",
+            "startMs": 33500,
+            "endMs": 34000
+          },
+          {
+            "word": "inspiring",
+            "startMs": 34000,
+            "endMs": 34500
+          },
+          {
+            "word": "a",
+            "startMs": 34500,
+            "endMs": 35000
+          },
+          {
+            "word": "generation.",
+            "startMs": 35000,
+            "endMs": 35500
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 2,
+            "level": "med"
+          },
+          {
+            "wordIndex": 3,
+            "level": "med"
+          },
+          {
+            "wordIndex": 9,
+            "level": "med"
+          },
+          {
+            "wordIndex": 15,
+            "level": "med"
+          },
+          {
+            "wordIndex": 16,
+            "level": "med"
+          },
+          {
+            "wordIndex": 20,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 25,
+            "level": "med"
+          },
+          {
+            "wordIndex": 37,
+            "level": "med"
+          },
+          {
+            "wordIndex": 40,
+            "level": "med"
+          },
+          {
+            "wordIndex": 42,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 52,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 57,
+            "level": "med"
+          },
+          {
+            "wordIndex": 61,
+            "level": "med"
+          }
+        ]
+      },
+      {
+        "id": "segment-6",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-6.mp3",
+        "segmentId": "segment-6",
+        "durationMs": 31000,
+        "wordTimestamps": [
+          {
+            "word": "The",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "path",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "to",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "greatness",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "is",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "rarely",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "smooth.",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "Newton",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "faced",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "intense",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "scrutiny,",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "criticism,",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "and",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "public",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "judgment",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "throughout",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "his",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "career.",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "From",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "draft-day",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "doubts",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "to",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "game-day",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "commentary,",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "he",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "was",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "constantly",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "under",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "a",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "microscope.",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "Yet,",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "he",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "demonstrated",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "remarkable",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "mental",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "resilience.",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "He",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "weathered",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "the",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "storms,",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "learned",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "from",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "adversity,",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "and",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "consistently",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "bounced",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "back,",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "proving",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "that",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "true",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "strength",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "isn't",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "just",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "physical,",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "but",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "forged",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "in",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "the",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "crucible",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "of",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "the",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "mind.",
+            "startMs": 30500,
+            "endMs": 31000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 3,
+            "level": "med"
+          },
+          {
+            "wordIndex": 7,
+            "level": "med"
+          },
+          {
+            "wordIndex": 10,
+            "level": "med"
+          },
+          {
+            "wordIndex": 11,
+            "level": "med"
+          },
+          {
+            "wordIndex": 14,
+            "level": "med"
+          },
+          {
+            "wordIndex": 30,
+            "level": "med"
+          },
+          {
+            "wordIndex": 34,
+            "level": "med"
+          },
+          {
+            "wordIndex": 35,
+            "level": "high"
+          },
+          {
+            "wordIndex": 41,
+            "level": "med"
+          },
+          {
+            "wordIndex": 50,
+            "level": "med"
+          },
+          {
+            "wordIndex": 61,
+            "level": "high"
+          }
+        ]
+      },
+      {
+        "id": "segment-7",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-7.mp3",
+        "segmentId": "segment-7",
+        "durationMs": 31000,
+        "wordTimestamps": [
+          {
+            "word": "At",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "the",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "heart",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "of",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "his",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "game",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "was",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "a",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "unique",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "psychology",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "of",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "playmaking.",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "Newton",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "didn't",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "just",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "execute",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "plays;",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "he",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "*felt*",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "them.",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "His",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "ability",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "to",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "improvise,",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "to",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "read",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "defenses",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "on",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "the",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "fly,",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "and",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "to",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "innovate",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "under",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "pressure",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "was",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "extraordinary.",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "This",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "creative",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "thinking,",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "this",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "willingness",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "to",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "think",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "outside",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "the",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "box,",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "allowed",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "him",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "to",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "consistently",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "make",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "game-changing",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "decisions,",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "demonstrating",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "a",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "strategic",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "brilliance",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "that",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "set",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "him",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "apart.",
+            "startMs": 30500,
+            "endMs": 31000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 5,
+            "level": "med"
+          },
+          {
+            "wordIndex": 9,
+            "level": "med"
+          },
+          {
+            "wordIndex": 11,
+            "level": "med"
+          },
+          {
+            "wordIndex": 13,
+            "level": "med"
+          },
+          {
+            "wordIndex": 20,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 26,
+            "level": "med"
+          },
+          {
+            "wordIndex": 37,
+            "level": "med"
+          },
+          {
+            "wordIndex": 44,
+            "level": "med"
+          },
+          {
+            "wordIndex": 45,
+            "level": "med"
+          },
+          {
+            "wordIndex": 60,
+            "level": "med"
+          },
+          {
+            "wordIndex": 65,
+            "level": "med"
+          }
+        ]
+      },
+      {
+        "id": "segment-8",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-8.mp3",
+        "segmentId": "segment-8",
+        "durationMs": 25000,
+        "wordTimestamps": [
+          {
+            "word": "Cam",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "Newton's",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "influence",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "extends",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "far",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "beyond",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "the",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "gridiron.",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "He",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "became",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "a",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "cultural",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "icon,",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "influencing",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "fashion,",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "breaking",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "barriers,",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "and",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "becoming",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "a",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "mentor",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "figure",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "for",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "young",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "athletes",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "and",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "leaders.",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "His",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "willingness",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "to",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "be",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "unapologetically",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "himself",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "has",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "empowered",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "countless",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "individuals",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "to",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "embrace",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "their",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "uniqueness,",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "proving",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "that",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "true",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "impact",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "comes",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "from",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "authenticity",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "and",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "courage.",
+            "startMs": 24500,
+            "endMs": 25000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 0,
+            "level": "med"
+          },
+          {
+            "wordIndex": 1,
+            "level": "med"
+          },
+          {
+            "wordIndex": 2,
+            "level": "med"
+          },
+          {
+            "wordIndex": 11,
+            "level": "med"
+          },
+          {
+            "wordIndex": 12,
+            "level": "med"
+          },
+          {
+            "wordIndex": 15,
+            "level": "med"
+          },
+          {
+            "wordIndex": 16,
+            "level": "med"
+          },
+          {
+            "wordIndex": 31,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 34,
+            "level": "high",
+            "tone": "intense"
+          }
+        ]
+      },
+      {
+        "id": "segment-9",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-9.mp3",
+        "segmentId": "segment-9",
+        "durationMs": 29000,
+        "wordTimestamps": [
+          {
+            "word": "His",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "legacy",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "is",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "etched",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "in",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "the",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "history",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "of",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "sports.",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "Cam",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "Newton",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "didn't",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "just",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "play",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "quarterback;",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "he",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "revolutionized",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "it.",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "He",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "showed",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "the",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "world",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "that",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "different",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "could",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "be",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "dominant,",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "that",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "unconventional",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "could",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "be",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "effective,",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "and",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "that",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "a",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "blend",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "of",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "physical",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "prowess",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "and",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "intellectual",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "depth",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "could",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "redefine",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "athletic",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "possibility.",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "He",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "inspired",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "a",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "new",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "wave",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "of",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "players",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "to",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "embrace",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "their",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "full",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "potential.",
+            "startMs": 28500,
+            "endMs": 29000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 1,
+            "level": "med"
+          },
+          {
+            "wordIndex": 9,
+            "level": "med"
+          },
+          {
+            "wordIndex": 10,
+            "level": "med"
+          },
+          {
+            "wordIndex": 14,
+            "level": "med"
+          },
+          {
+            "wordIndex": 16,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 23,
+            "level": "med"
+          },
+          {
+            "wordIndex": 26,
+            "level": "med"
+          },
+          {
+            "wordIndex": 28,
+            "level": "med"
+          },
+          {
+            "wordIndex": 43,
+            "level": "high",
+            "tone": "intense"
+          },
+          {
+            "wordIndex": 45,
+            "level": "med"
+          },
+          {
+            "wordIndex": 57,
+            "level": "med"
+          }
+        ]
+      },
+      {
+        "id": "segment-10",
+        "path": "/home/jeffreymoya/dev/remotion-p2v/public/projects/project-1764548027472/assets/audio/segment-10.mp3",
+        "segmentId": "segment-10",
+        "durationMs": 40000,
+        "wordTimestamps": [
+          {
+            "word": "So,",
+            "startMs": 0,
+            "endMs": 500
+          },
+          {
+            "word": "what",
+            "startMs": 500,
+            "endMs": 1000
+          },
+          {
+            "word": "is",
+            "startMs": 1000,
+            "endMs": 1500
+          },
+          {
+            "word": "'The",
+            "startMs": 1500,
+            "endMs": 2000
+          },
+          {
+            "word": "Cam",
+            "startMs": 2000,
+            "endMs": 2500
+          },
+          {
+            "word": "Newton",
+            "startMs": 2500,
+            "endMs": 3000
+          },
+          {
+            "word": "Code'?",
+            "startMs": 3000,
+            "endMs": 3500
+          },
+          {
+            "word": "It’s",
+            "startMs": 3500,
+            "endMs": 4000
+          },
+          {
+            "word": "the",
+            "startMs": 4000,
+            "endMs": 4500
+          },
+          {
+            "word": "fusion",
+            "startMs": 4500,
+            "endMs": 5000
+          },
+          {
+            "word": "of",
+            "startMs": 5000,
+            "endMs": 5500
+          },
+          {
+            "word": "biomechanical",
+            "startMs": 5500,
+            "endMs": 6000
+          },
+          {
+            "word": "innovation,",
+            "startMs": 6000,
+            "endMs": 6500
+          },
+          {
+            "word": "fearless",
+            "startMs": 6500,
+            "endMs": 7000
+          },
+          {
+            "word": "leadership,",
+            "startMs": 7000,
+            "endMs": 7500
+          },
+          {
+            "word": "mental",
+            "startMs": 7500,
+            "endMs": 8000
+          },
+          {
+            "word": "fortitude,",
+            "startMs": 8000,
+            "endMs": 8500
+          },
+          {
+            "word": "and",
+            "startMs": 8500,
+            "endMs": 9000
+          },
+          {
+            "word": "creative",
+            "startMs": 9000,
+            "endMs": 9500
+          },
+          {
+            "word": "playmaking.",
+            "startMs": 9500,
+            "endMs": 10000
+          },
+          {
+            "word": "It's",
+            "startMs": 10000,
+            "endMs": 10500
+          },
+          {
+            "word": "the",
+            "startMs": 10500,
+            "endMs": 11000
+          },
+          {
+            "word": "courage",
+            "startMs": 11000,
+            "endMs": 11500
+          },
+          {
+            "word": "to",
+            "startMs": 11500,
+            "endMs": 12000
+          },
+          {
+            "word": "be",
+            "startMs": 12000,
+            "endMs": 12500
+          },
+          {
+            "word": "yourself",
+            "startMs": 12500,
+            "endMs": 13000
+          },
+          {
+            "word": "and",
+            "startMs": 13000,
+            "endMs": 13500
+          },
+          {
+            "word": "to",
+            "startMs": 13500,
+            "endMs": 14000
+          },
+          {
+            "word": "challenge",
+            "startMs": 14000,
+            "endMs": 14500
+          },
+          {
+            "word": "the",
+            "startMs": 14500,
+            "endMs": 15000
+          },
+          {
+            "word": "status",
+            "startMs": 15000,
+            "endMs": 15500
+          },
+          {
+            "word": "quo.",
+            "startMs": 15500,
+            "endMs": 16000
+          },
+          {
+            "word": "What",
+            "startMs": 16000,
+            "endMs": 16500
+          },
+          {
+            "word": "lessons",
+            "startMs": 16500,
+            "endMs": 17000
+          },
+          {
+            "word": "can",
+            "startMs": 17000,
+            "endMs": 17500
+          },
+          {
+            "word": "you",
+            "startMs": 17500,
+            "endMs": 18000
+          },
+          {
+            "word": "take",
+            "startMs": 18000,
+            "endMs": 18500
+          },
+          {
+            "word": "from",
+            "startMs": 18500,
+            "endMs": 19000
+          },
+          {
+            "word": "Cam",
+            "startMs": 19000,
+            "endMs": 19500
+          },
+          {
+            "word": "Newton's",
+            "startMs": 19500,
+            "endMs": 20000
+          },
+          {
+            "word": "incredible",
+            "startMs": 20000,
+            "endMs": 20500
+          },
+          {
+            "word": "journey",
+            "startMs": 20500,
+            "endMs": 21000
+          },
+          {
+            "word": "to",
+            "startMs": 21000,
+            "endMs": 21500
+          },
+          {
+            "word": "revolutionize",
+            "startMs": 21500,
+            "endMs": 22000
+          },
+          {
+            "word": "your",
+            "startMs": 22000,
+            "endMs": 22500
+          },
+          {
+            "word": "own",
+            "startMs": 22500,
+            "endMs": 23000
+          },
+          {
+            "word": "game,",
+            "startMs": 23000,
+            "endMs": 23500
+          },
+          {
+            "word": "in",
+            "startMs": 23500,
+            "endMs": 24000
+          },
+          {
+            "word": "sports",
+            "startMs": 24000,
+            "endMs": 24500
+          },
+          {
+            "word": "or",
+            "startMs": 24500,
+            "endMs": 25000
+          },
+          {
+            "word": "in",
+            "startMs": 25000,
+            "endMs": 25500
+          },
+          {
+            "word": "life?",
+            "startMs": 25500,
+            "endMs": 26000
+          },
+          {
+            "word": "Let",
+            "startMs": 26000,
+            "endMs": 26500
+          },
+          {
+            "word": "us",
+            "startMs": 26500,
+            "endMs": 27000
+          },
+          {
+            "word": "know",
+            "startMs": 27000,
+            "endMs": 27500
+          },
+          {
+            "word": "your",
+            "startMs": 27500,
+            "endMs": 28000
+          },
+          {
+            "word": "biggest",
+            "startMs": 28000,
+            "endMs": 28500
+          },
+          {
+            "word": "takeaways",
+            "startMs": 28500,
+            "endMs": 29000
+          },
+          {
+            "word": "in",
+            "startMs": 29000,
+            "endMs": 29500
+          },
+          {
+            "word": "the",
+            "startMs": 29500,
+            "endMs": 30000
+          },
+          {
+            "word": "comments",
+            "startMs": 30000,
+            "endMs": 30500
+          },
+          {
+            "word": "below,",
+            "startMs": 30500,
+            "endMs": 31000
+          },
+          {
+            "word": "and",
+            "startMs": 31000,
+            "endMs": 31500
+          },
+          {
+            "word": "don't",
+            "startMs": 31500,
+            "endMs": 32000
+          },
+          {
+            "word": "forget",
+            "startMs": 32000,
+            "endMs": 32500
+          },
+          {
+            "word": "to",
+            "startMs": 32500,
+            "endMs": 33000
+          },
+          {
+            "word": "like",
+            "startMs": 33000,
+            "endMs": 33500
+          },
+          {
+            "word": "and",
+            "startMs": 33500,
+            "endMs": 34000
+          },
+          {
+            "word": "subscribe",
+            "startMs": 34000,
+            "endMs": 34500
+          },
+          {
+            "word": "for",
+            "startMs": 34500,
+            "endMs": 35000
+          },
+          {
+            "word": "more",
+            "startMs": 35000,
+            "endMs": 35500
+          },
+          {
+            "word": "deep",
+            "startMs": 35500,
+            "endMs": 36000
+          },
+          {
+            "word": "dives",
+            "startMs": 36000,
+            "endMs": 36500
+          },
+          {
+            "word": "into",
+            "startMs": 36500,
+            "endMs": 37000
+          },
+          {
+            "word": "the",
+            "startMs": 37000,
+            "endMs": 37500
+          },
+          {
+            "word": "minds",
+            "startMs": 37500,
+            "endMs": 38000
+          },
+          {
+            "word": "that",
+            "startMs": 38000,
+            "endMs": 38500
+          },
+          {
+            "word": "shape",
+            "startMs": 38500,
+            "endMs": 39000
+          },
+          {
+            "word": "our",
+            "startMs": 39000,
+            "endMs": 39500
+          },
+          {
+            "word": "world!",
+            "startMs": 39500,
+            "endMs": 40000
+          }
+        ],
+        "emphasis": [
+          {
+            "wordIndex": 4,
+            "level": "med"
+          },
+          {
+            "wordIndex": 5,
+            "level": "med"
+          },
+          {
+            "wordIndex": 6,
+            "level": "med"
+          },
+          {
+            "wordIndex": 9,
+            "level": "med"
+          },
+          {
+            "wordIndex": 11,
+            "level": "med"
+          },
+          {
+            "wordIndex": 12,
+            "level": "med"
+          },
+          {
+            "wordIndex": 14,
+            "level": "med"
+          },
+          {
+            "wordIndex": 16,
+            "level": "med"
+          },
+          {
+            "wordIndex": 19,
+            "level": "med"
+          },
+          {
+            "wordIndex": 22,
+            "level": "med"
+          },
+          {
+            "wordIndex": 25,
+            "level": "med"
+          },
+          {
+            "wordIndex": 28,
+            "level": "med"
+          },
+          {
+            "wordIndex": 52,
+            "level": "high",
+            "tone": "warm"
+          },
+          {
+            "wordIndex": 68,
+            "level": "high",
+            "tone": "warm"
+          }
+        ]
+      }
+    ],
+    "music": []
+  },
+  "gatheredAt": "2025-12-01T00:52:44.868Z"
+}

@@ -51,6 +51,44 @@ const StockAssetsConfigSchema = z.object({
   defaultProvider: z.string(),
   providers: z.record(z.any()),
   fallbackOrder: z.array(z.string()).optional(),
+  localLibrary: z.object({
+    enabled: z.boolean().default(true),
+    minMatches: z.object({
+      videos: z.number().int().nonnegative().default(1),
+      images: z.number().int().nonnegative().default(3),
+    }).default({ videos: 1, images: 3 }),
+    limit: z.object({
+      videos: z.number().int().positive().default(3),
+      images: z.number().int().positive().default(5),
+    }).default({ videos: 3, images: 5 }),
+    preferRecencyBoost: z.number().min(0).max(1).default(0.1),
+    semantic: z.object({
+      enabled: z.boolean().default(false),
+      minScore: z.number().min(0).max(1).default(0.18),
+      candidateLimit: z.number().int().positive().default(250),
+      dimensions: z.number().int().positive().default(384),
+    }).default({
+      enabled: false,
+      minScore: 0.18,
+      candidateLimit: 250,
+      dimensions: 384,
+    }),
+    optimization: z.object({
+      images: z.object({
+        enabled: z.boolean().default(false),
+        minSavingsPercent: z.number().min(0).max(100).default(5),
+      }).default({ enabled: false, minSavingsPercent: 5 }),
+    }).default({
+      images: { enabled: false, minSavingsPercent: 5 },
+    }),
+  }).default({
+    enabled: true,
+    minMatches: { videos: 1, images: 3 },
+    limit: { videos: 3, images: 5 },
+    preferRecencyBoost: 0.1,
+    semantic: { enabled: false, minScore: 0.18, candidateLimit: 250, dimensions: 384 },
+    optimization: { images: { enabled: false, minSavingsPercent: 5 } },
+  }),
   qualityScoring: z.object({
     enabled: z.boolean().default(true),
     weights: z.record(z.number()).optional(),

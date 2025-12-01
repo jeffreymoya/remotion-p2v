@@ -6,16 +6,12 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import type { CSSProperties } from "react";
 import { FPS, IMAGE_HEIGHT, IMAGE_WIDTH } from "../lib/constants";
-import { BackgroundElement, Timeline } from "../lib/types";
+import { BackgroundElement } from "../lib/types";
 import { calculateBlur } from "../lib/utils";
 
 const EXTRA_SCALE = 0.2;
-
-// Utility function to convert milliseconds to frames
-const msToFrame = (ms: number): number => {
-  return Math.floor((ms * FPS) / 1000);
-};
 
 // Calculate crop/letterbox styles for video or image
 const calculateMediaStyle = (
@@ -89,8 +85,7 @@ const calculateMediaStyle = (
 export const Background: React.FC<{
   item: BackgroundElement;
   project: string;
-  timeline?: Timeline;
-}> = ({ item, project, timeline }) => {
+}> = ({ item, project }) => {
   const frame = useCurrentFrame();
   const localMs = (frame / FPS) * 1000;
   const { width, height } = useVideoConfig();
@@ -125,6 +120,11 @@ export const Background: React.FC<{
 
   const currentBlur = maxBlur * blur;
 
+  const containerStyle: CSSProperties = {
+    overflow: "hidden",
+    backgroundColor: "black",
+  };
+
   // Check if this element has a video
   const isVideo = item.videoUrl !== undefined;
 
@@ -137,39 +137,51 @@ export const Background: React.FC<{
 
     const metadata = item.mediaMetadata;
 
-    let videoStyle: React.CSSProperties;
-    if (metadata && metadata.mode && metadata.scale !== undefined) {
-      // For letterbox, crop dimensions are already in target frame coordinates
-      // Only apply imgScale for Ken Burns animation
-      // For crop mode, apply both metadata.scale (aspect-fit) and imgScale (animation)
-      const totalScale = metadata.mode === 'letterbox' ? imgScale : metadata.scale * imgScale;
-      videoStyle = {
-        width: metadata.cropWidth * totalScale,
-        height: metadata.cropHeight * totalScale,
-        position: "absolute",
-        top: metadata.cropY * totalScale,
-        left: metadata.cropX * totalScale,
-        objectFit: metadata.mode === 'crop' ? 'cover' : 'contain',
-      };
-    } else {
-      // Strict mode: log warning if metadata incomplete
-      if (metadata && !metadata.scale) {
-        console.warn('[Background] Video metadata missing scale factor:', item.videoUrl);
+    const buildStyleFromMetadata = (data: typeof metadata) => {
+      if (!data?.width || !data?.height) {
+        return null;
       }
-      // Fallback to calculating style
-      const videoWidth = metadata?.width || 1920;
-      const videoHeight = metadata?.height || 1080;
-      videoStyle = calculateMediaStyle(
-        videoWidth,
-        videoHeight,
+
+      const baseScale = (data.scale ?? 1) as number;
+      const totalScale = baseScale * imgScale;
+
+      const mediaWidth = data.width * totalScale;
+      const mediaHeight = data.height * totalScale;
+
+      const cropX = data.cropX ?? 0;
+      const cropY = data.cropY ?? 0;
+
+      const isCropMode = data.mode === 'crop';
+
+      const left = isCropMode
+        ? -cropX * totalScale
+        : (width - mediaWidth) / 2;
+      const top = isCropMode
+        ? -cropY * totalScale
+        : (height - mediaHeight) / 2;
+
+      return {
+        width: mediaWidth,
+        height: mediaHeight,
+        position: "absolute" as const,
+        top,
+        left,
+        objectFit: "cover" as const,
+      } satisfies CSSProperties;
+    };
+
+    const videoStyle =
+      buildStyleFromMetadata(metadata) ||
+      calculateMediaStyle(
+        metadata?.width || 1920,
+        metadata?.height || 1080,
         width,
         height,
         imgScale,
       );
-    }
 
     return (
-      <AbsoluteFill>
+      <AbsoluteFill style={containerStyle}>
         <Video
           src={staticFile(`projects/${project}/assets/videos/${videoPath}`)}
           muted
@@ -188,37 +200,50 @@ export const Background: React.FC<{
   if (item.imageUrl) {
     const metadata = item.mediaMetadata;
 
-    let imageStyle: React.CSSProperties;
-    if (metadata && metadata.mode && metadata.scale !== undefined) {
-      // For letterbox, crop dimensions are already in target frame coordinates
-      // Only apply imgScale for Ken Burns animation
-      // For crop mode, apply both metadata.scale (aspect-fit) and imgScale (animation)
-      const totalScale = metadata.mode === 'letterbox' ? imgScale : metadata.scale * imgScale;
-      imageStyle = {
-        width: metadata.cropWidth * totalScale,
-        height: metadata.cropHeight * totalScale,
-        position: "absolute",
-        top: metadata.cropY * totalScale,
-        left: metadata.cropX * totalScale,
-        objectFit: metadata.mode === 'crop' ? 'cover' : 'contain',
-      };
-    } else {
-      // Strict mode: log warning if metadata incomplete
-      if (metadata && !metadata.scale) {
-        console.warn('[Background] Image metadata missing scale factor:', item.imageUrl);
+    const buildStyleFromMetadata = (data: typeof metadata) => {
+      if (!data?.width || !data?.height) {
+        return null;
       }
-      // Fallback to default styling
-      imageStyle = {
+
+      const baseScale = (data.scale ?? 1) as number;
+      const totalScale = baseScale * imgScale;
+
+      const mediaWidth = data.width * totalScale;
+      const mediaHeight = data.height * totalScale;
+
+      const cropX = data.cropX ?? 0;
+      const cropY = data.cropY ?? 0;
+
+      const isCropMode = data.mode === 'crop';
+
+      const left = isCropMode
+        ? -cropX * totalScale
+        : (width - mediaWidth) / 2;
+      const top = isCropMode
+        ? -cropY * totalScale
+        : (height - mediaHeight) / 2;
+
+      return {
+        width: mediaWidth,
+        height: mediaHeight,
+        position: "absolute" as const,
+        top,
+        left,
+        objectFit: "cover" as const,
+      } satisfies CSSProperties;
+    };
+
+    const imageStyle =
+      buildStyleFromMetadata(metadata) || {
         width: imgWidth * imgScale,
         height: imgHeight * imgScale,
         position: "absolute",
         top,
         left,
       };
-    }
 
     return (
-      <AbsoluteFill>
+      <AbsoluteFill style={containerStyle}>
         <Img
           src={staticFile(`projects/${project}/assets/images/${item.imageUrl}`)}
           style={{
@@ -232,5 +257,5 @@ export const Background: React.FC<{
   }
 
   // Fallback: empty fill
-  return <AbsoluteFill />;
+  return <AbsoluteFill style={containerStyle} />;
 };

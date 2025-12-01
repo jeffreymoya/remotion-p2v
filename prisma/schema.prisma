@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Image {
+  id         String    @id @default(uuid())
+  sha256     String    @unique
+  originalSha256 String @unique
+  filename   String
+  ext        String
+  bytes      Int
+  width      Int
+  height     Int
+  provider   String    // 'local-library' | 'pexels' | 'unsplash' | 'pixabay'
+  sourceUrl  String?
+  path       String
+  thumbPath  String?
+  embedding  Float[]   @default([])
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @default(now())
+  tags       ImageTag[]
+
+  @@index([provider])
+  @@index([lastUsedAt])
+  @@index([width, height])
+  @@index([lastUsedAt, bytes])
+}
+
+model Video {
+  id         String    @id @default(uuid())
+  sha256     String    @unique
+  originalSha256 String @unique
+  filename   String
+  ext        String
+  bytes      Int
+  width      Int
+  height     Int
+  durationMs Int
+  fps        Int?
+  videoCodec String?
+  audioCodec String?
+  bitrate    Int?
+  hasAudio   Boolean   @default(false)
+  provider   String
+  sourceUrl  String?
+  path       String
+  thumbPath  String?
+  embedding  Float[]   @default([])
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @default(now())
+  tags       VideoTag[]
+
+  @@index([provider])
+  @@index([lastUsedAt])
+  @@index([width, height])
+  @@index([durationMs])
+  @@index([lastUsedAt, bytes])
+}
+
+model ImageTag {
+  imageId String
+  tag     String
+  image   Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([imageId, tag])
+  @@index([tag])
+}
+
+model VideoTag {
+  videoId String
+  tag     String
+  video   Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([videoId, tag])
+  @@index([tag])
+}

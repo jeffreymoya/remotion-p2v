@@ -21,7 +21,22 @@ const Subtitle: React.FC<SubtitleProps> = ({ textElement }) => {
   const hasWords = textElement.words && textElement.words.length > 0;
 
   if (hasWords) {
-    // New word-level rendering
+    const words = textElement.words!;
+
+    // Use holdFrames from text element, fallback to 6
+    const holdFrames = textElement.holdFrames ?? 6;
+
+    // Get sentence end time from last word
+    const lastWord = words[words.length - 1];
+    const sentenceEndFrame = lastWord.endFrame ?? msToFrame(lastWord.endMs, fps);
+
+    // Hide entire sentence if it has ended
+    const sentenceHasEnded = frame > sentenceEndFrame + holdFrames;
+    if (sentenceHasEnded) {
+      return null;
+    }
+
+    // Cumulative word rendering - words appear progressively, disappear together
     return (
       <AbsoluteFill>
         <div
@@ -38,17 +53,26 @@ const Subtitle: React.FC<SubtitleProps> = ({ textElement }) => {
             alignItems: "center",
           }}
         >
-          {textElement.words!.map((word, idx) => (
-            <Word
-              key={idx}
-              text={word.text}
-              startFrame={msToFrame(word.startMs, fps)}
-              endFrame={msToFrame(word.endMs, fps)}
-              currentFrame={frame}
-              emphasis={word.emphasis || { level: "none" }}
-              fps={fps}
-            />
-          ))}
+          {words.map((word, idx) => {
+            const start = word.startFrame ?? msToFrame(word.startMs, fps);
+
+            // Word visible if it has started (sentence end check above)
+            const wordHasStarted = frame >= start;
+            if (!wordHasStarted) {
+              return null;
+            }
+
+            return (
+              <Word
+                key={idx}
+                text={word.text}
+                startFrame={start}
+                currentFrame={frame}
+                emphasis={word.emphasis || { level: "none" }}
+                fps={fps}
+              />
+            );
+          })}
         </div>
       </AbsoluteFill>
     );

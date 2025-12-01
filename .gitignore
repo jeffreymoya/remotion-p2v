@@ -7,3 +7,7 @@ dist
 out
 build/
 cache/
+/cache/library/
+/media/videos/
+
+/src/generated/prisma

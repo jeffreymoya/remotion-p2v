@@ -68,6 +68,7 @@
     "position": "bottom",
     "maxCharactersPerLine": 40,
     "maxLines": 2,
+    "subtitleLeadMs": 0,
     "fontSize": 48,
     "fontFamily": "Inter",
     "fontWeight": 700,

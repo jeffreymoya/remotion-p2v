@@ -55,11 +55,14 @@ const TextElementSchema = TimelineElementSchema.extend({
     text: z.string(),
     startMs: z.number(),
     endMs: z.number(),
+    startFrame: z.number().optional(),
+    endFrame: z.number().optional(),
     emphasis: z.object({
       level: z.enum(['none', 'med', 'high']),
       tone: z.enum(['warm', 'intense']).optional()
     }).optional()
   })).optional(),
+  holdFrames: z.number().min(0).max(30).optional(), // Hold buffer in frames (0-30)
 });
 
 const AudioElementSchema = TimelineElementSchema.extend({

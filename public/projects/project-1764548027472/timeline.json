@@ -1,0 +1,7412 @@
+{
+  "shortTitle": "The Cam Newton Code: How His Mind Revolutionized Sports",
+  "aspectRatio": "16:9",
+  "durationSeconds": 335,
+  "elements": [
+    {
+      "videoUrl": "198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53",
+      "startMs": 1000,
+      "endMs": 30000,
+      "startFrame": 30,
+      "endFrame": 900,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 12.03
+      }
+    },
+    {
+      "videoUrl": "411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742",
+      "startMs": 30000,
+      "endMs": 73500,
+      "startFrame": 900,
+      "endFrame": 2205,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 18.42
+      }
+    },
+    {
+      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
+      "startMs": 73500,
+      "endMs": 108000,
+      "startFrame": 2205,
+      "endFrame": 3240,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 11.35
+      }
+    },
+    {
+      "videoUrl": "198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53",
+      "startMs": 108000,
+      "endMs": 143500,
+      "startFrame": 3240,
+      "endFrame": 4305,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 12.03
+      }
+    },
+    {
+      "videoUrl": "cd5ebe31fa98ed93060b050d5dcef9f3",
+      "startMs": 143500,
+      "endMs": 179000,
+      "startFrame": 4305,
+      "endFrame": 5370,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "duration": 21,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944
+      }
+    },
+    {
+      "videoUrl": "004179f315faba88880eb0196ab553f7",
+      "startMs": 179000,
+      "endMs": 210000,
+      "startFrame": 5370,
+      "endFrame": 6300,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "duration": 11,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944
+      }
+    },
+    {
+      "videoUrl": "119883324bbb85ccb65a80f9251d557c",
+      "startMs": 210000,
+      "endMs": 241000,
+      "startFrame": 6300,
+      "endFrame": 7230,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "duration": 13,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944
+      }
+    },
+    {
+      "videoUrl": "411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742",
+      "startMs": 241000,
+      "endMs": 266000,
+      "startFrame": 7230,
+      "endFrame": 7980,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 18.42
+      }
+    },
+    {
+      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
+      "startMs": 266000,
+      "endMs": 295000,
+      "startFrame": 7980,
+      "endFrame": 8850,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 11.35
+      }
+    },
+    {
+      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
+      "startMs": 295000,
+      "endMs": 335000,
+      "startFrame": 8850,
+      "endFrame": 10050,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 11.35
+      }
+    }
+  ],
+  "text": [
+    {
+      "text": "Imagine a quarterback who didn't just play the game, but rewrote its very rules.",
+      "position": "bottom",
+      "startMs": 1000,
+      "endMs": 8000,
+      "startFrame": 30,
+      "endFrame": 240,
+      "words": [
+        {
+          "text": "**(Intro",
+          "startMs": 1000,
+          "endMs": 1500,
+          "startFrame": 30,
+          "endFrame": 45,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Music",
+          "startMs": 1500,
+          "endMs": 2000,
+          "startFrame": 45,
+          "endFrame": 60,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Fades)**",
+          "startMs": 2000,
+          "endMs": 2500,
+          "startFrame": 60,
+          "endFrame": 75,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Imagine",
+          "startMs": 2500,
+          "endMs": 3000,
+          "startFrame": 75,
+          "endFrame": 90,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 3000,
+          "endMs": 3500,
+          "startFrame": 90,
+          "endFrame": 105,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback",
+          "startMs": 3500,
+          "endMs": 4000,
+          "startFrame": 105,
+          "endFrame": 120,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "who",
+          "startMs": 4000,
+          "endMs": 4500,
+          "startFrame": 120,
+          "endFrame": 135,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "didn't",
+          "startMs": 4500,
+          "endMs": 5000,
+          "startFrame": 135,
+          "endFrame": 150,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 5000,
+          "endMs": 5500,
+          "startFrame": 150,
+          "endFrame": 165,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "play",
+          "startMs": 5500,
+          "endMs": 6000,
+          "startFrame": 165,
+          "endFrame": 180,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 6000,
+          "endMs": 6500,
+          "startFrame": 180,
+          "endFrame": 195,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "game,",
+          "startMs": 6500,
+          "endMs": 7000,
+          "startFrame": 195,
+          "endFrame": 210,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 7000,
+          "endMs": 7500,
+          "startFrame": 210,
+          "endFrame": 225,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "rewrote",
+          "startMs": 7500,
+          "endMs": 8000,
+          "startFrame": 225,
+          "endFrame": 240,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "A player who combined raw athleticism with a brilliant, unconventional mind.",
+      "position": "bottom",
+      "startMs": 8000,
+      "endMs": 13500,
+      "startFrame": 240,
+      "endFrame": 405,
+      "words": [
+        {
+          "text": "its",
+          "startMs": 8000,
+          "endMs": 8500,
+          "startFrame": 240,
+          "endFrame": 255,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "very",
+          "startMs": 8500,
+          "endMs": 9000,
+          "startFrame": 255,
+          "endFrame": 270,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "rules.",
+          "startMs": 9000,
+          "endMs": 9500,
+          "startFrame": 270,
+          "endFrame": 285,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "A",
+          "startMs": 9500,
+          "endMs": 10000,
+          "startFrame": 285,
+          "endFrame": 300,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "player",
+          "startMs": 10000,
+          "endMs": 10500,
+          "startFrame": 300,
+          "endFrame": 315,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "who",
+          "startMs": 10500,
+          "endMs": 11000,
+          "startFrame": 315,
+          "endFrame": 330,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "combined",
+          "startMs": 11000,
+          "endMs": 11500,
+          "startFrame": 330,
+          "endFrame": 345,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "raw",
+          "startMs": 11500,
+          "endMs": 12000,
+          "startFrame": 345,
+          "endFrame": 360,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "athleticism",
+          "startMs": 12000,
+          "endMs": 12500,
+          "startFrame": 360,
+          "endFrame": 375,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 12500,
+          "endMs": 13000,
+          "startFrame": 375,
+          "endFrame": 390,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 13000,
+          "endMs": 13500,
+          "startFrame": 390,
+          "endFrame": 405,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Today, we're diving deep into the revolutionary career of Cam Newton and uncovering 'The Cam Newton Code': How his unique approach to leadership, biomechanics, and mental fortitude changed sports forever.",
+      "position": "bottom",
+      "startMs": 13500,
+      "endMs": 28500,
+      "startFrame": 405,
+      "endFrame": 855,
+      "words": [
+        {
+          "text": "brilliant,",
+          "startMs": 13500,
+          "endMs": 14000,
+          "startFrame": 405,
+          "endFrame": 420,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unconventional",
+          "startMs": 14000,
+          "endMs": 14500,
+          "startFrame": 420,
+          "endFrame": 435,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mind.",
+          "startMs": 14500,
+          "endMs": 15000,
+          "startFrame": 435,
+          "endFrame": 450,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Today,",
+          "startMs": 15000,
+          "endMs": 15500,
+          "startFrame": 450,
+          "endFrame": 465,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "we're",
+          "startMs": 15500,
+          "endMs": 16000,
+          "startFrame": 465,
+          "endFrame": 480,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "diving",
+          "startMs": 16000,
+          "endMs": 16500,
+          "startFrame": 480,
+          "endFrame": 495,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deep",
+          "startMs": 16500,
+          "endMs": 17000,
+          "startFrame": 495,
+          "endFrame": 510,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 17000,
+          "endMs": 17500,
+          "startFrame": 510,
+          "endFrame": 525,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 17500,
+          "endMs": 18000,
+          "startFrame": 525,
+          "endFrame": 540,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionary",
+          "startMs": 18000,
+          "endMs": 18500,
+          "startFrame": 540,
+          "endFrame": 555,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "career",
+          "startMs": 18500,
+          "endMs": 19000,
+          "startFrame": 555,
+          "endFrame": 570,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 19000,
+          "endMs": 19500,
+          "startFrame": 570,
+          "endFrame": 585,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Cam",
+          "startMs": 19500,
+          "endMs": 20000,
+          "startFrame": 585,
+          "endFrame": 600,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 20000,
+          "endMs": 20500,
+          "startFrame": 600,
+          "endFrame": 615,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 20500,
+          "endMs": 21000,
+          "startFrame": 615,
+          "endFrame": 630,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "uncovering",
+          "startMs": 21000,
+          "endMs": 21500,
+          "startFrame": 630,
+          "endFrame": 645,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "'The",
+          "startMs": 21500,
+          "endMs": 22000,
+          "startFrame": 645,
+          "endFrame": 660,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Cam",
+          "startMs": 22000,
+          "endMs": 22500,
+          "startFrame": 660,
+          "endFrame": 675,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 22500,
+          "endMs": 23000,
+          "startFrame": 675,
+          "endFrame": 690,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Code':",
+          "startMs": 23000,
+          "endMs": 23500,
+          "startFrame": 690,
+          "endFrame": 705,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "How",
+          "startMs": 23500,
+          "endMs": 24000,
+          "startFrame": 705,
+          "endFrame": 720,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 24000,
+          "endMs": 24500,
+          "startFrame": 720,
+          "endFrame": 735,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 24500,
+          "endMs": 25000,
+          "startFrame": 735,
+          "endFrame": 750,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "approach",
+          "startMs": 25000,
+          "endMs": 25500,
+          "startFrame": 750,
+          "endFrame": 765,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 25500,
+          "endMs": 26000,
+          "startFrame": 765,
+          "endFrame": 780,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leadership,",
+          "startMs": 26000,
+          "endMs": 26500,
+          "startFrame": 780,
+          "endFrame": 795,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "biomechanics,",
+          "startMs": 26500,
+          "endMs": 27000,
+          "startFrame": 795,
+          "endFrame": 810,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 27000,
+          "endMs": 27500,
+          "startFrame": 810,
+          "endFrame": 825,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mental",
+          "startMs": 27500,
+          "endMs": 28000,
+          "startFrame": 825,
+          "endFrame": 840,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fortitude",
+          "startMs": 28000,
+          "endMs": 28500,
+          "startFrame": 840,
+          "endFrame": 855,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Before the NFL, before the MVP, there was a phenomenon.",
+      "position": "bottom",
+      "startMs": 30000,
+      "endMs": 35000,
+      "startFrame": 900,
+      "endFrame": 1050,
+      "words": [
+        {
+          "text": "Before",
+          "startMs": 30000,
+          "endMs": 30500,
+          "startFrame": 900,
+          "endFrame": 915,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 30500,
+          "endMs": 31000,
+          "startFrame": 915,
+          "endFrame": 930,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "NFL,",
+          "startMs": 31000,
+          "endMs": 31500,
+          "startFrame": 930,
+          "endFrame": 945,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "before",
+          "startMs": 31500,
+          "endMs": 32000,
+          "startFrame": 945,
+          "endFrame": 960,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 32000,
+          "endMs": 32500,
+          "startFrame": 960,
+          "endFrame": 975,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "MVP,",
+          "startMs": 32500,
+          "endMs": 33000,
+          "startFrame": 975,
+          "endFrame": 990,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "there",
+          "startMs": 33000,
+          "endMs": 33500,
+          "startFrame": 990,
+          "endFrame": 1005,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 33500,
+          "endMs": 34000,
+          "startFrame": 1005,
+          "endFrame": 1020,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 34000,
+          "endMs": 34500,
+          "startFrame": 1020,
+          "endFrame": 1035,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "phenomenon.",
+          "startMs": 34500,
+          "endMs": 35000,
+          "startFrame": 1035,
+          "endFrame": 1050,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 6
+    },
+    {
+      "text": "Cam Newton burst onto the scene, a dual-threat quarterback with a Heisman trophy and a national championship to his name.",
+      "position": "bottom",
+      "startMs": 35000,
+      "endMs": 45000,
+      "startFrame": 1050,
+      "endFrame": 1350,
+      "words": [
+        {
+          "text": "Cam",
+          "startMs": 35000,
+          "endMs": 35500,
+          "startFrame": 1050,
+          "endFrame": 1065,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 35500,
+          "endMs": 36000,
+          "startFrame": 1065,
+          "endFrame": 1080,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "burst",
+          "startMs": 36000,
+          "endMs": 36500,
+          "startFrame": 1080,
+          "endFrame": 1095,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "onto",
+          "startMs": 36500,
+          "endMs": 37000,
+          "startFrame": 1095,
+          "endFrame": 1110,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 37000,
+          "endMs": 37500,
+          "startFrame": 1110,
+          "endFrame": 1125,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scene,",
+          "startMs": 37500,
+          "endMs": 38000,
+          "startFrame": 1125,
+          "endFrame": 1140,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 38000,
+          "endMs": 38500,
+          "startFrame": 1140,
+          "endFrame": 1155,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dual-threat",
+          "startMs": 38500,
+          "endMs": 39000,
+          "startFrame": 1155,
+          "endFrame": 1170,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback",
+          "startMs": 39000,
+          "endMs": 39500,
+          "startFrame": 1170,
+          "endFrame": 1185,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 39500,
+          "endMs": 40000,
+          "startFrame": 1185,
+          "endFrame": 1200,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 40000,
+          "endMs": 40500,
+          "startFrame": 1200,
+          "endFrame": 1215,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Heisman",
+          "startMs": 40500,
+          "endMs": 41000,
+          "startFrame": 1215,
+          "endFrame": 1230,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "trophy",
+          "startMs": 41000,
+          "endMs": 41500,
+          "startFrame": 1230,
+          "endFrame": 1245,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 41500,
+          "endMs": 42000,
+          "startFrame": 1245,
+          "endFrame": 1260,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 42000,
+          "endMs": 42500,
+          "startFrame": 1260,
+          "endFrame": 1275,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "national",
+          "startMs": 42500,
+          "endMs": 43000,
+          "startFrame": 1275,
+          "endFrame": 1290,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "championship",
+          "startMs": 43000,
+          "endMs": 43500,
+          "startFrame": 1290,
+          "endFrame": 1305,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 43500,
+          "endMs": 44000,
+          "startFrame": 1305,
+          "endFrame": 1320,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 44000,
+          "endMs": 44500,
+          "startFrame": 1320,
+          "endFrame": 1335,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "name.",
+          "startMs": 44500,
+          "endMs": 45000,
+          "startFrame": 1335,
+          "endFrame": 1350,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "His style was raw, electrifying, and frankly, unlike anything seen before at the collegiate level.",
+      "position": "bottom",
+      "startMs": 45000,
+      "endMs": 52500,
+      "startFrame": 1350,
+      "endFrame": 1575,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 45000,
+          "endMs": 45500,
+          "startFrame": 1350,
+          "endFrame": 1365,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "style",
+          "startMs": 45500,
+          "endMs": 46000,
+          "startFrame": 1365,
+          "endFrame": 1380,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 46000,
+          "endMs": 46500,
+          "startFrame": 1380,
+          "endFrame": 1395,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "raw,",
+          "startMs": 46500,
+          "endMs": 47000,
+          "startFrame": 1395,
+          "endFrame": 1410,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "electrifying,",
+          "startMs": 47000,
+          "endMs": 47500,
+          "startFrame": 1410,
+          "endFrame": 1425,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 47500,
+          "endMs": 48000,
+          "startFrame": 1425,
+          "endFrame": 1440,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "frankly,",
+          "startMs": 48000,
+          "endMs": 48500,
+          "startFrame": 1440,
+          "endFrame": 1455,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unlike",
+          "startMs": 48500,
+          "endMs": 49000,
+          "startFrame": 1455,
+          "endFrame": 1470,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "anything",
+          "startMs": 49000,
+          "endMs": 49500,
+          "startFrame": 1470,
+          "endFrame": 1485,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "seen",
+          "startMs": 49500,
+          "endMs": 50000,
+          "startFrame": 1485,
+          "endFrame": 1500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "before",
+          "startMs": 50000,
+          "endMs": 50500,
+          "startFrame": 1500,
+          "endFrame": 1515,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "at",
+          "startMs": 50500,
+          "endMs": 51000,
+          "startFrame": 1515,
+          "endFrame": 1530,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 51000,
+          "endMs": 51500,
+          "startFrame": 1530,
+          "endFrame": 1545,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "collegiate",
+          "startMs": 51500,
+          "endMs": 52000,
+          "startFrame": 1545,
+          "endFrame": 1560,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "level.",
+          "startMs": 52000,
+          "endMs": 52500,
+          "startFrame": 1560,
+          "endFrame": 1575,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "He wasn't just a passer or a runner; he was an athletic marvel, shattering expectations and redefining what a quarterback could be.",
+      "position": "bottom",
+      "startMs": 52500,
+      "endMs": 63500,
+      "startFrame": 1575,
+      "endFrame": 1905,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 52500,
+          "endMs": 53000,
+          "startFrame": 1575,
+          "endFrame": 1590,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "wasn't",
+          "startMs": 53000,
+          "endMs": 53500,
+          "startFrame": 1590,
+          "endFrame": 1605,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 53500,
+          "endMs": 54000,
+          "startFrame": 1605,
+          "endFrame": 1620,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 54000,
+          "endMs": 54500,
+          "startFrame": 1620,
+          "endFrame": 1635,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "passer",
+          "startMs": 54500,
+          "endMs": 55000,
+          "startFrame": 1635,
+          "endFrame": 1650,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "or",
+          "startMs": 55000,
+          "endMs": 55500,
+          "startFrame": 1650,
+          "endFrame": 1665,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 55500,
+          "endMs": 56000,
+          "startFrame": 1665,
+          "endFrame": 1680,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "runner;",
+          "startMs": 56000,
+          "endMs": 56500,
+          "startFrame": 1680,
+          "endFrame": 1695,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 56500,
+          "endMs": 57000,
+          "startFrame": 1695,
+          "endFrame": 1710,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 57000,
+          "endMs": 57500,
+          "startFrame": 1710,
+          "endFrame": 1725,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "an",
+          "startMs": 57500,
+          "endMs": 58000,
+          "startFrame": 1725,
+          "endFrame": 1740,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "athletic",
+          "startMs": 58000,
+          "endMs": 58500,
+          "startFrame": 1740,
+          "endFrame": 1755,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "marvel,",
+          "startMs": 58500,
+          "endMs": 59000,
+          "startFrame": 1755,
+          "endFrame": 1770,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "shattering",
+          "startMs": 59000,
+          "endMs": 59500,
+          "startFrame": 1770,
+          "endFrame": 1785,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "expectations",
+          "startMs": 59500,
+          "endMs": 60000,
+          "startFrame": 1785,
+          "endFrame": 1800,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 60000,
+          "endMs": 60500,
+          "startFrame": 1800,
+          "endFrame": 1815,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "redefining",
+          "startMs": 60500,
+          "endMs": 61000,
+          "startFrame": 1815,
+          "endFrame": 1830,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "what",
+          "startMs": 61000,
+          "endMs": 61500,
+          "startFrame": 1830,
+          "endFrame": 1845,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 61500,
+          "endMs": 62000,
+          "startFrame": 1845,
+          "endFrame": 1860,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback",
+          "startMs": 62000,
+          "endMs": 62500,
+          "startFrame": 1860,
+          "endFrame": 1875,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "could",
+          "startMs": 62500,
+          "endMs": 63000,
+          "startFrame": 1875,
+          "endFrame": 1890,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "be.",
+          "startMs": 63000,
+          "endMs": 63500,
+          "startFrame": 1890,
+          "endFrame": 1905,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "This early brilliance was just the first chapter of a much larger story – the blueprint for his revolutionary approach.",
+      "position": "bottom",
+      "startMs": 63500,
+      "endMs": 73500,
+      "startFrame": 1905,
+      "endFrame": 2205,
+      "words": [
+        {
+          "text": "This",
+          "startMs": 63500,
+          "endMs": 64000,
+          "startFrame": 1905,
+          "endFrame": 1920,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "early",
+          "startMs": 64000,
+          "endMs": 64500,
+          "startFrame": 1920,
+          "endFrame": 1935,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "brilliance",
+          "startMs": 64500,
+          "endMs": 65000,
+          "startFrame": 1935,
+          "endFrame": 1950,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 65000,
+          "endMs": 65500,
+          "startFrame": 1950,
+          "endFrame": 1965,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 65500,
+          "endMs": 66000,
+          "startFrame": 1965,
+          "endFrame": 1980,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 66000,
+          "endMs": 66500,
+          "startFrame": 1980,
+          "endFrame": 1995,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "first",
+          "startMs": 66500,
+          "endMs": 67000,
+          "startFrame": 1995,
+          "endFrame": 2010,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "chapter",
+          "startMs": 67000,
+          "endMs": 67500,
+          "startFrame": 2010,
+          "endFrame": 2025,
+          "emphasis": {
+            "level": "high"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 67500,
+          "endMs": 68000,
+          "startFrame": 2025,
+          "endFrame": 2040,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 68000,
+          "endMs": 68500,
+          "startFrame": 2040,
+          "endFrame": 2055,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "much",
+          "startMs": 68500,
+          "endMs": 69000,
+          "startFrame": 2055,
+          "endFrame": 2070,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "larger",
+          "startMs": 69000,
+          "endMs": 69500,
+          "startFrame": 2070,
+          "endFrame": 2085,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "story",
+          "startMs": 69500,
+          "endMs": 70000,
+          "startFrame": 2085,
+          "endFrame": 2100,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 70000,
+          "endMs": 70500,
+          "startFrame": 2100,
+          "endFrame": 2115,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 70500,
+          "endMs": 71000,
+          "startFrame": 2115,
+          "endFrame": 2130,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "blueprint",
+          "startMs": 71000,
+          "endMs": 71500,
+          "startFrame": 2130,
+          "endFrame": 2145,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 71500,
+          "endMs": 72000,
+          "startFrame": 2145,
+          "endFrame": 2160,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 72000,
+          "endMs": 72500,
+          "startFrame": 2160,
+          "endFrame": 2175,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionary",
+          "startMs": 72500,
+          "endMs": 73000,
+          "startFrame": 2175,
+          "endFrame": 2190,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "approach.",
+          "startMs": 73000,
+          "endMs": 73500,
+          "startFrame": 2190,
+          "endFrame": 2205,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Let's break down the mechanics.",
+      "position": "bottom",
+      "startMs": 73500,
+      "endMs": 76000,
+      "startFrame": 2205,
+      "endFrame": 2280,
+      "words": [
+        {
+          "text": "Let's",
+          "startMs": 73500,
+          "endMs": 74000,
+          "startFrame": 2205,
+          "endFrame": 2220,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "break",
+          "startMs": 74000,
+          "endMs": 74500,
+          "startFrame": 2220,
+          "endFrame": 2235,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "down",
+          "startMs": 74500,
+          "endMs": 75000,
+          "startFrame": 2235,
+          "endFrame": 2250,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 75000,
+          "endMs": 75500,
+          "startFrame": 2250,
+          "endFrame": 2265,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mechanics.",
+          "startMs": 75500,
+          "endMs": 76000,
+          "startFrame": 2265,
+          "endFrame": 2280,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Newton's throwing motion wasn't textbook, but it was incredibly effective.",
+      "position": "bottom",
+      "startMs": 76000,
+      "endMs": 81000,
+      "startFrame": 2280,
+      "endFrame": 2430,
+      "words": [
+        {
+          "text": "Newton's",
+          "startMs": 76000,
+          "endMs": 76500,
+          "startFrame": 2280,
+          "endFrame": 2295,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "throwing",
+          "startMs": 76500,
+          "endMs": 77000,
+          "startFrame": 2295,
+          "endFrame": 2310,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "motion",
+          "startMs": 77000,
+          "endMs": 77500,
+          "startFrame": 2310,
+          "endFrame": 2325,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "wasn't",
+          "startMs": 77500,
+          "endMs": 78000,
+          "startFrame": 2325,
+          "endFrame": 2340,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "textbook,",
+          "startMs": 78000,
+          "endMs": 78500,
+          "startFrame": 2340,
+          "endFrame": 2355,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 78500,
+          "endMs": 79000,
+          "startFrame": 2355,
+          "endFrame": 2370,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 79000,
+          "endMs": 79500,
+          "startFrame": 2370,
+          "endFrame": 2385,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 79500,
+          "endMs": 80000,
+          "startFrame": 2385,
+          "endFrame": 2400,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "incredibly",
+          "startMs": 80000,
+          "endMs": 80500,
+          "startFrame": 2400,
+          "endFrame": 2415,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "effective.",
+          "startMs": 80500,
+          "endMs": 81000,
+          "startFrame": 2415,
+          "endFrame": 2430,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "His unique biomechanics, leveraging his entire athletic frame, generated an arm that could deliver with exceptional velocity and precision.",
+      "position": "bottom",
+      "startMs": 81000,
+      "endMs": 90500,
+      "startFrame": 2430,
+      "endFrame": 2715,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 81000,
+          "endMs": 81500,
+          "startFrame": 2430,
+          "endFrame": 2445,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 81500,
+          "endMs": 82000,
+          "startFrame": 2445,
+          "endFrame": 2460,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "biomechanics,",
+          "startMs": 82000,
+          "endMs": 82500,
+          "startFrame": 2460,
+          "endFrame": 2475,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "leveraging",
+          "startMs": 82500,
+          "endMs": 83000,
+          "startFrame": 2475,
+          "endFrame": 2490,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 83000,
+          "endMs": 83500,
+          "startFrame": 2490,
+          "endFrame": 2505,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entire",
+          "startMs": 83500,
+          "endMs": 84000,
+          "startFrame": 2505,
+          "endFrame": 2520,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "athletic",
+          "startMs": 84000,
+          "endMs": 84500,
+          "startFrame": 2520,
+          "endFrame": 2535,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "frame,",
+          "startMs": 84500,
+          "endMs": 85000,
+          "startFrame": 2535,
+          "endFrame": 2550,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generated",
+          "startMs": 85000,
+          "endMs": 85500,
+          "startFrame": 2550,
+          "endFrame": 2565,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "an",
+          "startMs": 85500,
+          "endMs": 86000,
+          "startFrame": 2565,
+          "endFrame": 2580,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "arm",
+          "startMs": 86000,
+          "endMs": 86500,
+          "startFrame": 2580,
+          "endFrame": 2595,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 86500,
+          "endMs": 87000,
+          "startFrame": 2595,
+          "endFrame": 2610,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "could",
+          "startMs": 87000,
+          "endMs": 87500,
+          "startFrame": 2610,
+          "endFrame": 2625,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deliver",
+          "startMs": 87500,
+          "endMs": 88000,
+          "startFrame": 2625,
+          "endFrame": 2640,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 88000,
+          "endMs": 88500,
+          "startFrame": 2640,
+          "endFrame": 2655,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "exceptional",
+          "startMs": 88500,
+          "endMs": 89000,
+          "startFrame": 2655,
+          "endFrame": 2670,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "velocity",
+          "startMs": 89000,
+          "endMs": 89500,
+          "startFrame": 2670,
+          "endFrame": 2685,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 89500,
+          "endMs": 90000,
+          "startFrame": 2685,
+          "endFrame": 2700,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "precision.",
+          "startMs": 90000,
+          "endMs": 90500,
+          "startFrame": 2700,
+          "endFrame": 2715,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "This wasn't just about strength; it was about efficiency and power transfer, a masterclass in athletic innovation that allowed him to make throws others couldn't even attempt, pushing the boundaries of the traditional quarterback's capabilities.",
+      "position": "bottom",
+      "startMs": 90500,
+      "endMs": 108000,
+      "startFrame": 2715,
+      "endFrame": 3240,
+      "words": [
+        {
+          "text": "This",
+          "startMs": 90500,
+          "endMs": 91000,
+          "startFrame": 2715,
+          "endFrame": 2730,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "wasn't",
+          "startMs": 91000,
+          "endMs": 91500,
+          "startFrame": 2730,
+          "endFrame": 2745,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 91500,
+          "endMs": 92000,
+          "startFrame": 2745,
+          "endFrame": 2760,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 92000,
+          "endMs": 92500,
+          "startFrame": 2760,
+          "endFrame": 2775,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "strength;",
+          "startMs": 92500,
+          "endMs": 93000,
+          "startFrame": 2775,
+          "endFrame": 2790,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 93000,
+          "endMs": 93500,
+          "startFrame": 2790,
+          "endFrame": 2805,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 93500,
+          "endMs": 94000,
+          "startFrame": 2805,
+          "endFrame": 2820,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 94000,
+          "endMs": 94500,
+          "startFrame": 2820,
+          "endFrame": 2835,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "efficiency",
+          "startMs": 94500,
+          "endMs": 95000,
+          "startFrame": 2835,
+          "endFrame": 2850,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 95000,
+          "endMs": 95500,
+          "startFrame": 2850,
+          "endFrame": 2865,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "power",
+          "startMs": 95500,
+          "endMs": 96000,
+          "startFrame": 2865,
+          "endFrame": 2880,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "transfer,",
+          "startMs": 96000,
+          "endMs": 96500,
+          "startFrame": 2880,
+          "endFrame": 2895,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 96500,
+          "endMs": 97000,
+          "startFrame": 2895,
+          "endFrame": 2910,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "masterclass",
+          "startMs": 97000,
+          "endMs": 97500,
+          "startFrame": 2910,
+          "endFrame": 2925,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 97500,
+          "endMs": 98000,
+          "startFrame": 2925,
+          "endFrame": 2940,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "athletic",
+          "startMs": 98000,
+          "endMs": 98500,
+          "startFrame": 2940,
+          "endFrame": 2955,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "innovation",
+          "startMs": 98500,
+          "endMs": 99000,
+          "startFrame": 2955,
+          "endFrame": 2970,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 99000,
+          "endMs": 99500,
+          "startFrame": 2970,
+          "endFrame": 2985,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "allowed",
+          "startMs": 99500,
+          "endMs": 100000,
+          "startFrame": 2985,
+          "endFrame": 3000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "him",
+          "startMs": 100000,
+          "endMs": 100500,
+          "startFrame": 3000,
+          "endFrame": 3015,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 100500,
+          "endMs": 101000,
+          "startFrame": 3015,
+          "endFrame": 3030,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "make",
+          "startMs": 101000,
+          "endMs": 101500,
+          "startFrame": 3030,
+          "endFrame": 3045,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "throws",
+          "startMs": 101500,
+          "endMs": 102000,
+          "startFrame": 3045,
+          "endFrame": 3060,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "others",
+          "startMs": 102000,
+          "endMs": 102500,
+          "startFrame": 3060,
+          "endFrame": 3075,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "couldn't",
+          "startMs": 102500,
+          "endMs": 103000,
+          "startFrame": 3075,
+          "endFrame": 3090,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 103000,
+          "endMs": 103500,
+          "startFrame": 3090,
+          "endFrame": 3105,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "attempt,",
+          "startMs": 103500,
+          "endMs": 104000,
+          "startFrame": 3105,
+          "endFrame": 3120,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "pushing",
+          "startMs": 104000,
+          "endMs": 104500,
+          "startFrame": 3120,
+          "endFrame": 3135,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 104500,
+          "endMs": 105000,
+          "startFrame": 3135,
+          "endFrame": 3150,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "boundaries",
+          "startMs": 105000,
+          "endMs": 105500,
+          "startFrame": 3150,
+          "endFrame": 3165,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 105500,
+          "endMs": 106000,
+          "startFrame": 3165,
+          "endFrame": 3180,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 106000,
+          "endMs": 106500,
+          "startFrame": 3180,
+          "endFrame": 3195,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "traditional",
+          "startMs": 106500,
+          "endMs": 107000,
+          "startFrame": 3195,
+          "endFrame": 3210,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback's",
+          "startMs": 107000,
+          "endMs": 107500,
+          "startFrame": 3210,
+          "endFrame": 3225,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "capabilities.",
+          "startMs": 107500,
+          "endMs": 108000,
+          "startFrame": 3225,
+          "endFrame": 3240,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "In 2015, all those elements coalesced into something extraordinary: an MVP season.",
+      "position": "bottom",
+      "startMs": 108000,
+      "endMs": 114000,
+      "startFrame": 3240,
+      "endFrame": 3420,
+      "words": [
+        {
+          "text": "In",
+          "startMs": 108000,
+          "endMs": 108500,
+          "startFrame": 3240,
+          "endFrame": 3255,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "2015,",
+          "startMs": 108500,
+          "endMs": 109000,
+          "startFrame": 3255,
+          "endFrame": 3270,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "all",
+          "startMs": 109000,
+          "endMs": 109500,
+          "startFrame": 3270,
+          "endFrame": 3285,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "those",
+          "startMs": 109500,
+          "endMs": 110000,
+          "startFrame": 3285,
+          "endFrame": 3300,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "elements",
+          "startMs": 110000,
+          "endMs": 110500,
+          "startFrame": 3300,
+          "endFrame": 3315,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "coalesced",
+          "startMs": 110500,
+          "endMs": 111000,
+          "startFrame": 3315,
+          "endFrame": 3330,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 111000,
+          "endMs": 111500,
+          "startFrame": 3330,
+          "endFrame": 3345,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "something",
+          "startMs": 111500,
+          "endMs": 112000,
+          "startFrame": 3345,
+          "endFrame": 3360,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "extraordinary:",
+          "startMs": 112000,
+          "endMs": 112500,
+          "startFrame": 3360,
+          "endFrame": 3375,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "an",
+          "startMs": 112500,
+          "endMs": 113000,
+          "startFrame": 3375,
+          "endFrame": 3390,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "MVP",
+          "startMs": 113000,
+          "endMs": 113500,
+          "startFrame": 3390,
+          "endFrame": 3405,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "season.",
+          "startMs": 113500,
+          "endMs": 114000,
+          "startFrame": 3405,
+          "endFrame": 3420,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Cam Newton wasn't just a good quarterback; he was the best player in the league.",
+      "position": "bottom",
+      "startMs": 114000,
+      "endMs": 121500,
+      "startFrame": 3420,
+      "endFrame": 3645,
+      "words": [
+        {
+          "text": "Cam",
+          "startMs": 114000,
+          "endMs": 114500,
+          "startFrame": 3420,
+          "endFrame": 3435,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 114500,
+          "endMs": 115000,
+          "startFrame": 3435,
+          "endFrame": 3450,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "wasn't",
+          "startMs": 115000,
+          "endMs": 115500,
+          "startFrame": 3450,
+          "endFrame": 3465,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 115500,
+          "endMs": 116000,
+          "startFrame": 3465,
+          "endFrame": 3480,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 116000,
+          "endMs": 116500,
+          "startFrame": 3480,
+          "endFrame": 3495,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "good",
+          "startMs": 116500,
+          "endMs": 117000,
+          "startFrame": 3495,
+          "endFrame": 3510,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback;",
+          "startMs": 117000,
+          "endMs": 117500,
+          "startFrame": 3510,
+          "endFrame": 3525,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 117500,
+          "endMs": 118000,
+          "startFrame": 3525,
+          "endFrame": 3540,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 118000,
+          "endMs": 118500,
+          "startFrame": 3540,
+          "endFrame": 3555,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 118500,
+          "endMs": 119000,
+          "startFrame": 3555,
+          "endFrame": 3570,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "best",
+          "startMs": 119000,
+          "endMs": 119500,
+          "startFrame": 3570,
+          "endFrame": 3585,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "player",
+          "startMs": 119500,
+          "endMs": 120000,
+          "startFrame": 3585,
+          "endFrame": 3600,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 120000,
+          "endMs": 120500,
+          "startFrame": 3600,
+          "endFrame": 3615,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 120500,
+          "endMs": 121000,
+          "startFrame": 3615,
+          "endFrame": 3630,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "league.",
+          "startMs": 121000,
+          "endMs": 121500,
+          "startFrame": 3630,
+          "endFrame": 3645,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "He commanded the offense with unparalleled flair, leading the Carolina Panthers to a Super Bowl appearance.",
+      "position": "bottom",
+      "startMs": 121500,
+      "endMs": 129500,
+      "startFrame": 3645,
+      "endFrame": 3885,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 121500,
+          "endMs": 122000,
+          "startFrame": 3645,
+          "endFrame": 3660,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "commanded",
+          "startMs": 122000,
+          "endMs": 122500,
+          "startFrame": 3660,
+          "endFrame": 3675,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 122500,
+          "endMs": 123000,
+          "startFrame": 3675,
+          "endFrame": 3690,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "offense",
+          "startMs": 123000,
+          "endMs": 123500,
+          "startFrame": 3690,
+          "endFrame": 3705,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 123500,
+          "endMs": 124000,
+          "startFrame": 3705,
+          "endFrame": 3720,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unparalleled",
+          "startMs": 124000,
+          "endMs": 124500,
+          "startFrame": 3720,
+          "endFrame": 3735,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "flair,",
+          "startMs": 124500,
+          "endMs": 125000,
+          "startFrame": 3735,
+          "endFrame": 3750,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leading",
+          "startMs": 125000,
+          "endMs": 125500,
+          "startFrame": 3750,
+          "endFrame": 3765,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 125500,
+          "endMs": 126000,
+          "startFrame": 3765,
+          "endFrame": 3780,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Carolina",
+          "startMs": 126000,
+          "endMs": 126500,
+          "startFrame": 3780,
+          "endFrame": 3795,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Panthers",
+          "startMs": 126500,
+          "endMs": 127000,
+          "startFrame": 3795,
+          "endFrame": 3810,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 127000,
+          "endMs": 127500,
+          "startFrame": 3810,
+          "endFrame": 3825,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 127500,
+          "endMs": 128000,
+          "startFrame": 3825,
+          "endFrame": 3840,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Super",
+          "startMs": 128000,
+          "endMs": 128500,
+          "startFrame": 3840,
+          "endFrame": 3855,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Bowl",
+          "startMs": 128500,
+          "endMs": 129000,
+          "startFrame": 3855,
+          "endFrame": 3870,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "appearance.",
+          "startMs": 129000,
+          "endMs": 129500,
+          "startFrame": 3870,
+          "endFrame": 3885,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "It was a season where his confidence, his talent, and his charisma were on full display, a testament to the power of his revolutionary style when everything clicked.",
+      "position": "bottom",
+      "startMs": 129500,
+      "endMs": 143500,
+      "startFrame": 3885,
+      "endFrame": 4305,
+      "words": [
+        {
+          "text": "It",
+          "startMs": 129500,
+          "endMs": 130000,
+          "startFrame": 3885,
+          "endFrame": 3900,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 130000,
+          "endMs": 130500,
+          "startFrame": 3900,
+          "endFrame": 3915,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 130500,
+          "endMs": 131000,
+          "startFrame": 3915,
+          "endFrame": 3930,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "season",
+          "startMs": 131000,
+          "endMs": 131500,
+          "startFrame": 3930,
+          "endFrame": 3945,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "where",
+          "startMs": 131500,
+          "endMs": 132000,
+          "startFrame": 3945,
+          "endFrame": 3960,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 132000,
+          "endMs": 132500,
+          "startFrame": 3960,
+          "endFrame": 3975,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "confidence,",
+          "startMs": 132500,
+          "endMs": 133000,
+          "startFrame": 3975,
+          "endFrame": 3990,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 133000,
+          "endMs": 133500,
+          "startFrame": 3990,
+          "endFrame": 4005,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "talent,",
+          "startMs": 133500,
+          "endMs": 134000,
+          "startFrame": 4005,
+          "endFrame": 4020,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 134000,
+          "endMs": 134500,
+          "startFrame": 4020,
+          "endFrame": 4035,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 134500,
+          "endMs": 135000,
+          "startFrame": 4035,
+          "endFrame": 4050,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "charisma",
+          "startMs": 135000,
+          "endMs": 135500,
+          "startFrame": 4050,
+          "endFrame": 4065,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "were",
+          "startMs": 135500,
+          "endMs": 136000,
+          "startFrame": 4065,
+          "endFrame": 4080,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 136000,
+          "endMs": 136500,
+          "startFrame": 4080,
+          "endFrame": 4095,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "full",
+          "startMs": 136500,
+          "endMs": 137000,
+          "startFrame": 4095,
+          "endFrame": 4110,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "display,",
+          "startMs": 137000,
+          "endMs": 137500,
+          "startFrame": 4110,
+          "endFrame": 4125,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 137500,
+          "endMs": 138000,
+          "startFrame": 4125,
+          "endFrame": 4140,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "testament",
+          "startMs": 138000,
+          "endMs": 138500,
+          "startFrame": 4140,
+          "endFrame": 4155,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 138500,
+          "endMs": 139000,
+          "startFrame": 4155,
+          "endFrame": 4170,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 139000,
+          "endMs": 139500,
+          "startFrame": 4170,
+          "endFrame": 4185,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "power",
+          "startMs": 139500,
+          "endMs": 140000,
+          "startFrame": 4185,
+          "endFrame": 4200,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 140000,
+          "endMs": 140500,
+          "startFrame": 4200,
+          "endFrame": 4215,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 140500,
+          "endMs": 141000,
+          "startFrame": 4215,
+          "endFrame": 4230,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionary",
+          "startMs": 141000,
+          "endMs": 141500,
+          "startFrame": 4230,
+          "endFrame": 4245,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "style",
+          "startMs": 141500,
+          "endMs": 142000,
+          "startFrame": 4245,
+          "endFrame": 4260,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "when",
+          "startMs": 142000,
+          "endMs": 142500,
+          "startFrame": 4260,
+          "endFrame": 4275,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "everything",
+          "startMs": 142500,
+          "endMs": 143000,
+          "startFrame": 4275,
+          "endFrame": 4290,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "clicked.",
+          "startMs": 143000,
+          "endMs": 143500,
+          "startFrame": 4290,
+          "endFrame": 4305,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "But 'The Cam Newton Code' is more than just stats and arm strength.",
+      "position": "bottom",
+      "startMs": 143500,
+      "endMs": 150000,
+      "startFrame": 4305,
+      "endFrame": 4500,
+      "words": [
+        {
+          "text": "But",
+          "startMs": 143500,
+          "endMs": 144000,
+          "startFrame": 4305,
+          "endFrame": 4320,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "'The",
+          "startMs": 144000,
+          "endMs": 144500,
+          "startFrame": 4320,
+          "endFrame": 4335,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Cam",
+          "startMs": 144500,
+          "endMs": 145000,
+          "startFrame": 4335,
+          "endFrame": 4350,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 145000,
+          "endMs": 145500,
+          "startFrame": 4350,
+          "endFrame": 4365,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Code'",
+          "startMs": 145500,
+          "endMs": 146000,
+          "startFrame": 4365,
+          "endFrame": 4380,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 146000,
+          "endMs": 146500,
+          "startFrame": 4380,
+          "endFrame": 4395,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "more",
+          "startMs": 146500,
+          "endMs": 147000,
+          "startFrame": 4395,
+          "endFrame": 4410,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "than",
+          "startMs": 147000,
+          "endMs": 147500,
+          "startFrame": 4410,
+          "endFrame": 4425,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 147500,
+          "endMs": 148000,
+          "startFrame": 4425,
+          "endFrame": 4440,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "stats",
+          "startMs": 148000,
+          "endMs": 148500,
+          "startFrame": 4440,
+          "endFrame": 4455,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 148500,
+          "endMs": 149000,
+          "startFrame": 4455,
+          "endFrame": 4470,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "arm",
+          "startMs": 149000,
+          "endMs": 149500,
+          "startFrame": 4470,
+          "endFrame": 4485,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "strength.",
+          "startMs": 149500,
+          "endMs": 150000,
+          "startFrame": 4485,
+          "endFrame": 4500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "It's about leadership.",
+      "position": "bottom",
+      "startMs": 150000,
+      "endMs": 151500,
+      "startFrame": 4500,
+      "endFrame": 4545,
+      "words": [
+        {
+          "text": "It's",
+          "startMs": 150000,
+          "endMs": 150500,
+          "startFrame": 4500,
+          "endFrame": 4515,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 150500,
+          "endMs": 151000,
+          "startFrame": 4515,
+          "endFrame": 4530,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leadership.",
+          "startMs": 151000,
+          "endMs": 151500,
+          "startFrame": 4530,
+          "endFrame": 4545,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "Cam's style was never conventional.",
+      "position": "bottom",
+      "startMs": 151500,
+      "endMs": 154000,
+      "startFrame": 4545,
+      "endFrame": 4620,
+      "words": [
+        {
+          "text": "Cam's",
+          "startMs": 151500,
+          "endMs": 152000,
+          "startFrame": 4545,
+          "endFrame": 4560,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "style",
+          "startMs": 152000,
+          "endMs": 152500,
+          "startFrame": 4560,
+          "endFrame": 4575,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 152500,
+          "endMs": 153000,
+          "startFrame": 4575,
+          "endFrame": 4590,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "never",
+          "startMs": 153000,
+          "endMs": 153500,
+          "startFrame": 4590,
+          "endFrame": 4605,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "conventional.",
+          "startMs": 153500,
+          "endMs": 154000,
+          "startFrame": 4605,
+          "endFrame": 4620,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        }
+      ],
+      "holdFrames": 3
+    },
+    {
+      "text": "He led with infectious energy, a unique sense of self, and a deep connection to his teammates and the fans.",
+      "position": "bottom",
+      "startMs": 154000,
+      "endMs": 164000,
+      "startFrame": 4620,
+      "endFrame": 4920,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 154000,
+          "endMs": 154500,
+          "startFrame": 4620,
+          "endFrame": 4635,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "led",
+          "startMs": 154500,
+          "endMs": 155000,
+          "startFrame": 4635,
+          "endFrame": 4650,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 155000,
+          "endMs": 155500,
+          "startFrame": 4650,
+          "endFrame": 4665,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "infectious",
+          "startMs": 155500,
+          "endMs": 156000,
+          "startFrame": 4665,
+          "endFrame": 4680,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "energy,",
+          "startMs": 156000,
+          "endMs": 156500,
+          "startFrame": 4680,
+          "endFrame": 4695,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 156500,
+          "endMs": 157000,
+          "startFrame": 4695,
+          "endFrame": 4710,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 157000,
+          "endMs": 157500,
+          "startFrame": 4710,
+          "endFrame": 4725,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sense",
+          "startMs": 157500,
+          "endMs": 158000,
+          "startFrame": 4725,
+          "endFrame": 4740,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 158000,
+          "endMs": 158500,
+          "startFrame": 4740,
+          "endFrame": 4755,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "self,",
+          "startMs": 158500,
+          "endMs": 159000,
+          "startFrame": 4755,
+          "endFrame": 4770,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 159000,
+          "endMs": 159500,
+          "startFrame": 4770,
+          "endFrame": 4785,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 159500,
+          "endMs": 160000,
+          "startFrame": 4785,
+          "endFrame": 4800,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deep",
+          "startMs": 160000,
+          "endMs": 160500,
+          "startFrame": 4800,
+          "endFrame": 4815,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "connection",
+          "startMs": 160500,
+          "endMs": 161000,
+          "startFrame": 4815,
+          "endFrame": 4830,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 161000,
+          "endMs": 161500,
+          "startFrame": 4830,
+          "endFrame": 4845,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 161500,
+          "endMs": 162000,
+          "startFrame": 4845,
+          "endFrame": 4860,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "teammates",
+          "startMs": 162000,
+          "endMs": 162500,
+          "startFrame": 4860,
+          "endFrame": 4875,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 162500,
+          "endMs": 163000,
+          "startFrame": 4875,
+          "endFrame": 4890,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 163000,
+          "endMs": 163500,
+          "startFrame": 4890,
+          "endFrame": 4905,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fans.",
+          "startMs": 163500,
+          "endMs": 164000,
+          "startFrame": 4905,
+          "endFrame": 4920,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 6
+    },
+    {
+      "text": "His 'Superman' celebration wasn't just a touchdown gesture; it was a declaration of his presence, a symbol of joy and confidence that resonated far beyond the field, inspiring a generation.",
+      "position": "bottom",
+      "startMs": 164000,
+      "endMs": 179000,
+      "startFrame": 4920,
+      "endFrame": 5370,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 164000,
+          "endMs": 164500,
+          "startFrame": 4920,
+          "endFrame": 4935,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "'Superman'",
+          "startMs": 164500,
+          "endMs": 165000,
+          "startFrame": 4935,
+          "endFrame": 4950,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "celebration",
+          "startMs": 165000,
+          "endMs": 165500,
+          "startFrame": 4950,
+          "endFrame": 4965,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "wasn't",
+          "startMs": 165500,
+          "endMs": 166000,
+          "startFrame": 4965,
+          "endFrame": 4980,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 166000,
+          "endMs": 166500,
+          "startFrame": 4980,
+          "endFrame": 4995,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 166500,
+          "endMs": 167000,
+          "startFrame": 4995,
+          "endFrame": 5010,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "touchdown",
+          "startMs": 167000,
+          "endMs": 167500,
+          "startFrame": 5010,
+          "endFrame": 5025,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "gesture;",
+          "startMs": 167500,
+          "endMs": 168000,
+          "startFrame": 5025,
+          "endFrame": 5040,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 168000,
+          "endMs": 168500,
+          "startFrame": 5040,
+          "endFrame": 5055,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 168500,
+          "endMs": 169000,
+          "startFrame": 5055,
+          "endFrame": 5070,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 169000,
+          "endMs": 169500,
+          "startFrame": 5070,
+          "endFrame": 5085,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "declaration",
+          "startMs": 169500,
+          "endMs": 170000,
+          "startFrame": 5085,
+          "endFrame": 5100,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 170000,
+          "endMs": 170500,
+          "startFrame": 5100,
+          "endFrame": 5115,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 170500,
+          "endMs": 171000,
+          "startFrame": 5115,
+          "endFrame": 5130,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "presence,",
+          "startMs": 171000,
+          "endMs": 171500,
+          "startFrame": 5130,
+          "endFrame": 5145,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 171500,
+          "endMs": 172000,
+          "startFrame": 5145,
+          "endFrame": 5160,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "symbol",
+          "startMs": 172000,
+          "endMs": 172500,
+          "startFrame": 5160,
+          "endFrame": 5175,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 172500,
+          "endMs": 173000,
+          "startFrame": 5175,
+          "endFrame": 5190,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "joy",
+          "startMs": 173000,
+          "endMs": 173500,
+          "startFrame": 5190,
+          "endFrame": 5205,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 173500,
+          "endMs": 174000,
+          "startFrame": 5205,
+          "endFrame": 5220,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "confidence",
+          "startMs": 174000,
+          "endMs": 174500,
+          "startFrame": 5220,
+          "endFrame": 5235,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 174500,
+          "endMs": 175000,
+          "startFrame": 5235,
+          "endFrame": 5250,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "resonated",
+          "startMs": 175000,
+          "endMs": 175500,
+          "startFrame": 5250,
+          "endFrame": 5265,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "far",
+          "startMs": 175500,
+          "endMs": 176000,
+          "startFrame": 5265,
+          "endFrame": 5280,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "beyond",
+          "startMs": 176000,
+          "endMs": 176500,
+          "startFrame": 5280,
+          "endFrame": 5295,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 176500,
+          "endMs": 177000,
+          "startFrame": 5295,
+          "endFrame": 5310,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "field,",
+          "startMs": 177000,
+          "endMs": 177500,
+          "startFrame": 5310,
+          "endFrame": 5325,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "inspiring",
+          "startMs": 177500,
+          "endMs": 178000,
+          "startFrame": 5325,
+          "endFrame": 5340,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 178000,
+          "endMs": 178500,
+          "startFrame": 5340,
+          "endFrame": 5355,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generation.",
+          "startMs": 178500,
+          "endMs": 179000,
+          "startFrame": 5355,
+          "endFrame": 5370,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "The path to greatness is rarely smooth.",
+      "position": "bottom",
+      "startMs": 179000,
+      "endMs": 182500,
+      "startFrame": 5370,
+      "endFrame": 5475,
+      "words": [
+        {
+          "text": "The",
+          "startMs": 179000,
+          "endMs": 179500,
+          "startFrame": 5370,
+          "endFrame": 5385,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "path",
+          "startMs": 179500,
+          "endMs": 180000,
+          "startFrame": 5385,
+          "endFrame": 5400,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 180000,
+          "endMs": 180500,
+          "startFrame": 5400,
+          "endFrame": 5415,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "greatness",
+          "startMs": 180500,
+          "endMs": 181000,
+          "startFrame": 5415,
+          "endFrame": 5430,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 181000,
+          "endMs": 181500,
+          "startFrame": 5430,
+          "endFrame": 5445,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "rarely",
+          "startMs": 181500,
+          "endMs": 182000,
+          "startFrame": 5445,
+          "endFrame": 5460,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "smooth.",
+          "startMs": 182000,
+          "endMs": 182500,
+          "startFrame": 5460,
+          "endFrame": 5475,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "Newton faced intense scrutiny, criticism, and public judgment throughout his career.",
+      "position": "bottom",
+      "startMs": 182500,
+      "endMs": 188000,
+      "startFrame": 5475,
+      "endFrame": 5640,
+      "words": [
+        {
+          "text": "Newton",
+          "startMs": 182500,
+          "endMs": 183000,
+          "startFrame": 5475,
+          "endFrame": 5490,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "faced",
+          "startMs": 183000,
+          "endMs": 183500,
+          "startFrame": 5490,
+          "endFrame": 5505,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "intense",
+          "startMs": 183500,
+          "endMs": 184000,
+          "startFrame": 5505,
+          "endFrame": 5520,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scrutiny,",
+          "startMs": 184000,
+          "endMs": 184500,
+          "startFrame": 5520,
+          "endFrame": 5535,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "criticism,",
+          "startMs": 184500,
+          "endMs": 185000,
+          "startFrame": 5535,
+          "endFrame": 5550,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 185000,
+          "endMs": 185500,
+          "startFrame": 5550,
+          "endFrame": 5565,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "public",
+          "startMs": 185500,
+          "endMs": 186000,
+          "startFrame": 5565,
+          "endFrame": 5580,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "judgment",
+          "startMs": 186000,
+          "endMs": 186500,
+          "startFrame": 5580,
+          "endFrame": 5595,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "throughout",
+          "startMs": 186500,
+          "endMs": 187000,
+          "startFrame": 5595,
+          "endFrame": 5610,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 187000,
+          "endMs": 187500,
+          "startFrame": 5610,
+          "endFrame": 5625,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "career.",
+          "startMs": 187500,
+          "endMs": 188000,
+          "startFrame": 5625,
+          "endFrame": 5640,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "From draft-day doubts to game-day commentary, he was constantly under a microscope.",
+      "position": "bottom",
+      "startMs": 188000,
+      "endMs": 194000,
+      "startFrame": 5640,
+      "endFrame": 5820,
+      "words": [
+        {
+          "text": "From",
+          "startMs": 188000,
+          "endMs": 188500,
+          "startFrame": 5640,
+          "endFrame": 5655,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "draft-day",
+          "startMs": 188500,
+          "endMs": 189000,
+          "startFrame": 5655,
+          "endFrame": 5670,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "doubts",
+          "startMs": 189000,
+          "endMs": 189500,
+          "startFrame": 5670,
+          "endFrame": 5685,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 189500,
+          "endMs": 190000,
+          "startFrame": 5685,
+          "endFrame": 5700,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game-day",
+          "startMs": 190000,
+          "endMs": 190500,
+          "startFrame": 5700,
+          "endFrame": 5715,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "commentary,",
+          "startMs": 190500,
+          "endMs": 191000,
+          "startFrame": 5715,
+          "endFrame": 5730,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 191000,
+          "endMs": 191500,
+          "startFrame": 5730,
+          "endFrame": 5745,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 191500,
+          "endMs": 192000,
+          "startFrame": 5745,
+          "endFrame": 5760,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "constantly",
+          "startMs": 192000,
+          "endMs": 192500,
+          "startFrame": 5760,
+          "endFrame": 5775,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "under",
+          "startMs": 192500,
+          "endMs": 193000,
+          "startFrame": 5775,
+          "endFrame": 5790,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 193000,
+          "endMs": 193500,
+          "startFrame": 5790,
+          "endFrame": 5805,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "microscope.",
+          "startMs": 193500,
+          "endMs": 194000,
+          "startFrame": 5805,
+          "endFrame": 5820,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Yet, he demonstrated remarkable mental resilience.",
+      "position": "bottom",
+      "startMs": 194000,
+      "endMs": 197000,
+      "startFrame": 5820,
+      "endFrame": 5910,
+      "words": [
+        {
+          "text": "Yet,",
+          "startMs": 194000,
+          "endMs": 194500,
+          "startFrame": 5820,
+          "endFrame": 5835,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 194500,
+          "endMs": 195000,
+          "startFrame": 5835,
+          "endFrame": 5850,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "demonstrated",
+          "startMs": 195000,
+          "endMs": 195500,
+          "startFrame": 5850,
+          "endFrame": 5865,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "remarkable",
+          "startMs": 195500,
+          "endMs": 196000,
+          "startFrame": 5865,
+          "endFrame": 5880,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mental",
+          "startMs": 196000,
+          "endMs": 196500,
+          "startFrame": 5880,
+          "endFrame": 5895,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "resilience.",
+          "startMs": 196500,
+          "endMs": 197000,
+          "startFrame": 5895,
+          "endFrame": 5910,
+          "emphasis": {
+            "level": "high"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "He weathered the storms, learned from adversity, and consistently bounced back, proving that true strength isn't just physical, but forged in the crucible of the mind.",
+      "position": "bottom",
+      "startMs": 197000,
+      "endMs": 210000,
+      "startFrame": 5910,
+      "endFrame": 6300,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 197000,
+          "endMs": 197500,
+          "startFrame": 5910,
+          "endFrame": 5925,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "weathered",
+          "startMs": 197500,
+          "endMs": 198000,
+          "startFrame": 5925,
+          "endFrame": 5940,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 198000,
+          "endMs": 198500,
+          "startFrame": 5940,
+          "endFrame": 5955,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "storms,",
+          "startMs": 198500,
+          "endMs": 199000,
+          "startFrame": 5955,
+          "endFrame": 5970,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "learned",
+          "startMs": 199000,
+          "endMs": 199500,
+          "startFrame": 5970,
+          "endFrame": 5985,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "from",
+          "startMs": 199500,
+          "endMs": 200000,
+          "startFrame": 5985,
+          "endFrame": 6000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "adversity,",
+          "startMs": 200000,
+          "endMs": 200500,
+          "startFrame": 6000,
+          "endFrame": 6015,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 200500,
+          "endMs": 201000,
+          "startFrame": 6015,
+          "endFrame": 6030,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "consistently",
+          "startMs": 201000,
+          "endMs": 201500,
+          "startFrame": 6030,
+          "endFrame": 6045,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "bounced",
+          "startMs": 201500,
+          "endMs": 202000,
+          "startFrame": 6045,
+          "endFrame": 6060,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "back,",
+          "startMs": 202000,
+          "endMs": 202500,
+          "startFrame": 6060,
+          "endFrame": 6075,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "proving",
+          "startMs": 202500,
+          "endMs": 203000,
+          "startFrame": 6075,
+          "endFrame": 6090,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 203000,
+          "endMs": 203500,
+          "startFrame": 6090,
+          "endFrame": 6105,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "true",
+          "startMs": 203500,
+          "endMs": 204000,
+          "startFrame": 6105,
+          "endFrame": 6120,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "strength",
+          "startMs": 204000,
+          "endMs": 204500,
+          "startFrame": 6120,
+          "endFrame": 6135,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "isn't",
+          "startMs": 204500,
+          "endMs": 205000,
+          "startFrame": 6135,
+          "endFrame": 6150,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 205000,
+          "endMs": 205500,
+          "startFrame": 6150,
+          "endFrame": 6165,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "physical,",
+          "startMs": 205500,
+          "endMs": 206000,
+          "startFrame": 6165,
+          "endFrame": 6180,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 206000,
+          "endMs": 206500,
+          "startFrame": 6180,
+          "endFrame": 6195,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "forged",
+          "startMs": 206500,
+          "endMs": 207000,
+          "startFrame": 6195,
+          "endFrame": 6210,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 207000,
+          "endMs": 207500,
+          "startFrame": 6210,
+          "endFrame": 6225,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 207500,
+          "endMs": 208000,
+          "startFrame": 6225,
+          "endFrame": 6240,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "crucible",
+          "startMs": 208000,
+          "endMs": 208500,
+          "startFrame": 6240,
+          "endFrame": 6255,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 208500,
+          "endMs": 209000,
+          "startFrame": 6255,
+          "endFrame": 6270,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 209000,
+          "endMs": 209500,
+          "startFrame": 6270,
+          "endFrame": 6285,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mind.",
+          "startMs": 209500,
+          "endMs": 210000,
+          "startFrame": 6285,
+          "endFrame": 6300,
+          "emphasis": {
+            "level": "high"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "At the heart of his game was a unique psychology of playmaking.",
+      "position": "bottom",
+      "startMs": 210000,
+      "endMs": 216000,
+      "startFrame": 6300,
+      "endFrame": 6480,
+      "words": [
+        {
+          "text": "At",
+          "startMs": 210000,
+          "endMs": 210500,
+          "startFrame": 6300,
+          "endFrame": 6315,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 210500,
+          "endMs": 211000,
+          "startFrame": 6315,
+          "endFrame": 6330,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "heart",
+          "startMs": 211000,
+          "endMs": 211500,
+          "startFrame": 6330,
+          "endFrame": 6345,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 211500,
+          "endMs": 212000,
+          "startFrame": 6345,
+          "endFrame": 6360,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "his",
+          "startMs": 212000,
+          "endMs": 212500,
+          "startFrame": 6360,
+          "endFrame": 6375,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game",
+          "startMs": 212500,
+          "endMs": 213000,
+          "startFrame": 6375,
+          "endFrame": 6390,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 213000,
+          "endMs": 213500,
+          "startFrame": 6390,
+          "endFrame": 6405,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 213500,
+          "endMs": 214000,
+          "startFrame": 6405,
+          "endFrame": 6420,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 214000,
+          "endMs": 214500,
+          "startFrame": 6420,
+          "endFrame": 6435,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "psychology",
+          "startMs": 214500,
+          "endMs": 215000,
+          "startFrame": 6435,
+          "endFrame": 6450,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 215000,
+          "endMs": 215500,
+          "startFrame": 6450,
+          "endFrame": 6465,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "playmaking.",
+          "startMs": 215500,
+          "endMs": 216000,
+          "startFrame": 6465,
+          "endFrame": 6480,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 6
+    },
+    {
+      "text": "Newton didn't just execute plays; he *felt* them.",
+      "position": "bottom",
+      "startMs": 216000,
+      "endMs": 220000,
+      "startFrame": 6480,
+      "endFrame": 6600,
+      "words": [
+        {
+          "text": "Newton",
+          "startMs": 216000,
+          "endMs": 216500,
+          "startFrame": 6480,
+          "endFrame": 6495,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "didn't",
+          "startMs": 216500,
+          "endMs": 217000,
+          "startFrame": 6495,
+          "endFrame": 6510,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 217000,
+          "endMs": 217500,
+          "startFrame": 6510,
+          "endFrame": 6525,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "execute",
+          "startMs": 217500,
+          "endMs": 218000,
+          "startFrame": 6525,
+          "endFrame": 6540,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "plays;",
+          "startMs": 218000,
+          "endMs": 218500,
+          "startFrame": 6540,
+          "endFrame": 6555,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 218500,
+          "endMs": 219000,
+          "startFrame": 6555,
+          "endFrame": 6570,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "*felt*",
+          "startMs": 219000,
+          "endMs": 219500,
+          "startFrame": 6570,
+          "endFrame": 6585,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "them.",
+          "startMs": 219500,
+          "endMs": 220000,
+          "startFrame": 6585,
+          "endFrame": 6600,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "His ability to improvise, to read defenses on the fly, and to innovate under pressure was extraordinary.",
+      "position": "bottom",
+      "startMs": 220000,
+      "endMs": 228500,
+      "startFrame": 6600,
+      "endFrame": 6855,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 220000,
+          "endMs": 220500,
+          "startFrame": 6600,
+          "endFrame": 6615,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "ability",
+          "startMs": 220500,
+          "endMs": 221000,
+          "startFrame": 6615,
+          "endFrame": 6630,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 221000,
+          "endMs": 221500,
+          "startFrame": 6630,
+          "endFrame": 6645,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "improvise,",
+          "startMs": 221500,
+          "endMs": 222000,
+          "startFrame": 6645,
+          "endFrame": 6660,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 222000,
+          "endMs": 222500,
+          "startFrame": 6660,
+          "endFrame": 6675,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "read",
+          "startMs": 222500,
+          "endMs": 223000,
+          "startFrame": 6675,
+          "endFrame": 6690,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "defenses",
+          "startMs": 223000,
+          "endMs": 223500,
+          "startFrame": 6690,
+          "endFrame": 6705,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 223500,
+          "endMs": 224000,
+          "startFrame": 6705,
+          "endFrame": 6720,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 224000,
+          "endMs": 224500,
+          "startFrame": 6720,
+          "endFrame": 6735,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fly,",
+          "startMs": 224500,
+          "endMs": 225000,
+          "startFrame": 6735,
+          "endFrame": 6750,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 225000,
+          "endMs": 225500,
+          "startFrame": 6750,
+          "endFrame": 6765,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 225500,
+          "endMs": 226000,
+          "startFrame": 6765,
+          "endFrame": 6780,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "innovate",
+          "startMs": 226000,
+          "endMs": 226500,
+          "startFrame": 6780,
+          "endFrame": 6795,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "under",
+          "startMs": 226500,
+          "endMs": 227000,
+          "startFrame": 6795,
+          "endFrame": 6810,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "pressure",
+          "startMs": 227000,
+          "endMs": 227500,
+          "startFrame": 6810,
+          "endFrame": 6825,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 227500,
+          "endMs": 228000,
+          "startFrame": 6825,
+          "endFrame": 6840,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "extraordinary.",
+          "startMs": 228000,
+          "endMs": 228500,
+          "startFrame": 6840,
+          "endFrame": 6855,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "This creative thinking, this willingness to think outside the box, allowed him to consistently make game-changing decisions, demonstrating a strategic brilliance that set him apart.",
+      "position": "bottom",
+      "startMs": 228500,
+      "endMs": 241000,
+      "startFrame": 6855,
+      "endFrame": 7230,
+      "words": [
+        {
+          "text": "This",
+          "startMs": 228500,
+          "endMs": 229000,
+          "startFrame": 6855,
+          "endFrame": 6870,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 229000,
+          "endMs": 229500,
+          "startFrame": 6870,
+          "endFrame": 6885,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "thinking,",
+          "startMs": 229500,
+          "endMs": 230000,
+          "startFrame": 6885,
+          "endFrame": 6900,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this",
+          "startMs": 230000,
+          "endMs": 230500,
+          "startFrame": 6900,
+          "endFrame": 6915,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "willingness",
+          "startMs": 230500,
+          "endMs": 231000,
+          "startFrame": 6915,
+          "endFrame": 6930,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 231000,
+          "endMs": 231500,
+          "startFrame": 6930,
+          "endFrame": 6945,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "think",
+          "startMs": 231500,
+          "endMs": 232000,
+          "startFrame": 6945,
+          "endFrame": 6960,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "outside",
+          "startMs": 232000,
+          "endMs": 232500,
+          "startFrame": 6960,
+          "endFrame": 6975,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 232500,
+          "endMs": 233000,
+          "startFrame": 6975,
+          "endFrame": 6990,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "box,",
+          "startMs": 233000,
+          "endMs": 233500,
+          "startFrame": 6990,
+          "endFrame": 7005,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "allowed",
+          "startMs": 233500,
+          "endMs": 234000,
+          "startFrame": 7005,
+          "endFrame": 7020,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "him",
+          "startMs": 234000,
+          "endMs": 234500,
+          "startFrame": 7020,
+          "endFrame": 7035,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 234500,
+          "endMs": 235000,
+          "startFrame": 7035,
+          "endFrame": 7050,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "consistently",
+          "startMs": 235000,
+          "endMs": 235500,
+          "startFrame": 7050,
+          "endFrame": 7065,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "make",
+          "startMs": 235500,
+          "endMs": 236000,
+          "startFrame": 7065,
+          "endFrame": 7080,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game-changing",
+          "startMs": 236000,
+          "endMs": 236500,
+          "startFrame": 7080,
+          "endFrame": 7095,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "decisions,",
+          "startMs": 236500,
+          "endMs": 237000,
+          "startFrame": 7095,
+          "endFrame": 7110,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "demonstrating",
+          "startMs": 237000,
+          "endMs": 237500,
+          "startFrame": 7110,
+          "endFrame": 7125,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 237500,
+          "endMs": 238000,
+          "startFrame": 7125,
+          "endFrame": 7140,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "strategic",
+          "startMs": 238000,
+          "endMs": 238500,
+          "startFrame": 7140,
+          "endFrame": 7155,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "brilliance",
+          "startMs": 238500,
+          "endMs": 239000,
+          "startFrame": 7155,
+          "endFrame": 7170,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 239000,
+          "endMs": 239500,
+          "startFrame": 7170,
+          "endFrame": 7185,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "set",
+          "startMs": 239500,
+          "endMs": 240000,
+          "startFrame": 7185,
+          "endFrame": 7200,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "him",
+          "startMs": 240000,
+          "endMs": 240500,
+          "startFrame": 7200,
+          "endFrame": 7215,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "apart.",
+          "startMs": 240500,
+          "endMs": 241000,
+          "startFrame": 7215,
+          "endFrame": 7230,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Cam Newton's influence extends far beyond the gridiron.",
+      "position": "bottom",
+      "startMs": 241000,
+      "endMs": 245000,
+      "startFrame": 7230,
+      "endFrame": 7350,
+      "words": [
+        {
+          "text": "Cam",
+          "startMs": 241000,
+          "endMs": 241500,
+          "startFrame": 7230,
+          "endFrame": 7245,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Newton's",
+          "startMs": 241500,
+          "endMs": 242000,
+          "startFrame": 7245,
+          "endFrame": 7260,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "influence",
+          "startMs": 242000,
+          "endMs": 242500,
+          "startFrame": 7260,
+          "endFrame": 7275,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "extends",
+          "startMs": 242500,
+          "endMs": 243000,
+          "startFrame": 7275,
+          "endFrame": 7290,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "far",
+          "startMs": 243000,
+          "endMs": 243500,
+          "startFrame": 7290,
+          "endFrame": 7305,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "beyond",
+          "startMs": 243500,
+          "endMs": 244000,
+          "startFrame": 7305,
+          "endFrame": 7320,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 244000,
+          "endMs": 244500,
+          "startFrame": 7320,
+          "endFrame": 7335,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "gridiron.",
+          "startMs": 244500,
+          "endMs": 245000,
+          "startFrame": 7335,
+          "endFrame": 7350,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "He became a cultural icon, influencing fashion, breaking barriers, and becoming a mentor figure for young athletes and leaders.",
+      "position": "bottom",
+      "startMs": 245000,
+      "endMs": 254500,
+      "startFrame": 7350,
+      "endFrame": 7635,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 245000,
+          "endMs": 245500,
+          "startFrame": 7350,
+          "endFrame": 7365,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "became",
+          "startMs": 245500,
+          "endMs": 246000,
+          "startFrame": 7365,
+          "endFrame": 7380,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 246000,
+          "endMs": 246500,
+          "startFrame": 7380,
+          "endFrame": 7395,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "cultural",
+          "startMs": 246500,
+          "endMs": 247000,
+          "startFrame": 7395,
+          "endFrame": 7410,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "icon,",
+          "startMs": 247000,
+          "endMs": 247500,
+          "startFrame": 7410,
+          "endFrame": 7425,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "influencing",
+          "startMs": 247500,
+          "endMs": 248000,
+          "startFrame": 7425,
+          "endFrame": 7440,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fashion,",
+          "startMs": 248000,
+          "endMs": 248500,
+          "startFrame": 7440,
+          "endFrame": 7455,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "breaking",
+          "startMs": 248500,
+          "endMs": 249000,
+          "startFrame": 7455,
+          "endFrame": 7470,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "barriers,",
+          "startMs": 249000,
+          "endMs": 249500,
+          "startFrame": 7470,
+          "endFrame": 7485,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 249500,
+          "endMs": 250000,
+          "startFrame": 7485,
+          "endFrame": 7500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "becoming",
+          "startMs": 250000,
+          "endMs": 250500,
+          "startFrame": 7500,
+          "endFrame": 7515,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 250500,
+          "endMs": 251000,
+          "startFrame": 7515,
+          "endFrame": 7530,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mentor",
+          "startMs": 251000,
+          "endMs": 251500,
+          "startFrame": 7530,
+          "endFrame": 7545,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "figure",
+          "startMs": 251500,
+          "endMs": 252000,
+          "startFrame": 7545,
+          "endFrame": 7560,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 252000,
+          "endMs": 252500,
+          "startFrame": 7560,
+          "endFrame": 7575,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "young",
+          "startMs": 252500,
+          "endMs": 253000,
+          "startFrame": 7575,
+          "endFrame": 7590,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "athletes",
+          "startMs": 253000,
+          "endMs": 253500,
+          "startFrame": 7590,
+          "endFrame": 7605,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 253500,
+          "endMs": 254000,
+          "startFrame": 7605,
+          "endFrame": 7620,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leaders.",
+          "startMs": 254000,
+          "endMs": 254500,
+          "startFrame": 7620,
+          "endFrame": 7635,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "His willingness to be unapologetically himself has empowered countless individuals to embrace their uniqueness, proving that true impact comes from authenticity and courage.",
+      "position": "bottom",
+      "startMs": 254500,
+      "endMs": 266000,
+      "startFrame": 7635,
+      "endFrame": 7980,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 254500,
+          "endMs": 255000,
+          "startFrame": 7635,
+          "endFrame": 7650,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "willingness",
+          "startMs": 255000,
+          "endMs": 255500,
+          "startFrame": 7650,
+          "endFrame": 7665,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 255500,
+          "endMs": 256000,
+          "startFrame": 7665,
+          "endFrame": 7680,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "be",
+          "startMs": 256000,
+          "endMs": 256500,
+          "startFrame": 7680,
+          "endFrame": 7695,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unapologetically",
+          "startMs": 256500,
+          "endMs": 257000,
+          "startFrame": 7695,
+          "endFrame": 7710,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "himself",
+          "startMs": 257000,
+          "endMs": 257500,
+          "startFrame": 7710,
+          "endFrame": 7725,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "has",
+          "startMs": 257500,
+          "endMs": 258000,
+          "startFrame": 7725,
+          "endFrame": 7740,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "empowered",
+          "startMs": 258000,
+          "endMs": 258500,
+          "startFrame": 7740,
+          "endFrame": 7755,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "countless",
+          "startMs": 258500,
+          "endMs": 259000,
+          "startFrame": 7755,
+          "endFrame": 7770,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "individuals",
+          "startMs": 259000,
+          "endMs": 259500,
+          "startFrame": 7770,
+          "endFrame": 7785,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 259500,
+          "endMs": 260000,
+          "startFrame": 7785,
+          "endFrame": 7800,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "embrace",
+          "startMs": 260000,
+          "endMs": 260500,
+          "startFrame": 7800,
+          "endFrame": 7815,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "their",
+          "startMs": 260500,
+          "endMs": 261000,
+          "startFrame": 7815,
+          "endFrame": 7830,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "uniqueness,",
+          "startMs": 261000,
+          "endMs": 261500,
+          "startFrame": 7830,
+          "endFrame": 7845,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "proving",
+          "startMs": 261500,
+          "endMs": 262000,
+          "startFrame": 7845,
+          "endFrame": 7860,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 262000,
+          "endMs": 262500,
+          "startFrame": 7860,
+          "endFrame": 7875,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "true",
+          "startMs": 262500,
+          "endMs": 263000,
+          "startFrame": 7875,
+          "endFrame": 7890,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "impact",
+          "startMs": 263000,
+          "endMs": 263500,
+          "startFrame": 7890,
+          "endFrame": 7905,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "comes",
+          "startMs": 263500,
+          "endMs": 264000,
+          "startFrame": 7905,
+          "endFrame": 7920,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "from",
+          "startMs": 264000,
+          "endMs": 264500,
+          "startFrame": 7920,
+          "endFrame": 7935,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "authenticity",
+          "startMs": 264500,
+          "endMs": 265000,
+          "startFrame": 7935,
+          "endFrame": 7950,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 265000,
+          "endMs": 265500,
+          "startFrame": 7950,
+          "endFrame": 7965,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "courage.",
+          "startMs": 265500,
+          "endMs": 266000,
+          "startFrame": 7965,
+          "endFrame": 7980,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "His legacy is etched in the history of sports.",
+      "position": "bottom",
+      "startMs": 266000,
+      "endMs": 270500,
+      "startFrame": 7980,
+      "endFrame": 8115,
+      "words": [
+        {
+          "text": "His",
+          "startMs": 266000,
+          "endMs": 266500,
+          "startFrame": 7980,
+          "endFrame": 7995,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "legacy",
+          "startMs": 266500,
+          "endMs": 267000,
+          "startFrame": 7995,
+          "endFrame": 8010,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 267000,
+          "endMs": 267500,
+          "startFrame": 8010,
+          "endFrame": 8025,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "etched",
+          "startMs": 267500,
+          "endMs": 268000,
+          "startFrame": 8025,
+          "endFrame": 8040,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 268000,
+          "endMs": 268500,
+          "startFrame": 8040,
+          "endFrame": 8055,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 268500,
+          "endMs": 269000,
+          "startFrame": 8055,
+          "endFrame": 8070,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "history",
+          "startMs": 269000,
+          "endMs": 269500,
+          "startFrame": 8070,
+          "endFrame": 8085,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 269500,
+          "endMs": 270000,
+          "startFrame": 8085,
+          "endFrame": 8100,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sports.",
+          "startMs": 270000,
+          "endMs": 270500,
+          "startFrame": 8100,
+          "endFrame": 8115,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Cam Newton didn't just play quarterback; he revolutionized it.",
+      "position": "bottom",
+      "startMs": 270500,
+      "endMs": 275000,
+      "startFrame": 8115,
+      "endFrame": 8250,
+      "words": [
+        {
+          "text": "Cam",
+          "startMs": 270500,
+          "endMs": 271000,
+          "startFrame": 8115,
+          "endFrame": 8130,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 271000,
+          "endMs": 271500,
+          "startFrame": 8130,
+          "endFrame": 8145,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "didn't",
+          "startMs": 271500,
+          "endMs": 272000,
+          "startFrame": 8145,
+          "endFrame": 8160,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 272000,
+          "endMs": 272500,
+          "startFrame": 8160,
+          "endFrame": 8175,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "play",
+          "startMs": 272500,
+          "endMs": 273000,
+          "startFrame": 8175,
+          "endFrame": 8190,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quarterback;",
+          "startMs": 273000,
+          "endMs": 273500,
+          "startFrame": 8190,
+          "endFrame": 8205,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "he",
+          "startMs": 273500,
+          "endMs": 274000,
+          "startFrame": 8205,
+          "endFrame": 8220,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionized",
+          "startMs": 274000,
+          "endMs": 274500,
+          "startFrame": 8220,
+          "endFrame": 8235,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "it.",
+          "startMs": 274500,
+          "endMs": 275000,
+          "startFrame": 8235,
+          "endFrame": 8250,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "He showed the world that different could be dominant, that unconventional could be effective, and that a blend of physical prowess and intellectual depth could redefine athletic possibility.",
+      "position": "bottom",
+      "startMs": 275000,
+      "endMs": 289000,
+      "startFrame": 8250,
+      "endFrame": 8670,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 275000,
+          "endMs": 275500,
+          "startFrame": 8250,
+          "endFrame": 8265,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "showed",
+          "startMs": 275500,
+          "endMs": 276000,
+          "startFrame": 8265,
+          "endFrame": 8280,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 276000,
+          "endMs": 276500,
+          "startFrame": 8280,
+          "endFrame": 8295,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "world",
+          "startMs": 276500,
+          "endMs": 277000,
+          "startFrame": 8295,
+          "endFrame": 8310,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 277000,
+          "endMs": 277500,
+          "startFrame": 8310,
+          "endFrame": 8325,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "different",
+          "startMs": 277500,
+          "endMs": 278000,
+          "startFrame": 8325,
+          "endFrame": 8340,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "could",
+          "startMs": 278000,
+          "endMs": 278500,
+          "startFrame": 8340,
+          "endFrame": 8355,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "be",
+          "startMs": 278500,
+          "endMs": 279000,
+          "startFrame": 8355,
+          "endFrame": 8370,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dominant,",
+          "startMs": 279000,
+          "endMs": 279500,
+          "startFrame": 8370,
+          "endFrame": 8385,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 279500,
+          "endMs": 280000,
+          "startFrame": 8385,
+          "endFrame": 8400,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unconventional",
+          "startMs": 280000,
+          "endMs": 280500,
+          "startFrame": 8400,
+          "endFrame": 8415,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "could",
+          "startMs": 280500,
+          "endMs": 281000,
+          "startFrame": 8415,
+          "endFrame": 8430,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "be",
+          "startMs": 281000,
+          "endMs": 281500,
+          "startFrame": 8430,
+          "endFrame": 8445,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "effective,",
+          "startMs": 281500,
+          "endMs": 282000,
+          "startFrame": 8445,
+          "endFrame": 8460,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 282000,
+          "endMs": 282500,
+          "startFrame": 8460,
+          "endFrame": 8475,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 282500,
+          "endMs": 283000,
+          "startFrame": 8475,
+          "endFrame": 8490,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 283000,
+          "endMs": 283500,
+          "startFrame": 8490,
+          "endFrame": 8505,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "blend",
+          "startMs": 283500,
+          "endMs": 284000,
+          "startFrame": 8505,
+          "endFrame": 8520,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 284000,
+          "endMs": 284500,
+          "startFrame": 8520,
+          "endFrame": 8535,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "physical",
+          "startMs": 284500,
+          "endMs": 285000,
+          "startFrame": 8535,
+          "endFrame": 8550,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "prowess",
+          "startMs": 285000,
+          "endMs": 285500,
+          "startFrame": 8550,
+          "endFrame": 8565,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 285500,
+          "endMs": 286000,
+          "startFrame": 8565,
+          "endFrame": 8580,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "intellectual",
+          "startMs": 286000,
+          "endMs": 286500,
+          "startFrame": 8580,
+          "endFrame": 8595,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "depth",
+          "startMs": 286500,
+          "endMs": 287000,
+          "startFrame": 8595,
+          "endFrame": 8610,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "could",
+          "startMs": 287000,
+          "endMs": 287500,
+          "startFrame": 8610,
+          "endFrame": 8625,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "redefine",
+          "startMs": 287500,
+          "endMs": 288000,
+          "startFrame": 8625,
+          "endFrame": 8640,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "athletic",
+          "startMs": 288000,
+          "endMs": 288500,
+          "startFrame": 8640,
+          "endFrame": 8655,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "possibility.",
+          "startMs": 288500,
+          "endMs": 289000,
+          "startFrame": 8655,
+          "endFrame": 8670,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "He inspired a new wave of players to embrace their full potential.",
+      "position": "bottom",
+      "startMs": 289000,
+      "endMs": 295000,
+      "startFrame": 8670,
+      "endFrame": 8850,
+      "words": [
+        {
+          "text": "He",
+          "startMs": 289000,
+          "endMs": 289500,
+          "startFrame": 8670,
+          "endFrame": 8685,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "inspired",
+          "startMs": 289500,
+          "endMs": 290000,
+          "startFrame": 8685,
+          "endFrame": 8700,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 290000,
+          "endMs": 290500,
+          "startFrame": 8700,
+          "endFrame": 8715,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 290500,
+          "endMs": 291000,
+          "startFrame": 8715,
+          "endFrame": 8730,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "wave",
+          "startMs": 291000,
+          "endMs": 291500,
+          "startFrame": 8730,
+          "endFrame": 8745,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 291500,
+          "endMs": 292000,
+          "startFrame": 8745,
+          "endFrame": 8760,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "players",
+          "startMs": 292000,
+          "endMs": 292500,
+          "startFrame": 8760,
+          "endFrame": 8775,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 292500,
+          "endMs": 293000,
+          "startFrame": 8775,
+          "endFrame": 8790,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "embrace",
+          "startMs": 293000,
+          "endMs": 293500,
+          "startFrame": 8790,
+          "endFrame": 8805,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "their",
+          "startMs": 293500,
+          "endMs": 294000,
+          "startFrame": 8805,
+          "endFrame": 8820,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "full",
+          "startMs": 294000,
+          "endMs": 294500,
+          "startFrame": 8820,
+          "endFrame": 8835,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "potential.",
+          "startMs": 294500,
+          "endMs": 295000,
+          "startFrame": 8835,
+          "endFrame": 8850,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "So, what is 'The Cam Newton Code'?",
+      "position": "bottom",
+      "startMs": 295000,
+      "endMs": 298500,
+      "startFrame": 8850,
+      "endFrame": 8955,
+      "words": [
+        {
+          "text": "So,",
+          "startMs": 295000,
+          "endMs": 295500,
+          "startFrame": 8850,
+          "endFrame": 8865,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "what",
+          "startMs": 295500,
+          "endMs": 296000,
+          "startFrame": 8865,
+          "endFrame": 8880,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 296000,
+          "endMs": 296500,
+          "startFrame": 8880,
+          "endFrame": 8895,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "'The",
+          "startMs": 296500,
+          "endMs": 297000,
+          "startFrame": 8895,
+          "endFrame": 8910,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Cam",
+          "startMs": 297000,
+          "endMs": 297500,
+          "startFrame": 8910,
+          "endFrame": 8925,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Newton",
+          "startMs": 297500,
+          "endMs": 298000,
+          "startFrame": 8925,
+          "endFrame": 8940,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Code'?",
+          "startMs": 298000,
+          "endMs": 298500,
+          "startFrame": 8940,
+          "endFrame": 8955,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 4
+    },
+    {
+      "text": "It’s the fusion of biomechanical innovation, fearless leadership, mental fortitude, and creative playmaking.",
+      "position": "bottom",
+      "startMs": 298500,
+      "endMs": 305000,
+      "startFrame": 8955,
+      "endFrame": 9150,
+      "words": [
+        {
+          "text": "It’s",
+          "startMs": 298500,
+          "endMs": 299000,
+          "startFrame": 8955,
+          "endFrame": 8970,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 299000,
+          "endMs": 299500,
+          "startFrame": 8970,
+          "endFrame": 8985,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fusion",
+          "startMs": 299500,
+          "endMs": 300000,
+          "startFrame": 8985,
+          "endFrame": 9000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 300000,
+          "endMs": 300500,
+          "startFrame": 9000,
+          "endFrame": 9015,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "biomechanical",
+          "startMs": 300500,
+          "endMs": 301000,
+          "startFrame": 9015,
+          "endFrame": 9030,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "innovation,",
+          "startMs": 301000,
+          "endMs": 301500,
+          "startFrame": 9030,
+          "endFrame": 9045,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "fearless",
+          "startMs": 301500,
+          "endMs": 302000,
+          "startFrame": 9045,
+          "endFrame": 9060,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leadership,",
+          "startMs": 302000,
+          "endMs": 302500,
+          "startFrame": 9060,
+          "endFrame": 9075,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "mental",
+          "startMs": 302500,
+          "endMs": 303000,
+          "startFrame": 9075,
+          "endFrame": 9090,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fortitude,",
+          "startMs": 303000,
+          "endMs": 303500,
+          "startFrame": 9090,
+          "endFrame": 9105,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 303500,
+          "endMs": 304000,
+          "startFrame": 9105,
+          "endFrame": 9120,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 304000,
+          "endMs": 304500,
+          "startFrame": 9120,
+          "endFrame": 9135,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "playmaking.",
+          "startMs": 304500,
+          "endMs": 305000,
+          "startFrame": 9135,
+          "endFrame": 9150,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "It's the courage to be yourself and to challenge the status quo.",
+      "position": "bottom",
+      "startMs": 305000,
+      "endMs": 311000,
+      "startFrame": 9150,
+      "endFrame": 9330,
+      "words": [
+        {
+          "text": "It's",
+          "startMs": 305000,
+          "endMs": 305500,
+          "startFrame": 9150,
+          "endFrame": 9165,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 305500,
+          "endMs": 306000,
+          "startFrame": 9165,
+          "endFrame": 9180,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "courage",
+          "startMs": 306000,
+          "endMs": 306500,
+          "startFrame": 9180,
+          "endFrame": 9195,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 306500,
+          "endMs": 307000,
+          "startFrame": 9195,
+          "endFrame": 9210,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "be",
+          "startMs": 307000,
+          "endMs": 307500,
+          "startFrame": 9210,
+          "endFrame": 9225,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "yourself",
+          "startMs": 307500,
+          "endMs": 308000,
+          "startFrame": 9225,
+          "endFrame": 9240,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 308000,
+          "endMs": 308500,
+          "startFrame": 9240,
+          "endFrame": 9255,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 308500,
+          "endMs": 309000,
+          "startFrame": 9255,
+          "endFrame": 9270,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "challenge",
+          "startMs": 309000,
+          "endMs": 309500,
+          "startFrame": 9270,
+          "endFrame": 9285,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 309500,
+          "endMs": 310000,
+          "startFrame": 9285,
+          "endFrame": 9300,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "status",
+          "startMs": 310000,
+          "endMs": 310500,
+          "startFrame": 9300,
+          "endFrame": 9315,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quo.",
+          "startMs": 310500,
+          "endMs": 311000,
+          "startFrame": 9315,
+          "endFrame": 9330,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "What lessons can you take from Cam Newton's incredible journey to revolutionize your own game, in sports or in life?",
+      "position": "bottom",
+      "startMs": 311000,
+      "endMs": 321000,
+      "startFrame": 9330,
+      "endFrame": 9630,
+      "words": [
+        {
+          "text": "What",
+          "startMs": 311000,
+          "endMs": 311500,
+          "startFrame": 9330,
+          "endFrame": 9345,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "lessons",
+          "startMs": 311500,
+          "endMs": 312000,
+          "startFrame": 9345,
+          "endFrame": 9360,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 312000,
+          "endMs": 312500,
+          "startFrame": 9360,
+          "endFrame": 9375,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 312500,
+          "endMs": 313000,
+          "startFrame": 9375,
+          "endFrame": 9390,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "take",
+          "startMs": 313000,
+          "endMs": 313500,
+          "startFrame": 9390,
+          "endFrame": 9405,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "from",
+          "startMs": 313500,
+          "endMs": 314000,
+          "startFrame": 9405,
+          "endFrame": 9420,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Cam",
+          "startMs": 314000,
+          "endMs": 314500,
+          "startFrame": 9420,
+          "endFrame": 9435,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Newton's",
+          "startMs": 314500,
+          "endMs": 315000,
+          "startFrame": 9435,
+          "endFrame": 9450,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "incredible",
+          "startMs": 315000,
+          "endMs": 315500,
+          "startFrame": 9450,
+          "endFrame": 9465,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "journey",
+          "startMs": 315500,
+          "endMs": 316000,
+          "startFrame": 9465,
+          "endFrame": 9480,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 316000,
+          "endMs": 316500,
+          "startFrame": 9480,
+          "endFrame": 9495,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionize",
+          "startMs": 316500,
+          "endMs": 317000,
+          "startFrame": 9495,
+          "endFrame": 9510,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 317000,
+          "endMs": 317500,
+          "startFrame": 9510,
+          "endFrame": 9525,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "own",
+          "startMs": 317500,
+          "endMs": 318000,
+          "startFrame": 9525,
+          "endFrame": 9540,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game,",
+          "startMs": 318000,
+          "endMs": 318500,
+          "startFrame": 9540,
+          "endFrame": 9555,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 318500,
+          "endMs": 319000,
+          "startFrame": 9555,
+          "endFrame": 9570,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sports",
+          "startMs": 319000,
+          "endMs": 319500,
+          "startFrame": 9570,
+          "endFrame": 9585,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "or",
+          "startMs": 319500,
+          "endMs": 320000,
+          "startFrame": 9585,
+          "endFrame": 9600,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 320000,
+          "endMs": 320500,
+          "startFrame": 9600,
+          "endFrame": 9615,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "life?",
+          "startMs": 320500,
+          "endMs": 321000,
+          "startFrame": 9615,
+          "endFrame": 9630,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 5
+    },
+    {
+      "text": "Let us know your biggest takeaways in the comments below, and don't forget to like and subscribe for more deep dives into the minds that shape our world!",
+      "position": "bottom",
+      "startMs": 321000,
+      "endMs": 335000,
+      "startFrame": 9630,
+      "endFrame": 10050,
+      "words": [
+        {
+          "text": "Let",
+          "startMs": 321000,
+          "endMs": 321500,
+          "startFrame": 9630,
+          "endFrame": 9645,
+          "emphasis": {
+            "level": "high",
+            "tone": "warm"
+          }
+        },
+        {
+          "text": "us",
+          "startMs": 321500,
+          "endMs": 322000,
+          "startFrame": 9645,
+          "endFrame": 9660,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "know",
+          "startMs": 322000,
+          "endMs": 322500,
+          "startFrame": 9660,
+          "endFrame": 9675,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 322500,
+          "endMs": 323000,
+          "startFrame": 9675,
+          "endFrame": 9690,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "biggest",
+          "startMs": 323000,
+          "endMs": 323500,
+          "startFrame": 9690,
+          "endFrame": 9705,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "takeaways",
+          "startMs": 323500,
+          "endMs": 324000,
+          "startFrame": 9705,
+          "endFrame": 9720,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 324000,
+          "endMs": 324500,
+          "startFrame": 9720,
+          "endFrame": 9735,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 324500,
+          "endMs": 325000,
+          "startFrame": 9735,
+          "endFrame": 9750,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "comments",
+          "startMs": 325000,
+          "endMs": 325500,
+          "startFrame": 9750,
+          "endFrame": 9765,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "below,",
+          "startMs": 325500,
+          "endMs": 326000,
+          "startFrame": 9765,
+          "endFrame": 9780,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 326000,
+          "endMs": 326500,
+          "startFrame": 9780,
+          "endFrame": 9795,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "don't",
+          "startMs": 326500,
+          "endMs": 327000,
+          "startFrame": 9795,
+          "endFrame": 9810,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "forget",
+          "startMs": 327000,
+          "endMs": 327500,
+          "startFrame": 9810,
+          "endFrame": 9825,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 327500,
+          "endMs": 328000,
+          "startFrame": 9825,
+          "endFrame": 9840,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 328000,
+          "endMs": 328500,
+          "startFrame": 9840,
+          "endFrame": 9855,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 328500,
+          "endMs": 329000,
+          "startFrame": 9855,
+          "endFrame": 9870,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "subscribe",
+          "startMs": 329000,
+          "endMs": 329500,
+          "startFrame": 9870,
+          "endFrame": 9885,
+          "emphasis": {
+            "level": "high",
+            "tone": "warm"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 329500,
+          "endMs": 330000,
+          "startFrame": 9885,
+          "endFrame": 9900,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "more",
+          "startMs": 330000,
+          "endMs": 330500,
+          "startFrame": 9900,
+          "endFrame": 9915,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deep",
+          "startMs": 330500,
+          "endMs": 331000,
+          "startFrame": 9915,
+          "endFrame": 9930,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dives",
+          "startMs": 331000,
+          "endMs": 331500,
+          "startFrame": 9930,
+          "endFrame": 9945,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 331500,
+          "endMs": 332000,
+          "startFrame": 9945,
+          "endFrame": 9960,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 332000,
+          "endMs": 332500,
+          "startFrame": 9960,
+          "endFrame": 9975,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "minds",
+          "startMs": 332500,
+          "endMs": 333000,
+          "startFrame": 9975,
+          "endFrame": 9990,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 333000,
+          "endMs": 333500,
+          "startFrame": 9990,
+          "endFrame": 10005,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "shape",
+          "startMs": 333500,
+          "endMs": 334000,
+          "startFrame": 10005,
+          "endFrame": 10020,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "our",
+          "startMs": 334000,
+          "endMs": 334500,
+          "startFrame": 10020,
+          "endFrame": 10035,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "world!",
+          "startMs": 334500,
+          "endMs": 335000,
+          "startFrame": 10035,
+          "endFrame": 10050,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ],
+      "holdFrames": 6
+    }
+  ],
+  "audio": [
+    {
+      "audioUrl": "segment-1",
+      "startMs": 1000,
+      "endMs": 30000,
+      "startFrame": 30,
+      "endFrame": 900
+    },
+    {
+      "audioUrl": "segment-2",
+      "startMs": 30000,
+      "endMs": 73500,
+      "startFrame": 900,
+      "endFrame": 2205
+    },
+    {
+      "audioUrl": "segment-3",
+      "startMs": 73500,
+      "endMs": 108000,
+      "startFrame": 2205,
+      "endFrame": 3240
+    },
+    {
+      "audioUrl": "segment-4",
+      "startMs": 108000,
+      "endMs": 143500,
+      "startFrame": 3240,
+      "endFrame": 4305
+    },
+    {
+      "audioUrl": "segment-5",
+      "startMs": 143500,
+      "endMs": 179000,
+      "startFrame": 4305,
+      "endFrame": 5370
+    },
+    {
+      "audioUrl": "segment-6",
+      "startMs": 179000,
+      "endMs": 210000,
+      "startFrame": 5370,
+      "endFrame": 6300
+    },
+    {
+      "audioUrl": "segment-7",
+      "startMs": 210000,
+      "endMs": 241000,
+      "startFrame": 6300,
+      "endFrame": 7230
+    },
+    {
+      "audioUrl": "segment-8",
+      "startMs": 241000,
+      "endMs": 266000,
+      "startFrame": 7230,
+      "endFrame": 7980
+    },
+    {
+      "audioUrl": "segment-9",
+      "startMs": 266000,
+      "endMs": 295000,
+      "startFrame": 7980,
+      "endFrame": 8850
+    },
+    {
+      "audioUrl": "segment-10",
+      "startMs": 295000,
+      "endMs": 335000,
+      "startFrame": 8850,
+      "endFrame": 10050
+    }
+  ]
+}

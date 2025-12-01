@@ -1,0 +1,6562 @@
+{
+  "shortTitle": "AI Video Creation: Revolutionizing How We Make Videos (Future-Proof Your Skills!)",
+  "aspectRatio": "16:9",
+  "durationSeconds": 390,
+  "elements": [
+    {
+      "videoUrl": "2a0d2558d153ac70398bad646e3fc9f22b52fbbc16de2cd93d7e343cd1fcaaf1",
+      "startMs": 1000,
+      "endMs": 34500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 14.91
+      }
+    },
+    {
+      "videoUrl": "3de5bcafdc715ff9fd33645db29a10df560fa9a669b8b37c1fd8430393305e58",
+      "startMs": 34500,
+      "endMs": 79000,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 15.56
+      }
+    },
+    {
+      "videoUrl": "614b9582c8f376cec4b9638ebf6c70b3099432c55dff888ca002af21ad6c2eb4",
+      "startMs": 79000,
+      "endMs": 121000,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 17.35
+      }
+    },
+    {
+      "videoUrl": "df344d8302b59f8c76cb494a87775faa6622d840adb1b5288c7f8cafb4dde2bc",
+      "startMs": 121000,
+      "endMs": 163000,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 18.82
+      }
+    },
+    {
+      "videoUrl": "3de5bcafdc715ff9fd33645db29a10df560fa9a669b8b37c1fd8430393305e58",
+      "startMs": 163000,
+      "endMs": 201500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 15.56
+      }
+    },
+    {
+      "videoUrl": "614b9582c8f376cec4b9638ebf6c70b3099432c55dff888ca002af21ad6c2eb4",
+      "startMs": 201500,
+      "endMs": 238500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 17.35
+      }
+    },
+    {
+      "videoUrl": "52cff29d79c1510a6e873a72b067b47ccbac789417a381fa7f2054417a7f2a17",
+      "startMs": 238500,
+      "endMs": 275500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 6.95
+      }
+    },
+    {
+      "videoUrl": "f5ad5413e50581728acd12b3860551b4",
+      "startMs": 275500,
+      "endMs": 311500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "duration": 11,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944
+      }
+    },
+    {
+      "videoUrl": "614b9582c8f376cec4b9638ebf6c70b3099432c55dff888ca002af21ad6c2eb4",
+      "startMs": 311500,
+      "endMs": 346500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 17.35
+      }
+    },
+    {
+      "videoUrl": "2a0d2558d153ac70398bad646e3fc9f22b52fbbc16de2cd93d7e343cd1fcaaf1",
+      "startMs": 346500,
+      "endMs": 389500,
+      "enterTransition": "fade",
+      "exitTransition": "fade",
+      "mediaMetadata": {
+        "width": 3840,
+        "height": 2160,
+        "mode": "crop",
+        "scale": 0.5555555555555556,
+        "cropX": 192,
+        "cropY": 108,
+        "cropWidth": 3456,
+        "cropHeight": 1944,
+        "duration": 14.91
+      }
+    }
+  ],
+  "text": [
+    {
+      "text": "Ever feel like creating amazing videos is a Herculean task? Spending hours editing, brainstorming scripts, and agonizing over visuals? Well, get ready, because the way we make videos is undergoing a radical, AI-driven transformation. In this video, we're diving deep into how Artificial Intelligence is not just changing the game, but completely revolutionizing video creation, and how YOU can future-proof your skills in this exciting new era!",
+      "position": "bottom",
+      "startMs": 1000,
+      "endMs": 34500,
+      "words": [
+        {
+          "text": "Ever",
+          "startMs": 1000,
+          "endMs": 1500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "feel",
+          "startMs": 1500,
+          "endMs": 2000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 2000,
+          "endMs": 2500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creating",
+          "startMs": 2500,
+          "endMs": 3000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "amazing",
+          "startMs": 3000,
+          "endMs": 3500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "videos",
+          "startMs": 3500,
+          "endMs": 4000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 4000,
+          "endMs": 4500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 4500,
+          "endMs": 5000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Herculean",
+          "startMs": 5000,
+          "endMs": 5500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "task?",
+          "startMs": 5500,
+          "endMs": 6000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Spending",
+          "startMs": 6000,
+          "endMs": 6500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "hours",
+          "startMs": 6500,
+          "endMs": 7000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "editing,",
+          "startMs": 7000,
+          "endMs": 7500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "brainstorming",
+          "startMs": 7500,
+          "endMs": 8000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scripts,",
+          "startMs": 8000,
+          "endMs": 8500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 8500,
+          "endMs": 9000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "agonizing",
+          "startMs": 9000,
+          "endMs": 9500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "over",
+          "startMs": 9500,
+          "endMs": 10000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visuals?",
+          "startMs": 10000,
+          "endMs": 10500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Well,",
+          "startMs": 10500,
+          "endMs": 11000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "get",
+          "startMs": 11000,
+          "endMs": 11500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ready,",
+          "startMs": 11500,
+          "endMs": 12000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "because",
+          "startMs": 12000,
+          "endMs": 12500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 12500,
+          "endMs": 13000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "way",
+          "startMs": 13000,
+          "endMs": 13500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "we",
+          "startMs": 13500,
+          "endMs": 14000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "make",
+          "startMs": 14000,
+          "endMs": 14500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "videos",
+          "startMs": 14500,
+          "endMs": 15000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 15000,
+          "endMs": 15500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "undergoing",
+          "startMs": 15500,
+          "endMs": 16000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 16000,
+          "endMs": 16500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "radical,",
+          "startMs": 16500,
+          "endMs": 17000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "AI-driven",
+          "startMs": 17000,
+          "endMs": 17500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "transformation.",
+          "startMs": 17500,
+          "endMs": 18000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "In",
+          "startMs": 18000,
+          "endMs": 18500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this",
+          "startMs": 18500,
+          "endMs": 19000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video,",
+          "startMs": 19000,
+          "endMs": 19500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "we're",
+          "startMs": 19500,
+          "endMs": 20000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "diving",
+          "startMs": 20000,
+          "endMs": 20500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deep",
+          "startMs": 20500,
+          "endMs": 21000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 21000,
+          "endMs": 21500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "how",
+          "startMs": 21500,
+          "endMs": 22000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Artificial",
+          "startMs": 22000,
+          "endMs": 22500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Intelligence",
+          "startMs": 22500,
+          "endMs": 23000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 23000,
+          "endMs": 23500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "not",
+          "startMs": 23500,
+          "endMs": 24000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 24000,
+          "endMs": 24500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "changing",
+          "startMs": 24500,
+          "endMs": 25000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 25000,
+          "endMs": 25500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game,",
+          "startMs": 25500,
+          "endMs": 26000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 26000,
+          "endMs": 26500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "completely",
+          "startMs": 26500,
+          "endMs": 27000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionizing",
+          "startMs": 27000,
+          "endMs": 27500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 27500,
+          "endMs": 28000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creation,",
+          "startMs": 28000,
+          "endMs": 28500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 28500,
+          "endMs": 29000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "how",
+          "startMs": 29000,
+          "endMs": 29500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "YOU",
+          "startMs": 29500,
+          "endMs": 30000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 30000,
+          "endMs": 30500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "future-proof",
+          "startMs": 30500,
+          "endMs": 31000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 31000,
+          "endMs": 31500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "skills",
+          "startMs": 31500,
+          "endMs": 32000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 32000,
+          "endMs": 32500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this",
+          "startMs": 32500,
+          "endMs": 33000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "exciting",
+          "startMs": 33000,
+          "endMs": 33500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 33500,
+          "endMs": 34000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "era!",
+          "startMs": 34000,
+          "endMs": 34500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "First up, let's talk about post-production. For years, editing was the bottleneck. But AI is changing that dramatically. Tools like Descript can now auto-transcribe your footage, allowing you to edit video simply by editing text. Imagine deleting a sentence, and the corresponding video footage is removed. AI can automatically identify and remove filler words, generate accurate subtitles in multiple languages, perform advanced color correction, and even intelligently remove backgrounds – all with minimal human input. This frees up creators to focus on the story, not just the tedious technicalities.",
+      "position": "bottom",
+      "startMs": 34500,
+      "endMs": 79000,
+      "words": [
+        {
+          "text": "First",
+          "startMs": 34500,
+          "endMs": 35000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "up,",
+          "startMs": 35000,
+          "endMs": 35500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "let's",
+          "startMs": 35500,
+          "endMs": 36000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "talk",
+          "startMs": 36000,
+          "endMs": 36500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 36500,
+          "endMs": 37000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "post-production.",
+          "startMs": 37000,
+          "endMs": 37500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "For",
+          "startMs": 37500,
+          "endMs": 38000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "years,",
+          "startMs": 38000,
+          "endMs": 38500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "editing",
+          "startMs": 38500,
+          "endMs": 39000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "was",
+          "startMs": 39000,
+          "endMs": 39500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 39500,
+          "endMs": 40000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "bottleneck.",
+          "startMs": 40000,
+          "endMs": 40500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "But",
+          "startMs": 40500,
+          "endMs": 41000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 41000,
+          "endMs": 41500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 41500,
+          "endMs": 42000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "changing",
+          "startMs": 42000,
+          "endMs": 42500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 42500,
+          "endMs": 43000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dramatically.",
+          "startMs": 43000,
+          "endMs": 43500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "Tools",
+          "startMs": 43500,
+          "endMs": 44000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 44000,
+          "endMs": 44500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Descript",
+          "startMs": 44500,
+          "endMs": 45000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 45000,
+          "endMs": 45500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "now",
+          "startMs": 45500,
+          "endMs": 46000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "auto-transcribe",
+          "startMs": 46000,
+          "endMs": 46500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 46500,
+          "endMs": 47000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "footage,",
+          "startMs": 47000,
+          "endMs": 47500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "allowing",
+          "startMs": 47500,
+          "endMs": 48000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 48000,
+          "endMs": 48500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 48500,
+          "endMs": 49000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "edit",
+          "startMs": 49000,
+          "endMs": 49500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 49500,
+          "endMs": 50000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "simply",
+          "startMs": 50000,
+          "endMs": 50500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "by",
+          "startMs": 50500,
+          "endMs": 51000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "editing",
+          "startMs": 51000,
+          "endMs": 51500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "text.",
+          "startMs": 51500,
+          "endMs": 52000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Imagine",
+          "startMs": 52000,
+          "endMs": 52500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "deleting",
+          "startMs": 52500,
+          "endMs": 53000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 53000,
+          "endMs": 53500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sentence,",
+          "startMs": 53500,
+          "endMs": 54000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 54000,
+          "endMs": 54500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 54500,
+          "endMs": 55000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "corresponding",
+          "startMs": 55000,
+          "endMs": 55500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 55500,
+          "endMs": 56000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "footage",
+          "startMs": 56000,
+          "endMs": 56500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 56500,
+          "endMs": 57000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "removed.",
+          "startMs": 57000,
+          "endMs": 57500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 57500,
+          "endMs": 58000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 58000,
+          "endMs": 58500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "automatically",
+          "startMs": 58500,
+          "endMs": 59000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "identify",
+          "startMs": 59000,
+          "endMs": 59500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 59500,
+          "endMs": 60000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "remove",
+          "startMs": 60000,
+          "endMs": 60500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "filler",
+          "startMs": 60500,
+          "endMs": 61000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "words,",
+          "startMs": 61000,
+          "endMs": 61500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generate",
+          "startMs": 61500,
+          "endMs": 62000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "accurate",
+          "startMs": 62000,
+          "endMs": 62500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "subtitles",
+          "startMs": 62500,
+          "endMs": 63000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 63000,
+          "endMs": 63500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "multiple",
+          "startMs": 63500,
+          "endMs": 64000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "languages,",
+          "startMs": 64000,
+          "endMs": 64500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "perform",
+          "startMs": 64500,
+          "endMs": 65000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "advanced",
+          "startMs": 65000,
+          "endMs": 65500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "color",
+          "startMs": 65500,
+          "endMs": 66000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "correction,",
+          "startMs": 66000,
+          "endMs": 66500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 66500,
+          "endMs": 67000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 67000,
+          "endMs": 67500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "intelligently",
+          "startMs": 67500,
+          "endMs": 68000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "remove",
+          "startMs": 68000,
+          "endMs": 68500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "backgrounds",
+          "startMs": 68500,
+          "endMs": 69000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 69000,
+          "endMs": 69500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "all",
+          "startMs": 69500,
+          "endMs": 70000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 70000,
+          "endMs": 70500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "minimal",
+          "startMs": 70500,
+          "endMs": 71000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "human",
+          "startMs": 71000,
+          "endMs": 71500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "input.",
+          "startMs": 71500,
+          "endMs": 72000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "This",
+          "startMs": 72000,
+          "endMs": 72500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "frees",
+          "startMs": 72500,
+          "endMs": 73000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "up",
+          "startMs": 73000,
+          "endMs": 73500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creators",
+          "startMs": 73500,
+          "endMs": 74000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 74000,
+          "endMs": 74500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "focus",
+          "startMs": 74500,
+          "endMs": 75000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 75000,
+          "endMs": 75500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 75500,
+          "endMs": 76000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "story,",
+          "startMs": 76000,
+          "endMs": 76500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "not",
+          "startMs": 76500,
+          "endMs": 77000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 77000,
+          "endMs": 77500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 77500,
+          "endMs": 78000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tedious",
+          "startMs": 78000,
+          "endMs": 78500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "technicalities.",
+          "startMs": 78500,
+          "endMs": 79000,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Now, for the real magic: creating video *from* text. Think about it – you can describe a scene, a concept, or a narrative, and AI tools can generate the visuals. Platforms like OpenAI's Sora, RunwayML, and Pika Labs are pushing boundaries, turning simple text prompts into dynamic video clips. While still evolving, these tools are opening up incredible possibilities for rapid prototyping, concept visualization, and even generating unique B-roll content. This democratizes video creation, putting powerful visual storytelling tools into the hands of everyone.",
+      "position": "bottom",
+      "startMs": 79000,
+      "endMs": 121000,
+      "words": [
+        {
+          "text": "Now,",
+          "startMs": 79000,
+          "endMs": 79500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 79500,
+          "endMs": 80000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 80000,
+          "endMs": 80500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "real",
+          "startMs": 80500,
+          "endMs": 81000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "magic:",
+          "startMs": 81000,
+          "endMs": 81500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "creating",
+          "startMs": 81500,
+          "endMs": 82000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 82000,
+          "endMs": 82500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "*from*",
+          "startMs": 82500,
+          "endMs": 83000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "text.",
+          "startMs": 83000,
+          "endMs": 83500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Think",
+          "startMs": 83500,
+          "endMs": 84000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 84000,
+          "endMs": 84500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 84500,
+          "endMs": 85000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 85000,
+          "endMs": 85500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 85500,
+          "endMs": 86000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 86000,
+          "endMs": 86500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "describe",
+          "startMs": 86500,
+          "endMs": 87000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 87000,
+          "endMs": 87500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scene,",
+          "startMs": 87500,
+          "endMs": 88000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 88000,
+          "endMs": 88500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concept,",
+          "startMs": 88500,
+          "endMs": 89000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "or",
+          "startMs": 89000,
+          "endMs": 89500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 89500,
+          "endMs": 90000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "narrative,",
+          "startMs": 90000,
+          "endMs": 90500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 90500,
+          "endMs": 91000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 91000,
+          "endMs": 91500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "tools",
+          "startMs": 91500,
+          "endMs": 92000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 92000,
+          "endMs": 92500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generate",
+          "startMs": 92500,
+          "endMs": 93000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 93000,
+          "endMs": 93500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visuals.",
+          "startMs": 93500,
+          "endMs": 94000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Platforms",
+          "startMs": 94000,
+          "endMs": 94500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 94500,
+          "endMs": 95000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "OpenAI's",
+          "startMs": 95000,
+          "endMs": 95500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Sora,",
+          "startMs": 95500,
+          "endMs": 96000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "RunwayML,",
+          "startMs": 96000,
+          "endMs": 96500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 96500,
+          "endMs": 97000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Pika",
+          "startMs": 97000,
+          "endMs": 97500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "Labs",
+          "startMs": 97500,
+          "endMs": 98000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 98000,
+          "endMs": 98500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "pushing",
+          "startMs": 98500,
+          "endMs": 99000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "boundaries,",
+          "startMs": 99000,
+          "endMs": 99500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "turning",
+          "startMs": 99500,
+          "endMs": 100000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "simple",
+          "startMs": 100000,
+          "endMs": 100500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "text",
+          "startMs": 100500,
+          "endMs": 101000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "prompts",
+          "startMs": 101000,
+          "endMs": 101500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 101500,
+          "endMs": 102000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dynamic",
+          "startMs": 102000,
+          "endMs": 102500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 102500,
+          "endMs": 103000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "clips.",
+          "startMs": 103000,
+          "endMs": 103500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "While",
+          "startMs": 103500,
+          "endMs": 104000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "still",
+          "startMs": 104000,
+          "endMs": 104500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "evolving,",
+          "startMs": 104500,
+          "endMs": 105000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "these",
+          "startMs": 105000,
+          "endMs": 105500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tools",
+          "startMs": 105500,
+          "endMs": 106000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 106000,
+          "endMs": 106500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "opening",
+          "startMs": 106500,
+          "endMs": 107000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "up",
+          "startMs": 107000,
+          "endMs": 107500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "incredible",
+          "startMs": 107500,
+          "endMs": 108000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "possibilities",
+          "startMs": 108000,
+          "endMs": 108500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 108500,
+          "endMs": 109000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "rapid",
+          "startMs": 109000,
+          "endMs": 109500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "prototyping,",
+          "startMs": 109500,
+          "endMs": 110000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concept",
+          "startMs": 110000,
+          "endMs": 110500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visualization,",
+          "startMs": 110500,
+          "endMs": 111000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 111000,
+          "endMs": 111500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 111500,
+          "endMs": 112000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generating",
+          "startMs": 112000,
+          "endMs": 112500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 112500,
+          "endMs": 113000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "B-roll",
+          "startMs": 113000,
+          "endMs": 113500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "content.",
+          "startMs": 113500,
+          "endMs": 114000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "This",
+          "startMs": 114000,
+          "endMs": 114500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "democratizes",
+          "startMs": 114500,
+          "endMs": 115000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 115000,
+          "endMs": 115500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creation,",
+          "startMs": 115500,
+          "endMs": 116000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "putting",
+          "startMs": 116000,
+          "endMs": 116500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "powerful",
+          "startMs": 116500,
+          "endMs": 117000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visual",
+          "startMs": 117000,
+          "endMs": 117500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "storytelling",
+          "startMs": 117500,
+          "endMs": 118000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tools",
+          "startMs": 118000,
+          "endMs": 118500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 118500,
+          "endMs": 119000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 119000,
+          "endMs": 119500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "hands",
+          "startMs": 119500,
+          "endMs": 120000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 120000,
+          "endMs": 120500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "everyone.",
+          "startMs": 120500,
+          "endMs": 121000,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "But it doesn't stop at the visuals. AI is also becoming a powerful co-pilot in pre-production. Struggling with writer's block? AI assistants like ChatGPT can help brainstorm ideas, outline scripts, and even draft entire narratives based on your input. Need to visualize your story? AI image generators can help create storyboards, concept art, or mood boards, giving you a tangible feel for your project before you even hit record. This integrated AI approach streamlines the entire creative process, making ideation faster and more collaborative.",
+      "position": "bottom",
+      "startMs": 121000,
+      "endMs": 163000,
+      "words": [
+        {
+          "text": "But",
+          "startMs": 121000,
+          "endMs": 121500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 121500,
+          "endMs": 122000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "doesn't",
+          "startMs": 122000,
+          "endMs": 122500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "stop",
+          "startMs": 122500,
+          "endMs": 123000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "at",
+          "startMs": 123000,
+          "endMs": 123500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 123500,
+          "endMs": 124000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visuals.",
+          "startMs": 124000,
+          "endMs": 124500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 124500,
+          "endMs": 125000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 125000,
+          "endMs": 125500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "also",
+          "startMs": 125500,
+          "endMs": 126000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "becoming",
+          "startMs": 126000,
+          "endMs": 126500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 126500,
+          "endMs": 127000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "powerful",
+          "startMs": 127000,
+          "endMs": 127500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "co-pilot",
+          "startMs": 127500,
+          "endMs": 128000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 128000,
+          "endMs": 128500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "pre-production.",
+          "startMs": 128500,
+          "endMs": 129000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Struggling",
+          "startMs": 129000,
+          "endMs": 129500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 129500,
+          "endMs": 130000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "writer's",
+          "startMs": 130000,
+          "endMs": 130500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "block?",
+          "startMs": 130500,
+          "endMs": 131000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 131000,
+          "endMs": 131500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "assistants",
+          "startMs": 131500,
+          "endMs": 132000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 132000,
+          "endMs": 132500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ChatGPT",
+          "startMs": 132500,
+          "endMs": 133000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 133000,
+          "endMs": 133500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "help",
+          "startMs": 133500,
+          "endMs": 134000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "brainstorm",
+          "startMs": 134000,
+          "endMs": 134500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ideas,",
+          "startMs": 134500,
+          "endMs": 135000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "outline",
+          "startMs": 135000,
+          "endMs": 135500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scripts,",
+          "startMs": 135500,
+          "endMs": 136000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 136000,
+          "endMs": 136500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 136500,
+          "endMs": 137000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "draft",
+          "startMs": 137000,
+          "endMs": 137500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entire",
+          "startMs": 137500,
+          "endMs": 138000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "narratives",
+          "startMs": 138000,
+          "endMs": 138500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "based",
+          "startMs": 138500,
+          "endMs": 139000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 139000,
+          "endMs": 139500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 139500,
+          "endMs": 140000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "input.",
+          "startMs": 140000,
+          "endMs": 140500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Need",
+          "startMs": 140500,
+          "endMs": 141000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 141000,
+          "endMs": 141500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visualize",
+          "startMs": 141500,
+          "endMs": 142000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 142000,
+          "endMs": 142500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "story?",
+          "startMs": 142500,
+          "endMs": 143000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 143000,
+          "endMs": 143500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "image",
+          "startMs": 143500,
+          "endMs": 144000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "generators",
+          "startMs": 144000,
+          "endMs": 144500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 144500,
+          "endMs": 145000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "help",
+          "startMs": 145000,
+          "endMs": 145500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "create",
+          "startMs": 145500,
+          "endMs": 146000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "storyboards,",
+          "startMs": 146000,
+          "endMs": 146500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concept",
+          "startMs": 146500,
+          "endMs": 147000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "art,",
+          "startMs": 147000,
+          "endMs": 147500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "or",
+          "startMs": 147500,
+          "endMs": 148000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mood",
+          "startMs": 148000,
+          "endMs": 148500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "boards,",
+          "startMs": 148500,
+          "endMs": 149000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "giving",
+          "startMs": 149000,
+          "endMs": 149500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 149500,
+          "endMs": 150000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 150000,
+          "endMs": 150500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tangible",
+          "startMs": 150500,
+          "endMs": 151000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "feel",
+          "startMs": 151000,
+          "endMs": 151500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 151500,
+          "endMs": 152000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 152000,
+          "endMs": 152500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "project",
+          "startMs": 152500,
+          "endMs": 153000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "before",
+          "startMs": 153000,
+          "endMs": 153500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 153500,
+          "endMs": 154000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 154000,
+          "endMs": 154500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "hit",
+          "startMs": 154500,
+          "endMs": 155000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "record.",
+          "startMs": 155000,
+          "endMs": 155500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "This",
+          "startMs": 155500,
+          "endMs": 156000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "integrated",
+          "startMs": 156000,
+          "endMs": 156500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 156500,
+          "endMs": 157000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "approach",
+          "startMs": 157000,
+          "endMs": 157500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "streamlines",
+          "startMs": 157500,
+          "endMs": 158000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 158000,
+          "endMs": 158500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entire",
+          "startMs": 158500,
+          "endMs": 159000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 159000,
+          "endMs": 159500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "process,",
+          "startMs": 159500,
+          "endMs": 160000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "making",
+          "startMs": 160000,
+          "endMs": 160500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ideation",
+          "startMs": 160500,
+          "endMs": 161000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "faster",
+          "startMs": 161000,
+          "endMs": 161500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 161500,
+          "endMs": 162000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "more",
+          "startMs": 162000,
+          "endMs": 162500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "collaborative.",
+          "startMs": 162500,
+          "endMs": 163000,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Video is powerful, but *personalized* video is game-changing. AI is unlocking new levels of audience understanding. By analyzing viewer data – watch time, engagement, demographics – AI can help you understand what resonates. It can even predict which video variations will perform best, optimize content for different platforms, and help deliver hyper-targeted messages. Imagine creating dynamic video ads that adapt to individual viewer preferences in real-time. This data-driven approach ensures your content hits the mark every time.",
+      "position": "bottom",
+      "startMs": 163000,
+      "endMs": 201500,
+      "words": [
+        {
+          "text": "Video",
+          "startMs": 163000,
+          "endMs": 163500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 163500,
+          "endMs": 164000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "powerful,",
+          "startMs": 164000,
+          "endMs": 164500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 164500,
+          "endMs": 165000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "*personalized*",
+          "startMs": 165000,
+          "endMs": 165500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 165500,
+          "endMs": 166000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 166000,
+          "endMs": 166500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "game-changing.",
+          "startMs": 166500,
+          "endMs": 167000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 167000,
+          "endMs": 167500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 167500,
+          "endMs": 168000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unlocking",
+          "startMs": 168000,
+          "endMs": 168500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 168500,
+          "endMs": 169000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "levels",
+          "startMs": 169000,
+          "endMs": 169500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 169500,
+          "endMs": 170000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "audience",
+          "startMs": 170000,
+          "endMs": 170500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "understanding.",
+          "startMs": 170500,
+          "endMs": 171000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "By",
+          "startMs": 171000,
+          "endMs": 171500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "analyzing",
+          "startMs": 171500,
+          "endMs": 172000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "viewer",
+          "startMs": 172000,
+          "endMs": 172500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "data",
+          "startMs": 172500,
+          "endMs": 173000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 173000,
+          "endMs": 173500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "watch",
+          "startMs": 173500,
+          "endMs": 174000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "time,",
+          "startMs": 174000,
+          "endMs": 174500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "engagement,",
+          "startMs": 174500,
+          "endMs": 175000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "demographics",
+          "startMs": 175000,
+          "endMs": 175500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 175500,
+          "endMs": 176000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 176000,
+          "endMs": 176500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 176500,
+          "endMs": 177000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "help",
+          "startMs": 177000,
+          "endMs": 177500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 177500,
+          "endMs": 178000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "understand",
+          "startMs": 178000,
+          "endMs": 178500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "what",
+          "startMs": 178500,
+          "endMs": 179000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "resonates.",
+          "startMs": 179000,
+          "endMs": 179500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "It",
+          "startMs": 179500,
+          "endMs": 180000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 180000,
+          "endMs": 180500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "even",
+          "startMs": 180500,
+          "endMs": 181000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "predict",
+          "startMs": 181000,
+          "endMs": 181500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "which",
+          "startMs": 181500,
+          "endMs": 182000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 182000,
+          "endMs": 182500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "variations",
+          "startMs": 182500,
+          "endMs": 183000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "will",
+          "startMs": 183000,
+          "endMs": 183500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "perform",
+          "startMs": 183500,
+          "endMs": 184000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "best,",
+          "startMs": 184000,
+          "endMs": 184500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "optimize",
+          "startMs": 184500,
+          "endMs": 185000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "content",
+          "startMs": 185000,
+          "endMs": 185500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 185500,
+          "endMs": 186000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "different",
+          "startMs": 186000,
+          "endMs": 186500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "platforms,",
+          "startMs": 186500,
+          "endMs": 187000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 187000,
+          "endMs": 187500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "help",
+          "startMs": 187500,
+          "endMs": 188000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deliver",
+          "startMs": 188000,
+          "endMs": 188500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "hyper-targeted",
+          "startMs": 188500,
+          "endMs": 189000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "messages.",
+          "startMs": 189000,
+          "endMs": 189500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Imagine",
+          "startMs": 189500,
+          "endMs": 190000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creating",
+          "startMs": 190000,
+          "endMs": 190500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "dynamic",
+          "startMs": 190500,
+          "endMs": 191000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 191000,
+          "endMs": 191500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ads",
+          "startMs": 191500,
+          "endMs": 192000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 192000,
+          "endMs": 192500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "adapt",
+          "startMs": 192500,
+          "endMs": 193000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 193000,
+          "endMs": 193500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "individual",
+          "startMs": 193500,
+          "endMs": 194000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "viewer",
+          "startMs": 194000,
+          "endMs": 194500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "preferences",
+          "startMs": 194500,
+          "endMs": 195000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 195000,
+          "endMs": 195500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "real-time.",
+          "startMs": 195500,
+          "endMs": 196000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "This",
+          "startMs": 196000,
+          "endMs": 196500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "data-driven",
+          "startMs": 196500,
+          "endMs": 197000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "approach",
+          "startMs": 197000,
+          "endMs": 197500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ensures",
+          "startMs": 197500,
+          "endMs": 198000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 198000,
+          "endMs": 198500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "content",
+          "startMs": 198500,
+          "endMs": 199000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "hits",
+          "startMs": 199000,
+          "endMs": 199500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 199500,
+          "endMs": 200000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mark",
+          "startMs": 200000,
+          "endMs": 200500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "every",
+          "startMs": 200500,
+          "endMs": 201000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "time.",
+          "startMs": 201000,
+          "endMs": 201500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "So, who's using this, and how? Small businesses are creating polished marketing videos in minutes, not days. Educators are generating engaging explainer videos for complex topics. Social media creators are producing eye-catching short-form content at an unprecedented rate. Even large corporations are leveraging AI for personalized customer support videos and internal training modules. From quick social media ads to complex documentaries, AI is proving itself an invaluable asset across every sector of video production.",
+      "position": "bottom",
+      "startMs": 201500,
+      "endMs": 238500,
+      "words": [
+        {
+          "text": "So,",
+          "startMs": 201500,
+          "endMs": 202000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "who's",
+          "startMs": 202000,
+          "endMs": 202500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "using",
+          "startMs": 202500,
+          "endMs": 203000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this,",
+          "startMs": 203000,
+          "endMs": 203500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 203500,
+          "endMs": 204000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "how?",
+          "startMs": 204000,
+          "endMs": 204500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Small",
+          "startMs": 204500,
+          "endMs": 205000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "businesses",
+          "startMs": 205000,
+          "endMs": 205500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 205500,
+          "endMs": 206000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creating",
+          "startMs": 206000,
+          "endMs": 206500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "polished",
+          "startMs": 206500,
+          "endMs": 207000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "marketing",
+          "startMs": 207000,
+          "endMs": 207500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "videos",
+          "startMs": 207500,
+          "endMs": 208000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 208000,
+          "endMs": 208500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "minutes,",
+          "startMs": 208500,
+          "endMs": 209000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "not",
+          "startMs": 209000,
+          "endMs": 209500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "days.",
+          "startMs": 209500,
+          "endMs": 210000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Educators",
+          "startMs": 210000,
+          "endMs": 210500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 210500,
+          "endMs": 211000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generating",
+          "startMs": 211000,
+          "endMs": 211500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "engaging",
+          "startMs": 211500,
+          "endMs": 212000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "explainer",
+          "startMs": 212000,
+          "endMs": 212500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "videos",
+          "startMs": 212500,
+          "endMs": 213000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 213000,
+          "endMs": 213500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "complex",
+          "startMs": 213500,
+          "endMs": 214000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "topics.",
+          "startMs": 214000,
+          "endMs": 214500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Social",
+          "startMs": 214500,
+          "endMs": 215000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "media",
+          "startMs": 215000,
+          "endMs": 215500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creators",
+          "startMs": 215500,
+          "endMs": 216000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 216000,
+          "endMs": 216500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "producing",
+          "startMs": 216500,
+          "endMs": 217000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "eye-catching",
+          "startMs": 217000,
+          "endMs": 217500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "short-form",
+          "startMs": 217500,
+          "endMs": 218000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "content",
+          "startMs": 218000,
+          "endMs": 218500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "at",
+          "startMs": 218500,
+          "endMs": 219000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "an",
+          "startMs": 219000,
+          "endMs": 219500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unprecedented",
+          "startMs": 219500,
+          "endMs": 220000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "rate.",
+          "startMs": 220000,
+          "endMs": 220500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Even",
+          "startMs": 220500,
+          "endMs": 221000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "large",
+          "startMs": 221000,
+          "endMs": 221500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "corporations",
+          "startMs": 221500,
+          "endMs": 222000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 222000,
+          "endMs": 222500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "leveraging",
+          "startMs": 222500,
+          "endMs": 223000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 223000,
+          "endMs": 223500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 223500,
+          "endMs": 224000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "personalized",
+          "startMs": 224000,
+          "endMs": 224500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "customer",
+          "startMs": 224500,
+          "endMs": 225000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "support",
+          "startMs": 225000,
+          "endMs": 225500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "videos",
+          "startMs": 225500,
+          "endMs": 226000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 226000,
+          "endMs": 226500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "internal",
+          "startMs": 226500,
+          "endMs": 227000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "training",
+          "startMs": 227000,
+          "endMs": 227500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "modules.",
+          "startMs": 227500,
+          "endMs": 228000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "From",
+          "startMs": 228000,
+          "endMs": 228500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "quick",
+          "startMs": 228500,
+          "endMs": 229000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "social",
+          "startMs": 229000,
+          "endMs": 229500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "media",
+          "startMs": 229500,
+          "endMs": 230000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ads",
+          "startMs": 230000,
+          "endMs": 230500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 230500,
+          "endMs": 231000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "complex",
+          "startMs": 231000,
+          "endMs": 231500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "documentaries,",
+          "startMs": 231500,
+          "endMs": 232000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 232000,
+          "endMs": 232500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 232500,
+          "endMs": 233000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "proving",
+          "startMs": 233000,
+          "endMs": 233500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "itself",
+          "startMs": 233500,
+          "endMs": 234000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "an",
+          "startMs": 234000,
+          "endMs": 234500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "invaluable",
+          "startMs": 234500,
+          "endMs": 235000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "asset",
+          "startMs": 235000,
+          "endMs": 235500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "across",
+          "startMs": 235500,
+          "endMs": 236000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "every",
+          "startMs": 236000,
+          "endMs": 236500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sector",
+          "startMs": 236500,
+          "endMs": 237000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 237000,
+          "endMs": 237500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 237500,
+          "endMs": 238000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "production.",
+          "startMs": 238000,
+          "endMs": 238500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Looking ahead, the future is astounding. We're talking about AI that can generate photorealistic actors, entire virtual worlds, and interactive narrative experiences. Imagine AI agents that act as your complete video production team – from concept to final render, with nuanced creative direction. This isn't just about efficiency; it's about unlocking new forms of storytelling and visual expression previously confined to high-budget studios. The barriers to entry for professional-quality video are about to shatter.",
+      "position": "bottom",
+      "startMs": 238500,
+      "endMs": 275500,
+      "words": [
+        {
+          "text": "Looking",
+          "startMs": 238500,
+          "endMs": 239000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ahead,",
+          "startMs": 239000,
+          "endMs": 239500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 239500,
+          "endMs": 240000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "future",
+          "startMs": 240000,
+          "endMs": 240500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 240500,
+          "endMs": 241000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "astounding.",
+          "startMs": 241000,
+          "endMs": 241500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "We're",
+          "startMs": 241500,
+          "endMs": 242000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "talking",
+          "startMs": 242000,
+          "endMs": 242500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 242500,
+          "endMs": 243000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 243000,
+          "endMs": 243500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 243500,
+          "endMs": 244000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "can",
+          "startMs": 244000,
+          "endMs": 244500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generate",
+          "startMs": 244500,
+          "endMs": 245000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "photorealistic",
+          "startMs": 245000,
+          "endMs": 245500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "actors,",
+          "startMs": 245500,
+          "endMs": 246000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entire",
+          "startMs": 246000,
+          "endMs": 246500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "virtual",
+          "startMs": 246500,
+          "endMs": 247000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "worlds,",
+          "startMs": 247000,
+          "endMs": 247500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 247500,
+          "endMs": 248000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "interactive",
+          "startMs": 248000,
+          "endMs": 248500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "narrative",
+          "startMs": 248500,
+          "endMs": 249000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "experiences.",
+          "startMs": 249000,
+          "endMs": 249500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Imagine",
+          "startMs": 249500,
+          "endMs": 250000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 250000,
+          "endMs": 250500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "agents",
+          "startMs": 250500,
+          "endMs": 251000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "that",
+          "startMs": 251000,
+          "endMs": 251500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "act",
+          "startMs": 251500,
+          "endMs": 252000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "as",
+          "startMs": 252000,
+          "endMs": 252500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 252500,
+          "endMs": 253000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "complete",
+          "startMs": 253000,
+          "endMs": 253500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 253500,
+          "endMs": 254000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "production",
+          "startMs": 254000,
+          "endMs": 254500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "team",
+          "startMs": 254500,
+          "endMs": 255000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "–",
+          "startMs": 255000,
+          "endMs": 255500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "from",
+          "startMs": 255500,
+          "endMs": 256000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concept",
+          "startMs": 256000,
+          "endMs": 256500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 256500,
+          "endMs": 257000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "final",
+          "startMs": 257000,
+          "endMs": 257500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "render,",
+          "startMs": 257500,
+          "endMs": 258000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 258000,
+          "endMs": 258500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "nuanced",
+          "startMs": 258500,
+          "endMs": 259000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 259000,
+          "endMs": 259500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "direction.",
+          "startMs": 259500,
+          "endMs": 260000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "This",
+          "startMs": 260000,
+          "endMs": 260500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "isn't",
+          "startMs": 260500,
+          "endMs": 261000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 261000,
+          "endMs": 261500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 261500,
+          "endMs": 262000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "efficiency;",
+          "startMs": 262000,
+          "endMs": 262500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it's",
+          "startMs": 262500,
+          "endMs": 263000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 263000,
+          "endMs": 263500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unlocking",
+          "startMs": 263500,
+          "endMs": 264000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 264000,
+          "endMs": 264500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "forms",
+          "startMs": 264500,
+          "endMs": 265000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 265000,
+          "endMs": 265500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "storytelling",
+          "startMs": 265500,
+          "endMs": 266000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 266000,
+          "endMs": 266500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "visual",
+          "startMs": 266500,
+          "endMs": 267000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "expression",
+          "startMs": 267000,
+          "endMs": 267500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "previously",
+          "startMs": 267500,
+          "endMs": 268000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "confined",
+          "startMs": 268000,
+          "endMs": 268500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 268500,
+          "endMs": 269000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "high-budget",
+          "startMs": 269000,
+          "endMs": 269500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "studios.",
+          "startMs": 269500,
+          "endMs": 270000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "The",
+          "startMs": 270000,
+          "endMs": 270500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "barriers",
+          "startMs": 270500,
+          "endMs": 271000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 271000,
+          "endMs": 271500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entry",
+          "startMs": 271500,
+          "endMs": 272000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 272000,
+          "endMs": 272500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "professional-quality",
+          "startMs": 272500,
+          "endMs": 273000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 273000,
+          "endMs": 273500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 273500,
+          "endMs": 274000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 274000,
+          "endMs": 274500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 274500,
+          "endMs": 275000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "shatter.",
+          "startMs": 275000,
+          "endMs": 275500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        }
+      ]
+    },
+    {
+      "text": "However, with great power comes great responsibility. The rise of AI video also brings critical ethical questions. We need to address concerns around deepfakes, misinformation, copyright, and the potential impact on creative jobs. As creators and consumers, we must champion transparency, authenticity, and responsible AI development. Understanding these ethical considerations is just as vital as mastering the technology itself. The goal is to augment human creativity, not replace it with unchecked automation.",
+      "position": "bottom",
+      "startMs": 275500,
+      "endMs": 311500,
+      "words": [
+        {
+          "text": "However,",
+          "startMs": 275500,
+          "endMs": 276000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 276000,
+          "endMs": 276500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "great",
+          "startMs": 276500,
+          "endMs": 277000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "power",
+          "startMs": 277000,
+          "endMs": 277500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "comes",
+          "startMs": 277500,
+          "endMs": 278000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "great",
+          "startMs": 278000,
+          "endMs": 278500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "responsibility.",
+          "startMs": 278500,
+          "endMs": 279000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "The",
+          "startMs": 279000,
+          "endMs": 279500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "rise",
+          "startMs": 279500,
+          "endMs": 280000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 280000,
+          "endMs": 280500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 280500,
+          "endMs": 281000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 281000,
+          "endMs": 281500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "also",
+          "startMs": 281500,
+          "endMs": 282000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "brings",
+          "startMs": 282000,
+          "endMs": 282500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "critical",
+          "startMs": 282500,
+          "endMs": 283000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "ethical",
+          "startMs": 283000,
+          "endMs": 283500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "questions.",
+          "startMs": 283500,
+          "endMs": 284000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "We",
+          "startMs": 284000,
+          "endMs": 284500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "need",
+          "startMs": 284500,
+          "endMs": 285000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 285000,
+          "endMs": 285500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "address",
+          "startMs": 285500,
+          "endMs": 286000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concerns",
+          "startMs": 286000,
+          "endMs": 286500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "around",
+          "startMs": 286500,
+          "endMs": 287000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "deepfakes,",
+          "startMs": 287000,
+          "endMs": 287500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "misinformation,",
+          "startMs": 287500,
+          "endMs": 288000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "copyright,",
+          "startMs": 288000,
+          "endMs": 288500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 288500,
+          "endMs": 289000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 289000,
+          "endMs": 289500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "potential",
+          "startMs": 289500,
+          "endMs": 290000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "impact",
+          "startMs": 290000,
+          "endMs": 290500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 290500,
+          "endMs": 291000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 291000,
+          "endMs": 291500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "jobs.",
+          "startMs": 291500,
+          "endMs": 292000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "As",
+          "startMs": 292000,
+          "endMs": 292500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creators",
+          "startMs": 292500,
+          "endMs": 293000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 293000,
+          "endMs": 293500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "consumers,",
+          "startMs": 293500,
+          "endMs": 294000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "we",
+          "startMs": 294000,
+          "endMs": 294500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "must",
+          "startMs": 294500,
+          "endMs": 295000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "champion",
+          "startMs": 295000,
+          "endMs": 295500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "transparency,",
+          "startMs": 295500,
+          "endMs": 296000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "authenticity,",
+          "startMs": 296000,
+          "endMs": 296500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 296500,
+          "endMs": 297000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "responsible",
+          "startMs": 297000,
+          "endMs": 297500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 297500,
+          "endMs": 298000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "development.",
+          "startMs": 298000,
+          "endMs": 298500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Understanding",
+          "startMs": 298500,
+          "endMs": 299000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "these",
+          "startMs": 299000,
+          "endMs": 299500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ethical",
+          "startMs": 299500,
+          "endMs": 300000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "considerations",
+          "startMs": 300000,
+          "endMs": 300500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 300500,
+          "endMs": 301000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "just",
+          "startMs": 301000,
+          "endMs": 301500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "as",
+          "startMs": 301500,
+          "endMs": 302000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "vital",
+          "startMs": 302000,
+          "endMs": 302500,
+          "emphasis": {
+            "level": "high"
+          }
+        },
+        {
+          "text": "as",
+          "startMs": 302500,
+          "endMs": 303000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "mastering",
+          "startMs": 303000,
+          "endMs": 303500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 303500,
+          "endMs": 304000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "technology",
+          "startMs": 304000,
+          "endMs": 304500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "itself.",
+          "startMs": 304500,
+          "endMs": 305000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "The",
+          "startMs": 305000,
+          "endMs": 305500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "goal",
+          "startMs": 305500,
+          "endMs": 306000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 306000,
+          "endMs": 306500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 306500,
+          "endMs": 307000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "augment",
+          "startMs": 307000,
+          "endMs": 307500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "human",
+          "startMs": 307500,
+          "endMs": 308000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creativity,",
+          "startMs": 308000,
+          "endMs": 308500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "not",
+          "startMs": 308500,
+          "endMs": 309000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "replace",
+          "startMs": 309000,
+          "endMs": 309500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it",
+          "startMs": 309500,
+          "endMs": 310000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 310000,
+          "endMs": 310500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unchecked",
+          "startMs": 310500,
+          "endMs": 311000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "automation.",
+          "startMs": 311000,
+          "endMs": 311500,
+          "emphasis": {
+            "level": "med"
+          }
+        }
+      ]
+    },
+    {
+      "text": "So, how do you thrive in this evolving landscape? It's not about competing with AI, but about *collaborating* with it. Focus on skills AI can't easily replicate: strategic thinking, nuanced storytelling, creative direction, ethical judgment, and especially, mastering prompt engineering. Learn to guide AI tools effectively. Embrace continuous learning, experiment with new platforms, and view AI as your ultimate creative assistant. Your unique human perspective is more valuable than ever.",
+      "position": "bottom",
+      "startMs": 311500,
+      "endMs": 346500,
+      "words": [
+        {
+          "text": "So,",
+          "startMs": 311500,
+          "endMs": 312000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "how",
+          "startMs": 312000,
+          "endMs": 312500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "do",
+          "startMs": 312500,
+          "endMs": 313000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 313000,
+          "endMs": 313500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "thrive",
+          "startMs": 313500,
+          "endMs": 314000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 314000,
+          "endMs": 314500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this",
+          "startMs": 314500,
+          "endMs": 315000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "evolving",
+          "startMs": 315000,
+          "endMs": 315500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "landscape?",
+          "startMs": 315500,
+          "endMs": 316000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "It's",
+          "startMs": 316000,
+          "endMs": 316500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "not",
+          "startMs": 316500,
+          "endMs": 317000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 317000,
+          "endMs": 317500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "competing",
+          "startMs": 317500,
+          "endMs": 318000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 318000,
+          "endMs": 318500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI,",
+          "startMs": 318500,
+          "endMs": 319000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "but",
+          "startMs": 319000,
+          "endMs": 319500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "about",
+          "startMs": 319500,
+          "endMs": 320000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "*collaborating*",
+          "startMs": 320000,
+          "endMs": 320500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 320500,
+          "endMs": 321000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it.",
+          "startMs": 321000,
+          "endMs": 321500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Focus",
+          "startMs": 321500,
+          "endMs": 322000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "on",
+          "startMs": 322000,
+          "endMs": 322500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "skills",
+          "startMs": 322500,
+          "endMs": 323000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 323000,
+          "endMs": 323500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "can't",
+          "startMs": 323500,
+          "endMs": 324000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "easily",
+          "startMs": 324000,
+          "endMs": 324500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "replicate:",
+          "startMs": 324500,
+          "endMs": 325000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "strategic",
+          "startMs": 325000,
+          "endMs": 325500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "thinking,",
+          "startMs": 325500,
+          "endMs": 326000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "nuanced",
+          "startMs": 326000,
+          "endMs": 326500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "storytelling,",
+          "startMs": 326500,
+          "endMs": 327000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 327000,
+          "endMs": 327500,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "direction,",
+          "startMs": 327500,
+          "endMs": 328000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ethical",
+          "startMs": 328000,
+          "endMs": 328500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "judgment,",
+          "startMs": 328500,
+          "endMs": 329000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 329000,
+          "endMs": 329500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "especially,",
+          "startMs": 329500,
+          "endMs": 330000,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "mastering",
+          "startMs": 330000,
+          "endMs": 330500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "prompt",
+          "startMs": 330500,
+          "endMs": 331000,
+          "emphasis": {
+            "level": "med"
+          }
+        },
+        {
+          "text": "engineering.",
+          "startMs": 331000,
+          "endMs": 331500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Learn",
+          "startMs": 331500,
+          "endMs": 332000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 332000,
+          "endMs": 332500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "guide",
+          "startMs": 332500,
+          "endMs": 333000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 333000,
+          "endMs": 333500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tools",
+          "startMs": 333500,
+          "endMs": 334000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "effectively.",
+          "startMs": 334000,
+          "endMs": 334500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Embrace",
+          "startMs": 334500,
+          "endMs": 335000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "continuous",
+          "startMs": 335000,
+          "endMs": 335500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "learning,",
+          "startMs": 335500,
+          "endMs": 336000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "experiment",
+          "startMs": 336000,
+          "endMs": 336500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 336500,
+          "endMs": 337000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 337000,
+          "endMs": 337500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "platforms,",
+          "startMs": 337500,
+          "endMs": 338000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 338000,
+          "endMs": 338500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "view",
+          "startMs": 338500,
+          "endMs": 339000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 339000,
+          "endMs": 339500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "as",
+          "startMs": 339500,
+          "endMs": 340000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 340000,
+          "endMs": 340500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ultimate",
+          "startMs": 340500,
+          "endMs": 341000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 341000,
+          "endMs": 341500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "assistant.",
+          "startMs": 341500,
+          "endMs": 342000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Your",
+          "startMs": 342000,
+          "endMs": 342500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "unique",
+          "startMs": 342500,
+          "endMs": 343000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "human",
+          "startMs": 343000,
+          "endMs": 343500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "perspective",
+          "startMs": 343500,
+          "endMs": 344000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 344000,
+          "endMs": 344500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "more",
+          "startMs": 344500,
+          "endMs": 345000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "valuable",
+          "startMs": 345000,
+          "endMs": 345500,
+          "emphasis": {
+            "level": "high",
+            "tone": "intense"
+          }
+        },
+        {
+          "text": "than",
+          "startMs": 345500,
+          "endMs": 346000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "ever.",
+          "startMs": 346000,
+          "endMs": 346500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    },
+    {
+      "text": "AI is no longer a sci-fi concept; it's a powerful, accessible tool revolutionizing video creation right now. From streamlining edits to generating entire scenes from a thought, the future is here, and it's incredibly exciting. Embrace the change, experiment fearlessly with these new technologies, and start future-proofing your creative journey today! What AI video tool are you most excited to try? Let us know in the comments below, and don't forget to like this video and subscribe for more insights into the future of content creation!",
+      "position": "bottom",
+      "startMs": 346500,
+      "endMs": 389500,
+      "words": [
+        {
+          "text": "AI",
+          "startMs": 346500,
+          "endMs": 347000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 347000,
+          "endMs": 347500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "no",
+          "startMs": 347500,
+          "endMs": 348000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "longer",
+          "startMs": 348000,
+          "endMs": 348500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 348500,
+          "endMs": 349000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "sci-fi",
+          "startMs": 349000,
+          "endMs": 349500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "concept;",
+          "startMs": 349500,
+          "endMs": 350000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it's",
+          "startMs": 350000,
+          "endMs": 350500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 350500,
+          "endMs": 351000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "powerful,",
+          "startMs": 351000,
+          "endMs": 351500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "accessible",
+          "startMs": 351500,
+          "endMs": 352000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tool",
+          "startMs": 352000,
+          "endMs": 352500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "revolutionizing",
+          "startMs": 352500,
+          "endMs": 353000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 353000,
+          "endMs": 353500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creation",
+          "startMs": 353500,
+          "endMs": 354000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "right",
+          "startMs": 354000,
+          "endMs": 354500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "now.",
+          "startMs": 354500,
+          "endMs": 355000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "From",
+          "startMs": 355000,
+          "endMs": 355500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "streamlining",
+          "startMs": 355500,
+          "endMs": 356000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "edits",
+          "startMs": 356000,
+          "endMs": 356500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 356500,
+          "endMs": 357000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "generating",
+          "startMs": 357000,
+          "endMs": 357500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "entire",
+          "startMs": 357500,
+          "endMs": 358000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "scenes",
+          "startMs": 358000,
+          "endMs": 358500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "from",
+          "startMs": 358500,
+          "endMs": 359000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "a",
+          "startMs": 359000,
+          "endMs": 359500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "thought,",
+          "startMs": 359500,
+          "endMs": 360000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 360000,
+          "endMs": 360500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "future",
+          "startMs": 360500,
+          "endMs": 361000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "is",
+          "startMs": 361000,
+          "endMs": 361500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "here,",
+          "startMs": 361500,
+          "endMs": 362000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 362000,
+          "endMs": 362500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "it's",
+          "startMs": 362500,
+          "endMs": 363000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "incredibly",
+          "startMs": 363000,
+          "endMs": 363500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "exciting.",
+          "startMs": 363500,
+          "endMs": 364000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Embrace",
+          "startMs": 364000,
+          "endMs": 364500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 364500,
+          "endMs": 365000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "change,",
+          "startMs": 365000,
+          "endMs": 365500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "experiment",
+          "startMs": 365500,
+          "endMs": 366000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "fearlessly",
+          "startMs": 366000,
+          "endMs": 366500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "with",
+          "startMs": 366500,
+          "endMs": 367000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "these",
+          "startMs": 367000,
+          "endMs": 367500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "new",
+          "startMs": 367500,
+          "endMs": 368000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "technologies,",
+          "startMs": 368000,
+          "endMs": 368500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 368500,
+          "endMs": 369000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "start",
+          "startMs": 369000,
+          "endMs": 369500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "future-proofing",
+          "startMs": 369500,
+          "endMs": 370000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "your",
+          "startMs": 370000,
+          "endMs": 370500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creative",
+          "startMs": 370500,
+          "endMs": 371000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "journey",
+          "startMs": 371000,
+          "endMs": 371500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "today!",
+          "startMs": 371500,
+          "endMs": 372000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "What",
+          "startMs": 372000,
+          "endMs": 372500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "AI",
+          "startMs": 372500,
+          "endMs": 373000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 373000,
+          "endMs": 373500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "tool",
+          "startMs": 373500,
+          "endMs": 374000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "are",
+          "startMs": 374000,
+          "endMs": 374500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "you",
+          "startMs": 374500,
+          "endMs": 375000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "most",
+          "startMs": 375000,
+          "endMs": 375500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "excited",
+          "startMs": 375500,
+          "endMs": 376000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 376000,
+          "endMs": 376500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "try?",
+          "startMs": 376500,
+          "endMs": 377000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "Let",
+          "startMs": 377000,
+          "endMs": 377500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "us",
+          "startMs": 377500,
+          "endMs": 378000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "know",
+          "startMs": 378000,
+          "endMs": 378500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "in",
+          "startMs": 378500,
+          "endMs": 379000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 379000,
+          "endMs": 379500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "comments",
+          "startMs": 379500,
+          "endMs": 380000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "below,",
+          "startMs": 380000,
+          "endMs": 380500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 380500,
+          "endMs": 381000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "don't",
+          "startMs": 381000,
+          "endMs": 381500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "forget",
+          "startMs": 381500,
+          "endMs": 382000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "to",
+          "startMs": 382000,
+          "endMs": 382500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "like",
+          "startMs": 382500,
+          "endMs": 383000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "this",
+          "startMs": 383000,
+          "endMs": 383500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "video",
+          "startMs": 383500,
+          "endMs": 384000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "and",
+          "startMs": 384000,
+          "endMs": 384500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "subscribe",
+          "startMs": 384500,
+          "endMs": 385000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "for",
+          "startMs": 385000,
+          "endMs": 385500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "more",
+          "startMs": 385500,
+          "endMs": 386000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "insights",
+          "startMs": 386000,
+          "endMs": 386500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "into",
+          "startMs": 386500,
+          "endMs": 387000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "the",
+          "startMs": 387000,
+          "endMs": 387500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "future",
+          "startMs": 387500,
+          "endMs": 388000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "of",
+          "startMs": 388000,
+          "endMs": 388500,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "content",
+          "startMs": 388500,
+          "endMs": 389000,
+          "emphasis": {
+            "level": "none"
+          }
+        },
+        {
+          "text": "creation!",
+          "startMs": 389000,
+          "endMs": 389500,
+          "emphasis": {
+            "level": "none"
+          }
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "audioUrl": "segment-1",
+      "startMs": 1000,
+      "endMs": 34500
+    },
+    {
+      "audioUrl": "segment-2",
+      "startMs": 34500,
+      "endMs": 79000
+    },
+    {
+      "audioUrl": "segment-3",
+      "startMs": 79000,
+      "endMs": 121000
+    },
+    {
+      "audioUrl": "segment-4",
+      "startMs": 121000,
+      "endMs": 163000
+    },
+    {
+      "audioUrl": "segment-5",
+      "startMs": 163000,
+      "endMs": 201500
+    },
+    {
+      "audioUrl": "segment-6",
+      "startMs": 201500,
+      "endMs": 238500
+    },
+    {
+      "audioUrl": "segment-7",
+      "startMs": 238500,
+      "endMs": 275500
+    },
+    {
+      "audioUrl": "segment-8",
+      "startMs": 275500,
+      "endMs": 311500
+    },
+    {
+      "audioUrl": "segment-9",
+      "startMs": 311500,
+      "endMs": 346500
+    },
+    {
+      "audioUrl": "segment-10",
+      "startMs": 346500,
+      "endMs": 389500
+    }
+  ]
+}

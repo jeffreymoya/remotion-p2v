@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "Cam Newton: The Psychology of Athletic Innovation & Leadership",
+      "description": "Explore Cam Newton's groundbreaking athletic strategies and unique leadership. This video delves into the psychology and biomechanics that defined his career and influenced sports innovation.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "Psychology",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "Luigi Mangione's Authentic Italian Cooking Secrets & Cultural Roots",
+      "description": "Discover the art of authentic Italian cuisine with insights inspired by Chef Luigi Mangione. Learn essential techniques and explore the rich cultural heritage behind beloved dishes.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "Culture",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "The Dynasty Blueprint: Steelers' Historical Success & Team Culture",
+      "description": "Go beyond scores to understand the historical factors and team culture that built the Pittsburgh Steelers dynasty. Analyze their training, strategy, and enduring legacy.",
+      "source": "google-trends",
+      "trendScore": 80,
+      "category": "History",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "The Mind Game of Football: Psychology of Elite Performance",
+      "description": "Dive into the mental fortitude required for NFL success, inspired by players like Myles Gaskin. Explore the psychology of focus, resilience, and pressure management on the field.",
+      "source": "google-trends",
+      "trendScore": 75,
+      "category": "Psychology",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "NFL Week 14: Evolution of Game-Winning Strategies & Analytics",
+      "description": "Analyze the tactical shifts and advanced analytics defining pivotal NFL Week 14 games. Discover how data and strategy evolve throughout the season to secure victories.",
+      "source": "google-trends",
+      "trendScore": 70,
+      "category": "Technology",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "The Physics of Speed: Biomechanics of Deebo Samuel's Explosive Plays",
+      "description": "Uncover the scientific principles of physics and biomechanics enabling incredible athletic feats like Deebo Samuel's. Understand the forces, angles, and movements behind explosive plays.",
+      "source": "google-trends",
+      "trendScore": 65,
+      "category": "Science",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "Tony Romo & Beyond: Psychology of Sports Commentary & Game Prediction",
+      "description": "Explore how former athletes like Tony Romo use experience to analyze and predict game outcomes. Examine the psychology behind reading plays and communicating complex strategies.",
+      "source": "google-trends",
+      "trendScore": 60,
+      "category": "Psychology",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "From Court to Culture: How NBA Stars Influence Trends",
+      "description": "Examine the cultural impact of NBA players beyond the game. Explore how athletes like Miles McBride shape fashion, music, and societal trends for young adults.",
+      "source": "google-trends",
+      "trendScore": 55,
+      "category": "Culture",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "Young Prodigies: Psychology & Training of Future Sports Stars",
+      "description": "Investigate the unique mental and physical development of young sports prodigies like Lamine Yamal. Explore the science behind early talent identification and elite training programs.",
+      "source": "google-trends",
+      "trendScore": 50,
+      "category": "Science",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "Jennifer Garner & The 'Girl Next Door' Archetype: A Cultural Analysis",
+      "description": "Deconstruct the appeal and cultural significance of the 'girl next door' persona in Hollywood, using Jennifer Garner as an example. Explore how this archetype reflects and evolves with societal values.",
+      "source": "google-trends",
+      "trendScore": 45,
+      "category": "Culture",
+      "discoveredAt": "2025-12-01T00:14:37.851Z"
+    }
+  ],
+  "discoveredAt": "2025-12-01T00:14:37.851Z",
+  "totalCount": 10
+}

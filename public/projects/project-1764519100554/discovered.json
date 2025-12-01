@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "AI Revolutionizing Video: The Future is Now!",
+      "description": "Explore how artificial intelligence is transforming video creation, from automated editing to AI-generated content. Learn about the latest tools and what to expect in the coming years.",
+      "source": "google-trends",
+      "trendScore": 95,
+      "category": "technology",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "Deepfakes Explained: The Tech, Risks, and Future",
+      "description": "Demystify the technology behind deepfakes and synthetic media. Understand how they are created, their potential applications, and the ethical implications we face in the digital age.",
+      "source": "google-trends",
+      "trendScore": 92,
+      "category": "technology",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "Why Some Videos Go Viral: The Science of Internet Stardom",
+      "description": "Dive into the psychological triggers and social dynamics that make online content spread like wildfire. Understand the elements that capture audience attention and drive shares across platforms.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "Your Digital Empire: How to Thrive in the Creator Economy",
+      "description": "Discover how individuals are building successful careers online by leveraging their passions. Learn the strategies for content creation, audience engagement, and monetization in the modern creator landscape.",
+      "source": "google-trends",
+      "trendScore": 89,
+      "category": "culture",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "Shoot Like a Pro: Smartphone Videography Secrets Revealed",
+      "description": "Unlock the full potential of your smartphone camera to create stunning videos. Learn essential tips on lighting, sound, composition, and editing on the go for professional-looking results.",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "how-to",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "The Dopamine Hack: Why You Can't Stop Scrolling",
+      "description": "Explore the neuroscience behind social media addiction. Understand the role of dopamine and how platforms are designed to keep users engaged, often to their detriment.",
+      "source": "google-trends",
+      "trendScore": 87,
+      "category": "psychology",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "Edit Videos Like a Pro: Your First Steps with DaVinci Resolve",
+      "description": "Get started with powerful, free video editing software like DaVinci Resolve. This beginner-friendly guide covers the essential tools and techniques to bring your video ideas to life.",
+      "source": "google-trends",
+      "trendScore": 86,
+      "category": "how-to",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "How We Learned to Tell Stories: A Visual History",
+      "description": "Trace the fascinating journey of human visual communication, from ancient cave paintings to modern digital media. Discover how technology and culture have shaped the way we share narratives.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "history",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "From ARPANET to WiFi: The Internet's Incredible Journey",
+      "description": "Uncover the key moments and innovations that shaped the internet as we know it today. Learn about the pioneers and breakthroughs that connected the world and continue to evolve its infrastructure.",
+      "source": "google-trends",
+      "trendScore": 84,
+      "category": "history",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "Quantum Computing: The Mind-Bending Future of Tech",
+      "description": "Explore the revolutionary principles of quantum computing. Understand what it is, how it works, and its potential to solve complex problems far beyond the reach of today's supercomputers.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "science",
+      "discoveredAt": "2025-11-30T16:12:06.383Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T16:12:06.383Z",
+  "totalCount": 10
+}

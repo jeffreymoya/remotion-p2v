@@ -21,17 +21,23 @@ import {
   BackgroundMusicElement,
   Timeline,
 } from '../../src/lib/types';
+import { FPS, INTRO_DURATION_MS } from '../../src/lib/constants';
+import { removeStageDirections, splitIntoSentences, calculateSpeakingVelocity } from '../../src/lib/utils';
+import { holdBufferPrompt, HoldBufferSchema } from '../../config/prompts/hold-buffer.prompt';
+import { AIProviderFactory } from '../services/ai';
 
 // Intro offset constant (matches INTRO_DURATION in src/lib/constants.ts)
 // This offset is BAKED INTO timeline data during assembly.
 // Renderer uses timeline timestamps as-is without adding offset.
-const INTRO_OFFSET_MS = 1000;
+const INTRO_OFFSET_MS = INTRO_DURATION_MS;
 
 // WordData interface for internal use during timeline assembly
 export interface WordData {
   text: string;
   startMs: number;
   endMs: number;
+  startFrame?: number;
+  endFrame?: number;
   emphasis?: {
     level: 'none' | 'med' | 'high';
     tone?: 'warm' | 'intense';
@@ -44,7 +50,11 @@ function stripExtension(filename: string): string {
 }
 
 // Helper function to generate audio elements
-function generateAudioElements(audioManifest: any[], projectId: string): AudioElement[] {
+export function generateAudioElements(
+  audioManifest: any[],
+  projectId: string,
+  toFrame: (ms: number) => number,
+): AudioElement[] {
   const elements: AudioElement[] = [];
   let currentTimeMs = 0;
 
@@ -54,10 +64,15 @@ function generateAudioElements(audioManifest: any[], projectId: string): AudioEl
     // To: "segment-1"
     const basename = path.basename(audioFile.path, '.mp3');
 
+    const startMs = currentTimeMs + INTRO_OFFSET_MS;
+    const endMs = currentTimeMs + audioFile.durationMs + INTRO_OFFSET_MS;
+
     elements.push({
       audioUrl: basename,
-      startMs: currentTimeMs + INTRO_OFFSET_MS,
-      endMs: currentTimeMs + audioFile.durationMs + INTRO_OFFSET_MS,
+      startMs,
+      endMs,
+      startFrame: toFrame(startMs),
+      endFrame: toFrame(endMs),
     });
     currentTimeMs += audioFile.durationMs;
   }
@@ -87,12 +102,13 @@ function generateBackgroundMusicElements(
 }
 
 // Helper function to generate background elements (video or image)
-function generateBackgroundElements(
+export function generateBackgroundElements(
   images: any[],
   videos: any[],
   tags: any[],
   audioElements: AudioElement[],
-  videoConfig: any
+  videoConfig: any,
+  toFrame: (ms: number) => number,
 ): BackgroundElement[] {
   const elements: BackgroundElement[] = [];
   const transitions = videoConfig.transitions || {};
@@ -139,10 +155,15 @@ function generateBackgroundElements(
         // Strip extension to prevent double .mp4.mp4
         videoUrl = stripExtension(videoUrl);
 
+        const startMs = audio.startMs;
+        const endMs = audio.endMs;
+
         elements.push({
           videoUrl: videoUrl,
-          startMs: audio.startMs,
-          endMs: audio.endMs,
+          startMs,
+          endMs,
+          startFrame: toFrame(startMs),
+          endFrame: toFrame(endMs),
           enterTransition: transitions.defaultEnter || 'blur',
           exitTransition: transitions.defaultExit || 'blur',
           mediaMetadata: video.metadata || {
@@ -188,10 +209,15 @@ function generateBackgroundElements(
           imageUrl = imageUrl.split('assets/images/')[1];
         }
 
+        const startMs = audio.startMs + (j * imageDuration);
+        const endMs = audio.startMs + ((j + 1) * imageDuration);
+
         elements.push({
           imageUrl: imageUrl,
-          startMs: audio.startMs + (j * imageDuration),
-          endMs: audio.startMs + ((j + 1) * imageDuration),
+          startMs,
+          endMs,
+          startFrame: toFrame(startMs),
+          endFrame: toFrame(endMs),
           enterTransition: transitions.defaultEnter || 'fade',
           exitTransition: transitions.defaultExit || 'fade',
           mediaMetadata: image.metadata,
@@ -246,12 +272,14 @@ function chunkText(text: string, maxCharsPerLine: number, maxLines: number): str
 }
 
 // Helper function to generate text elements with word-level timing
-function generateTextElements(
+export async function generateTextElements(
   segments: any[],
   audioElements: AudioElement[],
   audioManifest: any[],
-  videoConfig: any
-): TextElement[] {
+  videoConfig: any,
+  toFrame: (ms: number) => number,
+  subtitleLeadMs: number,
+): Promise<TextElement[]> {
   const elements: TextElement[] = [];
   const textConfig = videoConfig.text || {};
   const maxCharsPerLine = textConfig.maxCharactersPerLine || 40;
@@ -267,30 +295,136 @@ function generateTextElements(
 
     // Check if word-level timestamps are available
     if (audioData.wordTimestamps && audioData.wordTimestamps.length > 0) {
-      // New path: Build text element with word-level timing
-      const wordData: WordData[] = audioData.wordTimestamps.map((ts: any, idx: number) => {
-        // Find emphasis for this word if available
+      // Clean segment text
+      const cleanedSegmentText = removeStageDirections(segment.text);
+
+      // Validate cleaned text isn't empty
+      if (!cleanedSegmentText || cleanedSegmentText.trim().length === 0) {
+        console.warn(`[BUILD] Segment ${i + 1} has no text after stage direction removal, skipping`);
+        continue;
+      }
+
+      // Split into sentences
+      const sentences = splitIntoSentences(cleanedSegmentText);
+
+      // Validate sentence splitting worked
+      if (sentences.length === 0) {
+        console.error(`[BUILD] Failed to split text into sentences: "${cleanedSegmentText.substring(0, 100)}..."`);
+        // Fallback: treat entire text as one sentence
+        sentences.push(cleanedSegmentText);
+      }
+
+      // Map word timestamps to cleaned text
+      const allWords = audioData.wordTimestamps.map((ts: any, idx: number) => {
         const emphasis = audioData.emphasis?.find((e: any) => e.wordIndex === idx);
+        const startMs = ts.startMs + audio.startMs + subtitleLeadMs;
+        const endMs = ts.endMs + audio.startMs + subtitleLeadMs;
 
         return {
           text: ts.word,
-          startMs: ts.startMs + audio.startMs,
-          endMs: ts.endMs + audio.startMs,
-          emphasis: emphasis ? {
-            level: emphasis.level,
-            tone: emphasis.tone,
-          } : { level: 'none' as const },
+          startMs,
+          endMs,
+          startFrame: toFrame(startMs),
+          endFrame: toFrame(endMs),
+          emphasis: emphasis ? { level: emphasis.level, tone: emphasis.tone } : { level: 'none' as const },
         };
       });
 
-      // Create a single text element with all words
-      if (wordData.length > 0) {
+      // Validate total word count matches (helps catch TTS tokenization issues)
+      const expectedWordCount = cleanedSegmentText.split(/\s+/).filter(w => w.length > 0).length;
+      if (allWords.length !== expectedWordCount) {
+        console.warn(`[BUILD] Word count mismatch in segment ${i + 1}: TTS returned ${allWords.length} words, expected ${expectedWordCount}`);
+        console.warn(`[BUILD]   Text: "${cleanedSegmentText.substring(0, 100)}..."`);
+        console.warn(`[BUILD]   This may cause subtitle misalignment`);
+      }
+
+      // Prepare all sentence data first for batch processing
+      const sentenceData: Array<{
+        sentence: string;
+        words: typeof allWords;
+        velocity: ReturnType<typeof calculateSpeakingVelocity>;
+        hasPauseAtEnd: boolean;
+      }> = [];
+
+      let wordIndex = 0;
+      for (let sentenceIdx = 0; sentenceIdx < sentences.length; sentenceIdx++) {
+        const sentence = sentences[sentenceIdx];
+        const sentenceWords = sentence.split(/\s+/).filter(w => w.length > 0);
+
+        // Safety check: ensure we don't exceed available words
+        const wordsAvailable = allWords.length - wordIndex;
+        const wordsToTake = Math.min(sentenceWords.length, wordsAvailable);
+
+        if (wordsToTake === 0) {
+          console.warn(`[BUILD] No words available for sentence ${sentenceIdx + 1}: "${sentence.substring(0, 50)}..."`);
+          continue;
+        }
+
+        if (wordsToTake < sentenceWords.length) {
+          console.warn(`[BUILD] Insufficient words for sentence ${sentenceIdx + 1}: need ${sentenceWords.length}, have ${wordsAvailable}`);
+        }
+
+        const sentenceWordData = allWords.slice(wordIndex, wordIndex + wordsToTake);
+
+        // Calculate speaking velocity for this sentence
+        const velocity = calculateSpeakingVelocity(sentenceWordData);
+
+        // Detect if there's a pause after last word
+        const lastWordEndMs = sentenceWordData[sentenceWordData.length - 1].endMs;
+        const nextWordStartMs = wordIndex + wordsToTake < allWords.length
+          ? allWords[wordIndex + wordsToTake].startMs
+          : lastWordEndMs;
+        const hasPauseAtEnd = (nextWordStartMs - lastWordEndMs) > velocity.avgGapDuration * 1.5;
+
+        sentenceData.push({
+          sentence,
+          words: sentenceWordData,
+          velocity,
+          hasPauseAtEnd,
+        });
+
+        wordIndex += wordsToTake;
+      }
+
+      // Initialize AI provider once (outside loop for efficiency)
+      const aiProvider = await AIProviderFactory.getProviderWithFallback();
+
+      // Batch process all sentences with LLM in parallel
+      const holdPromises = sentenceData.map(async (data, idx) => {
+        try {
+          const prompt = holdBufferPrompt(
+            data.velocity.wordsPerMinute,
+            data.velocity.avgGapDuration,
+            data.hasPauseAtEnd,
+            data.words.length
+          );
+
+          const result = await aiProvider.structuredComplete(prompt, HoldBufferSchema);
+          return { holdFrames: result.holdFrames, reasoning: result.reasoning };
+        } catch (error) {
+          console.warn(`[BUILD] LLM hold buffer determination failed for sentence ${idx + 1}, using default`);
+          return { holdFrames: 6, reasoning: 'fallback (LLM error)' };
+        }
+      });
+
+      const holdResults = await Promise.all(holdPromises);
+
+      // Create text elements with determined hold frames
+      for (let i = 0; i < sentenceData.length; i++) {
+        const data = sentenceData[i];
+        const hold = holdResults[i];
+
+        console.log(`[BUILD] Sentence ${i + 1}/${sentenceData.length}: ${hold.holdFrames} frames - ${hold.reasoning}`);
+
         elements.push({
-          text: segment.text, // Legacy compatibility - full text
+          text: data.sentence,
           position: textConfig.position || 'bottom',
-          startMs: wordData[0].startMs,
-          endMs: wordData[wordData.length - 1].endMs,
-          words: wordData,
+          startMs: data.words[0].startMs,
+          endMs: data.words[data.words.length - 1].endMs,
+          startFrame: data.words[0].startFrame,
+          endFrame: data.words[data.words.length - 1].endFrame,
+          words: data.words,
+          holdFrames: hold.holdFrames,
         });
       }
     } else {
@@ -299,11 +433,16 @@ function generateTextElements(
       const chunkDuration = (audio.endMs - audio.startMs) / chunks.length;
 
       for (let j = 0; j < chunks.length; j++) {
+        const startMs = audio.startMs + (j * chunkDuration) + subtitleLeadMs;
+        const endMs = audio.startMs + ((j + 1) * chunkDuration) + subtitleLeadMs;
+
         elements.push({
           text: chunks[j],
           position: textConfig.position || 'bottom',
-          startMs: audio.startMs + (j * chunkDuration),
-          endMs: audio.startMs + ((j + 1) * chunkDuration),
+          startMs,
+          endMs,
+          startFrame: toFrame(startMs),
+          endFrame: toFrame(endMs),
           // No words array - backward compatibility
         });
       }
@@ -335,6 +474,9 @@ async function main(projectId?: string) {
 
     // Load configuration
     const videoConfig = await ConfigManager.loadVideoConfig();
+    const fps = videoConfig.aspectRatios?.[videoConfig.defaultAspectRatio]?.fps ?? FPS;
+    const subtitleLeadMs = videoConfig.text?.subtitleLeadMs ?? 0;
+    const toFrame = (ms: number) => Math.round((ms / 1000) * fps);
 
     console.log(`[BUILD] Aspect ratio: ${videoConfig.defaultAspectRatio}`);
     console.log(`[BUILD] Target duration: ${videoConfig.duration?.targetSeconds || 720}s`);
@@ -348,7 +490,7 @@ async function main(projectId?: string) {
 
     // Build timeline elements
     console.log('[BUILD]   → Generating audio elements...');
-    const audioElements = generateAudioElements(tagsData.manifest.audio, projectId);
+    const audioElements = generateAudioElements(tagsData.manifest.audio, projectId, toFrame);
     console.log(`[BUILD]   ✓ Generated ${audioElements.length} audio element(s)`);
 
     console.log('[BUILD]   → Generating background elements...');
@@ -357,16 +499,19 @@ async function main(projectId?: string) {
       tagsData.manifest.videos || [],
       tagsData.tags,
       audioElements,
-      videoConfig
+      videoConfig,
+      toFrame,
     );
     console.log(`[BUILD]   ✓ Generated ${backgroundElements.length} background element(s)`);
 
     console.log('[BUILD]   → Generating text elements...');
-    const textElements = generateTextElements(
+    const textElements = await generateTextElements(
       scriptData.segments,
       audioElements,
       tagsData.manifest.audio,
-      videoConfig
+      videoConfig,
+      toFrame,
+      subtitleLeadMs,
     );
     console.log(`[BUILD]   ✓ Generated ${textElements.length} text element(s)`);
 
@@ -385,7 +530,7 @@ async function main(projectId?: string) {
       elements: backgroundElements,
       text: textElements,
       audio: audioElements,
-      backgroundMusic: generateBackgroundMusicElements(manifest, totalDurationMs),
+      backgroundMusic: generateBackgroundMusicElements(tagsData.manifest, totalDurationMs),
     };
 
     // Write timeline.json

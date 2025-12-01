@@ -10,6 +10,7 @@ export * from './quality';
 export * from './deduplication';
 export * from './downloader';
 export * from './aspect-processor';
+export * from './local-repo';
 
 import { PexelsService } from './pexels';
 import { UnsplashService } from './unsplash';
@@ -18,6 +19,7 @@ import { StockMediaSearch } from './stock-search';
 import { MediaDownloader } from './downloader';
 import { ConfigManager } from '../../lib/config';
 import { logger } from '../../utils/logger';
+import { LocalMediaRepo, LocalMediaRepoOptions } from './local-repo';
 
 /**
  * Factory for creating stock media search service with API keys from config
@@ -25,6 +27,7 @@ import { logger } from '../../utils/logger';
 export class MediaServiceFactory {
   private static searchInstance: StockMediaSearch | null = null;
   private static downloaderInstance: MediaDownloader | null = null;
+  private static localRepoInstance: LocalMediaRepo | null = null;
 
   /**
    * Get or create StockMediaSearch instance
@@ -74,10 +77,22 @@ export class MediaServiceFactory {
   }
 
   /**
+   * Get or create LocalMediaRepo instance
+   */
+  static getLocalMediaRepo(options?: LocalMediaRepoOptions): LocalMediaRepo {
+    if (!this.localRepoInstance) {
+      this.localRepoInstance = new LocalMediaRepo(options);
+    }
+    return this.localRepoInstance;
+  }
+
+  /**
    * Clear cached instances
    */
   static clearCache(): void {
     this.searchInstance = null;
     this.downloaderInstance = null;
+    void this.localRepoInstance?.dispose();
+    this.localRepoInstance = null;
   }
 }

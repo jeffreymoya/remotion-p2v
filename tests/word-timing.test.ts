@@ -8,6 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { msToFrame } from '../src/lib/utils';
 import { FPS } from '../src/lib/constants';
+import { generateAudioElements, generateTextElements } from '../cli/commands/build';
 
 // Test msToFrame conversion
 test('msToFrame() converts milliseconds to frames correctly', () => {
@@ -381,6 +382,74 @@ test('Frame conversion: matches calculateFrameTiming utility', () => {
   assert.strictEqual(startFrame, 0, 'Start frame should be 0');
   assert.strictEqual(endFrame, 60, 'End frame should be 60');
   assert.strictEqual(duration, 60, 'Duration should be 60 frames (2 seconds at 30fps)');
+});
+
+test('Precomputed frames stay aligned between audio and subtitles', () => {
+  const fps = 30;
+  const toFrame = (ms: number) => Math.round((ms / 1000) * fps);
+  const subtitleLeadMs = 0;
+
+  const audioManifest = [
+    {
+      path: 'projects/demo/assets/audio/segment-1.mp3',
+      durationMs: 1800,
+      wordTimestamps: [
+        { word: 'Hello', startMs: 0, endMs: 350 },
+        { word: 'world', startMs: 350, endMs: 900 },
+        { word: 'again', startMs: 900, endMs: 1500 },
+      ],
+    },
+    {
+      path: 'projects/demo/assets/audio/segment-2.mp3',
+      durationMs: 2000,
+      wordTimestamps: [
+        { word: 'Stay', startMs: 0, endMs: 400 },
+        { word: 'in', startMs: 400, endMs: 800 },
+        { word: 'sync', startMs: 800, endMs: 1500 },
+      ],
+    },
+  ];
+
+  const segments = [
+    { text: 'Hello world again' },
+    { text: 'Stay in sync' },
+  ];
+
+  const audioElements = generateAudioElements(audioManifest, 'demo', toFrame);
+  const textElements = generateTextElements(
+    segments,
+    audioElements,
+    audioManifest,
+    { text: { position: 'bottom', subtitleLeadMs } },
+    toFrame,
+    subtitleLeadMs,
+  );
+
+  assert.strictEqual(textElements.length, audioElements.length, 'Text and audio counts should match');
+
+  textElements.forEach((text, idx) => {
+    const audio = audioElements[idx];
+    assert.ok(text.words && text.words.length > 0, `Text element ${idx} should contain words`);
+
+    const firstWord = text.words![0];
+    assert.ok(typeof audio.startFrame === 'number', 'Audio should carry startFrame');
+    assert.ok(typeof firstWord.startFrame === 'number', 'First word should carry startFrame');
+
+    const frameDiff = Math.abs((audio.startFrame ?? 0) - (firstWord.startFrame ?? 0));
+    assert.ok(frameDiff <= 1, `Audio ${idx} startFrame should match first word startFrame (diff ${frameDiff})`);
+
+    for (let w = 1; w < text.words!.length; w++) {
+      const prev = text.words![w - 1];
+      const current = text.words![w];
+
+      assert.ok(typeof current.startFrame === 'number', `Word ${w} should have startFrame`);
+      assert.ok(typeof prev.startFrame === 'number', `Word ${w - 1} should have startFrame`);
+
+      const delta = (current.startFrame ?? 0) - (prev.startFrame ?? 0);
+      assert.ok(delta >= -1, `Word frames should not drift backwards by more than 1 frame (delta ${delta})`);
+      assert.ok((current.endFrame ?? current.startFrame ?? 0) >= (current.startFrame ?? 0), 'End frame should not precede start frame');
+    }
+  });
 });
 
 console.log('\n✅ All word timing tests passed!');

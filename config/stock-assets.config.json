@@ -90,6 +90,14 @@
     "retryAttempts": 3,
     "retryDelayMs": 1000
   },
+  "localLibrary": {
+    "enabled": true,
+    "minMatches": { "videos": 1, "images": 3 },
+    "limit": { "videos": 3, "images": 5 },
+    "preferRecencyBoost": 0.1,
+    "semantic": { "enabled": false, "minScore": 0.18, "candidateLimit": 250, "dimensions": 384 },
+    "optimization": { "images": { "enabled": false, "minSavingsPercent": 5 } }
+  },
   "aspectRatios": {
     "16:9": {
       "width": 1920,

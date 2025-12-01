@@ -1,0 +1,96 @@
+{
+  "topics": [
+    {
+      "id": "topic-1",
+      "title": "The AI Revolution: How Artificial Intelligence is Reshaping Creativity",
+      "description": "Explore the latest AI tools transforming graphic design, music production, and video editing. Understand how AI is augmenting, not replacing, human creativity.",
+      "source": "google-trends",
+      "trendScore": 95,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-2",
+      "title": "Stop Procrastinating NOW: The Psychology Behind Putting Things Off",
+      "description": "Understand the deep-seated psychological reasons for procrastination. Learn scientifically-backed methods to overcome it and boost productivity.",
+      "source": "google-trends",
+      "trendScore": 93,
+      "category": "Psychology",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-3",
+      "title": "Build a Gaming PC for Under $800: Full Step-by-Step Guide (2025)",
+      "description": "Get a complete walkthrough on selecting parts and assembling a powerful budget gaming PC. Perfect for beginners looking to upgrade their setup.",
+      "source": "google-trends",
+      "trendScore": 92,
+      "category": "How-to",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-4",
+      "title": "Unlock Your Brain: The Science of How We Learn and Remember",
+      "description": "Dive into the neuroscience behind memory formation and effective learning strategies. Discover practical tips to boost your cognitive abilities.",
+      "source": "google-trends",
+      "trendScore": 90,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-5",
+      "title": "JWST's Biggest Discoveries: What the Webb Telescope Has Revealed",
+      "description": "Explore the breathtaking images and groundbreaking scientific findings from the James Webb Space Telescope. See how it's changing our understanding of the cosmos.",
+      "source": "google-trends",
+      "trendScore": 89,
+      "category": "Science",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-6",
+      "title": "Atlantis Uncovered: What History REALLY Knows About the Lost City",
+      "description": "We sift through myths and archaeological evidence to uncover the truth behind the legend of Atlantis. Was it real, and what can its story teach us?",
+      "source": "google-trends",
+      "trendScore": 88,
+      "category": "History",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-7",
+      "title": "Green Tech: Innovations Making Our Planet Sustainable",
+      "description": "Discover cutting-edge technologies and solutions aimed at combating climate change and creating a more sustainable future for everyone.",
+      "source": "google-trends",
+      "trendScore": 87,
+      "category": "Technology",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-8",
+      "title": "From Graffiti to Masterpieces: The Surprising History of Street Art",
+      "description": "Trace the journey of street art, from its rebellious origins to its current status as a celebrated global art form. Explore its cultural impact and iconic artists.",
+      "source": "google-trends",
+      "trendScore": 85,
+      "category": "Culture",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-9",
+      "title": "The Machine Age: How the Industrial Revolution Redefined Humanity",
+      "description": "Journey back to the era that reshaped society, economy, and daily life. Understand the key inventions and their lasting impact on the modern world.",
+      "source": "google-trends",
+      "trendScore": 82,
+      "category": "History",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    },
+    {
+      "id": "topic-10",
+      "title": "Bake Perfect Croissants at Home: Easy French Pastry Masterclass",
+      "description": "Learn the secrets to making flaky, buttery croissants from scratch with this easy-to-follow guide. Impress your friends and family with authentic French baking.",
+      "source": "google-trends",
+      "trendScore": 78,
+      "category": "How-to",
+      "discoveredAt": "2025-11-30T16:09:50.914Z"
+    }
+  ],
+  "discoveredAt": "2025-11-30T16:09:50.914Z",
+  "totalCount": 10
+}

@@ -57,14 +57,32 @@
       position: relative;
     }
 
-    .topic-card:hover {
+    .topic-card:hover:not(.selected) {
       transform: translateY(-4px);
       box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      border: 2px solid #e0e7ff;
     }
 
     .topic-card.selected {
-      border: 3px solid #667eea;
-      box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+      border: 4px solid #667eea;
+      background: #f8faff;
+      transform: scale(1.02);
+      box-shadow:
+        0 8px 16px rgba(102, 126, 234, 0.3),
+        0 0 0 4px rgba(102, 126, 234, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    .topic-card.selected::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 16px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.15), transparent 70%);
+      animation: selectionGlow 2s ease-in-out infinite;
+      pointer-events: none;
+      z-index: -1;
     }
 
     .topic-category {
@@ -215,6 +233,64 @@
       font-size: 1.2rem;
     }
 
+    .selection-checkmark {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 48px;
+      height: 48px;
+      background: #667eea;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      animation: checkmarkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 20;
+    }
+
+    .topic-card.confirming {
+      animation: selectionPulse 0.6s ease-out;
+    }
+
+    @keyframes selectionGlow {
+      0%, 100% { opacity: 0.5; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+
+    @keyframes checkmarkBounce {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      50% { transform: scale(1.1) rotate(0deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    @keyframes selectionPulse {
+      0%, 100% { transform: scale(1.02); }
+      50% { transform: scale(1.05); }
+    }
+
+    .topic-card:focus-visible {
+      outline: 3px solid #667eea;
+      outline-offset: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .topic-card,
+      .topic-card.selected::before,
+      .selection-checkmark,
+      .topic-card.confirming {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .topic-card:hover {
+        transform: none;
+      }
+    }
+
     @media (max-width: 768px) {
       .topics-grid {
         grid-template-columns: 1fr;
@@ -319,9 +395,27 @@
 
       // Update card styling
       document.querySelectorAll('.topic-card').forEach(card => {
-        card.classList.remove('selected');
+        card.classList.remove('selected', 'confirming');
+        // Remove any existing checkmarks
+        const existingCheckmark = card.querySelector('.selection-checkmark');
+        if (existingCheckmark) {
+          existingCheckmark.remove();
+        }
       });
-      event.currentTarget.classList.add('selected');
+
+      const selectedCard = event.currentTarget;
+      selectedCard.classList.add('selected', 'confirming');
+
+      // Add checkmark
+      const checkmark = document.createElement('div');
+      checkmark.className = 'selection-checkmark';
+      checkmark.innerHTML = '✓';
+      selectedCard.appendChild(checkmark);
+
+      // Remove confirming animation class after it completes
+      setTimeout(() => {
+        selectedCard.classList.remove('confirming');
+      }, 600);
 
       // Show notes section
       document.getElementById('notes-section').classList.add('visible');
@@ -335,7 +429,12 @@
     function cancelSelection() {
       selectedTopicId = null;
       document.querySelectorAll('.topic-card').forEach(card => {
-        card.classList.remove('selected');
+        card.classList.remove('selected', 'confirming');
+        // Remove checkmarks
+        const checkmark = card.querySelector('.selection-checkmark');
+        if (checkmark) {
+          checkmark.remove();
+        }
       });
       document.getElementById('notes-section').classList.remove('visible');
       document.getElementById('select-hint').style.display = 'block';

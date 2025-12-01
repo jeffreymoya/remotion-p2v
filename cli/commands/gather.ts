@@ -16,12 +16,16 @@ import { ConfigManager } from '../lib/config';
 import { getProjectPaths, ensureProjectDirs } from '../../src/lib/paths';
 import { AIProviderFactory } from '../services/ai';
 import { MediaServiceFactory } from '../services/media';
-import { TTSProviderFactory, generateWithFallback } from '../services/tts';
+import { generateWithFallback } from '../services/tts';
 import { MusicServiceFactory } from '../services/music';
 import { deduplicateImages, deduplicateVideos } from '../services/media/deduplication';
 import { rankByQuality } from '../services/media/quality';
 import { z } from 'zod';
 import { extractVisualTagsPrompt, emphasisTaggingPrompt } from '../../config/prompts';
+import type { LocalMediaRepo } from '../services/media/local-repo';
+import { processAspectRatio, CropConfig } from '../services/media/aspect-processor';
+import type { AIProvider } from '../lib/types';
+import { removeStageDirections } from '../../src/lib/utils';
 
 export interface AssetTag {
   tag: string;
@@ -36,11 +40,23 @@ export interface EmphasisData {
 }
 
 export interface AssetManifest {
-  images: Array<{ id: string; path: string; source: string; tags: string[]; metadata?: any }>;
-  videos: Array<{
+  images: Array<{
     id: string;
+    libraryId?: string;
     path: string;
     source: string;
+    provider?: string;
+    sourceUrl?: string;
+    tags: string[];
+    metadata?: any;
+  }>;
+  videos: Array<{
+    id: string;
+    libraryId?: string;
+    path: string;
+    source: string;
+    provider?: string;
+    sourceUrl?: string;
     tags: string[];
     width: number;
     height: number;
@@ -144,13 +160,87 @@ function validateEmphasisConstraints(
   return finalFiltered;
 }
 
-async function main(projectId?: string) {
+const DEFAULT_CROP_CONFIG: CropConfig = {
+  safePaddingPercent: 10,
+  maxAspectDelta: 0.3,
+  targetWidth: 1920,
+  targetHeight: 1080,
+};
+
+function getCropConfig(stockConfig: any): CropConfig {
+  const cfg = (stockConfig as any)?.cropConfig;
+  if (
+    cfg &&
+    typeof cfg.safePaddingPercent === 'number' &&
+    typeof cfg.maxAspectDelta === 'number' &&
+    typeof cfg.targetWidth === 'number' &&
+    typeof cfg.targetHeight === 'number'
+  ) {
+    return cfg as CropConfig;
+  }
+  return DEFAULT_CROP_CONFIG;
+}
+
+function getDesiredAspectRatio(defaultAspect: string, videoConfig: any, stockConfig: any): number | undefined {
+  const aspectFromVideo = videoConfig.aspectRatios?.[defaultAspect];
+  if (aspectFromVideo?.width && aspectFromVideo?.height) {
+    return aspectFromVideo.width / aspectFromVideo.height;
+  }
+
+  const aspectFromStock = stockConfig.aspectRatios?.[defaultAspect];
+  if (aspectFromStock?.width && aspectFromStock?.height) {
+    return aspectFromStock.width / aspectFromStock.height;
+  }
+
+  const parts = defaultAspect.split(':').map(Number);
+  if (parts.length === 2 && parts[0] && parts[1]) {
+    return parts[0] / parts[1];
+  }
+
+  return undefined;
+}
+
+function buildImageMetadata(width: number, height: number, cropConfig: CropConfig) {
+  const crop = processAspectRatio(width, height, cropConfig);
+  return {
+    width,
+    height,
+    mode: crop.mode,
+    scale: crop.scale,
+    cropX: crop.x,
+    cropY: crop.y,
+    cropWidth: crop.width,
+    cropHeight: crop.height,
+  };
+}
+
+function buildVideoMetadata(width: number, height: number, durationSeconds: number, cropConfig: CropConfig) {
+  return {
+    ...buildImageMetadata(width, height, cropConfig),
+    duration: durationSeconds,
+  };
+}
+
+function mergeTags(...sources: string[][]): string[] {
+  const merged = new Set<string>();
+  for (const list of sources) {
+    for (const tag of list) {
+      if (tag) merged.add(tag);
+    }
+  }
+  return Array.from(merged);
+}
+
+async function main(projectId?: string, preview = false) {
+  let localRepo: LocalMediaRepo | null = null;
   try {
     console.log('[GATHER] Starting asset gathering...');
+    const isLibraryTestMode = process.env.STOCK_LIBRARY_TEST_MODE === '1';
+    const disableOnlineSearch = process.env.LOCAL_LIBRARY_DISABLE_ONLINE === '1';
 
     if (!projectId) {
       console.error('[GATHER] ✗ Error: Missing required argument --project <id>');
-      console.log('[GATHER] Usage: npm run gather -- --project <project-id>');
+      console.log('[GATHER] Usage: npm run gather -- --project <project-id> [--preview]');
       process.exit(1);
     }
 
@@ -170,23 +260,61 @@ async function main(projectId?: string) {
     const videoConfig = await ConfigManager.loadVideoConfig();
     const stockConfig = await ConfigManager.loadStockAssetsConfig();
     const musicConfig = await ConfigManager.loadMusicConfig();
+    const localLibraryConfig = stockConfig.localLibrary;
+    const cropConfig = getCropConfig(stockConfig);
+    const desiredAspectRatio = getDesiredAspectRatio(
+      videoConfig.defaultAspectRatio,
+      videoConfig,
+      stockConfig
+    );
 
     console.log(`[GATHER] Aspect ratio: ${videoConfig.defaultAspectRatio}`);
     console.log(`[GATHER] Music enabled: ${musicConfig.enabled}`);
 
     // Read script
     const scriptData = JSON.parse(await fs.readFile(scriptPath, 'utf-8'));
-    console.log(`[GATHER] Processing ${scriptData.segments?.length || 0} script segment(s)`);
+
+    // Preview mode configuration
+    const PREVIEW_SEGMENT_LIMIT = 3;
+    const PREVIEW_VIDEO_LIMIT = 1;
+    const PREVIEW_IMAGE_LIMIT = 2;
+
+    const totalSegments = scriptData.segments?.length || 0;
+    const segmentsToProcess = preview ? Math.min(totalSegments, PREVIEW_SEGMENT_LIMIT) : totalSegments;
+
+    if (preview) {
+      console.log(`[GATHER] Preview mode: processing first ${segmentsToProcess} segment(s)...`);
+    }
+    console.log(`[GATHER] Processing ${segmentsToProcess} of ${totalSegments} script segment(s)`);
 
     if (!scriptData.segments || scriptData.segments.length === 0) {
       throw new Error('Script has no segments');
     }
 
     // Initialize services
-    const aiProvider = await AIProviderFactory.getProviderWithFallback();
-    const stockSearch = await MediaServiceFactory.getStockMediaSearch();
+    const aiProvider = isLibraryTestMode ? createMockAIProvider() : await AIProviderFactory.getProviderWithFallback();
+    const stockSearch = disableOnlineSearch
+      ? createOfflineStockSearch()
+      : await MediaServiceFactory.getStockMediaSearch();
     const downloader = MediaServiceFactory.getMediaDownloader();
     const musicService = musicConfig.enabled ? await MusicServiceFactory.getMusicService() : null;
+    if (localLibraryConfig.enabled) {
+      localRepo = MediaServiceFactory.getLocalMediaRepo({
+        preferRecencyBoost: localLibraryConfig.preferRecencyBoost,
+        semanticEnabled: localLibraryConfig.semantic?.enabled,
+        semanticMinScore: localLibraryConfig.semantic?.minScore,
+        semanticCandidateLimit: localLibraryConfig.semantic?.candidateLimit,
+        semanticDimensions: localLibraryConfig.semantic?.dimensions,
+        optimizeImages: localLibraryConfig.optimization?.images?.enabled,
+        optimizeMinSavingsPercent: localLibraryConfig.optimization?.images?.minSavingsPercent,
+      });
+      await localRepo.ensureAvailable();
+      console.log(
+        `[GATHER] Local library enabled (minMatches videos=${localLibraryConfig.minMatches.videos}, images=${localLibraryConfig.minMatches.images})`
+      );
+    } else {
+      console.log('[GATHER] Local library disabled via config');
+    }
 
     const allTags: AssetTag[] = [];
     const manifest: AssetManifest = {
@@ -197,11 +325,11 @@ async function main(projectId?: string) {
     };
 
     // Process each segment
-    for (let i = 0; i < scriptData.segments.length; i++) {
+    for (let i = 0; i < segmentsToProcess; i++) {
       const segment = scriptData.segments[i];
       const segmentId = segment.id || `segment-${i + 1}`;
 
-      console.log(`[GATHER] Processing segment ${i + 1}/${scriptData.segments.length}: ${segmentId}`);
+      console.log(`[GATHER] Processing segment ${i + 1}/${segmentsToProcess}: ${segmentId}`);
 
       // 1. Extract tags from segment text using AI
       const prompt = extractVisualTagsPrompt({
@@ -223,127 +351,296 @@ async function main(projectId?: string) {
 
       console.log(`[GATHER]   → Extracted ${tagResult.tags.length} tags: ${tagResult.tags.map(t => t.tag).join(', ')}`);
 
-      // 2. Search stock videos FIRST (Wave 2A.3)
+      const segmentTags = tagResult.tags.map(t => t.tag);
+
+      // 2. Local library lookup for videos first
       let videoAcquired = false;
-      try {
-        console.log(`[GATHER]   → Searching for videos...`);
-        const videoResults = await stockSearch.searchVideos(
-          tagResult.tags.map(t => t.tag),
-          {
-            perTag: stockConfig.providers?.pexels?.videoDefaults?.perPage || 5,
-            orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-            minDuration: stockConfig.providers?.pexels?.videoDefaults?.minDuration || 5,
-          }
-        );
+      let imagesAcquired = false;
 
-        // Deduplicate and rank by quality
-        const uniqueVideos = deduplicateVideos(videoResults);
-        const rankedVideos = rankByQuality(uniqueVideos, {
-          aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-          minQuality: stockConfig.qualityScoring?.minVideoQualityScore || 0.7,
-        }).slice(0, 3); // Top 3 videos per segment
+      const minDurationSeconds = stockConfig.providers?.pexels?.videoDefaults?.minDuration;
+      const minDurationMs = typeof minDurationSeconds === 'number' ? minDurationSeconds * 1000 : undefined;
 
-        console.log(`[GATHER]   → Found ${rankedVideos.length} videos (quality threshold: ${stockConfig.qualityScoring?.minVideoQualityScore || 0.7})`);
-
-        // Download videos if quality threshold met
-        if (rankedVideos.length > 0) {
-          const topVideo = rankedVideos[0];
-
-          // Calculate quality score to check threshold
-          const qualityScore = rankByQuality([topVideo], {
-            aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-            minQuality: 0,
+      if (localRepo && localLibraryConfig.enabled) {
+        try {
+          console.log('[GATHER]   → Checking local library for videos...');
+          const maxVideos = preview ? PREVIEW_VIDEO_LIMIT : localLibraryConfig.limit.videos;
+          const localVideos = await localRepo.searchVideos(segmentTags, {
+            minWidth: stockConfig.providers?.pexels?.videoDefaults?.minWidth,
+            minHeight: stockConfig.providers?.pexels?.videoDefaults?.minHeight,
+            minDurationMs,
+            desiredAspectRatio,
+            maxResults: maxVideos,
+            preferRecencyBoost: localLibraryConfig.preferRecencyBoost,
           });
 
-          if (qualityScore.length > 0) {
-            console.log(`[GATHER]   → Downloading top ${Math.min(3, rankedVideos.length)} video(s)...`);
-
-            // Track videos added for THIS segment
-            const videosBeforeSegment = manifest.videos.length;
-
-            for (const video of rankedVideos) {
+          const videosToUse = localVideos.slice(0, maxVideos);
+          if (videosToUse.length > 0) {
+            const usedIds: string[] = [];
+            for (const video of videosToUse) {
               try {
-                const { path: cachePath, metadata } = await downloader.downloadVideo(video);
-                const filename = path.basename(cachePath);
-                const projectVideoPath = path.join(paths.assetsVideos, filename);
-                await fs.copyFile(cachePath, projectVideoPath);
-
+                const destPath = path.join(paths.assetsVideos, path.basename(video.path));
+                await fs.copyFile(video.path, destPath);
+                const durationSeconds = Number((video.durationMs / 1000).toFixed(2));
                 manifest.videos.push({
                   id: video.id,
-                  path: projectVideoPath,
-                  source: video.source,
+                  libraryId: video.id,
+                  path: destPath,
+                  source: 'local-library',
+                  provider: video.provider,
+                  sourceUrl: video.sourceUrl ?? undefined,
                   tags: video.tags,
                   width: video.width,
                   height: video.height,
-                  duration: video.duration,
-                  metadata: metadata,
+                  duration: durationSeconds,
+                  metadata: buildVideoMetadata(video.width, video.height, durationSeconds, cropConfig),
                 });
-
-                console.log(`[GATHER]   → Downloaded video: ${video.id} (${video.width}x${video.height}, ${video.duration}s)`);
-              } catch (downloadError: any) {
-                console.warn(`[GATHER]   ⚠ Failed to download video ${video.id}: ${downloadError.message}`);
+                usedIds.push(video.id);
+              } catch (copyError: any) {
+                console.warn(`[GATHER]   ⚠ Failed to reuse local video ${video.id}: ${copyError.message}`);
               }
             }
 
-            // Check if THIS segment acquired videos (not global count)
-            const segmentVideoCount = manifest.videos.length - videosBeforeSegment;
-            if (segmentVideoCount > 0) {
-              videoAcquired = true;
-              console.log(`[GATHER]   ✓ Acquired ${segmentVideoCount} video(s) for this segment, skipping image search`);
+            if (usedIds.length > 0) {
+              await localRepo.markUsed(usedIds, 'video');
+              if (usedIds.length >= localLibraryConfig.minMatches.videos) {
+                videoAcquired = true;
+                console.log(`[GATHER]   ✓ Reused ${usedIds.length} video(s) from local library`);
+              } else {
+                console.log(`[GATHER]   → Reused ${usedIds.length} local video(s); searching online for more`);
+              }
             }
           }
+        } catch (error: any) {
+          console.warn(`[GATHER]   ⚠ Local video search failed: ${error.message}`);
         }
-      } catch (videoError: any) {
-        console.warn(`[GATHER]   ⚠ Video search failed: ${videoError.message}`);
-        console.log(`[GATHER]   → Falling back to image search`);
+      }
+
+      // 2b. Search stock videos if local library didn't meet threshold
+      if (!videoAcquired) {
+        try {
+          if (disableOnlineSearch) {
+            throw new Error('Online video search disabled via LOCAL_LIBRARY_DISABLE_ONLINE');
+          }
+          console.log(`[GATHER]   → Searching for videos...`);
+          const videoResults = await stockSearch.searchVideos(
+            segmentTags,
+            {
+              perTag: stockConfig.providers?.pexels?.videoDefaults?.perPage || 5,
+              orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+              minDuration: stockConfig.providers?.pexels?.videoDefaults?.minDuration || 5,
+            }
+          );
+
+          // Deduplicate and rank by quality
+          const maxVideos = preview ? PREVIEW_VIDEO_LIMIT : 3;
+          const uniqueVideos = deduplicateVideos(videoResults);
+          const rankedVideos = rankByQuality(uniqueVideos, {
+            aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+            minQuality: stockConfig.qualityScoring?.minVideoQualityScore || 0.7,
+          }).slice(0, maxVideos); // Top N videos per segment
+
+          console.log(`[GATHER]   → Found ${rankedVideos.length} videos (quality threshold: ${stockConfig.qualityScoring?.minVideoQualityScore || 0.7})`);
+
+          // Download videos if quality threshold met
+          if (rankedVideos.length > 0) {
+            const topVideo = rankedVideos[0];
+
+            // Calculate quality score to check threshold
+            const qualityScore = rankByQuality([topVideo], {
+              aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+              minQuality: 0,
+            });
+
+            if (qualityScore.length > 0) {
+              console.log(`[GATHER]   → Downloading top ${Math.min(maxVideos, rankedVideos.length)} video(s)...`);
+
+              // Track videos added for THIS segment
+              const videosBeforeSegment = manifest.videos.length;
+
+              for (const video of rankedVideos) {
+                try {
+                  const { path: cachePath, metadata } = await downloader.downloadVideo(video);
+                  const filename = path.basename(cachePath);
+                  const projectVideoPath = path.join(paths.assetsVideos, filename);
+                  await fs.copyFile(cachePath, projectVideoPath);
+
+                  let libraryId: string | undefined;
+                  if (localRepo && localLibraryConfig.enabled) {
+                    try {
+                      const ingested = await localRepo.ingestDownloaded(
+                        { path: cachePath, type: 'video' },
+                        mergeTags(video.tags, segmentTags),
+                        video.source,
+                        video.url
+                      );
+                      libraryId = ingested.id;
+                      await localRepo.markUsed([ingested.id], 'video');
+                    } catch (ingestError: any) {
+                      console.warn(`[GATHER]   ⚠ Failed to ingest video ${video.id} into local library: ${ingestError.message}`);
+                    }
+                  }
+
+                  manifest.videos.push({
+                    id: video.id,
+                    libraryId,
+                    path: projectVideoPath,
+                    source: video.source,
+                    provider: video.source,
+                    sourceUrl: video.url,
+                    tags: mergeTags(video.tags, segmentTags),
+                    width: video.width,
+                    height: video.height,
+                    duration: video.duration,
+                    metadata: metadata,
+                  });
+
+                  console.log(`[GATHER]   → Downloaded video: ${video.id} (${video.width}x${video.height}, ${video.duration}s)`);
+                } catch (downloadError: any) {
+                  console.warn(`[GATHER]   ⚠ Failed to download video ${video.id}: ${downloadError.message}`);
+                }
+              }
+
+              // Check if THIS segment acquired videos (not global count)
+              const segmentVideoCount = manifest.videos.length - videosBeforeSegment;
+              if (segmentVideoCount > 0) {
+                videoAcquired = true;
+                console.log(`[GATHER]   ✓ Acquired ${segmentVideoCount} video(s) for this segment, skipping image search`);
+              }
+            }
+          }
+        } catch (videoError: any) {
+          console.warn(`[GATHER]   ⚠ Video search failed: ${videoError.message}`);
+          console.log(`[GATHER]   → Falling back to image search`);
+        }
       }
 
       // 3. Fall back to image search if video acquisition failed
       if (!videoAcquired) {
-        console.log(`[GATHER]   → Searching for images (video fallback)...`);
-        const imageResults = await stockSearch.searchImages(
-          tagResult.tags.map(t => t.tag),
-          {
-            perTag: stockConfig.providers?.pexels?.searchDefaults?.perPage || 10,
-            orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-          }
-        );
-
-        // Deduplicate and rank
-        const uniqueImages = deduplicateImages(imageResults);
-        const rankedImages = rankByQuality(uniqueImages, {
-          aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-          minQuality: stockConfig.qualityScoring?.minQualityScore || 0.6,
-        }).slice(0, 5); // Top 5 images per segment
-
-        console.log(`[GATHER]   → Found ${rankedImages.length} images`);
-
-        // Download images
-        for (const image of rankedImages) {
+        if (localRepo && localLibraryConfig.enabled) {
           try {
-            const { path: cachePath, metadata } = await downloader.downloadImage(image);
-
-            // Copy from cache to project assets directory
-            const filename = path.basename(cachePath);
-            const projectImagePath = path.join(paths.assetsImages, filename);
-            await fs.copyFile(cachePath, projectImagePath);
-
-            manifest.images.push({
-              id: image.id,
-              path: projectImagePath,
-              source: image.source,
-              tags: image.tags,
-              metadata: metadata,
+            console.log('[GATHER]   → Checking local library for images...');
+            const maxImages = preview ? PREVIEW_IMAGE_LIMIT : localLibraryConfig.limit.images;
+            const localImages = await localRepo.searchImages(segmentTags, {
+              minWidth: stockConfig.providers?.pexels?.searchDefaults?.minWidth,
+              minHeight: stockConfig.providers?.pexels?.searchDefaults?.minHeight,
+              desiredAspectRatio,
+              maxResults: maxImages,
+              preferRecencyBoost: localLibraryConfig.preferRecencyBoost,
             });
-          } catch (downloadError: any) {
-            console.warn(`[GATHER]   ⚠ Failed to download image ${image.id}: ${downloadError.message}`);
+
+            const imagesToUse = localImages.slice(0, maxImages);
+            if (imagesToUse.length > 0) {
+              const usedIds: string[] = [];
+              for (const image of imagesToUse) {
+                try {
+                  const destPath = path.join(paths.assetsImages, path.basename(image.path));
+                  await fs.copyFile(image.path, destPath);
+                  manifest.images.push({
+                    id: image.id,
+                    libraryId: image.id,
+                    path: destPath,
+                    source: 'local-library',
+                    provider: image.provider,
+                    sourceUrl: image.sourceUrl ?? undefined,
+                    tags: image.tags,
+                    metadata: buildImageMetadata(image.width, image.height, cropConfig),
+                  });
+                  usedIds.push(image.id);
+                } catch (copyError: any) {
+                  console.warn(`[GATHER]   ⚠ Failed to reuse local image ${image.id}: ${copyError.message}`);
+                }
+              }
+
+              if (usedIds.length > 0) {
+                await localRepo.markUsed(usedIds, 'image');
+                if (usedIds.length >= localLibraryConfig.minMatches.images) {
+                  imagesAcquired = true;
+                  console.log(`[GATHER]   ✓ Reused ${usedIds.length} image(s) from local library`);
+                } else {
+                  console.log(`[GATHER]   → Reused ${usedIds.length} local image(s); searching online for more`);
+                }
+              }
+            }
+          } catch (error: any) {
+            console.warn(`[GATHER]   ⚠ Local image search failed: ${error.message}`);
+          }
+        }
+
+        if (!imagesAcquired) {
+          if (disableOnlineSearch) {
+            throw new Error('Online image search disabled via LOCAL_LIBRARY_DISABLE_ONLINE');
+          }
+          console.log(`[GATHER]   → Searching for images (video fallback)...`);
+          const imageResults = await stockSearch.searchImages(
+            segmentTags,
+            {
+              perTag: stockConfig.providers?.pexels?.searchDefaults?.perPage || 10,
+              orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+            }
+          );
+
+          // Deduplicate and rank
+          const maxImages = preview ? PREVIEW_IMAGE_LIMIT : 5;
+          const uniqueImages = deduplicateImages(imageResults);
+          const rankedImages = rankByQuality(uniqueImages, {
+            aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+            minQuality: stockConfig.qualityScoring?.minQualityScore || 0.6,
+          }).slice(0, maxImages); // Top N images per segment
+
+          console.log(`[GATHER]   → Found ${rankedImages.length} images`);
+
+          // Download images
+          for (const image of rankedImages) {
+            try {
+              const { path: cachePath, metadata } = await downloader.downloadImage(image);
+
+              // Copy from cache to project assets directory
+              const filename = path.basename(cachePath);
+              const projectImagePath = path.join(paths.assetsImages, filename);
+              await fs.copyFile(cachePath, projectImagePath);
+
+              let libraryId: string | undefined;
+              if (localRepo && localLibraryConfig.enabled) {
+                try {
+                  const ingested = await localRepo.ingestDownloaded(
+                    { path: cachePath, type: 'image' },
+                    mergeTags(image.tags, segmentTags),
+                    image.source,
+                    image.url
+                  );
+                  libraryId = ingested.id;
+                  await localRepo.markUsed([ingested.id], 'image');
+                } catch (ingestError: any) {
+                  console.warn(`[GATHER]   ⚠ Failed to ingest image ${image.id} into local library: ${ingestError.message}`);
+                }
+              }
+
+              manifest.images.push({
+                id: image.id,
+                libraryId,
+                path: projectImagePath,
+                source: image.source,
+                provider: image.source,
+                sourceUrl: image.url,
+                tags: mergeTags(image.tags, segmentTags),
+                metadata: metadata,
+              });
+            } catch (downloadError: any) {
+              console.warn(`[GATHER]   ⚠ Failed to download image ${image.id}: ${downloadError.message}`);
+            }
           }
         }
       }
 
       // 4. Generate TTS audio for segment
       console.log(`[GATHER]   → Generating TTS audio...`);
-      const { audio: ttsResult, provider: ttsProviderUsed } = await generateWithFallback(segment.text);
+
+      // Filter stage directions before TTS
+      const cleanedText = removeStageDirections(segment.text);
+      console.log(`[GATHER]   → Cleaned text: "${cleanedText.substring(0, 80)}${cleanedText.length > 80 ? '...' : ''}"`);
+
+      const ttsGenerator = isLibraryTestMode ? generateStubTTS : generateWithFallback;
+      const { audio: ttsResult, provider: ttsProviderUsed } = await ttsGenerator(cleanedText);
       const audioPath = path.join(paths.assetsAudio, `${segmentId}.mp3`);
       await fs.writeFile(audioPath, ttsResult.audioBuffer);
       console.log(`[GATHER]   → TTS generated using ${ttsProviderUsed}`);
@@ -352,7 +649,7 @@ async function main(projectId?: string) {
       let emphasisData: EmphasisData[] = [];
       try {
         console.log(`[GATHER]   → Detecting emphasis...`);
-        const emphasisPrompt = emphasisTaggingPrompt(segment.text);
+        const emphasisPrompt = emphasisTaggingPrompt(cleanedText);
 
         // Try to get emphasis from AI
         const emphasisResult = await aiProvider.structuredComplete(
@@ -368,7 +665,7 @@ async function main(projectId?: string) {
         }));
 
         // Count words in segment
-        const wordCount = segment.text.split(/\s+/).filter(w => w.length > 0).length;
+        const wordCount = cleanedText.split(/\s+/).filter(w => w.length > 0).length;
 
         // Validate and enforce constraints
         emphasisData = validateEmphasisConstraints(rawEmphases, wordCount);
@@ -400,7 +697,7 @@ async function main(projectId?: string) {
     }
 
     // 6. Download background music if enabled
-    if (musicService && musicConfig.enabled) {
+    if (musicService && musicConfig.enabled && !preview) {
       console.log('[GATHER] Searching for background music...');
 
       const totalDuration = manifest.audio.reduce((sum, a) => sum + a.durationMs, 0) / 1000;
@@ -430,6 +727,10 @@ async function main(projectId?: string) {
       }
     }
 
+    if (preview) {
+      console.log('[GATHER] Preview mode: skipping music gathering');
+    }
+
     // Write output
     const output: GatherOutput = {
       tags: allTags,
@@ -450,12 +751,18 @@ async function main(projectId?: string) {
     console.log(`[GATHER] ✓ Music: ${output.manifest.music.length}`);
     console.log(`[GATHER] ✓ Output: ${paths.tags}`);
 
+    if (preview) {
+      console.log(`[GATHER] Preview mode: processed ${segmentsToProcess} of ${totalSegments} segments`);
+    }
+
+    await localRepo?.dispose();
     process.exit(0);
   } catch (error: any) {
     console.error('[GATHER] ✗ Error:', error.message);
     if (error.stack) {
       console.error(error.stack);
     }
+    await localRepo?.dispose();
     process.exit(1);
   }
 }
@@ -464,10 +771,65 @@ async function main(projectId?: string) {
 const args = process.argv.slice(2);
 const projectIdIndex = args.indexOf('--project');
 const projectId = projectIdIndex !== -1 ? args[projectIdIndex + 1] : undefined;
+const preview = args.includes('--preview');
+
+function createMockAIProvider(): AIProvider {
+  return {
+    name: 'mock-ai',
+    complete: async (prompt: string) => `mock:${prompt}`,
+    structuredComplete: async <T>(prompt: string, schema: z.ZodSchema<T>): Promise<T> => {
+      const words = prompt
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if ((schema as any).shape?.tags) {
+        const unique = Array.from(new Set(words));
+        const selected = unique.slice(0, Math.max(3, Math.min(5, unique.length)));
+        const payload: any = {
+          tags: selected.map((tag, idx) => ({ tag, confidence: Math.max(0.5, 1 - idx * 0.1) })),
+        };
+        return schema.parse(payload);
+      }
+
+      if ((schema as any).shape?.emphasisTags) {
+        return schema.parse({ emphasisTags: [] } as any);
+      }
+
+      return schema.parse({} as any);
+    },
+  };
+}
+
+function createOfflineStockSearch() {
+  const error = new Error('Online stock search disabled via LOCAL_LIBRARY_DISABLE_ONLINE');
+  return {
+    searchImages: async () => { throw error; },
+    searchVideos: async () => { throw error; },
+  };
+}
+
+async function generateStubTTS(text: string) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const timestamps = words.map((word, idx) => {
+    const startMs = idx * 180;
+    return { word, startMs, endMs: startMs + 180 };
+  });
+  const durationMs = timestamps.length ? timestamps[timestamps.length - 1].endMs : 1000;
+  return {
+    audio: {
+      audioBuffer: Buffer.from('mock-tts-audio'),
+      durationMs,
+      timestamps,
+    },
+    provider: 'mock-tts',
+  };
+}
 
 // Run if called directly
 if (require.main === module) {
-  main(projectId);
+  main(projectId, preview);
 }
 
 export default main;

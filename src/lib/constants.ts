@@ -1,5 +1,6 @@
 export const FPS = 30;
-export const INTRO_DURATION = 1 * FPS;
+export const INTRO_DURATION_MS = 1000;
+export const INTRO_DURATION = Math.round((INTRO_DURATION_MS / 1000) * FPS);
 
 // Legacy dimensions (9:16 vertical)
 export const IMAGE_WIDTH = 1024;

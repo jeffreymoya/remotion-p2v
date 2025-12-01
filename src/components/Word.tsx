@@ -1,12 +1,11 @@
 import type React from "react";
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, spring } from "remotion";
 import videoConfig from "../../config/video.config.json";
 import { bebasNeue, breeSerif } from "../lib/fonts";
 
 interface WordProps {
   text: string;
   startFrame: number;
-  endFrame: number;
   currentFrame: number;
   emphasis: { level: "none" | "med" | "high"; tone?: string };
   fps: number;
@@ -34,16 +33,12 @@ function getEmphasisStyle(level: "none" | "med" | "high") {
 export const Word: React.FC<WordProps> = ({
   text,
   startFrame,
-  endFrame,
   currentFrame,
   emphasis,
   fps,
 }) => {
-  const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
-
-  // Only show word when it's within its time range
-  const isVisible = currentFrame >= startFrame && currentFrame < endFrame;
+  // Show the word once it has started and keep it on-screen for the rest of the line
+  const isVisible = currentFrame >= startFrame;
 
   if (!isVisible) {
     return null;
