@@ -120,5 +120,80 @@
     "enabled": true,
     "ttlSeconds": 86400,
     "cacheSearchResults": true
+  },
+  "webScrape": {
+    "enabled": true,
+    "candidateCount": {
+      "target": 5,
+      "maxAttempts": 10
+    },
+    "concurrency": {
+      "maxConcurrent": 3,
+      "rateLimit": {
+        "requestsPerSecond": 10,
+        "perDomain": true
+      }
+    },
+    "quality": {
+      "minWidth": 1920,
+      "minHeight": 1080,
+      "maxWidth": 7680,
+      "maxHeight": 4320,
+      "allowedFormats": ["jpeg", "jpg", "png", "webp", "avif"],
+      "rejectedFormats": ["gif", "tiff", "heic"],
+      "minSizeBytes": 102400,
+      "maxSizeBytes": 10485760,
+      "aspectRatio": {
+        "target": 1.777778,
+        "tolerance": 0.3
+      }
+    },
+    "selection": {
+      "weights": {
+        "sceneRelevance": 0.4,
+        "technicalQuality": 0.3,
+        "aestheticAppeal": 0.2,
+        "aspectRatioMatch": 0.1
+      },
+      "tieBreaker": "resolution"
+    },
+    "download": {
+      "timeoutMs": 30000,
+      "totalOperationTimeoutMs": 120000,
+      "retryAttempts": 3,
+      "retryDelayMs": 1000,
+      "userAgent": "Mozilla/5.0 (compatible; RemotionP2V/1.0)",
+      "strictSSL": true,
+      "streamDownload": true
+    },
+    "security": {
+      "allowedSchemes": ["https"],
+      "blockedIpRanges": [
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16",
+        "127.0.0.0/8",
+        "169.254.0.0/16"
+      ],
+      "blockedTLDs": [".local", ".internal", ".corp"],
+      "maxUrlLength": 2048
+    },
+    "cache": {
+      "directory": "cache/media-scrape",
+      "maxSizeGB": 5,
+      "ttlDays": 7,
+      "evictionPolicy": "lru"
+    },
+    "search": {
+      "provider": "google-custom-search",
+      "apiKey": "${GOOGLE_CUSTOM_SEARCH_API_KEY}",
+      "searchEngineId": "${GOOGLE_CUSTOM_SEARCH_ENGINE_ID}",
+      "fallbackToStock": true,
+      "minCandidatesForSuccess": 3
+    },
+    "gemini": {
+      "searchModel": "gemini-2.0-flash-exp",
+      "selectionModel": "gemini-2.0-flash-exp"
+    }
   }
 }

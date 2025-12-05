@@ -1,0 +1,18 @@
+{
+  "segments": [
+    {
+      "id": "segment-1",
+      "text": "A beautiful sunset over the ocean with vibrant orange and purple colors reflecting on the calm water.",
+      "wordCount": 18
+    },
+    {
+      "id": "segment-2",
+      "text": "Mountains covered in snow under a clear blue sky, with pine trees in the foreground.",
+      "wordCount": 17
+    }
+  ],
+  "metadata": {
+    "totalWords": 35,
+    "totalSegments": 2
+  }
+}

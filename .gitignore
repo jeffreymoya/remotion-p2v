@@ -11,3 +11,9 @@ cache/
 /media/videos/
 
 /src/generated/prisma
+
+# Test fixtures (generated programmatically)
+tests/fixtures/*.jpg
+tests/fixtures/*.webp
+tests/fixtures/*.png
+!tests/fixtures/README.md

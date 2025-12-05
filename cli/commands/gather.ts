@@ -26,6 +26,10 @@ import type { LocalMediaRepo } from '../services/media/local-repo';
 import { processAspectRatio, CropConfig } from '../services/media/aspect-processor';
 import type { AIProvider } from '../lib/types';
 import { removeStageDirections } from '../../src/lib/utils';
+import { WebScraperService } from '../services/media/web-scraper';
+import { createGoogleSearchClient } from '../services/media/google-search';
+import { ImageQualityValidator } from '../services/media/image-validator';
+import type { QualityConfig } from '../lib/scraper-types';
 
 export interface AssetTag {
   tag: string;
@@ -231,7 +235,7 @@ function mergeTags(...sources: string[][]): string[] {
   return Array.from(merged);
 }
 
-async function main(projectId?: string, preview = false) {
+async function main(projectId?: string, preview = false, scrape = false) {
   let localRepo: LocalMediaRepo | null = null;
   try {
     console.log('[GATHER] Starting asset gathering...');
@@ -240,7 +244,13 @@ async function main(projectId?: string, preview = false) {
 
     if (!projectId) {
       console.error('[GATHER] ✗ Error: Missing required argument --project <id>');
-      console.log('[GATHER] Usage: npm run gather -- --project <project-id> [--preview]');
+      console.log('[GATHER] Usage: npm run gather -- --project <project-id> [--preview] [--scrape]');
+      console.log('[GATHER] ');
+      console.log('[GATHER] Options:');
+      console.log('[GATHER]   --project <id>  Project ID (required)');
+      console.log('[GATHER]   --preview        Process only first 3 segments');
+      console.log('[GATHER]   --scrape         Enable strict web scraping (no fallback to stock media)');
+      console.log('[GATHER] ');
       process.exit(1);
     }
 
@@ -270,6 +280,46 @@ async function main(projectId?: string, preview = false) {
 
     console.log(`[GATHER] Aspect ratio: ${videoConfig.defaultAspectRatio}`);
     console.log(`[GATHER] Music enabled: ${musicConfig.enabled}`);
+
+    // Validate --scrape requirements early
+    if (scrape) {
+      console.log('[GATHER] Scrape mode: ENABLED (strict mode - no fallback to stock media)');
+
+      const missingRequirements: string[] = [];
+
+      if (!process.env.GOOGLE_CUSTOM_SEARCH_API_KEY) {
+        missingRequirements.push('GOOGLE_CUSTOM_SEARCH_API_KEY');
+      }
+      if (!process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID) {
+        missingRequirements.push('GOOGLE_CUSTOM_SEARCH_ENGINE_ID');
+      }
+
+      // Check if Gemini provider is configured
+      try {
+        const geminiConfig = await ConfigManager.getAIProvider('gemini');
+        if (!geminiConfig || !geminiConfig.name) {
+          missingRequirements.push('Gemini AI provider configuration');
+        }
+      } catch (error) {
+        missingRequirements.push('Gemini AI provider configuration');
+      }
+
+      if (missingRequirements.length > 0) {
+        console.error('[GATHER] ✗ Error: Missing required configuration for --scrape mode');
+        console.error('[GATHER] ');
+        console.error('[GATHER] Missing:');
+        for (const req of missingRequirements) {
+          console.error(`[GATHER]   - ${req}`);
+        }
+        console.error('[GATHER] ');
+        console.error('[GATHER] Please configure these settings before using --scrape.');
+        console.error('[GATHER] See .env.example for configuration details.');
+        console.error('[GATHER] ');
+        process.exit(1);
+      }
+    } else {
+      console.log('[GATHER] Scrape mode: DISABLED (stock media APIs will be used)');
+    }
 
     // Read script
     const scriptData = JSON.parse(await fs.readFile(scriptPath, 'utf-8'));
@@ -314,6 +364,71 @@ async function main(projectId?: string, preview = false) {
       );
     } else {
       console.log('[GATHER] Local library disabled via config');
+    }
+
+    // Initialize web scraper if scrape mode enabled
+    let webScraper: WebScraperService | null = null;
+    if (scrape) {
+      try {
+        console.log('[GATHER] Initializing web scraper (strict mode)...');
+
+        // Import GeminiCLIProvider for web scraper
+        const { GeminiCLIProvider } = await import('../services/ai/gemini-cli');
+        const geminiConfig = await ConfigManager.getAIProvider('gemini');
+        const geminiProvider = new GeminiCLIProvider(geminiConfig);
+
+        // Create Google Search client
+        const googleClient = createGoogleSearchClient();
+
+        // Create quality config from stock config
+        const webScrapeConfig = (stockConfig as any).webScrape;
+        const qualityConfig: QualityConfig = {
+          minWidth: webScrapeConfig.quality.minWidth,
+          minHeight: webScrapeConfig.quality.minHeight,
+          maxWidth: webScrapeConfig.quality.maxWidth,
+          maxHeight: webScrapeConfig.quality.maxHeight,
+          allowedFormats: webScrapeConfig.quality.allowedFormats,
+          minSizeBytes: webScrapeConfig.quality.minSizeBytes,
+          maxSizeBytes: webScrapeConfig.quality.maxSizeBytes,
+          aspectRatios: {
+            target: webScrapeConfig.quality.aspectRatio.target,
+            tolerance: webScrapeConfig.quality.aspectRatio.tolerance,
+          },
+        };
+
+        // Create image validator
+        const imageValidator = new ImageQualityValidator(qualityConfig);
+
+        // Create web scraper service
+        webScraper = new WebScraperService(
+          geminiProvider,
+          googleClient,
+          imageValidator,
+          qualityConfig
+        );
+
+        console.log('[GATHER] ✓ Web scraper initialized successfully (strict mode enabled)');
+      } catch (error: any) {
+        // STRICT MODE: Fail immediately, no fallback
+        console.error('[GATHER] ✗ Fatal: Failed to initialize web scraper in strict mode');
+        console.error(`[GATHER] Error: ${error.message}`);
+        console.error('[GATHER] ');
+        console.error('[GATHER] When using --scrape, web scraper initialization must succeed.');
+        console.error('[GATHER] Please check:');
+        console.error('[GATHER]   - GOOGLE_CUSTOM_SEARCH_API_KEY is set');
+        console.error('[GATHER]   - GOOGLE_CUSTOM_SEARCH_ENGINE_ID is set');
+        console.error('[GATHER]   - Gemini AI provider credentials are configured');
+        console.error('[GATHER]   - Internet connectivity is available');
+        console.error('[GATHER] ');
+
+        if (error.stack) {
+          console.error('[GATHER] Stack trace:');
+          console.error(error.stack);
+        }
+
+        await localRepo?.dispose();
+        process.exit(1);
+      }
     }
 
     const allTags: AssetTag[] = [];
@@ -567,67 +682,166 @@ async function main(projectId?: string, preview = false) {
         }
 
         if (!imagesAcquired) {
-          if (disableOnlineSearch) {
-            throw new Error('Online image search disabled via LOCAL_LIBRARY_DISABLE_ONLINE');
-          }
-          console.log(`[GATHER]   → Searching for images (video fallback)...`);
-          const imageResults = await stockSearch.searchImages(
-            segmentTags,
-            {
-              perTag: stockConfig.providers?.pexels?.searchDefaults?.perPage || 10,
-              orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-            }
-          );
+          // Web scraping path (STRICT MODE)
+          if (scrape && webScraper) {
+            console.log('[GATHER]   → Searching web for images (strict scrape mode)...');
 
-          // Deduplicate and rank
-          const maxImages = preview ? PREVIEW_IMAGE_LIMIT : 5;
-          const uniqueImages = deduplicateImages(imageResults);
-          const rankedImages = rankByQuality(uniqueImages, {
-            aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
-            minQuality: stockConfig.qualityScoring?.minQualityScore || 0.6,
-          }).slice(0, maxImages); // Top N images per segment
-
-          console.log(`[GATHER]   → Found ${rankedImages.length} images`);
-
-          // Download images
-          for (const image of rankedImages) {
             try {
-              const { path: cachePath, metadata } = await downloader.downloadImage(image);
+              // Define search options
+              const webScrapeConfig = (stockConfig as any).webScrape;
+              const imageSearchOptions = {
+                targetCount: webScrapeConfig?.candidateCount?.target || 5,
+                maxAttempts: webScrapeConfig?.candidateCount?.maxAttempts || 10,
+                timeout: webScrapeConfig?.download?.totalOperationTimeoutMs || 120000,
+              };
 
-              // Copy from cache to project assets directory
-              const filename = path.basename(cachePath);
-              const projectImagePath = path.join(paths.assetsImages, filename);
-              await fs.copyFile(cachePath, projectImagePath);
+              // Search returns already-downloaded and validated candidates
+              const candidates = await webScraper.searchImagesForScene(
+                segment.text,
+                segmentTags,
+                imageSearchOptions
+              );
 
-              let libraryId: string | undefined;
-              if (localRepo && localLibraryConfig.enabled) {
-                try {
-                  const ingested = await localRepo.ingestDownloaded(
-                    { path: cachePath, type: 'image' },
-                    mergeTags(image.tags, segmentTags),
-                    image.source,
-                    image.url
-                  );
-                  libraryId = ingested.id;
-                  await localRepo.markUsed([ingested.id], 'image');
-                } catch (ingestError: any) {
-                  console.warn(`[GATHER]   ⚠ Failed to ingest image ${image.id} into local library: ${ingestError.message}`);
-                }
+              const minCandidatesForSuccess = webScrapeConfig?.search?.minCandidatesForSuccess || 3;
+
+              if (candidates.length < minCandidatesForSuccess) {
+                // STRICT MODE: Fail immediately on insufficient candidates
+                throw new Error(
+                  `Insufficient candidates: found ${candidates.length}, need ${minCandidatesForSuccess}+ ` +
+                  `(segment ${i + 1}/${segmentsToProcess}: "${segmentId}")`
+                );
               }
 
+              // Define selection criteria
+              const selectionCriteria = {
+                sceneRelevance: webScrapeConfig?.selection?.weights?.sceneRelevance || 0.4,
+                technicalQuality: webScrapeConfig?.selection?.weights?.technicalQuality || 0.3,
+                aestheticAppeal: webScrapeConfig?.selection?.weights?.aestheticAppeal || 0.2,
+                aspectRatioMatch: webScrapeConfig?.selection?.weights?.aspectRatioMatch || 0.1,
+              };
+
+              const bestImage = await webScraper.selectBestImage(
+                candidates,
+                segment.text,
+                selectionCriteria
+              );
+
+              // Copy from cache to project (already downloaded during search)
+              const projectImagePath = path.join(paths.assetsImages, path.basename(bestImage.downloadedPath!));
+              await fs.copyFile(bestImage.downloadedPath!, projectImagePath);
+
+              // Skip local library ingestion for scraped images (project-specific only)
               manifest.images.push({
-                id: image.id,
-                libraryId,
+                id: bestImage.id,
                 path: projectImagePath,
-                source: image.source,
-                provider: image.source,
-                sourceUrl: image.url,
-                tags: mergeTags(image.tags, segmentTags),
-                metadata: metadata,
+                source: 'web-scrape',
+                provider: 'gemini-search',
+                sourceUrl: bestImage.sourceUrl,
+                tags: mergeTags(bestImage.tags, segmentTags),
+                metadata: bestImage.metadata,
               });
-            } catch (downloadError: any) {
-              console.warn(`[GATHER]   ⚠ Failed to download image ${image.id}: ${downloadError.message}`);
+
+              imagesAcquired = true;
+              console.log(`[GATHER]   ✓ Downloaded scraped image: ${bestImage.url}`);
+            } catch (scrapeError: any) {
+              // STRICT MODE: Fail immediately, no fallback
+              console.error(`[GATHER] ✗ Fatal: Web scraping failed for segment ${i + 1}/${segmentsToProcess}`);
+              console.error(`[GATHER] Segment ID: ${segmentId}`);
+              console.error(`[GATHER] Segment text: "${segment.text.substring(0, 100)}${segment.text.length > 100 ? '...' : ''}"`);
+              console.error(`[GATHER] Error: ${scrapeError.message}`);
+              console.error('[GATHER] ');
+              console.error('[GATHER] In strict scrape mode (--scrape), all segments must succeed.');
+              console.error('[GATHER] No fallback to stock media APIs is allowed.');
+              console.error('[GATHER] ');
+              console.error('[GATHER] Possible solutions:');
+              console.error('[GATHER]   1. Check your internet connection');
+              console.error('[GATHER]   2. Verify Google Custom Search API quota');
+              console.error('[GATHER]   3. Retry the command (temporary network issues)');
+              console.error('[GATHER]   4. Run without --scrape to use stock media fallback');
+              console.error('[GATHER] ');
+
+              if (scrapeError.stack) {
+                console.error('[GATHER] Stack trace:');
+                console.error(scrapeError.stack);
+              }
+
+              await localRepo?.dispose();
+              process.exit(1);
             }
+          }
+
+          // Stock media search path (ONLY when NOT in scrape mode)
+          if (!imagesAcquired && !scrape) {
+            if (disableOnlineSearch) {
+              throw new Error('Online image search disabled via LOCAL_LIBRARY_DISABLE_ONLINE');
+            }
+            console.log(`[GATHER]   → Searching for images (video fallback)...`);
+            const imageResults = await stockSearch.searchImages(
+              segmentTags,
+              {
+                perTag: stockConfig.providers?.pexels?.searchDefaults?.perPage || 10,
+                orientation: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+              }
+            );
+
+            // Deduplicate and rank
+            const maxImages = preview ? PREVIEW_IMAGE_LIMIT : 5;
+            const uniqueImages = deduplicateImages(imageResults);
+            const rankedImages = rankByQuality(uniqueImages, {
+              aspectRatio: videoConfig.defaultAspectRatio as '16:9' | '9:16',
+              minQuality: stockConfig.qualityScoring?.minQualityScore || 0.6,
+            }).slice(0, maxImages); // Top N images per segment
+
+            console.log(`[GATHER]   → Found ${rankedImages.length} images`);
+
+            // Download images
+            for (const image of rankedImages) {
+              try {
+                const { path: cachePath, metadata } = await downloader.downloadImage(image);
+
+                // Copy from cache to project assets directory
+                const filename = path.basename(cachePath);
+                const projectImagePath = path.join(paths.assetsImages, filename);
+                await fs.copyFile(cachePath, projectImagePath);
+
+                let libraryId: string | undefined;
+                if (localRepo && localLibraryConfig.enabled) {
+                  try {
+                    const ingested = await localRepo.ingestDownloaded(
+                      { path: cachePath, type: 'image' },
+                      mergeTags(image.tags, segmentTags),
+                      image.source,
+                      image.url
+                    );
+                    libraryId = ingested.id;
+                    await localRepo.markUsed([ingested.id], 'image');
+                  } catch (ingestError: any) {
+                    console.warn(`[GATHER]   ⚠ Failed to ingest image ${image.id} into local library: ${ingestError.message}`);
+                  }
+                }
+
+                manifest.images.push({
+                  id: image.id,
+                  libraryId,
+                  path: projectImagePath,
+                  source: image.source,
+                  provider: image.source,
+                  sourceUrl: image.url,
+                  tags: mergeTags(image.tags, segmentTags),
+                  metadata: metadata,
+                });
+              } catch (downloadError: any) {
+                console.warn(`[GATHER]   ⚠ Failed to download image ${image.id}: ${downloadError.message}`);
+              }
+            }
+          }
+
+          // STRICT MODE: If we're in scrape mode and still no images, something went wrong
+          if (!imagesAcquired && scrape) {
+            console.error('[GATHER] ✗ Fatal: Failed to acquire images in strict scrape mode');
+            console.error(`[GATHER] Segment ${i + 1}/${segmentsToProcess}: ${segmentId}`);
+            await localRepo?.dispose();
+            process.exit(1);
           }
         }
       }
@@ -770,8 +984,14 @@ async function main(projectId?: string, preview = false) {
 // Parse CLI args
 const args = process.argv.slice(2);
 const projectIdIndex = args.indexOf('--project');
-const projectId = projectIdIndex !== -1 ? args[projectIdIndex + 1] : undefined;
+// Support both --project <id> and positional argument <id>
+let projectId = projectIdIndex !== -1 ? args[projectIdIndex + 1] : undefined;
+if (!projectId && args.length > 0 && !args[0].startsWith('--')) {
+  // First positional argument is project ID
+  projectId = args[0];
+}
 const preview = args.includes('--preview');
+const scrape = args.includes('--scrape');
 
 function createMockAIProvider(): AIProvider {
   return {
@@ -829,7 +1049,7 @@ async function generateStubTTS(text: string) {
 
 // Run if called directly
 if (require.main === module) {
-  main(projectId, preview);
+  main(projectId, preview, scrape);
 }
 
 export default main;
