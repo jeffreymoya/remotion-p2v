@@ -240,6 +240,7 @@ export class WebScraperService {
 
       let selectionResult;
       try {
+        this.aiProvider.setPipelineStage('image-selection');
         const geminiResponse = await this.aiProvider.complete(prompt);
         const cleanedResponse = this.cleanJsonResponse(geminiResponse);
         selectionResult = ImageSelectionSchema.parse(JSON.parse(cleanedResponse));
@@ -315,6 +316,7 @@ export class WebScraperService {
         imageCount,
       });
 
+      this.aiProvider.setPipelineStage('search-query-generation');
       const response = await this.aiProvider.complete(prompt);
       const cleanedResponse = this.cleanJsonResponse(response);
       const parsed = JSON.parse(cleanedResponse);

@@ -7,6 +7,7 @@ export interface AIProvider {
   name: string;
   complete(prompt: string, options?: CompletionOptions): Promise<string>;
   structuredComplete<T>(prompt: string, schema: z.ZodSchema<T>): Promise<T>;
+  setPipelineStage?(stage: string): void;
 }
 
 /**

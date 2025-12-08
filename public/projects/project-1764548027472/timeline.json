@@ -4,203 +4,78 @@
   "durationSeconds": 335,
   "elements": [
     {
-      "videoUrl": "198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53",
-      "startMs": 1000,
-      "endMs": 30000,
-      "startFrame": 30,
-      "endFrame": 900,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 12.03
-      }
-    },
-    {
-      "videoUrl": "411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742",
-      "startMs": 30000,
-      "endMs": 73500,
-      "startFrame": 900,
-      "endFrame": 2205,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 18.42
-      }
-    },
-    {
-      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
-      "startMs": 73500,
-      "endMs": 108000,
-      "startFrame": 2205,
-      "endFrame": 3240,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 11.35
-      }
-    },
-    {
-      "videoUrl": "198ddc5014e821be076be6c911a47b5668b4c14171d7542eefd157563ae62f53",
-      "startMs": 108000,
-      "endMs": 143500,
-      "startFrame": 3240,
-      "endFrame": 4305,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 12.03
-      }
-    },
-    {
-      "videoUrl": "cd5ebe31fa98ed93060b050d5dcef9f3",
-      "startMs": 143500,
-      "endMs": 179000,
-      "startFrame": 4305,
-      "endFrame": 5370,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "duration": 21,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944
-      }
-    },
-    {
-      "videoUrl": "004179f315faba88880eb0196ab553f7",
-      "startMs": 179000,
-      "endMs": 210000,
-      "startFrame": 5370,
-      "endFrame": 6300,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "duration": 11,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944
-      }
-    },
-    {
-      "videoUrl": "119883324bbb85ccb65a80f9251d557c",
-      "startMs": 210000,
-      "endMs": 241000,
-      "startFrame": 6300,
-      "endFrame": 7230,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "duration": 13,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944
-      }
-    },
-    {
-      "videoUrl": "411dac4d985af5be755c7057d44179ba9c7d0abf6346d5f0a680f76f73286742",
-      "startMs": 241000,
-      "endMs": 266000,
-      "startFrame": 7230,
-      "endFrame": 7980,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 18.42
-      }
-    },
-    {
-      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
-      "startMs": 266000,
-      "endMs": 295000,
-      "startFrame": 7980,
-      "endFrame": 8850,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
-      "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
-        "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 11.35
-      }
-    },
-    {
-      "videoUrl": "15470d6438ce6d8ea2cec17a4b5cb7bce8cfaf4c9354b369565a6ba2370a182d",
-      "startMs": 295000,
+      "imageUrl": "cam_newton.png",
+      "startMs": 0,
       "endMs": 335000,
-      "startFrame": 8850,
+      "startFrame": 0,
       "endFrame": 10050,
-      "enterTransition": "fade",
-      "exitTransition": "fade",
+      "enterTransition": "none",
+      "exitTransition": "none",
       "mediaMetadata": {
-        "width": 3840,
-        "height": 2160,
+        "width": 2752,
+        "height": 1536,
         "mode": "crop",
-        "scale": 0.5555555555555556,
-        "cropX": 192,
-        "cropY": 108,
-        "cropWidth": 3456,
-        "cropHeight": 1944,
-        "duration": 11.35
+        "scale": 1
+      },
+      "viewportAnimation": {
+        "enabled": true,
+        "keyframes": [
+          {
+            "frameStart": 30,
+            "frameEnd": 2205,
+            "viewport": {
+              "centerX": 0.3,
+              "centerY": 0.4,
+              "zoom": 1.8
+            },
+            "easing": "slowDramatic",
+            "transitionDurationMs": 0
+          },
+          {
+            "frameStart": 2205,
+            "frameEnd": 5370,
+            "viewport": {
+              "centerX": 0.52,
+              "centerY": 0.32,
+              "zoom": 1.9
+            },
+            "easing": "slowDramatic",
+            "transitionDurationMs": 2500
+          },
+          {
+            "frameStart": 5370,
+            "frameEnd": 7230,
+            "viewport": {
+              "centerX": 0.55,
+              "centerY": 0.58,
+              "zoom": 1.8
+            },
+            "easing": "slowDramatic",
+            "transitionDurationMs": 2800
+          },
+          {
+            "frameStart": 7230,
+            "frameEnd": 8850,
+            "viewport": {
+              "centerX": 0.72,
+              "centerY": 0.42,
+              "zoom": 1.7
+            },
+            "easing": "easeInOut",
+            "transitionDurationMs": 1300
+          },
+          {
+            "frameStart": 8850,
+            "frameEnd": 10050,
+            "viewport": {
+              "centerX": 0.72,
+              "centerY": 0.72,
+              "zoom": 1.9
+            },
+            "easing": "easeInOut",
+            "transitionDurationMs": 1300
+          }
+        ]
       }
     }
   ],
@@ -899,7 +774,7 @@
           }
         }
       ],
-      "holdFrames": 6
+      "holdFrames": 4
     },
     {
       "text": "Cam Newton burst onto the scene, a dual-threat quarterback with a Heisman trophy and a national championship to his name.",
@@ -1271,7 +1146,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 6
     },
     {
       "text": "He wasn't just a passer or a runner; he was an athletic marvel, shattering expectations and redefining what a quarterback could be.",
@@ -1887,7 +1762,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "His unique biomechanics, leveraging his entire athletic frame, generated an arm that could deliver with exceptional velocity and precision.",
@@ -2089,7 +1964,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "This wasn't just about strength; it was about efficiency and power transfer, a masterclass in athletic innovation that allowed him to make throws others couldn't even attempt, pushing the boundaries of the traditional quarterback's capabilities.",
@@ -3208,7 +3083,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "But 'The Cam Newton Code' is more than just stats and arm strength.",
@@ -3349,7 +3224,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "It's about leadership.",
@@ -3390,7 +3265,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 6
     },
     {
       "text": "Cam's style was never conventional.",
@@ -3452,7 +3327,7 @@
           }
         }
       ],
-      "holdFrames": 3
+      "holdFrames": 4
     },
     {
       "text": "He led with infectious energy, a unique sense of self, and a deep connection to his teammates and the fans.",
@@ -3663,7 +3538,7 @@
           }
         }
       ],
-      "holdFrames": 6
+      "holdFrames": 4
     },
     {
       "text": "His 'Superman' celebration wasn't just a touchdown gesture; it was a declaration of his presence, a symbol of joy and confidence that resonated far beyond the field, inspiring a generation.",
@@ -3976,7 +3851,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "The path to greatness is rarely smooth.",
@@ -4178,7 +4053,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "From draft-day doubts to game-day commentary, he was constantly under a microscope.",
@@ -4309,7 +4184,7 @@
           }
         }
       ],
-      "holdFrames": 5
+      "holdFrames": 4
     },
     {
       "text": "Yet, he demonstrated remarkable mental resilience.",
@@ -4651,7 +4526,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "At the heart of his game was a unique psychology of playmaking.",
@@ -4782,7 +4657,7 @@
           }
         }
       ],
-      "holdFrames": 6
+      "holdFrames": 4
     },
     {
       "text": "Newton didn't just execute plays; he *felt* them.",
@@ -5316,7 +5191,7 @@
           }
         }
       ],
-      "holdFrames": 5
+      "holdFrames": 4
     },
     {
       "text": "Cam Newton's influence extends far beyond the gridiron.",
@@ -5407,7 +5282,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "He became a cultural icon, influencing fashion, breaking barriers, and becoming a mentor figure for young athletes and leaders.",
@@ -5608,7 +5483,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "His willingness to be unapologetically himself has empowered countless individuals to embrace their uniqueness, proving that true impact comes from authenticity and courage.",
@@ -5851,7 +5726,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "His legacy is etched in the history of sports.",
@@ -6558,7 +6433,7 @@
           }
         }
       ],
-      "holdFrames": 4
+      "holdFrames": 5
     },
     {
       "text": "It’s the fusion of biomechanical innovation, fearless leadership, mental fortitude, and creative playmaking.",
@@ -6699,7 +6574,7 @@
           }
         }
       ],
-      "holdFrames": 5
+      "holdFrames": 4
     },
     {
       "text": "It's the courage to be yourself and to challenge the status quo.",
@@ -7334,7 +7209,7 @@
           }
         }
       ],
-      "holdFrames": 6
+      "holdFrames": 5
     }
   ],
   "audio": [

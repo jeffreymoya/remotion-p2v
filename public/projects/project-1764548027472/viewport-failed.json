@@ -1,0 +1,109 @@
+{
+  "geminiResult": {
+    "regions": [
+      {
+        "id": "region-1",
+        "label": "College Glory & National Champion",
+        "bounds": {
+          "x": 0.05,
+          "y": 0.05,
+          "width": 0.35,
+          "height": 0.45
+        },
+        "salience": 0.9
+      },
+      {
+        "id": "region-2",
+        "label": "NFL MVP & Superman",
+        "bounds": {
+          "x": 0.35,
+          "y": 0.05,
+          "width": 0.4,
+          "height": 0.4
+        },
+        "salience": 0.85
+      },
+      {
+        "id": "region-3",
+        "label": "Biomechanics & Athletic Innovation",
+        "bounds": {
+          "x": 0.45,
+          "y": 0.4,
+          "width": 0.35,
+          "height": 0.35
+        },
+        "salience": 0.8
+      },
+      {
+        "id": "region-4",
+        "label": "Legacy, Leadership & Influence",
+        "bounds": {
+          "x": 0.7,
+          "y": 0.1,
+          "width": 0.3,
+          "height": 0.6
+        },
+        "salience": 0.9
+      },
+      {
+        "id": "region-5",
+        "label": "Game Action & Playmaking",
+        "bounds": {
+          "x": 0.58,
+          "y": 0.2,
+          "width": 0.35,
+          "height": 0.3
+        },
+        "salience": 0.75
+      }
+    ],
+    "segmentGroups": [
+      {
+        "segmentIndices": [
+          0,
+          1
+        ],
+        "regionId": "region-1",
+        "tone": "narrative",
+        "focusReason": "These segments introduce Cam Newton and detail his early career achievements, fitting the 'College Glory' region."
+      },
+      {
+        "segmentIndices": [
+          2,
+          5
+        ],
+        "regionId": "region-3",
+        "tone": "contemplative",
+        "focusReason": "Segments 2 and 5 explore Newton's unique biomechanics and mental fortitude, aligning with the 'Biomechanics & Athletic Innovation' region."
+      },
+      {
+        "segmentIndices": [
+          3,
+          4
+        ],
+        "regionId": "region-2",
+        "tone": "energetic",
+        "focusReason": "These segments cover Newton's MVP season and his charismatic leadership and 'Superman' persona, well-represented by the 'NFL MVP & Superman' region."
+      },
+      {
+        "segmentIndices": [
+          6,
+          7
+        ],
+        "regionId": "region-5",
+        "tone": "narrative",
+        "focusReason": "Segments 6 and 7 discuss Newton's innovative playmaking and his broader cultural influence, connecting to on-field brilliance and wider impact."
+      },
+      {
+        "segmentIndices": [
+          8,
+          9
+        ],
+        "regionId": "region-4",
+        "tone": "dramatic",
+        "focusReason": "These segments summarize Cam Newton's revolutionary legacy and the essence of 'The Cam Newton Code', providing a powerful conclusion fitting his lasting impact."
+      }
+    ]
+  },
+  "error": "Regions region-4 and region-5 have IoU overlap of 32% (max allowed: 20%)"
+}

@@ -25,6 +25,7 @@ import { FPS, INTRO_DURATION_MS } from '../../src/lib/constants';
 import { removeStageDirections, splitIntoSentences, calculateSpeakingVelocity } from '../../src/lib/utils';
 import { holdBufferPrompt, HoldBufferSchema } from '../../config/prompts/hold-buffer.prompt';
 import { AIProviderFactory } from '../services/ai';
+import { ViewportAnalysis } from '../../src/lib/viewport-types';
 
 // Intro offset constant (matches INTRO_DURATION in src/lib/constants.ts)
 // This offset is BAKED INTO timeline data during assembly.
@@ -388,6 +389,7 @@ export async function generateTextElements(
 
       // Initialize AI provider once (outside loop for efficiency)
       const aiProvider = await AIProviderFactory.getProviderWithFallback();
+      aiProvider.setPipelineStage?.('hold-buffer-calculation');
 
       // Batch process all sentences with LLM in parallel
       const holdPromises = sentenceData.map(async (data, idx) => {
@@ -452,6 +454,84 @@ export async function generateTextElements(
   return elements;
 }
 
+// Helper function to generate pan-scan background from viewport.json
+export function generatePanScanBackground(
+  viewport: ViewportAnalysis,
+  audioElements: AudioElement[],
+  textElements: TextElement[],
+  fps: number,
+  projectId: string,
+): BackgroundElement[] {
+  // Single background element for entire video
+  const audioEnd = audioElements.length ? audioElements[audioElements.length - 1].endMs : 0;
+  const viewportEnd = viewport.keyframes.length
+    ? (viewport.keyframes[viewport.keyframes.length - 1].frameEnd / fps) * 1000
+    : 0;
+  const textEnd = textElements.length ? textElements[textElements.length - 1].endMs : 0;
+  const totalDurationMs = Math.max(audioEnd, viewportEnd, textEnd);
+
+  // VALIDATION: Ensure viewport.imageMetadata exists and has required fields
+  if (!viewport.imageMetadata?.width || !viewport.imageMetadata?.height) {
+    throw new Error('[BUILD] viewport.imageMetadata missing required width/height fields');
+  }
+
+  // VALIDATION: Ensure image file exists at expected path
+  const imageBasename = viewport.imageSource;
+  const expectedImagePath = path.join(
+    process.cwd(),
+    'public',
+    'projects',
+    projectId,
+    'assets',
+    'images',
+    imageBasename
+  );
+
+  // Synchronous existence check using fs.accessSync
+  try {
+    require('fs').accessSync(expectedImagePath);
+  } catch (error) {
+    throw new Error(
+      `[BUILD] Viewport image not found: ${expectedImagePath}. Ensure image was placed during gather stage.`
+    );
+  }
+
+  // Helper: Convert ms to frame
+  const toFrame = (ms: number) => Math.round((ms / 1000) * fps);
+
+  return [
+    {
+      imageUrl: imageBasename, // CRITICAL: Must be basename only, matching viewport.imageSource
+      startMs: 0,
+      endMs: totalDurationMs,
+      startFrame: 0,
+      endFrame: toFrame(totalDurationMs),
+      enterTransition: 'none' as const, // Viewport handles all transitions
+      exitTransition: 'none' as const,
+      mediaMetadata: {
+        width: viewport.imageMetadata.width,
+        height: viewport.imageMetadata.height,
+        mode: 'crop' as const,
+        scale: 1,
+      },
+      // NOTE: No animations - viewport bypasses that entirely
+      viewportAnimation: {
+        enabled: true,
+        keyframes: viewport.keyframes.map((kf) => ({
+          // CRITICAL: Add INTRO_OFFSET_MS to frame calculations
+          // Viewport.json contains "pure" timings relative to script
+          // Build stage applies intro offset to align with audio/text
+          frameStart: kf.frameStart + toFrame(INTRO_OFFSET_MS),
+          frameEnd: kf.frameEnd + toFrame(INTRO_OFFSET_MS),
+          viewport: kf.viewport,
+          easing: kf.easing,
+          transitionDurationMs: kf.transitionDurationMs,
+        })),
+      },
+    },
+  ];
+}
+
 async function main(projectId?: string) {
   try {
     console.log('[BUILD] Starting timeline assembly...');
@@ -493,17 +573,6 @@ async function main(projectId?: string) {
     const audioElements = generateAudioElements(tagsData.manifest.audio, projectId, toFrame);
     console.log(`[BUILD]   ✓ Generated ${audioElements.length} audio element(s)`);
 
-    console.log('[BUILD]   → Generating background elements...');
-    const backgroundElements = generateBackgroundElements(
-      tagsData.manifest.images,
-      tagsData.manifest.videos || [],
-      tagsData.tags,
-      audioElements,
-      videoConfig,
-      toFrame,
-    );
-    console.log(`[BUILD]   ✓ Generated ${backgroundElements.length} background element(s)`);
-
     console.log('[BUILD]   → Generating text elements...');
     const textElements = await generateTextElements(
       scriptData.segments,
@@ -514,6 +583,70 @@ async function main(projectId?: string) {
       subtitleLeadMs,
     );
     console.log(`[BUILD]   ✓ Generated ${textElements.length} text element(s)`);
+
+    // Check for pan-scan mode
+    const viewportPath = path.join(paths.root, 'viewport.json');
+    let backgroundElements: BackgroundElement[];
+
+    try {
+      await fs.access(viewportPath);
+      // viewport.json exists - use pan-scan mode
+      console.log('[BUILD] Pan-scan mode detected');
+
+      // HARD FAIL: Validate viewport.json is valid before proceeding
+      let viewportData: ViewportAnalysis;
+      try {
+        const viewportContent = await fs.readFile(viewportPath, 'utf-8');
+        viewportData = JSON.parse(viewportContent);
+
+        // Validate required fields
+        if (!viewportData.version || !viewportData.imageSource) {
+          throw new Error('[BUILD] Invalid viewport.json: missing version or imageSource');
+        }
+
+        if (!viewportData.imageMetadata?.width || !viewportData.imageMetadata?.height) {
+          throw new Error('[BUILD] Invalid viewport.json: imageMetadata missing width/height');
+        }
+
+        if (!viewportData.keyframes || viewportData.keyframes.length === 0) {
+          throw new Error('[BUILD] Invalid viewport.json: no keyframes defined');
+        }
+      } catch (error: any) {
+        if (error.message.startsWith('[BUILD]')) {
+          throw error; // Re-throw validation errors
+        }
+        console.error('[BUILD] ✗ Failed to load or validate viewport.json');
+        console.error(`[BUILD] ✗ Error: ${error.message}`);
+        throw new Error('[BUILD] Corrupted or invalid viewport.json. Pipeline cannot continue.');
+      }
+
+      console.log('[BUILD]   → Generating pan-scan background...');
+      backgroundElements = generatePanScanBackground(
+        viewportData,
+        audioElements,
+        textElements,
+        fps,
+        projectId
+      );
+      console.log(`[BUILD]   ✓ Generated pan-scan background with ${viewportData.keyframes.length} keyframes`);
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        // viewport.json doesn't exist - use existing multi-image logic
+        console.log('[BUILD]   → Generating background elements (multi-image mode)...');
+        backgroundElements = generateBackgroundElements(
+          tagsData.manifest.images,
+          tagsData.manifest.videos || [],
+          tagsData.tags,
+          audioElements,
+          videoConfig,
+          toFrame,
+        );
+        console.log(`[BUILD]   ✓ Generated ${backgroundElements.length} background element(s)`);
+      } else {
+        // Re-throw other errors (validation failures, etc.)
+        throw error;
+      }
+    }
 
     // Calculate total duration from audio elements
     const durationSeconds = audioElements.length > 0

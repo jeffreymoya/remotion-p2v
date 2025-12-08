@@ -10,6 +10,12 @@ cache/
 /cache/library/
 /media/videos/
 
+# Ignore MP4 files in projects folder
+public/projects/**/*.mp4
+
+# Gemini API logs
+logs/gemini/
+
 /src/generated/prisma
 
 # Test fixtures (generated programmatically)

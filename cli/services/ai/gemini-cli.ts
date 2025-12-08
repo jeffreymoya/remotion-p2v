@@ -1,5 +1,6 @@
 import { BaseCLIProvider } from './base';
 import { AIProviderConfig, CompletionOptions } from '../../lib/types';
+import { GeminiLogger } from './gemini-logger';
 
 /**
  * Gemini CLI provider
@@ -10,6 +11,9 @@ import { AIProviderConfig, CompletionOptions } from '../../lib/types';
  * models configured in the Gemini CLI settings (e.g., gemini-2.5-flash-lite).
  */
 export class GeminiCLIProvider extends BaseCLIProvider {
+  private logger: GeminiLogger;
+  private pipelineStage: string = 'unknown';
+
   constructor(config?: Partial<AIProviderConfig>) {
     super({
       name: 'gemini-cli',
@@ -19,6 +23,14 @@ export class GeminiCLIProvider extends BaseCLIProvider {
       maxTokens: 8000,
       ...config,
     });
+    this.logger = GeminiLogger.getInstance();
+  }
+
+  /**
+   * Set the current pipeline stage for logging purposes
+   */
+  public setPipelineStage(stage: string): void {
+    this.pipelineStage = stage;
   }
 
   /**
@@ -51,6 +63,7 @@ export class GeminiCLIProvider extends BaseCLIProvider {
    */
   async complete(prompt: string, options?: CompletionOptions): Promise<string> {
     const outputPath = this.orchestrator.generateTempFilePath('gemini-output');
+    const startTime = Date.now();
 
     try {
       const command = this.buildCommand(prompt, outputPath, options);
@@ -74,11 +87,54 @@ export class GeminiCLIProvider extends BaseCLIProvider {
       await this.orchestrator.deleteFile(outputPath);
 
       if (wrapper.error) {
-        throw new Error(`Gemini CLI error: ${wrapper.error.message}`);
+        const errorMsg = `Gemini CLI error: ${wrapper.error.message}`;
+        await this.logger.logError(
+          this.pipelineStage,
+          prompt,
+          errorMsg,
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime,
+          undefined,
+          { stats: wrapper.stats }
+        );
+        throw new Error(errorMsg);
       }
+
+      // Log successful response
+      await this.logger.logResponse(
+        this.pipelineStage,
+        prompt,
+        wrapper.response,
+        {
+          model: 'gemini-2.5-flash-lite',
+          temperature: this.config.temperature || 0.7,
+          maxTokens: this.config.maxTokens || 8000,
+        },
+        startTime,
+        undefined,
+        { stats: wrapper.stats }
+      );
 
       return wrapper.response;
     } catch (error) {
+      // Log error if not already logged
+      if (!(error instanceof Error && error.message.startsWith('Gemini CLI error:'))) {
+        await this.logger.logError(
+          this.pipelineStage,
+          prompt,
+          error instanceof Error ? error.message : String(error),
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime
+        );
+      }
       throw error;
     }
   }
@@ -92,10 +148,47 @@ export class GeminiCLIProvider extends BaseCLIProvider {
     outputPath: string,
     schema?: import('zod').ZodSchema<any>
   ): string {
-    // For Gemini, be explicit about JSON-only response
-    const schemaInstruction = schema
-      ? '\n\nThe JSON must be valid and properly structured.'
-      : '';
+    // Extract schema shape for explicit field requirements
+    let schemaInstruction = '';
+    let exampleOutput = '{"field": "value", "nested": {"key": "data"}}';
+
+    if (schema) {
+      try {
+        // Try to extract shape from Zod schema for explicit field requirements
+        const shape = (schema as any)._def?.shape?.();
+        if (shape) {
+          const fields = Object.entries(shape).map(([key, value]: [string, any]) => {
+            const typeName = value._def?.typeName || 'unknown';
+            const description = value._def?.description || '';
+            let typeStr = 'any';
+            if (typeName === 'ZodString') typeStr = 'string';
+            else if (typeName === 'ZodNumber') typeStr = 'number';
+            else if (typeName === 'ZodBoolean') typeStr = 'boolean';
+            else if (typeName === 'ZodArray') typeStr = 'array';
+            else if (typeName === 'ZodObject') typeStr = 'object';
+            return `  - "${key}" (${typeStr}, REQUIRED)${description ? ': ' + description : ''}`;
+          });
+
+          schemaInstruction = `\n\nREQUIRED JSON STRUCTURE:
+The response MUST include ALL of these fields:
+${fields.join('\n')}`;
+
+          // Build example based on actual schema
+          const exampleFields = Object.entries(shape).map(([key, value]: [string, any]) => {
+            const typeName = value._def?.typeName || 'unknown';
+            if (typeName === 'ZodNumber') return `"${key}": 5`;
+            if (typeName === 'ZodBoolean') return `"${key}": true`;
+            if (typeName === 'ZodArray') return `"${key}": []`;
+            if (typeName === 'ZodObject') return `"${key}": {}`;
+            return `"${key}": "example value"`;
+          });
+          exampleOutput = `{${exampleFields.join(', ')}}`;
+        }
+      } catch {
+        // Fallback if schema introspection fails
+        schemaInstruction = '\n\nThe JSON must be valid and properly structured.';
+      }
+    }
 
     return `${prompt}${schemaInstruction}
 
@@ -105,9 +198,10 @@ CRITICAL INSTRUCTIONS:
 3. Ensure proper JSON syntax with correct brackets, commas, and quotes
 4. All strings must be properly escaped
 5. The entire response should be parseable as JSON
+6. Include ALL required fields - missing fields will cause validation failure
 
 Correct format example:
-{"field": "value", "nested": {"key": "data"}}`;
+${exampleOutput}`;
   }
 
   /**
@@ -120,6 +214,8 @@ Correct format example:
   ): Promise<T> {
     const maxRetries = 2;
     const outputPath = this.orchestrator.generateTempFilePath('gemini-structured');
+    const startTime = Date.now();
+    const isRetry = retryCount > 0;
 
     try {
       // Build prompt with explicit JSON instructions
@@ -139,7 +235,21 @@ Correct format example:
       }>(outputPath);
 
       if (wrapper.error) {
-        throw new Error(`Gemini CLI error: ${wrapper.error.message}`);
+        const errorMsg = `Gemini CLI error: ${wrapper.error.message}`;
+        await this.logger.logError(
+          this.pipelineStage,
+          prompt,
+          errorMsg,
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime,
+          undefined,
+          { isRetry, retryCount, structuredOutput: true }
+        );
+        throw new Error(errorMsg);
       }
 
       // Parse the response as JSON
@@ -169,12 +279,41 @@ Correct format example:
 
         data = JSON.parse(jsonText);
       } catch (parseError) {
-        throw new Error(`Failed to parse JSON from Gemini response: ${parseError}`);
+        const errorMsg = `Failed to parse JSON from Gemini response: ${parseError}`;
+        await this.logger.logError(
+          this.pipelineStage,
+          prompt,
+          errorMsg,
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime,
+          undefined,
+          { isRetry, retryCount, structuredOutput: true, parseError: true }
+        );
+        throw new Error(errorMsg);
       }
 
       // Validate with schema
       try {
         const validated = schema.parse(data);
+
+        // Log successful structured response
+        await this.logger.logResponse(
+          this.pipelineStage,
+          prompt,
+          JSON.stringify(validated),
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime,
+          undefined,
+          { isRetry, retryCount, structuredOutput: true, validated: true }
+        );
 
         // Clean up on success
         await this.orchestrator.deleteFile(outputPath);
@@ -185,6 +324,22 @@ Correct format example:
           // Validation failed, retry with error feedback
           if (retryCount < maxRetries) {
             const errorMsg = require('../../lib/types').formatZodErrors(error);
+
+            // Log validation failure before retry
+            await this.logger.logError(
+              this.pipelineStage,
+              prompt,
+              `Validation failed, retrying: ${errorMsg}`,
+              {
+                model: 'gemini-2.5-flash-lite',
+                temperature: this.config.temperature || 0.7,
+                maxTokens: this.config.maxTokens || 8000,
+              },
+              startTime,
+              undefined,
+              { isRetry, retryCount, structuredOutput: true, validationError: true, willRetry: true }
+            );
+
             const retryPrompt = `${prompt}
 
 PREVIOUS ATTEMPT FAILED VALIDATION:
@@ -195,6 +350,21 @@ Please correct these issues and provide valid JSON matching the required structu
             return this.structuredComplete(retryPrompt, schema, retryCount + 1);
           }
 
+          // Final validation failure
+          await this.logger.logError(
+            this.pipelineStage,
+            prompt,
+            `Validation failed after ${maxRetries} retries`,
+            {
+              model: 'gemini-2.5-flash-lite',
+              temperature: this.config.temperature || 0.7,
+              maxTokens: this.config.maxTokens || 8000,
+            },
+            startTime,
+            undefined,
+            { isRetry, retryCount, structuredOutput: true, validationError: true, maxRetriesReached: true }
+          );
+
           throw new require('../../lib/types').ValidationError(
             `Validation failed after ${maxRetries} retries`,
             error
@@ -204,6 +374,27 @@ Please correct these issues and provide valid JSON matching the required structu
         throw error;
       }
     } catch (error) {
+      // Log error if not already logged
+      if (
+        !(error instanceof Error) ||
+        (!error.message.startsWith('Gemini CLI error:') &&
+          !error.message.startsWith('Failed to parse JSON') &&
+          !error.message.startsWith('Validation failed'))
+      ) {
+        await this.logger.logError(
+          this.pipelineStage,
+          prompt,
+          error instanceof Error ? error.message : String(error),
+          {
+            model: 'gemini-2.5-flash-lite',
+            temperature: this.config.temperature || 0.7,
+            maxTokens: this.config.maxTokens || 8000,
+          },
+          startTime,
+          undefined,
+          { isRetry, retryCount, structuredOutput: true }
+        );
+      }
       throw error;
     }
   }

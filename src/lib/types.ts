@@ -31,6 +31,21 @@ const MediaMetadataSchema = z.object({
   cropHeight: z.number().optional(),
 }).optional();
 
+const ViewportAnimationSchema = z.object({
+  enabled: z.boolean(),
+  keyframes: z.array(z.object({
+    frameStart: z.number(),
+    frameEnd: z.number(),
+    viewport: z.object({
+      centerX: z.number().min(0).max(1),
+      centerY: z.number().min(0).max(1),
+      zoom: z.number().min(1).max(4),
+    }),
+    easing: z.string(),
+    transitionDurationMs: z.number(),
+  })),
+}).optional();
+
 const BackgroundElementSchema = TimelineElementSchema.extend({
   imageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
@@ -38,6 +53,7 @@ const BackgroundElementSchema = TimelineElementSchema.extend({
   exitTransition: BackgroundTransitionTypeSchema.optional(),
   animations: z.array(ElementAnimationSchema).optional(),
   mediaMetadata: MediaMetadataSchema,
+  viewportAnimation: ViewportAnimationSchema,
 }).refine(
   (data) => data.imageUrl || data.videoUrl,
   { message: "BackgroundElement must have either imageUrl or videoUrl" }
@@ -105,6 +121,7 @@ export type BackgroundTransitionType = z.infer<
 export type TimelineElement = z.infer<typeof TimelineElementSchema>;
 export type ElementAnimation = z.infer<typeof ElementAnimationSchema>;
 export type MediaMetadata = z.infer<typeof MediaMetadataSchema>;
+export type ViewportAnimation = z.infer<typeof ViewportAnimationSchema>;
 export type BackgroundElement = z.infer<typeof BackgroundElementSchema>;
 export type TextElement = z.infer<typeof TextElementSchema>;
 export type AudioElement = z.infer<typeof AudioElementSchema>;
@@ -118,6 +135,7 @@ export {
   TimelineElementSchema,
   ElementAnimationSchema,
   MediaMetadataSchema,
+  ViewportAnimationSchema,
   BackgroundElementSchema,
   TextElementSchema,
   AudioElementSchema,

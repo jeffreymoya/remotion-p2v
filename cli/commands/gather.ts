@@ -343,6 +343,7 @@ async function main(projectId?: string, preview = false, scrape = false) {
 
     // Initialize services
     const aiProvider = isLibraryTestMode ? createMockAIProvider() : await AIProviderFactory.getProviderWithFallback();
+    aiProvider.setPipelineStage?.('scene-media-analysis');
     const stockSearch = disableOnlineSearch
       ? createOfflineStockSearch()
       : await MediaServiceFactory.getStockMediaSearch();

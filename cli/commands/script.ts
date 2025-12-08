@@ -78,6 +78,7 @@ async function main(projectId?: string) {
 
     // Initialize AI provider
     const aiProvider = await AIProviderFactory.getProviderWithFallback();
+    aiProvider.setPipelineStage?.('script-generation');
 
     // Generate script using AI
     const targetDuration = videoConfig.duration?.targetSeconds || 720;

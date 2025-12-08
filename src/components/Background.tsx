@@ -6,10 +6,11 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import type { CSSProperties } from "react";
+import React, { type CSSProperties } from "react";
 import { FPS, IMAGE_HEIGHT, IMAGE_WIDTH } from "../lib/constants";
 import { BackgroundElement } from "../lib/types";
 import { calculateBlur } from "../lib/utils";
+import { calculateViewportState, viewportToTransform } from "../lib/viewport-utils";
 
 const EXTRA_SCALE = 0.2;
 
@@ -82,13 +83,63 @@ const calculateMediaStyle = (
   }
 };
 
+// Helper function for viewport animation rendering
+const renderWithViewportAnimation = (
+  item: BackgroundElement,
+  project: string,
+  frame: number,
+  canvasW: number,
+  canvasH: number,
+  fps: number,
+): React.ReactElement => {
+  // Get current viewport state
+  const viewport = calculateViewportState(
+    frame,
+    item.viewportAnimation!.keyframes as any,
+    fps
+  );
+
+  // Get image dimensions from metadata
+  const imageW = item.mediaMetadata!.width!;
+  const imageH = item.mediaMetadata!.height!;
+
+  // Calculate CSS transform
+  // NOTE: This bypasses EXTRA_SCALE and item.animations entirely
+  const transform = viewportToTransform(viewport, imageW, imageH, canvasW, canvasH);
+
+  // NO blur calculation - enterTransition/exitTransition are 'none' for pan-scan
+  // This prevents conflicts with existing transition logic
+
+  return (
+    <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: 'black' }}>
+      <Img
+        src={staticFile(`projects/${project}/assets/images/${item.imageUrl}`)}
+        style={{
+          width: imageW,
+          height: imageH,
+          position: 'absolute',
+          transform: `translate(${transform.translateX}px, ${transform.translateY}px) scale(${transform.scale})`,
+          transformOrigin: '0 0',
+          // No blur filter - transitions handled by viewport animation
+        }}
+      />
+    </AbsoluteFill>
+  );
+};
+
 export const Background: React.FC<{
   item: BackgroundElement;
   project: string;
 }> = ({ item, project }) => {
   const frame = useCurrentFrame();
+  const { width, height, fps } = useVideoConfig();
+
+  // Check for viewport animation FIRST - bypasses existing scale logic
+  if (item.viewportAnimation?.enabled) {
+    return renderWithViewportAnimation(item, project, frame, width, height, fps);
+  }
+
   const localMs = (frame / FPS) * 1000;
-  const { width, height } = useVideoConfig();
 
   const imageRatio = IMAGE_HEIGHT / IMAGE_WIDTH;
 

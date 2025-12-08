@@ -66,6 +66,7 @@ async function main(projectId?: string) {
 
     console.log('[REFINE] Using AI to refine topic for target audience...');
     const aiProvider = await AIProviderFactory.getProviderWithFallback();
+    aiProvider.setPipelineStage?.('topic-refinement');
 
     // Define schema for AI-refined topic
     const RefinedTopicSchema = z.object({

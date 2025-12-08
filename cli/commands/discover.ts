@@ -77,6 +77,7 @@ async function main(options: { projectId?: string; geo?: string; limit?: number 
     // Step 2: Use AI to filter and enrich topics
     console.log('[DISCOVER] Using AI to filter and enrich topics...');
     const aiProvider = await AIProviderFactory.getProviderWithFallback();
+    aiProvider.setPipelineStage?.('topic-filtering');
 
     // Format trending topics as a numbered list
     const trendsList = rawTrends
