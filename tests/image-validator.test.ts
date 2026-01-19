@@ -13,7 +13,7 @@ import {
   type QualityConfig,
   type ImageRequirements,
   type ImageMetadata,
-} from '../cli/services/media/image-validator';
+} from '../src/lib/services/media/image-validator';
 
 // Mock axios for HTTP requests
 let mockAxiosHead: any = null;

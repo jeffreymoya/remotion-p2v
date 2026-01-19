@@ -14,7 +14,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 
 // Import timeout and retry utilities
-import { withTimeout, withRetry, type RetryConfig } from '../../../cli/services/media/timeout-wrapper';
+import { withTimeout, withRetry, type RetryConfig } from '../../../src/lib/services/media/timeout-wrapper';
 
 // Test constants
 const TEST_TIMEOUT = 180000; // 3 minutes

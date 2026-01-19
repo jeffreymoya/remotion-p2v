@@ -4,7 +4,7 @@
  * Wave 1.4: Tag words with emphasis levels for TTS rendering
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface EmphasisPromptVariables extends PromptVariables {
   segmentText: string;       // Script segment text to analyze

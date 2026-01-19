@@ -30,6 +30,7 @@ test('getProjectPaths returns all required paths', () => {
   const paths = getProjectPaths(TEST_PROJECT_ID);
 
   assert.ok(paths.root, 'Should have root path');
+  assert.ok(paths.project, 'Should have project path alias');
   assert.ok(paths.discovered, 'Should have discovered path');
   assert.ok(paths.selected, 'Should have selected path');
   assert.ok(paths.refined, 'Should have refined path');
@@ -39,6 +40,7 @@ test('getProjectPaths returns all required paths', () => {
   assert.ok(paths.assetsVideos, 'Should have assetsVideos path');
   assert.ok(paths.assetsAudio, 'Should have assetsAudio path');
   assert.ok(paths.assetsMusic, 'Should have assetsMusic path');
+  assert.ok(paths.boards, 'Should have boards path');
   assert.ok(paths.tags, 'Should have tags path');
   assert.ok(paths.timeline, 'Should have timeline path');
 
@@ -60,6 +62,7 @@ test('ensureProjectDirs creates all directories', () => {
   assert.ok(fs.existsSync(paths.assetsVideos), 'Videos directory should exist');
   assert.ok(fs.existsSync(paths.assetsAudio), 'Audio directory should exist');
   assert.ok(fs.existsSync(paths.assetsMusic), 'Music directory should exist');
+  assert.ok(fs.existsSync(paths.boards), 'Boards directory should exist');
 
   // Check that .keep files were created
   assert.ok(fs.existsSync(path.join(paths.scripts, '.keep')), '.keep should exist in scripts');
@@ -68,6 +71,7 @@ test('ensureProjectDirs creates all directories', () => {
   assert.ok(fs.existsSync(path.join(paths.assetsVideos, '.keep')), '.keep should exist in videos');
   assert.ok(fs.existsSync(path.join(paths.assetsAudio, '.keep')), '.keep should exist in audio');
   assert.ok(fs.existsSync(path.join(paths.assetsMusic, '.keep')), '.keep should exist in music');
+  assert.ok(fs.existsSync(path.join(paths.boards, '.keep')), '.keep should exist in boards');
 
   // Cleanup
   fs.rmSync(paths.root, { recursive: true, force: true });
@@ -140,6 +144,7 @@ test('Path helpers use consistent separators', () => {
     paths.refined,
     paths.scripts,
     paths.assets,
+    paths.boards,
     paths.timeline,
   ];
 

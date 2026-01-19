@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import * as assert from 'node:assert';
-import { withTimeout, withRetry } from '../cli/services/media/timeout-wrapper';
+import { withTimeout, withRetry } from '../src/lib/services/media/timeout-wrapper';
 
 test('withTimeout resolves when promise completes within timeout', async () => {
   const fastOperation = () => new Promise((resolve) => {

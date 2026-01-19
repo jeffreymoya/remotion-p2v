@@ -1,8 +1,12 @@
+> NOTE: This document references the legacy CLI implementation. The CLI has been removed and replaced with a web UI. A backup of the CLI is available in the `backup/cli-removed` branch for historical reference.
+
 # E2E Test Implementation Handoff Document
 
 ## Document Purpose
 
 This document provides everything needed to continue implementing the comprehensive E2E test suite for the Remotion P2V pipeline across multiple work sessions. Use this as your guide to pick up where you left off.
+
+**IMPORTANT**: This document describes tests for the legacy CLI-based pipeline. The CLI has been removed and replaced with a Next.js web UI. The test infrastructure and patterns described here may still be useful, but the actual pipeline commands and file paths need to be updated to reflect the new architecture.
 
 ---
 
@@ -11,7 +15,7 @@ This document provides everything needed to continue implementing the comprehens
 1. **Read this entire document** to understand the context
 2. **Check the Implementation Status** section to see what's been completed
 3. **Review the Current Priority** section to know what to work on next
-4. **Reference the Detailed Plan** at `/home/jeffreymoya/.claude/plans/imperative-strolling-bubble.md`
+4. **Note**: Test file paths and implementations may need updates for the new web UI architecture
 5. **Start implementing** following the priority order
 
 ---
@@ -20,21 +24,19 @@ This document provides everything needed to continue implementing the comprehens
 
 ### What is Remotion P2V?
 
-Remotion P2V is a 7-stage pipeline that generates videos from topics:
+Remotion P2V is a video generation pipeline accessible through a Next.js web UI:
 
-**Pipeline Stages:**
-1. **Discover** → Google Trends → `discovered.json` (trending topics)
-2. **Curate** → User selection → `selected.json` (chosen topic)
-3. **Refine** → AI enhancement → `refined.json` (enriched context)
-4. **Script** → AI script generation → `scripts/script-v1.json` (4-5 segments, ~720s)
-5. **Gather** → Multi-process asset collection → `tags.json` + assets/* (MOST COMPLEX)
+**Pipeline Stages (Web UI):**
+1. **Script** → AI script generation → `scripts/script-v1.json` (segments with hooks and turns)
+2. **Gather** → Multi-process asset collection → `tags.json` + assets/* (MOST COMPLEX)
    - Tag extraction (3-5 per segment)
    - Media search (Pexels, Pixabay, Unsplash)
    - Google TTS with word-level timestamps
    - Emphasis detection with constraints
    - Background music (optional)
-6. **Build** → Timeline assembly → `timeline.json` (word-level text, aspect-fit media)
-7. **Render** → Remotion rendering → `output.mp4` (H.264, 30 FPS)
+3. **Boards** → Grid-based board planning → `boards/*.json`
+4. **Build** → Timeline assembly → `timeline.json` (word-level text, aspect-fit media)
+5. **Render** → Remotion rendering → `output.mp4` (H.264, 30 FPS)
 
 ### Test Requirements
 
@@ -414,12 +416,14 @@ export class CleanupManager {
 
 ## Priority 3: Individual Stage Tests (After Priority 2)
 
+> NOTE: These tests were designed for the CLI pipeline. With CLI removed, stages 1-3 no longer exist and tests may need updates.
+
 ### Files to Create:
 
-1. **`tests/e2e/stage-discover.test.ts`** - Google Trends → discovered.json
-2. **`tests/e2e/stage-curate.test.ts`** - Topic selection → selected.json
-3. **`tests/e2e/stage-refine.test.ts`** - AI enhancement → refined.json
-4. **`tests/e2e/stage-script.test.ts`** - AI script generation → script-v1.json
+1. **`tests/e2e/stage-discover.test.ts`** - ~~Google Trends → discovered.json~~ (Stage removed with CLI)
+2. **`tests/e2e/stage-curate.test.ts`** - ~~Topic selection → selected.json~~ (Stage removed with CLI)
+3. **`tests/e2e/stage-refine.test.ts`** - ~~AI enhancement → refined.json~~ (Stage removed with CLI)
+4. **`tests/e2e/stage-script.test.ts`** - AI script generation → script-v1.json (Now via web UI API)
 5. **`tests/e2e/stage-render.test.ts`** - Remotion rendering → output.mp4
 
 ---
@@ -448,14 +452,14 @@ Create directory: `tests/e2e/edge-cases/`
 3. **`package.json`** - Add test scripts
 
 **Test Scripts to Add:**
+
+> NOTE: These scripts reference CLI-based tests. With CLI removed, some may need updates or removal.
+
 ```json
 {
   "scripts": {
     "test:e2e": "tsx tests/e2e/full-pipeline.test.ts",
     "test:e2e:fast": "TEST_PREVIEW_ONLY=true npm run test:e2e",
-    "test:e2e:stage:discover": "tsx tests/e2e/stage-discover.test.ts",
-    "test:e2e:stage:curate": "tsx tests/e2e/stage-curate.test.ts",
-    "test:e2e:stage:refine": "tsx tests/e2e/stage-refine.test.ts",
     "test:e2e:stage:script": "tsx tests/e2e/stage-script.test.ts",
     "test:e2e:stage:gather": "tsx tests/e2e/stage-gather.test.ts",
     "test:e2e:stage:build": "tsx tests/e2e/stage-build.test.ts",
@@ -464,6 +468,11 @@ Create directory: `tests/e2e/edge-cases/`
   }
 }
 ```
+
+Scripts removed (CLI stages no longer exist):
+- `test:e2e:stage:discover`
+- `test:e2e:stage:curate`
+- `test:e2e:stage:refine`
 
 ---
 
@@ -543,34 +552,38 @@ After implementing each helper or test file:
 
 ### Key Existing Files to Reference:
 
-**Pipeline Commands:**
-- `cli/commands/discover.ts` - Stage 1
-- `cli/commands/curate.ts` - Stage 2
-- `cli/commands/refine.ts` - Stage 3
-- `cli/commands/script.ts` - Stage 4
-- `cli/commands/gather.ts` - Stage 5 (MOST COMPLEX)
-- `cli/commands/build.ts` - Stage 6
-- `cli/commands/render.ts` - Stage 7
+**Web UI & API Routes (Current Architecture):**
+- `app/api/` - Next.js API routes for pipeline stages
+- `src/lib/storyflow/` - Business logic for projects, scripts, TTS, assets, rendering
 
 **Services:**
-- `cli/services/tts/google-tts.ts` - TTS with word timestamps
-- `cli/services/media/stock-search.ts` - Media search across providers
-- `cli/services/media/downloader.ts` - Media download
-- `cli/services/media/quality.ts` - Quality scoring
-- `cli/services/ai/` - AI providers
+- `src/lib/services/` - Shared services (may need to check if moved from cli)
+  - TTS with word timestamps
+  - Media search across providers
+  - Media download
+  - Quality scoring
+  - AI providers
 
 **Types & Schemas:**
 - `src/lib/types.ts` - All Zod schemas and TypeScript types
+- `src/lib/viewport-types.ts` - Viewport/camera types
+- `src/lib/boards-types.ts` - Boards pipeline types
 
 **Existing Tests:**
 - `tests/e2e/word-sync.test.ts` - Good example of E2E test structure
 - `tests/schema.test.ts` - Schema validation examples
 - `tests/timeline.test.ts` - Timeline validation examples
+- `tests/boards-triggers.test.ts` - Boards trigger tests
+- `tests/boards-build.test.ts` - Boards build tests
 
 **Config:**
 - `config/video.config.json` - Video settings
 - `config/tts.config.json` - TTS settings
 - `config/stock-assets.config.json` - Media provider settings
+
+**Legacy Files (For Reference Only - CLI Removed):**
+- CLI implementation backed up in `backup/cli-removed` branch
+- Original pipeline commands (`cli/commands/*.ts`) are no longer available in main branch
 
 ---
 
@@ -684,20 +697,35 @@ TEST_PRESERVE_ARTIFACTS=true|false  # Keep artifacts even on success
 ## Document Metadata
 
 - **Created:** 2025-11-29
-- **Last Updated:** 2025-11-30
+- **Last Updated:** 2026-01-17 (Updated for CLI removal)
 - **Completed:** 2025-11-30
 - **Plan Location:** `/home/jeffreymoya/.claude/plans/imperative-strolling-bubble.md`
 - **Total Files:** 23 (across 5 priorities)
 - **Completion Status:** ✅ ALL COMPLETE (23/23 files, 100%)
 - **Implementation Time:** 1 session (all priorities completed)
+- **Architecture:** Tests written for legacy CLI (CLI removed 2026-01-17, see backup branch)
+
+---
+
+## Important Note: CLI Removal
+
+**This test suite was designed for the legacy CLI implementation which has been removed.**
+
+The CLI has been replaced with a Next.js web UI. Key changes:
+- Pipeline commands (`cli/commands/*.ts`) removed
+- Services may have moved from `cli/services/` to `src/lib/services/`
+- CLI-based test execution no longer applicable
+- Tests may need updates to work with web UI API routes
+
+A backup of the CLI implementation is available in the `backup/cli-removed` branch for reference.
 
 ---
 
 ## Questions or Issues?
 
 If you encounter issues or have questions:
-1. Check the detailed plan at `/home/jeffreymoya/.claude/plans/imperative-strolling-bubble.md`
+1. Check the detailed plan at `/home/jeffreymoya/.claude/plans/imperative-strolling-bubble.md` (may be outdated)
 2. Review existing test files in `tests/` for patterns
-3. Consult the pipeline command files in `cli/commands/`
-4. Check service implementations in `cli/services/`
-5. Review schemas in `src/lib/types.ts`
+3. Review schemas in `src/lib/types.ts`
+4. Check web UI API routes in `app/api/`
+5. For CLI reference, check the `backup/cli-removed` branch

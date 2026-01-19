@@ -1,13 +1,50 @@
 import { staticFile } from "remotion";
 import { BackgroundElement, Timeline } from "./types";
-import { FPS, INTRO_DURATION, INTRO_DURATION_MS, DEFAULT_ASPECT_RATIO } from "./constants";
+import { FPS, DEFAULT_ASPECT_RATIO } from "./constants";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Utility function for merging Tailwind CSS classes.
+ * Combines clsx for conditional classes and tailwind-merge for deduplication.
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * Normalizes a legacy timeline by adding default values for new optional fields.
  * This ensures backward compatibility with timelines created before schema extension.
  */
-export const normalizeTimeline = (timeline: Timeline): Timeline => {
+export const normalizeTimeline = (timeline: Record<string, unknown>): Timeline => {
   const normalized = { ...timeline };
+
+  // Handle legacy format: convert "backgrounds" to "elements"
+  if (timeline.backgrounds && !timeline.elements) {
+    normalized.elements = timeline.backgrounds;
+    delete normalized.backgrounds;
+  }
+
+  // Handle legacy format: convert "title" to "shortTitle"
+  if (timeline.title && !timeline.shortTitle) {
+    normalized.shortTitle = timeline.title;
+    delete normalized.title;
+  }
+
+  // Ensure elements array exists
+  if (!normalized.elements) {
+    normalized.elements = [];
+  }
+
+  // Ensure text array exists
+  if (!normalized.text) {
+    normalized.text = [];
+  }
+
+  // Ensure audio array exists
+  if (!normalized.audio) {
+    normalized.audio = [];
+  }
 
   // Add default aspect ratio if not present
   if (!normalized.aspectRatio) {
@@ -15,8 +52,8 @@ export const normalizeTimeline = (timeline: Timeline): Timeline => {
   }
 
   // Calculate duration from elements if not provided
-  if (!normalized.durationSeconds && timeline.elements && timeline.elements.length > 0) {
-    const lastElement = timeline.elements[timeline.elements.length - 1];
+  if (!normalized.durationSeconds && normalized.elements && normalized.elements.length > 0) {
+    const lastElement = normalized.elements[normalized.elements.length - 1];
     normalized.durationSeconds = lastElement.endMs / 1000;
   }
 
@@ -29,7 +66,7 @@ export const normalizeTimeline = (timeline: Timeline): Timeline => {
     normalized.backgroundMusic = [];
   }
 
-  return normalized;
+  return normalized as Timeline;
 };
 
 export const loadTimelineFromFile = async (filename: string, fps: number = FPS) => {
@@ -40,8 +77,10 @@ export const loadTimelineFromFile = async (filename: string, fps: number = FPS) 
   // Normalize legacy timelines
   timeline = normalizeTimeline(timeline);
 
-  // Sort elements by start time
-  timeline.elements.sort((a, b) => a.startMs - b.startMs);
+  // Sort elements by start time (normalizeTimeline ensures elements array exists)
+  if (timeline.elements && timeline.elements.length > 0) {
+    timeline.elements.sort((a, b) => a.startMs - b.startMs);
+  }
 
   const frameCandidates: number[] = [];
 
@@ -162,20 +201,20 @@ export const splitIntoSentences = (text: string): string[] => {
   const abbreviations = ['Dr', 'Mr', 'Mrs', 'Ms', 'Prof', 'Sr', 'Jr', 'St', 'Ave', 'etc', 'vs', 'Vol', 'No', 'Fig'];
 
   // Protect abbreviations with placeholder
-  let protected = text;
+  let protectedText = text;
   abbreviations.forEach((abbr, idx) => {
     const regex = new RegExp(`\\b${abbr}\\.`, 'g');
-    protected = protected.replace(regex, `${abbr}⸱${idx}⸱`);
+    protectedText = protectedText.replace(regex, `${abbr}⸱${idx}⸱`);
   });
 
   // Protect decimals (number.number)
-  protected = protected.replace(/(\d)\.(\d)/g, '$1⸱DEC⸱$2');
+  protectedText = protectedText.replace(/(\d)\.(\d)/g, '$1⸱DEC⸱$2');
 
   // Protect ellipsis (... or ..)
-  protected = protected.replace(/\.{2,}/g, '⸱ELLIPSIS⸱');
+  protectedText = protectedText.replace(/\.{2,}/g, '⸱ELLIPSIS⸱');
 
   // Split on sentence-ending punctuation, keeping the punctuation
-  const sentences = protected.match(/[^.!?]+[.!?]+/g) || [];
+  const sentences = protectedText.match(/[^.!?]+[.!?]+/g) || [];
 
   // Restore protected periods in matched sentences
   const restored = sentences.map(s => {
@@ -192,7 +231,7 @@ export const splitIntoSentences = (text: string): string[] => {
   const matched = sentences.join('');
   const lastMatchLength = matched.replace(/⸱\w+⸱/g, '.').length;
   if (lastMatchLength < text.length) {
-    const remaining = protected.substring(matched.length).trim();
+    const remaining = protectedText.substring(matched.length).trim();
     if (remaining) {
       // Restore protected chars in remaining text
       let restoredRemaining = remaining;

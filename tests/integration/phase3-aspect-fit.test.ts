@@ -9,7 +9,7 @@
 
 import { test } from 'node:test';
 import * as assert from 'node:assert';
-import { processAspectRatio, shouldCrop } from '../../cli/services/media/aspect-processor';
+import { processAspectRatio, shouldCrop } from '../../src/lib/services/media/aspect-processor';
 
 test('Aspect processor handles 16:9 video (perfect match)', () => {
   const result = processAspectRatio(1920, 1080, {

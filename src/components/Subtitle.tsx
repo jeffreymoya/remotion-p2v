@@ -48,9 +48,11 @@ const Subtitle: React.FC<SubtitleProps> = ({ textElement }) => {
             height: 150,
             display: "flex",
             flexWrap: "wrap",
-            justifyContent: "center",
+            justifyContent: "flex-start",
             gap: "0.5rem",
             alignItems: "center",
+            paddingLeft: 100,
+            paddingRight: 100,
           }}
         >
           {words.map((word, idx) => {

@@ -6,9 +6,9 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateQualityScore, rankByQuality } from '../cli/services/media/quality';
-import { deduplicateImages, deduplicateVideos } from '../cli/services/media/deduplication';
-import type { StockImage, StockVideo } from '../cli/lib/media-types';
+import { calculateQualityScore, rankByQuality } from '../src/lib/services/media/quality';
+import { deduplicateImages, deduplicateVideos } from '../src/lib/services/media/deduplication';
+import type { StockImage, StockVideo } from '../src/lib/media-types';
 
 // Mock quality thresholds from config
 const QUALITY_THRESHOLDS = {

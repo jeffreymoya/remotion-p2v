@@ -13,7 +13,7 @@ import {
   ImageValidationError,
   ImageDownloadError,
   WebScraperError,
-} from '../cli/lib/scraper-types';
+} from '../src/lib/scraper-types';
 
 // ===========================
 // ImageUrlSchema Tests

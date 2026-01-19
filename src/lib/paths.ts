@@ -12,6 +12,7 @@ const PROJECTS_DIR = path.join(PUBLIC_DIR, 'projects');
 
 export interface ProjectPaths {
   root: string;
+  project: string; // Alias for root (clarity in CLI commands)
   discovered: string;
   selected: string;
   refined: string;
@@ -21,6 +22,7 @@ export interface ProjectPaths {
   assetsVideos: string;
   assetsAudio: string;
   assetsMusic: string;
+  boards: string;
   tags: string;
   timeline: string;
 }
@@ -41,6 +43,7 @@ export function getProjectPaths(projectId: string): ProjectPaths {
 
   return {
     root,
+    project: root,
     discovered: path.join(root, 'discovered.json'),
     selected: path.join(root, 'selected.json'),
     refined: path.join(root, 'refined.json'),
@@ -50,6 +53,7 @@ export function getProjectPaths(projectId: string): ProjectPaths {
     assetsVideos: path.join(root, 'assets', 'videos'),
     assetsAudio: path.join(root, 'assets', 'audio'),
     assetsMusic: path.join(root, 'assets', 'music'),
+    boards: path.join(root, 'boards'),
     tags: path.join(root, 'tags.json'),
     timeline: path.join(root, 'timeline.json'),
   };
@@ -72,6 +76,7 @@ export function ensureProjectDirs(projectId: string): ProjectPaths {
     paths.assetsVideos,
     paths.assetsAudio,
     paths.assetsMusic,
+    paths.boards,
   ];
 
   for (const dir of dirsToCreate) {

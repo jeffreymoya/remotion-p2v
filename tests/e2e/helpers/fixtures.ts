@@ -6,7 +6,7 @@
  */
 
 import type { Timeline, TextElement, BackgroundElement, AudioElement } from '../../../src/lib/types';
-import type { AssetTag, EmphasisData, AssetManifest } from '../../../cli/commands/gather';
+import type { AssetTag, EmphasisData, AssetManifest } from '../../../src/lib/gather-types';
 
 // ============================================================================
 // STAGE 1: DISCOVER - Trending Topics

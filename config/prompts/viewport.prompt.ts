@@ -27,6 +27,12 @@ TASK:
 2. Group consecutive segments (indices) that discuss the SAME subject/region
 3. Assign each group to a region and determine the tone
 
+IMPORTANT - COLLAGE IMAGE HANDLING:
+- If the image is a COLLAGE (multiple distinct panels/sections arranged in a grid), treat EACH PANEL as a separate region
+- For collages: bounds should TIGHTLY fit each individual panel - do NOT create regions that span multiple panels
+- Each panel should be roughly 0.25-0.5 in width AND 0.25-0.5 in height (NOT larger)
+- The camera will ZOOM INTO each region, so regions must be small enough to show ONE section at a time
+
 REGION DETECTION RULES:
 - You MUST return at least 3 regions
 - Bounds use normalized coordinates (0-1 range)
@@ -34,6 +40,7 @@ REGION DETECTION RULES:
 - Include face regions, key objects, text/numbers, action areas
 - Regions must keep IoU ≤ 0.2 (at most 20% overlap allowed)
 - Consecutive groups MUST NOT target the same region (camera needs to move)
+- CRITICAL: Keep regions SMALL (max 0.5 width, max 0.5 height) so camera can zoom in effectively
 
 SEGMENT GROUPING RULES:
 - Group 1-4 consecutive segments that relate to the same visual focus

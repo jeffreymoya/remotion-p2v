@@ -10,6 +10,8 @@ const BackgroundTransitionTypeSchema = z.union([
 const TimelineElementSchema = z.object({
   startMs: z.number(),
   endMs: z.number(),
+  startFrame: z.number().optional(),
+  endFrame: z.number().optional(),
 });
 
 const ElementAnimationSchema = TimelineElementSchema.extend({

@@ -1,7 +1,122 @@
-# Update Summary - Gemini CLI Integration & Auto-Curation
+# Update Summary - CLI Removal & Documentation Update
+
+**Date:** January 17, 2026
+**Status:** ✅ Complete
+
+---
+
+## What Changed
+
+### CLI Removed
+The entire CLI implementation has been removed from the main branch and backed up to `backup/cli-removed` branch. The project now uses a Next.js web UI exclusively.
+
+**Removed Directories:**
+- `cli/commands/` - All CLI commands (discover, curate, refine, script, gather, boards, viewport, build, render)
+- `cli/services/` - May have been moved to `src/lib/services/`
+- `cli/lib/` - CLI-specific utilities
+- `cli/*.ts` - CLI entry points and test scripts
+
+### Documentation Updated
+
+All documentation has been updated to remove CLI references and reflect the new web UI architecture:
+
+1. **CLAUDE.md**
+   - Removed CLI interface section
+   - Removed CLI commands from build/test section
+   - Updated architecture to focus on web UI only
+   - Updated key directories (removed `cli/` paths, added `app/` and `src/lib/services/`)
+   - Updated AI provider pattern references (`cli/services/ai/` → `src/lib/services/ai/`)
+   - Updated configuration references
+
+2. **README.md**
+   - Removed all CLI workflow instructions
+   - Removed legacy CLI command examples
+   - Focused on web UI as primary interface
+   - Updated getting started to use `npm run web:dev`
+   - Updated pipeline stages to reflect web UI workflow
+   - Simplified setup instructions
+   - Added note about backup branch for CLI reference
+
+3. **docs/E2E_TEST_IMPLEMENTATION_HANDOFF.md**
+   - Added prominent note about CLI removal at the top
+   - Updated pipeline stages to reflect current architecture
+   - Marked removed stages (discover, curate, refine) as deprecated
+   - Updated reference file paths (CLI → web UI)
+   - Added legacy file reference section pointing to backup branch
+   - Updated document metadata with CLI removal date
+   - Added migration notes for test infrastructure
+
+---
+
+## Current Architecture
+
+### Web UI Only
+- **Interface:** Next.js app in `app/` with API routes
+- **Database:** SQLite via Prisma
+- **Pipeline:** All stages accessible through web UI
+
+### Pipeline Stages (Updated)
+1. **Script** → AI script generation via Script Builder API
+2. **Gather** → TTS audio + stock media
+3. **Boards** → Grid-based board planning
+4. **Build** → Timeline assembly
+5. **Render** → Remotion video rendering
+
+Removed stages (CLI-only):
+- ~~Discover~~ (Google Trends integration)
+- ~~Curate~~ (Manual topic selection)
+- ~~Refine~~ (Topic enhancement)
+
+### Key Directories (Updated)
+- `app/` - Next.js web UI and API routes
+- `src/components/` - Remotion components
+- `src/lib/` - Shared utilities and types
+- `src/lib/storyflow/` - Business logic
+- `src/lib/services/` - Services (AI, TTS, media)
+- `prisma/` - Database schema
+- `config/` - Configuration files
+
+---
+
+## Migration Notes
+
+### For Developers
+- CLI commands no longer work
+- Use `npm run web:dev` instead of individual stage commands
+- All pipeline functionality now accessible through web UI
+- Existing services may have moved from `cli/services/` to `src/lib/services/`
+
+### For Test Infrastructure
+- E2E tests written for CLI pipeline need updates
+- Tests referencing `cli/commands/` will fail
+- Update test imports to use web UI API routes
+- Test project manager still valid for artifact management
+- Rate limiters and API validators still applicable
+
+### Backup Access
+The complete CLI implementation is preserved in the `backup/cli-removed` branch:
+```bash
+git checkout backup/cli-removed  # View CLI code
+```
+
+---
+
+## Files Modified
+
+### Documentation Updated
+- `CLAUDE.md` - Removed CLI references, updated architecture
+- `README.md` - Removed CLI workflow, focused on web UI
+- `docs/E2E_TEST_IMPLEMENTATION_HANDOFF.md` - Added CLI removal notes
+- `UPDATE_SUMMARY.md` - This update
+
+---
+
+## Previous Update Summary - Gemini CLI Integration & Auto-Curation
+
+> HISTORICAL: This section describes CLI features that have been removed.
 
 **Date:** November 25, 2025
-**Status:** ✅ Complete
+**Status:** ✅ Complete (CLI now removed)
 
 ---
 

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { msToFrame } from '../src/lib/utils';
 import { FPS } from '../src/lib/constants';
-import { generateAudioElements, generateTextElements } from '../cli/commands/build';
+import { generateAudioElements, generateTextElements } from '../src/lib/build-utils';
 
 // Test msToFrame conversion
 test('msToFrame() converts milliseconds to frames correctly', () => {
@@ -384,7 +384,7 @@ test('Frame conversion: matches calculateFrameTiming utility', () => {
   assert.strictEqual(duration, 60, 'Duration should be 60 frames (2 seconds at 30fps)');
 });
 
-test('Precomputed frames stay aligned between audio and subtitles', () => {
+test('Precomputed frames stay aligned between audio and subtitles', async () => {
   const fps = 30;
   const toFrame = (ms: number) => Math.round((ms / 1000) * fps);
   const subtitleLeadMs = 0;
@@ -416,7 +416,7 @@ test('Precomputed frames stay aligned between audio and subtitles', () => {
   ];
 
   const audioElements = generateAudioElements(audioManifest, 'demo', toFrame);
-  const textElements = generateTextElements(
+  const textElements = await generateTextElements(
     segments,
     audioElements,
     audioManifest,

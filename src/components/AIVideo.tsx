@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Audio } from "@remotion/media";
 import { TimelineSchema } from "../lib/types";
 import { INTRO_DURATION_MS } from "../lib/constants";
-import { loadFont } from "@remotion/google-fonts/BreeSerif";
+import { loadFont } from "@remotion/google-fonts/Montserrat";
 import { Background } from "./Background";
 import Subtitle from "./Subtitle";
 import { calculateFrameTiming } from "../lib/utils";
@@ -13,6 +13,19 @@ export const aiVideoSchema = z.object({
 });
 
 const { fontFamily } = loadFont();
+
+// Helper to normalize audio paths (handles both legacy and new formats)
+const normalizeAudioPath = (audioUrl: string, projectId: string): string => {
+  // If already a full path starting with projects/, use it directly
+  if (audioUrl.startsWith('projects/') || audioUrl.startsWith('/projects/')) {
+    const normalized = audioUrl.startsWith('/') ? audioUrl.slice(1) : audioUrl;
+    // Ensure it has .mp3 extension
+    return normalized.endsWith('.mp3') ? normalized : `${normalized}.mp3`;
+  }
+  // Otherwise, construct the full path
+  const baseUrl = audioUrl.endsWith('.mp3') ? audioUrl : `${audioUrl}.mp3`;
+  return `projects/${projectId}/assets/audio/${baseUrl}`;
+};
 
 export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
   timeline,
@@ -75,7 +88,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
               color: "black",
               fontFamily,
               textTransform: "uppercase",
-              backgroundColor: "yellow",
+              backgroundColor: "#F2E205",
               paddingTop: 20,
               paddingBottom: 20,
               border: "10px solid black",
@@ -143,7 +156,7 @@ export const AIVideo: React.FC<z.infer<typeof aiVideoSchema>> = ({
             durationInFrames={durationInFrames}
             premountFor={Math.round(3 * fps)}
           >
-            <Audio src={staticFile(`projects/${id}/assets/audio/${element.audioUrl}.mp3`)} />
+            <Audio src={staticFile(normalizeAudioPath(element.audioUrl, id))} />
           </Sequence>
         );
       })}

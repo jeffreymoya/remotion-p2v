@@ -14,6 +14,16 @@ import { calculateViewportState, viewportToTransform } from "../lib/viewport-uti
 
 const EXTRA_SCALE = 0.2;
 
+// Helper to normalize media paths (handles both legacy and new formats)
+const normalizeMediaPath = (mediaUrl: string, project: string, type: 'images' | 'videos'): string => {
+  // If already a full path starting with projects/, use it directly
+  if (mediaUrl.startsWith('projects/') || mediaUrl.startsWith('/projects/')) {
+    return mediaUrl.startsWith('/') ? mediaUrl.slice(1) : mediaUrl;
+  }
+  // Otherwise, construct the full path
+  return `projects/${project}/assets/${type}/${mediaUrl}`;
+};
+
 // Calculate crop/letterbox styles for video or image
 const calculateMediaStyle = (
   sourceWidth: number,
@@ -95,7 +105,7 @@ const renderWithViewportAnimation = (
   // Get current viewport state
   const viewport = calculateViewportState(
     frame,
-    item.viewportAnimation!.keyframes as any,
+    item.viewportAnimation!.keyframes,
     fps
   );
 
@@ -113,7 +123,7 @@ const renderWithViewportAnimation = (
   return (
     <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: 'black' }}>
       <Img
-        src={staticFile(`projects/${project}/assets/images/${item.imageUrl}`)}
+        src={staticFile(normalizeMediaPath(item.imageUrl!, project, 'images'))}
         style={{
           width: imageW,
           height: imageH,
@@ -234,7 +244,7 @@ export const Background: React.FC<{
     return (
       <AbsoluteFill style={containerStyle}>
         <Video
-          src={staticFile(`projects/${project}/assets/videos/${videoPath}`)}
+          src={staticFile(normalizeMediaPath(videoPath, project, 'videos'))}
           muted
           loop
           style={{
@@ -296,7 +306,7 @@ export const Background: React.FC<{
     return (
       <AbsoluteFill style={containerStyle}>
         <Img
-          src={staticFile(`projects/${project}/assets/images/${item.imageUrl}`)}
+          src={staticFile(normalizeMediaPath(item.imageUrl, project, 'images'))}
           style={{
             ...imageStyle,
             filter: `blur(${currentBlur}px)`,

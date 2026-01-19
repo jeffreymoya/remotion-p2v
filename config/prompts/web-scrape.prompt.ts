@@ -4,7 +4,7 @@
  * Specialized prompts for web scraping and image search operations
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface SearchQueriesPromptVariables extends PromptVariables {
   sceneDescription: string;  // Description of the scene/visual content needed

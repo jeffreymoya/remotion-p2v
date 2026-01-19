@@ -14,7 +14,6 @@ import {
   clamp,
   type ViewportKeyframe,
   type ViewportState,
-  type TransformValues,
 } from '../viewport-utils';
 
 // ============================================================================

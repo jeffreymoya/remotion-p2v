@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Phase 5: Documentation Specification
 
 ## Overview

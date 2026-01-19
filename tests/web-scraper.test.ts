@@ -7,15 +7,15 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { WebScraperService } from '../cli/services/media/web-scraper';
+import { WebScraperService } from '../src/lib/services/media/web-scraper';
 import {
   ScrapedImage,
   QualityConfig,
   SelectionCriteria,
   WebScraperError,
-} from '../cli/lib/scraper-types';
-import { GoogleImageResult } from '../cli/services/media/google-search';
-import { ImageMetadata, ImageRequirements, ValidationResult } from '../cli/services/media/image-validator';
+} from '../src/lib/scraper-types';
+import { GoogleImageResult } from '../src/lib/services/media/google-search';
+import { ImageMetadata, ImageRequirements, ValidationResult } from '../src/lib/services/media/image-validator';
 
 // ============================================================================
 // Mock Dependencies

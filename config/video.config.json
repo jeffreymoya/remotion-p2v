@@ -56,7 +56,7 @@
     "enabled": true,
     "durationMs": 1000,
     "titleAnimation": "fade",
-    "backgroundColor": "#FFD700"
+    "backgroundColor": "#F2E205"
   },
   "transitions": {
     "defaultEnter": "fade",
@@ -73,15 +73,15 @@
     "fontFamily": "Inter",
     "fontWeight": 700,
     "color": "#FFFFFF",
-    "strokeColor": "#000000",
+    "strokeColor": "#1A1A1D",
     "strokeWidth": 2,
     "backgroundColor": "rgba(0, 0, 0, 0.7)",
     "padding": 20
   },
   "emphasis": {
-    "none": { "fontFamily": "Bree Serif", "fontSize": 48, "color": "#FFFFFF", "fontWeight": 400 },
-    "med": { "fontFamily": "Bree Serif", "fontSize": 52, "color": "#FFBF00", "fontWeight": 600 },
-    "high": { "fontFamily": "Bebas Neue", "fontSize": 58, "color": "#FFD700", "fontWeight": 700 }
+    "none": { "fontFamily": "Roboto", "fontSize": 48, "color": "#FFFFFF", "fontWeight": 500 },
+    "med": { "fontFamily": "Roboto", "fontSize": 52, "color": "#FFFFFF", "fontWeight": 500 },
+    "high": { "fontFamily": "Montserrat", "fontSize": 58, "color": "#FFFFFF", "fontWeight": 900 }
   },
   "animations": {
     "background": {

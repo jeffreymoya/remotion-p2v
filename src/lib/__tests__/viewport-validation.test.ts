@@ -269,7 +269,7 @@ test('GeminiResponseSchema - accepts all valid tone values', () => {
         },
       ],
       segmentGroups: [
-        { segmentIndices: [0], regionId: 'r1', tone: tone as any, focusReason: 'test' },
+        { segmentIndices: [0], regionId: 'r1', tone: tone as 'dramatic' | 'narrative' | 'action' | 'contemplative' | 'energetic', focusReason: 'test' },
       ],
     };
 

@@ -8,8 +8,8 @@ import { spawn } from 'node:child_process';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { PrismaClient } from '../../src/generated/prisma/client';
-import { LocalMediaRepo } from '../../cli/services/media/local-repo';
-import { generateSampleImage, generateSampleVideo } from '../../cli/services/media/sample-generator';
+import { LocalMediaRepo } from '../../src/lib/services/media/local-repo';
+import { generateSampleImage, generateSampleVideo } from '../utils/sample-generator';
 import { TestProjectManager, type TestProject } from './helpers/test-project-manager';
 
 const TEST_TIMEOUT = 120000; // 2 minutes

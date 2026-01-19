@@ -18,7 +18,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 // Import helpers
-import { shouldCrop, calculateCrop, type CropConfig, type CropResult } from '../../../cli/services/media/aspect-processor';
+import { shouldCrop, calculateCrop, type CropConfig, type CropResult } from '../../../src/lib/services/media/aspect-processor';
 import { TestProjectManager, type TestProject } from '../helpers/test-project-manager';
 import { CleanupManager } from '../helpers/cleanup';
 

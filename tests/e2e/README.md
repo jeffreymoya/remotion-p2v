@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Remotion P2V E2E Test Suite
 
 Comprehensive end-to-end test suite for the Remotion P2V pipeline, covering all 7 stages from topic discovery to video rendering.

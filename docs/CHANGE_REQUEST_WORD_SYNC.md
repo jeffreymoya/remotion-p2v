@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Change Request: YouTube 16:9 Word-Synced Emphasis Videos
 
 **Last Verified**: 2025-11-27

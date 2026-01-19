@@ -13,7 +13,7 @@ import * as path from 'path';
 import type { Timeline, TextElement } from '../../src/lib/types';
 import { TimelineSchema } from '../../src/lib/types';
 import { normalizeTimeline } from '../../src/lib/utils';
-import type { AssetManifest, EmphasisData } from '../../cli/commands/gather';
+import type { AssetManifest, EmphasisData } from '../../src/lib/gather-types';
 
 // Test constants
 const TEST_PROJECT_DIR = path.join(process.cwd(), 'public', 'projects');

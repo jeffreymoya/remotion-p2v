@@ -4,7 +4,7 @@
  * Stage 3: Refine selected topics for target audience
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface RefinePromptVariables extends PromptVariables {
   title: string;             // Original topic title

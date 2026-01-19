@@ -17,7 +17,7 @@ import {
   BackgroundMusicElementSchema,
   AspectRatioSchema,
 } from '../src/lib/types';
-import { ConfigManager } from '../cli/lib/config';
+import { ConfigManager } from '../src/lib/config';
 
 // Test Timeline Schema
 test('TimelineSchema validates correctly', () => {

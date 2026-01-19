@@ -7,8 +7,9 @@
       "apiKey": "${GOOGLE_TTS_API_KEY}",
       "defaultVoice": {
         "languageCode": "en-US",
-        "name": "en-US-Chirp3-HD-Algieba",
-        "ssmlGender": "MALE"
+        "name": "en-US-Neural2-J",
+        "ssmlGender": "MALE",
+        "_comment": "Switched to Neural2 for SSML mark testing - Chirp3-HD doesn't support SSML"
       },
       "voices": {
         "male-casual": {

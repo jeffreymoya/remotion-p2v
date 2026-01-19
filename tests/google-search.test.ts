@@ -13,7 +13,7 @@ import {
   GoogleSearchError,
   GoogleImageResult,
   createGoogleSearchClient,
-} from '../cli/services/media/google-search';
+} from '../src/lib/services/media/google-search';
 
 // Mock axios module
 let mockAxiosGet: any = null;

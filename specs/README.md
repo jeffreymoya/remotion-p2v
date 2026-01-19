@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Implementation Specifications Index
 
 This directory contains detailed specifications for each phase of the web scraping implementation.

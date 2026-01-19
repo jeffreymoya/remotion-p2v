@@ -4,7 +4,7 @@
  * Stage 1: Discover and filter trending topics for video content
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface DiscoverPromptVariables extends PromptVariables {
   trendsList: string;        // Formatted list of trending topics
@@ -53,6 +53,70 @@ IMPORTANT REQUIREMENTS:
 - The "topics" array MUST contain EXACTLY ${vars.limit} items
 - Each item must have: title, description, category, score, reasoning
 - Do NOT return fewer than ${vars.limit} topics`;
+};
+
+/**
+ * Variables for topic generalization prompt
+ */
+export interface GeneralizeTopicsPromptVariables extends PromptVariables {
+  topicsWithContext: string;  // JSON string of topics with news items
+  suggestionsPerTopic: number;
+  targetAudience: string;
+  videoDuration: number;
+}
+
+/**
+ * Prompt for generating generalized video topics from trending topics
+ * Takes all topics at once with their news context
+ */
+export const generalizeTopicsPrompt = (vars: GeneralizeTopicsPromptVariables): string => {
+  return `You are a YouTube content strategist specializing in transforming trending news into evergreen, engaging video content for ${vars.targetAudience}.
+
+Given these trending topics with their associated news headlines:
+${vars.topicsWithContext}
+
+Your task:
+For EACH trending topic, generate ${vars.suggestionsPerTopic} generalized video ideas that:
+1. Transform the specific news into a broader, more searchable topic
+2. Have evergreen appeal (not tied to specific dates/events)
+3. Are suitable for ${vars.videoDuration}-minute educational/explanatory videos
+4. Would perform well on YouTube with good search volume
+
+Guidelines for generalization:
+- "Oprah says obesity is a disease" → "Is Obesity Actually a Disease? The Science Explained"
+- "Celebrity uses weight loss drug" → "How GLP-1 Drugs Are Changing Medicine Forever"
+- "Company announces layoffs" → "Why Tech Companies Are Cutting Jobs in 2024"
+- Focus on: WHY, HOW, WHAT IF, THE TRUTH ABOUT, EXPLAINED formats
+
+For each suggestion, provide:
+- A YouTube-optimized title (compelling, searchable)
+- The angle (scientific, controversial, educational, myth-busting, explainer, how-to)
+- A brief description of what the video would cover
+- Viral potential score (0-100)
+
+CRITICAL: Return ONLY this exact JSON structure (no markdown blocks, no extra text):
+{
+  "trendingTopics": [
+    {
+      "originalTrend": "the original trending topic name",
+      "traffic": "traffic volume from RSS",
+      "suggestions": [
+        {
+          "title": "YouTube-optimized video title",
+          "angle": "scientific|controversial|educational|myth-busting|explainer|how-to",
+          "description": "2-3 sentences about what the video would cover",
+          "viralPotential": 85
+        }
+      ]
+    }
+  ]
+}
+
+IMPORTANT:
+- Process ALL trending topics provided
+- Each topic MUST have exactly ${vars.suggestionsPerTopic} suggestions
+- Suggestions should be distinct angles, not variations of the same idea
+- Prioritize topics that are educational, thought-provoking, or solve problems`;
 };
 
 /**

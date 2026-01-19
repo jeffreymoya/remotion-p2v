@@ -1,3 +1,9 @@
 import { config } from "@remotion/eslint-config-flat";
 
-export default config;
+// Exclude auto-generated Prisma client/output from lint to avoid noisy errors.
+export default [
+  ...config,
+  {
+    ignores: ["src/generated/**"],
+  },
+];

@@ -4,7 +4,7 @@
  * Stage 4: Generate video scripts with public speaking techniques
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface ScriptPromptVariables extends PromptVariables {
   title: string;             // Refined video title

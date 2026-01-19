@@ -6,8 +6,8 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { TTSProviderFactory, generateWithFallback } from '../cli/services/tts';
-import { ConfigManager } from '../cli/lib/config';
+import { TTSProviderFactory, generateWithFallback } from '../src/lib/services/tts';
+import { ConfigManager } from '../src/lib/config';
 
 // Clear cached providers before tests
 TTSProviderFactory.clearCache();

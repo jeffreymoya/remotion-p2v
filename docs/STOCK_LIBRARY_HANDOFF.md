@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Stock Media Library Handoff (2025-11-30)
 
 ## Objectives

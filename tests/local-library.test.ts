@@ -5,9 +5,9 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
 import sharp from 'sharp';
-import { LocalMediaRepo } from '../cli/services/media/local-repo';
+import { LocalMediaRepo } from '../src/lib/services/media/local-repo';
 import { createFakePrismaClient, FakePrismaClient } from './helpers/fake-prisma-client';
-import { generateSampleImage, generateSampleVideo } from '../cli/services/media/sample-generator';
+import { generateSampleImage, generateSampleVideo } from './utils/sample-generator';
 
 let tmpDir: string;
 let libraryRoot: string;

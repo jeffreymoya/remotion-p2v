@@ -4,7 +4,7 @@
  * Stage 5: Extract visual tags and metadata from script segments
  */
 
-import { PromptVariables } from '../../cli/lib/prompt-manager';
+import { PromptVariables } from '../../src/lib/prompt-manager';
 
 export interface GatherPromptVariables extends PromptVariables {
   segmentText: string;       // Script segment text

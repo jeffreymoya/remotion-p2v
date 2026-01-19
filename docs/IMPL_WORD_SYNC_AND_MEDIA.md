@@ -1,3 +1,5 @@
+> NOTE: CLI is deprecated and will be removed. Use the web UI. Any CLI references below are historical.
+
 # Implementation Design: Word-Synced Emphasis & 16:9 Media
 
 **Last Verified**: 2025-11-27

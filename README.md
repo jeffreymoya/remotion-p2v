@@ -1,181 +1,91 @@
-# Remotion AI Video template
+# Remotion AI Video Template
 
-<p align="center">
-  <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://cdn.webmonch.dev/img/remotion-template-promo.png">
-      <img alt="Animated Remotion Logo" src="https://cdn.webmonch.dev/img/remotion-template-promo.png">
-    </picture>
-</p>
+> NOTE: A backup of the removed CLI implementation is available in the `backup/cli-removed` branch for reference.
 
-Using this template you can create high quality **AI videos for TikTok or Instagram**.
+Create short-form AI videos with Remotion, AI for script generation, and Google TTS (word-level timestamps). The project uses the **boards** pipeline for viewport generation (grid-based detective boards with word-level camera triggers).
 
-It includes a CLI that will generate a story script, images and voiceover using OpenAI and Google Text-to-Speech (TTS). _Note: ElevenLabs TTS support is planned but not yet implemented._
+## Setup
+- Install dependencies: `npm install`
+- Copy env template: `cp .env.example .env` (or `.env.local`) and fill at least:
+  - `GEMINI_API_KEY` (default LLM), or `OPENAI_API_KEY`/`ANTHROPIC_API_KEY`
+  - `GOOGLE_TTS_API_KEY`
+  - One stock media key (`PEXELS_API_KEY`, `UNSPLASH_ACCESS_KEY`, or `PIXABAY_API_KEY`)
+  - `DATABASE_URL` or `STORYFLOW_DATABASE_URL` for SQLite database
+- Set up the database: `npm run db:push:storyflow`
+- Start the web UI: `npm run web:dev`
+- (Optional) Start Remotion Studio for previews: `npm run dev`
 
-## Getting started
+## Web UI Workflow
+1) Start the app: `npm run web:dev`
+2) Use the in-app flow to:
+   - Create a new project
+   - Generate scripts using the Script Builder API
+   - Configure video settings (aspect ratio, style, etc.)
+   - Generate TTS audio and gather media assets
+   - Build boards and viewport (camera path)
+   - Assemble timeline
+   - Render final video
 
-Set up the demo story:
-
-**Install Dependencies**
-
-```console
-npm install
-```
-
-**Start Preview**
-
-```console
-npm run dev
-```
-
-**Render video**
-
-```console
-npx remotion render
-```
-
-Or check out the [Remotion docs](/docs/render/). There are lots of ways to render.
-
-## Pipeline Architecture
-
-The video generation pipeline consists of 7 stages that can be run individually or together:
-
-### The 7 Stages
-
-1. **Discover** (`npm run discover`) - Fetch trending topics from Google Trends
-2. **Curate** (`npm run curate`) - Select and refine a topic (interactive web UI or auto-select)
-3. **Refine** (`npm run refine`) - Enhance topic with additional details for target audience
-4. **Script** (`npm run script`) - Generate video script with segments and timing
-5. **Gather** (`npm run gather`) - Fetch media assets (images/videos) and generate TTS audio with word-level timing
-6. **Build Timeline** (`npm run build:timeline`) - Assemble timeline.json from all assets
-7. **Render** (`npm run render:project`) - Generate final video file
-
-### Running the Full Pipeline
-
-To run all 7 stages automatically:
-
-```console
-npm run gen
-```
-
-This executes the complete end-to-end pipeline for automated video generation.
-
-### Running Individual Stages
-
-For more control over the generation process, run stages individually:
-
-```console
-# Stage 1: Discover topics
-npm run discover
-
-# Get the latest project ID
-PROJECT_ID=$(ls -t public/projects/ | head -1)
-
-# Stages 2-7: Run with project ID
-npm run curate -- --project "$PROJECT_ID" --auto
-npm run refine -- --project "$PROJECT_ID"
-npm run script -- --project "$PROJECT_ID"
-npm run gather -- --project "$PROJECT_ID"
-npm run build:timeline -- --project "$PROJECT_ID"
-npm run render:project -- --project "$PROJECT_ID"
-```
-
-## Creating a new story
-
-You can easily create your own videos using provided CLI.
-
-It will generate a script, images, voiceover and timeline based on your story title and topic. Topics that work well: history, ELI5, fun facts, science.
-
-**Configure environment variables**
-
-Create .env file with following env vars (you can also find them in .env.example):
+## Project Artifact Structure
+All generated files live in `public/projects/<project-id>/`:
 
 ```
-OPENAI_API_KEY=
-GOOGLE_TTS_API_KEY=
+public/projects/<project-id>/
+├── scripts/script-v1.json
+├── assets/
+│   ├── audio/segment-*.mp3           # TTS audio with word timestamps
+│   └── images/                       # Stock or board images
+├── boards/                           # Board pipeline artifacts
+│   ├── board-plan.json
+│   ├── board-prompts.json
+│   ├── board-regions.json
+│   └── board-triggers.json
+├── viewport.json                     # Camera path built from boards
+├── timeline.json                     # Final Remotion timeline
+└── preview.mp4 / final.mp4           # Rendered videos
 ```
 
-If you don't create an env file, you will be prompted for these variables when using CLI.
+## Pipeline Stages
 
-**Select voice**
+The video generation pipeline consists of:
 
-Google TTS voices can be configured in `config/tts.config.json`. The default voice is `en-US-Neural2-J` (male, casual). You can choose from various Google TTS voices including Neural2 and WaveNet options. See the [Google TTS documentation](https://cloud.google.com/text-to-speech/docs/voices) for available voices.
+1. **Script Generation** - AI-powered script builder with hooks, segments, and turns
+2. **Gather Assets** - TTS audio (with word-level timestamps) + stock media
+3. **Boards Planning** - Create grid-based "detective boards" with image prompts
+4. **Region Detection** - Identify areas of interest in board images
+5. **Trigger Generation** - Create word-level camera movements
+6. **Viewport Build** - Generate smooth camera path across boards
+7. **Timeline Assembly** - Combine all elements into Remotion timeline
+8. **Render** - Produce final video via Remotion
 
-**Generate story timeline**
+## Development Scripts
 
-For automated end-to-end generation:
+### Core Commands
+- `npm run web:dev` - Start Next.js web UI (port 3000)
+- `npm run dev` - Start Remotion Studio for video preview
 
-```console
-npm run gen
-```
+### Database
+- `npm run db:generate:storyflow` - Generate Prisma client
+- `npm run db:push:storyflow` - Push schema changes to database
 
-This runs the complete 7-stage pipeline automatically, from topic discovery to final video rendering.
+### Testing
+- `npm run test` - Run all unit tests
+- `npm run test:boards-triggers` - Boards trigger tests
+- `npm run test:boards-build` - Boards build tests
+- `npm run test:e2e:fast` - Fast E2E tests (preview only)
+- `npm run test:all` - All tests including edge cases
 
-For interactive development with more control over each stage, see the [Pipeline Architecture](#pipeline-architecture) section above.
+### Linting
+- `npm run lint` - Run ESLint + TypeScript check
 
-The pipeline will generate a script, fetch matching media assets, create TTS audio with word-level timing, assemble everything into a timeline, and render the final video.
+## Key Technologies
 
-## Technical overview
-
-Remotion is rendering videos based on Timeline (timeline.json in project folder). The timeline is generated by CLI.
-
-It consists of three blocks - Elements, Text and Audio.
-
-Elements define slide backgrounds and include enter/exit transitions (e.g. blur) and animations that are applied while slide is active (e.g. scale, rotate).
-
-Text and audio are self explanatory. The only special thing about them is that they are synced.
-
-You can customize the generation of the timeline in [`createTimeLineFromStoryWithDetails()`](cli/timeline.ts) function.
-
-## Feature Status
-
-Current implementation status of planned features:
-
-| Feature | Status | Notes |
-|---------|--------|-------|
-| TTS (Neural2-F) | ✅ Implemented | google-tts.ts |
-| TTS (Chirp3) | 📋 Planned | Not yet available |
-| Image Search | ✅ Implemented | Pexels, Unsplash, Pixabay |
-| Video Search | 📋 Planned | Schema ready, not used |
-| Phrase-Based Subtitles | ✅ Implemented | 14-char chunks |
-| Word-Level Timing | 📋 Planned | Requires TTS timestamp changes |
-| Emphasis Tagging | 📋 Planned | Needs LLM integration |
-| 16:9 Aspect Ratio | ✅ Implemented | Default in config |
-| Crop-to-Fill | 📋 Planned | Background.tsx needs refactor |
-| Music Ducking | ✅ Implemented | Enabled in config |
-
-**Legend**: ✅ Implemented | 📋 Planned | ⚠️ Partial | ❌ Deprecated
-
-For detailed implementation status, see [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md).
-
-## Deploying on a remote server
-
-Current project needs light modification if you want to deploy it as a remote service.
-
-Remotion renderer with template bundle should be deployed as per usual.
-
-Then you have to update [`Root.tsx`](src/Root.tsx) to use timeline url that you will pass as a prop (instead of project name).
-
-The last thing - you have to upload generated resources (images and audio) to server and use urls to them instead of file names when generating a timeline.
-
-## Issues
-
-Found an issue with Remotion? Upgrade Remotion to receive fixes:
-
-```
-npx remotion upgrade
-```
-
-Didn't help? [File an issue here](https://github.com/remotion-dev/remotion/issues/new).
-
-## Contributing
-
-The source of this template is in the [Remotion Monorepo](https://github.com/remotion-dev/remotion/tree/main/packages/template-ai-video).  
-Don't send pull requests here, this is only a mirror.
-
-## License
-
-Note that for some entities a company license is needed. [Read the terms here](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md).
+- **Next.js** - Web UI framework
+- **Remotion** - Programmatic video creation
+- **Prisma** - Database ORM (SQLite)
+- **Google TTS** - Text-to-speech with word timestamps
+- **AI Providers** - Gemini, OpenAI, or Anthropic for script generation
+- **Stock Media** - Pexels, Unsplash, Pixabay integration
 
 ## Credits
-
-Thanks to [@webmonch](https://github.com/webmonch) for contributing this template!
+Template by [@webmonch](https://github.com/webmonch). Contributions mirrored from the Remotion monorepo.

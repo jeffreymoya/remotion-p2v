@@ -1,0 +1,246 @@
+generator storyflowClient {
+  provider = "prisma-client-js"
+  output   = "../src/generated/storyflow"
+}
+
+datasource storyflowDb {
+  provider = "sqlite"
+  url      = env("STORYFLOW_DATABASE_URL")
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  topic       String?
+  status      ProjectStatus @default(DRAFT)
+  aspectRatio String        @default("16:9")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  settings      ProjectSettings?
+  script        Script?
+  blueprints    Blueprint[]
+  assets        Asset[]
+  viewport      Viewport?
+  boards        Board[]
+  assetMappings Json?
+  renders       Render[]
+}
+
+model ProjectSettings {
+  id                 String  @id @default(cuid())
+  projectId          String  @unique
+  project            Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  provider           String  @default("gemini-cli")
+  model              String  @default("gemini-2.5-pro")
+  temperature        Float   @default(0.7)
+  voice              String  @default("en-US-Chirp3-HD-Algieba")
+  speakingRate       Float   @default(1.0)
+  pitch              Float   @default(0.0)
+  defaultQuality     String  @default("draft")
+  defaultAspectRatio String  @default("16:9")
+  musicTrackId       String?
+  musicVolume        Float   @default(0.3)
+}
+
+model Script {
+  id          String     @id @default(cuid())
+  projectId   String     @unique
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  blueprintId String?
+  blueprint   Blueprint? @relation(fields: [blueprintId], references: [id], onDelete: SetNull)
+  title       String
+  segments    Json // ScriptSegment[]
+  timestamps  Json? // WordTimestamp[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Asset {
+  id           String    @id @default(cuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type         AssetType
+  filename     String
+  path         String
+  metadata     Json?
+  upscaled     Boolean   @default(false)
+  upscaledPath String?
+  createdAt    DateTime  @default(now())
+
+  viewport Viewport?
+
+  @@index([projectId])
+  @@index([type])
+}
+
+model AppSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model Render {
+  id          String        @id @default(cuid())
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quality     RenderQuality @default(DRAFT)
+  status      RenderStatus  @default(PENDING)
+  progress    Float         @default(0)
+  outputPath  String?
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([projectId])
+  @@index([status])
+}
+
+enum ProjectStatus {
+  DRAFT
+  SCRIPT_READY
+  ASSETS_READY
+  VIEWPORT_READY
+  BOARDS_READY
+  RENDER_READY
+  RENDERING
+  COMPLETED
+  ERROR
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  MUSIC
+}
+
+enum RenderQuality {
+  DRAFT
+  MEDIUM
+  HIGH
+  PRODUCTION
+}
+
+enum RenderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Viewport {
+  id           String   @id @default(cuid())
+  projectId    String   @unique
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  imageAssetId String?  @unique
+  imageAsset   Asset?   @relation(fields: [imageAssetId], references: [id], onDelete: SetNull)
+  keyframes    Json
+  regions      Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Board {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  index     Int
+  layout    Json
+  regions   Json
+  triggers  Json?
+  plan      Json? // Board plan data (segment groupings)
+  prompts   Json? // Generated prompts for AI image generation
+  imagePath String? // Path to uploaded AI-generated image
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, index])
+  @@index([projectId])
+}
+
+model Blueprint {
+  id               String          @id @default(cuid())
+  projectId        String
+  project          Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version          Int             @default(1)
+  targetDurationMs Int
+  status           BlueprintStatus @default(GENERATING)
+  beats            Json // Beat[]
+  rejectionNotes   String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  scripts        Script[]
+  scriptDrafts   ScriptDraft[]
+  histories      BlueprintHistory[]
+  draftHistories ScriptDraftHistory[]
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model ScriptDraft {
+  id               String            @id @default(cuid())
+  blueprintId      String
+  blueprint        Blueprint         @relation(fields: [blueprintId], references: [id], onDelete: Cascade)
+  version          Int               @default(1)
+  status           ScriptDraftStatus @default(DRAFTING)
+  currentBeatIndex Int               @default(0)
+  beatDrafts       Json // BeatDraft[]
+  glueIssues       Json? // GlueIssue[]
+  polishedText     String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  histories ScriptDraftHistory[]
+
+  @@index([blueprintId])
+  @@index([status])
+}
+
+enum BlueprintStatus {
+  GENERATING
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ScriptDraftStatus {
+  DRAFTING
+  GLUING
+  POLISHING
+  COMPLETED
+  FAILED
+}
+
+model BlueprintHistory {
+  id          String    @id @default(cuid())
+  blueprintId String
+  blueprint   Blueprint @relation(fields: [blueprintId], references: [id], onDelete: Cascade)
+  version     Int
+  event       String
+  snapshot    Json
+  createdAt   DateTime  @default(now())
+
+  @@index([blueprintId])
+  @@index([blueprintId, version])
+}
+
+model ScriptDraftHistory {
+  id            String      @id @default(cuid())
+  scriptDraftId String
+  scriptDraft   ScriptDraft @relation(fields: [scriptDraftId], references: [id], onDelete: Cascade)
+  blueprintId   String
+  blueprint     Blueprint   @relation(fields: [blueprintId], references: [id], onDelete: Cascade)
+  version       Int
+  event         String
+  snapshot      Json
+  createdAt     DateTime    @default(now())
+
+  @@index([scriptDraftId])
+  @@index([scriptDraftId, version])
+  @@index([blueprintId])
+}

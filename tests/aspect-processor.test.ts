@@ -11,7 +11,7 @@ import {
   calculateCrop,
   calculateLetterbox,
   CropConfig,
-} from '../cli/services/media/aspect-processor';
+} from '../src/lib/services/media/aspect-processor';
 
 // Default test configuration
 const DEFAULT_CONFIG: CropConfig = {
