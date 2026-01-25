@@ -62,6 +62,7 @@ export async function POST(
     });
     await recordScriptDraftHistory(resumedDraft, "resume_started");
 
+    const projectId = scriptDraft.blueprint.projectId;
     const beatDrafts = [...existingBeatDrafts];
 
     try {
@@ -75,6 +76,7 @@ export async function POST(
 
         // Execute beat
         const beatDraft = await executeBeat(
+          projectId,
           beat,
           previousContent,
           isFirst,

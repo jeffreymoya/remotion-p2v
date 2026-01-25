@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
+import { boardsLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -21,7 +23,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  *   metadata: { width, height, aspectRatio };
  * }
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
   try {
@@ -96,7 +98,13 @@ export async function POST(req: Request, { params }: RouteParams) {
     // Return relative path from project root
     const relativePath = `boards/${filename}`;
 
-    console.log(`[UPLOAD] Saved board image: ${relativePath} (${metadata.width}x${metadata.height})`);
+    boardsLogger.info({
+      projectId,
+      boardId,
+      imagePath: relativePath,
+      width: metadata.width,
+      height: metadata.height,
+    }, "Saved board image");
 
     return NextResponse.json({
       success: true,
@@ -108,12 +116,13 @@ export async function POST(req: Request, { params }: RouteParams) {
       },
     });
   } catch (error) {
+    const { id: projectId } = await params;
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("[UPLOAD] Error uploading board image:", message);
+    boardsLogger.error({ projectId, error: message }, "Error uploading board image");
 
     return NextResponse.json(
       { error: "Failed to upload image", details: message },
       { status: 500 }
     );
   }
-}
+});

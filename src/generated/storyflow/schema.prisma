@@ -25,6 +25,7 @@ model Project {
   boards        Board[]
   assetMappings Json?
   renders       Render[]
+  aiCallLogs    AiCallLog[]
 }
 
 model ProjectSettings {
@@ -96,6 +97,53 @@ model Render {
 
   @@index([projectId])
   @@index([status])
+}
+
+model AiCallLog {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  provider  String
+  model     String?
+  operation String
+
+  parentId String?
+  parent   AiCallLog?  @relation("CallLineage", fields: [parentId], references: [id], onDelete: SetNull)
+  children AiCallLog[] @relation("CallLineage")
+
+  prompt       String
+  promptTokens Int?
+
+  response       String?
+  responseTokens Int?
+
+  status      AiCallStatus @default(PENDING)
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  durationMs  Int?
+
+  errorMessage String?
+  errorCode    String?
+  retryCount   Int     @default(0)
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([status])
+  @@index([operation])
+  @@index([startedAt])
+}
+
+enum AiCallStatus {
+  PENDING
+  STREAMING
+  COMPLETED
+  FAILED
+  CANCELLED
 }
 
 enum ProjectStatus {

@@ -7,34 +7,40 @@ import { StatusBadge } from "./status-badge";
 import { formatDate } from "@/src/lib/storyflow/utils";
 import { Project } from "@/src/lib/storyflow/types";
 import { useToast } from "@/components/ui/toast-provider";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { InlineError } from "@/components/ui/inline-error";
 
 export function ProjectCard({ project }: { project: Project }) {
   const [deleting, startDelete] = useTransition();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
 
-  const handleDelete = () => {
+  const performDelete = async () => {
     setError(null);
-    const confirmed = window.confirm(
-      `Delete project “${project.name}”? This removes its assets directory.`
-    );
-    if (!confirmed) return;
+    await new Promise<void>((resolve) => {
+      startDelete(async () => {
+        const res = await fetch(`/api/projects/${project.id}`, {
+          method: "DELETE",
+        });
 
-    startDelete(async () => {
-      const res = await fetch(`/api/projects/${project.id}`, {
-        method: "DELETE",
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          setError(body.error ?? "Failed to delete");
+          resolve();
+          return;
+        }
+
+        toast({
+          title: "Project deleted",
+          description: `${project.name} was removed.`,
+          variant: "success",
+        });
+
+        resolve();
+        window.location.reload();
       });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setError(body.error ?? "Failed to delete");
-        return;
-      }
-      toast({
-        title: "Project deleted",
-        description: `${project.name} was removed.`,
-        variant: "success",
-      });
-      window.location.reload();
     });
   };
 
@@ -52,14 +58,40 @@ export function ProjectCard({ project }: { project: Project }) {
             Created {formatDate(project.createdAt)}
           </div>
         </div>
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-red-300 disabled:opacity-50"
-          aria-label="Delete project"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <Dialog open={confirmOpen} onOpenChange={(open) => !deleting && setConfirmOpen(open)}>
+          <button
+            onClick={() => setConfirmOpen(true)}
+            disabled={deleting}
+            className="rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-red-300 disabled:opacity-50"
+            aria-label="Delete project"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete project</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-slate-400">
+              Delete “{project.name}”? This removes its assets directory. This action cannot be undone.
+            </p>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  setConfirmOpen(false);
+                  void performDelete();
+                }}
+                disabled={deleting}
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
         <StatusBadge status={project.status} />
@@ -70,7 +102,23 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.topic}
         </div>
       )}
-      {error && <div className="mt-2 text-xs text-rose-300">{error}</div>}
+      {error && (
+        <div className="mt-3">
+          <InlineError
+            title="Could not delete project"
+            message={error}
+            suggestions={[
+              "Check your connection and try again.",
+              "Make sure the project still exists and you have permission to delete it.",
+            ]}
+            retryLabel="Retry delete"
+            onRetry={() => {
+              if (deleting) return;
+              return performDelete();
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

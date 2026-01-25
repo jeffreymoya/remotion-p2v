@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Blueprint, ScriptDraft } from "@/src/lib/storyflow/script-builder-types";
 import { Script } from "@/src/lib/storyflow/types";
+import { WorkflowError } from "./workflow-error";
+import { WorkflowPhase, WorkflowState } from "@/src/lib/storyflow/workflow-state";
 import { DurationPicker } from "./duration-picker";
 import { BlueprintReview } from "./blueprint-review";
 import { ExecutionProgress } from "./execution-progress";
@@ -12,31 +14,77 @@ import { GluePhase } from "./glue-phase";
 import { HistoryPanel } from "./history-panel";
 import { useToast } from "@/components/ui/toast-provider";
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
-
-type WorkflowPhase = "input" | "blueprint" | "execution" | "glue" | "preview";
+import { useStageInvalidation } from "@/components/pipeline/stage-invalidation-context";
+import { SaveIndicator } from "@/components/ui/save-indicator";
+import { useAutoSave } from "@/src/hooks/use-auto-save";
 
 interface ScriptBuilderWorkflowProps {
   projectId: string;
   initialTopic: string | null;
-  initialScript: Script | null;
+  initialState: WorkflowState;
 }
 
 export function ScriptBuilderWorkflow({
   projectId,
   initialTopic,
-  initialScript,
+  initialState,
 }: ScriptBuilderWorkflowProps) {
-  const [phase, setPhase] = useState<WorkflowPhase>(
-    initialScript ? "preview" : "input"
-  );
+  const [stateError, setStateError] = useState<string | null>(initialState.error);
+  const [phase, setPhase] = useState<WorkflowPhase>(initialState.phase);
   const [topic, setTopic] = useState(initialTopic ?? "");
   const [targetDuration, setTargetDuration] = useState(180000); // 3 minutes default
-  const [blueprint, setBlueprint] = useState<Blueprint | null>(null);
-  const [scriptDraft, setScriptDraft] = useState<ScriptDraft | null>(null);
-  const [script, setScript] = useState<Script | null>(initialScript);
+  const [blueprint, setBlueprint] = useState<Blueprint | null>(initialState.blueprint);
+  const [scriptDraft, setScriptDraft] = useState<ScriptDraft | null>(initialState.scriptDraft);
+  const [script, setScript] = useState<Script | null>(initialState.script);
   const [loading, setLoading] = useState(false);
-  const [segmenting, setSegmenting] = useState(false);
+  const [_segmenting, _setSegmenting] = useState(false);
+  const [ttsState, setTtsState] = useState({
+    running: false,
+    completed: 0,
+    total: initialState.script?.segments.length ?? 0,
+    error: null as string | null,
+  });
   const toast = useToast();
+  const { registerScriptChange, registerEdit } = useStageInvalidation();
+  const storageKey = useMemo(
+    () => `storyflow:auto-save:project:${projectId}:builder-topic`,
+    [projectId]
+  );
+
+  const handleResetState = () => {
+    setStateError(null);
+    setPhase("input");
+    setBlueprint(null);
+    setScriptDraft(null);
+    setScript(null);
+    setTtsState({ running: false, completed: 0, total: 0, error: null });
+  };
+
+  const persistTopic = async (payload: { topic: string }) => {
+    const res = await fetch(`/api/projects/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const detail =
+        typeof body.error === "string"
+          ? body.error
+          : body.error?.topic?.[0] || "Failed to save topic";
+      throw new Error(detail);
+    }
+  };
+
+  const { status: saveStatus, lastSavedAt, error: saveError } = useAutoSave({
+    data: { topic },
+    saveFn: persistTopic,
+    storageKey,
+    debounceMs: 1500,
+    enabled: topic.trim().length > 0,
+    onError: (err) => toast({ title: err.message, variant: "error" }),
+  });
 
   const handleGenerateBlueprint = async () => {
     if (!topic.trim()) {
@@ -110,6 +158,7 @@ export function ScriptBuilderWorkflow({
       setScriptDraft(null);
       setScript(null);
       setPhase("blueprint");
+      registerEdit("script", "structural");
       toast({ title: message ?? "Blueprint regenerated", variant: "success" });
     } catch (err) {
       console.error(err);
@@ -146,9 +195,18 @@ export function ScriptBuilderWorkflow({
       }
 
       const { script: finalScript, message } = await res.json();
+      registerScriptChange(script, finalScript);
       setScript(finalScript);
       setPhase("preview");
+      setTtsState({
+        running: true,
+        completed: 0,
+        total: finalScript.segments.length,
+        error: null,
+      });
       toast({ title: message ?? "Script segmented", variant: "success" });
+
+      await runTtsForScript(finalScript);
     } catch (err) {
       console.error(err);
       toast({ title: "Network error creating segments", variant: "error" });
@@ -157,11 +215,87 @@ export function ScriptBuilderWorkflow({
     }
   };
 
+  const runTtsForScript = async (
+    scriptToUse: Script,
+    { force = false }: { force?: boolean } = {}
+  ) => {
+    const targets = scriptToUse.segments.filter((seg) => force || !seg.audioUrl);
+    if (targets.length === 0) {
+      setTtsState((prev) => ({
+        ...prev,
+        running: false,
+        error: null,
+        completed: prev.total || scriptToUse.segments.length,
+      }));
+      toast({ title: "All segments already have audio" });
+      return;
+    }
+
+    setTtsState({ running: true, completed: 0, total: targets.length, error: null });
+
+    try {
+      for (let i = 0; i < targets.length; i++) {
+        const seg = targets[i];
+        const res = await fetch("/api/tts/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId,
+            segmentIndex: seg.index,
+            force,
+          }),
+        });
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          const detail = typeof body.error === "string" ? body.error : "TTS failed";
+          setTtsState({
+            running: false,
+            completed: i,
+            total: targets.length,
+            error: detail,
+          });
+          toast({ title: detail, variant: "error" });
+          return;
+        }
+
+        const { segment: updated } = await res.json();
+        setScript((prev) =>
+          prev
+            ? {
+                ...prev,
+                segments: prev.segments.map((s) =>
+                  s.index === updated.index ? updated : s
+                ),
+              }
+            : prev
+        );
+        setTtsState((prev) => ({ ...prev, completed: prev.completed + 1 }));
+      }
+
+      setTtsState((prev) => ({ ...prev, running: false, error: null }));
+      toast({ title: force ? "Audio regenerated" : "Audio generated", variant: "success" });
+    } catch (error) {
+      console.error(error);
+      setTtsState({
+        running: false,
+        completed: 0,
+        total: targets.length,
+        error: "Network error generating audio",
+      });
+      toast({ title: "Network error generating audio", variant: "error" });
+    }
+  };
+
   const handleBackToInput = () => {
     setPhase("input");
     setBlueprint(null);
     setScriptDraft(null);
   };
+
+  if (stateError) {
+    return <WorkflowError error={stateError} onReset={handleResetState} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -204,7 +338,7 @@ export function ScriptBuilderWorkflow({
       {/* Phase 1: Topic Input */}
       {phase === "input" && (
         <div className="space-y-6">
-          <div className="space-y-2">
+          <div className="space-y-2" data-onboarding="script-input">
             <label className="text-sm font-medium text-slate-200">Topic</label>
             <textarea
               value={topic}
@@ -217,6 +351,9 @@ export function ScriptBuilderWorkflow({
             <p className="text-xs text-slate-400">
               This topic will be used to generate an engagement-focused blueprint with narrative beats.
             </p>
+            <div data-onboarding="save-indicator">
+              <SaveIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
+            </div>
           </div>
 
           <DurationPicker value={targetDuration} onChange={setTargetDuration} />
@@ -224,6 +361,7 @@ export function ScriptBuilderWorkflow({
           <button
             onClick={handleGenerateBlueprint}
             disabled={loading}
+            data-onboarding="ai-generate"
             className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
           >
             {loading ? (
@@ -286,6 +424,53 @@ export function ScriptBuilderWorkflow({
       {/* Phase 4: Final Script Preview */}
       {phase === "preview" && script && (
         <div className="space-y-4">
+          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white">TTS Audio</p>
+                <p className="text-xs text-slate-400">
+                  Audio runs automatically after segmentation. Regenerate if you change pacing or voice.
+                </p>
+                <p className="text-xs text-slate-400">
+                  {ttsState.completed} / {ttsState.total || script.segments.length} segments processed.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => runTtsForScript(script)}
+                  disabled={ttsState.running}
+                  className="rounded-md bg-brand-600 px-3 py-2 text-xs font-semibold text-white shadow hover:-translate-y-0.5 disabled:opacity-60"
+                >
+                  {ttsState.running ? "Generating…" : "Generate Audio"}
+                </button>
+                <button
+                  onClick={() => runTtsForScript(script, { force: true })}
+                  disabled={ttsState.running}
+                  className="rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow hover:-translate-y-0.5 disabled:opacity-60"
+                >
+                  Regenerate All
+                </button>
+              </div>
+            </div>
+            {(ttsState.running || ttsState.completed > 0 || ttsState.error) && (
+              <div className="mt-3 space-y-2">
+                <ProgressBar
+                  value={
+                    (ttsState.completed /
+                      Math.max(ttsState.total || script.segments.length, 1)) *
+                    100
+                  }
+                />
+                <div className="flex items-center justify-between text-xs text-slate-400">
+                  <span>
+                    {ttsState.completed} / {ttsState.total || script.segments.length} segments
+                  </span>
+                  {ttsState.error ? <span className="text-rose-300">{ttsState.error}</span> : null}
+                </div>
+              </div>
+            )}
+          </div>
+
           <ScriptPreview script={script} />
           <div className="flex gap-3">
             <button
@@ -295,10 +480,10 @@ export function ScriptBuilderWorkflow({
               Start New Script
             </button>
             <a
-              href={`/projects/${projectId}`}
+              href={`/projects/${projectId}/media`}
               className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 hover:-translate-y-0.5"
             >
-              Continue to Assets
+              Continue to Media
             </a>
           </div>
         </div>
@@ -334,6 +519,18 @@ function PhaseIndicator({ label, active, completed }: PhaseIndicatorProps) {
       >
         {label}
       </span>
+    </div>
+  );
+}
+
+function ProgressBar({ value }: { value: number }) {
+  const clamped = Math.min(100, Math.max(0, value));
+  return (
+    <div className="h-2 w-full rounded-full bg-slate-800">
+      <div
+        className="h-2 rounded-full bg-brand-500 transition-[width]"
+        style={{ width: `${clamped}%` }}
+      />
     </div>
   );
 }

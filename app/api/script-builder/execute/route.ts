@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     await recordScriptDraftHistory(scriptDraft, "draft_created");
 
     // Execute beats sequentially with checkpointing
+    const projectId = blueprint.projectId;
     const beatDrafts: BeatDraft[] = [];
     let previousContent = "";
 
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
 
         // Execute beat
         const beatDraft = await executeBeat(
+          projectId,
           beat,
           previousContent,
           isFirst,

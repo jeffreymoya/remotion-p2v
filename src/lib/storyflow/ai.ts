@@ -1,13 +1,11 @@
-import { execFile } from "child_process";
-import { promisify } from "util";
 import { z } from "zod";
 import { getSettings } from "./settings";
 import { parseGeminiOutput } from "./gemini-parser";
 import { scriptSchema, ScriptPayload } from "./scripts";
 import { TrendingTopic, GeneralizedTrendingTopic, TopicSuggestion } from "./discovery";
 import { countWords, WORDS_PER_MINUTE } from "../constants";
-
-const execFileAsync = promisify(execFile);
+import { geminiCall } from "@/src/lib/services/ai";
+import { aiLogger } from "@/src/lib/logger";
 
 function estimateWordCount(text: string): { wordCount: number; estimatedDuration: number } {
   const words = countWords(text);
@@ -46,9 +44,12 @@ function normalizeScript(parsed: Record<string, unknown>, topic: string): Script
   return scriptSchema.parse(candidate);
 }
 
-export async function generateScriptFromGemini(topic: string): Promise<ScriptPayload> {
+export async function generateScriptFromGemini(
+  projectId: string,
+  topic: string
+): Promise<ScriptPayload> {
   const settings = await getSettings();
-  const model = settings.ai.model || "gemini-2.5-pro";
+  const model = settings.ai.proModel;
 
   const prompt = `
 You are a professional video scriptwriter. Create an engaging script for a video about: ${topic}
@@ -65,27 +66,19 @@ Requirements:
 }
 `;
 
-  const args = [
-    "--yolo",
-    "--model",
-    model,
-    "--output-format",
-    "json",
-    prompt,
-  ];
-
   try {
-    const { stdout } = await execFileAsync("gemini", args, {
-      maxBuffer: 2_000_000,
-      timeout: 300_000,
-    });
+    const { rawResponse } = await geminiCall<Record<string, unknown>>(
+      { projectId, operation: "script-generate" },
+      prompt,
+      { model }
+    );
 
-    const parsed = parseGeminiOutput(stdout);
+    const parsed = parseGeminiOutput(rawResponse ?? "");
     return normalizeScript(parsed, topic);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown Gemini error";
-    console.warn("[ai] Gemini failed, falling back to demo script:", message);
+    aiLogger.warn({ projectId, topic, error: message }, "Gemini failed, falling back to demo script");
     throw error;
   }
 }
@@ -114,11 +107,12 @@ ${headlines || '   - No headlines available'}`;
 }
 
 export async function generalizeTopics(
+  projectId: string,
   trends: TrendingTopic[],
   suggestionsPerTopic = 4
 ): Promise<GeneralizedTrendingTopic[]> {
   const settings = await getSettings();
-  const model = settings.ai.model || "gemini-2.5-pro";
+  const model = settings.ai.model;
 
   const topicsWithContext = formatTopicsForPrompt(trends);
 
@@ -170,24 +164,20 @@ IMPORTANT:
 - Suggestions should be distinct angles, not variations of the same idea
 - Prioritize topics that are educational, thought-provoking, or solve problems`;
 
-  const args = [
-    "--yolo",
-    "--model",
-    model,
-    "--output-format",
-    "json",
-    prompt,
-  ];
-
   try {
-    const { stdout } = await execFileAsync("gemini", args, {
-      maxBuffer: 5_000_000,
-      timeout: 300_000,
-    });
+    const { rawResponse } = await geminiCall<Record<string, unknown>>(
+      { projectId, operation: "topic-generalize" },
+      prompt,
+      { model }
+    );
 
-    console.log("[ai] Raw Gemini output (first 500 chars):", stdout.substring(0, 500));
+    aiLogger.debug({
+      projectId,
+      operation: "topic-generalize",
+      rawOutputPreview: (rawResponse ?? "").substring(0, 500)
+    }, "Raw Gemini output received");
 
-    const parsed = parseGeminiOutput(stdout);
+    const parsed = parseGeminiOutput(rawResponse ?? "");
     const validated = generalizedTopicsSchema.parse(parsed);
 
     let suggestionCounter = 0;
@@ -217,7 +207,7 @@ IMPORTANT:
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown Gemini error";
-    console.error("[ai] Topic generalization failed:", message);
+    aiLogger.error({ projectId, error: message }, "Topic generalization failed");
     throw error;
   }
 }

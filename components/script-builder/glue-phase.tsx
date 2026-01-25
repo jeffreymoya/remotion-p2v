@@ -21,7 +21,17 @@ const typeStyles: Record<string, { color: string; label: string }> = {
   pacing: { color: "bg-sky-500/20 text-sky-200", label: "Pacing" },
 };
 
-function HighlightOverlay({ text, issues }: { text: string; issues: GlueIssue[] }) {
+function HighlightOverlay({
+  text,
+  issues,
+  scrollTop = 0,
+  scrollLeft = 0
+}: {
+  text: string;
+  issues: GlueIssue[];
+  scrollTop?: number;
+  scrollLeft?: number;
+}) {
   const spans = useMemo(() => {
     if (!issues.length) return [{ text, highlight: null as GlueIssue | null }];
 
@@ -48,6 +58,9 @@ function HighlightOverlay({ text, issues }: { text: string; issues: GlueIssue[] 
   return (
     <div
       className="pointer-events-none absolute inset-0 whitespace-pre-wrap break-words rounded-md border border-slate-800 bg-slate-900/80 px-3 py-2 font-mono text-sm leading-relaxed text-slate-100"
+      style={{
+        transform: `translate(-${scrollLeft}px, -${scrollTop}px)`,
+      }}
       aria-hidden
     >
       {spans.map((segment, idx) => {
@@ -81,12 +94,19 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
   const [issues, setIssues] = useState<GlueIssue[]>(() => (scriptDraft.glueIssues as GlueIssue[]) ?? []);
   const [analyzing, setAnalyzing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const warningCount = issues.filter((i) => i.severity === "warning" && !i.resolved).length;
   const errorCount = issues.filter((i) => i.severity === "error" && !i.resolved).length;
 
   const toggleResolved = (id: string) => {
     setIssues((prev) => prev.map((issue) => (issue.id === id ? { ...issue, resolved: !issue.resolved } : issue)));
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    setScrollTop(e.currentTarget.scrollTop);
+    setScrollLeft(e.currentTarget.scrollLeft);
   };
 
   const fixRobotWords = () => {
@@ -211,11 +231,17 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
           </div>
         </div>
 
-        <div className="relative">
-          <HighlightOverlay text={text} issues={issues.filter((i) => !i.resolved)} />
+        <div className="relative overflow-hidden">
+          <HighlightOverlay
+            text={text}
+            issues={issues.filter((i) => !i.resolved)}
+            scrollTop={scrollTop}
+            scrollLeft={scrollLeft}
+          />
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onScroll={handleScroll}
             className="relative z-10 h-80 w-full rounded-md border border-slate-800 bg-transparent px-3 py-2 font-mono text-sm leading-relaxed text-transparent caret-white selection:bg-brand-500/30 focus:border-brand-500 focus:outline-none"
             spellCheck={false}
           />

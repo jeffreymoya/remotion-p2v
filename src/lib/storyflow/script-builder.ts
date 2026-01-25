@@ -7,9 +7,7 @@
  * - Script segmentation
  */
 
-import { execFile } from "child_process";
 import { randomUUID } from "crypto";
-import { promisify } from "util";
 import { z } from "zod";
 import { getSettings } from "./settings";
 import { parseGeminiOutput, stripMarkdownBlocks } from "./gemini-parser";
@@ -22,8 +20,7 @@ import {
   segmentPrompt,
 } from "../../../config/prompts";
 import { WORDS_PER_MINUTE, countWords } from "../constants";
-
-const execFileAsync = promisify(execFile);
+import { geminiCall } from "@/src/lib/services/ai";
 
 // Constants
 const MS_PER_MINUTE = 60000;
@@ -113,53 +110,42 @@ export function calculateBeatCount(targetDurationMs: number): number {
 /**
  * Execute Gemini CLI command and return raw stdout for further parsing
  */
-async function executeGeminiRaw(prompt: string): Promise<string> {
+async function executeGeminiRaw(
+  projectId: string,
+  operation: string,
+  modelTier: "PRO" | "FLASH",
+  prompt: string
+) {
   const settings = await getSettings();
-  const model = settings.ai.model || "gemini-2.5-pro";
+  const chosenModel =
+    modelTier === "PRO"
+      ? settings.ai.proModel
+      : settings.ai.model;
 
-  const args = [
-    "--yolo",
-    "--model",
-    model,
-    "--output-format",
-    "json",
+  const { rawResponse } = await geminiCall<string>(
+    { projectId, operation },
     prompt,
-  ];
+    { model: chosenModel }
+  );
 
-  try {
-    const { stdout } = await execFileAsync("gemini", args, {
-      maxBuffer: 2_000_000,
-      timeout: 300_000, // 5 minutes
-    });
-
-    return stdout;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown Gemini error";
-    console.error("[script-builder] Gemini execution failed:", message);
-    throw error;
-  }
+  return rawResponse ?? "";
 }
 
-/**
- * Execute Gemini CLI command for text output (extracts response string)
- */
-async function executeGeminiText(prompt: string): Promise<string> {
-  const stdout = await executeGeminiRaw(prompt);
+async function executeGeminiText(
+  projectId: string,
+  operation: string,
+  modelTier: "PRO" | "FLASH",
+  prompt: string
+) {
+  const stdout = await executeGeminiRaw(projectId, operation, modelTier, prompt);
 
-  // Use robust parser to handle wrapper format
   const parsed = parseGeminiOutput<{ response?: string }>(stdout);
-
-  // If we got a string directly, return it
   if (typeof parsed === "string") {
     return stripMarkdownBlocks(parsed);
   }
-
-  // If we got an object with response, extract it
   if (parsed && typeof parsed === "object" && "response" in parsed && typeof parsed.response === "string") {
     return stripMarkdownBlocks(parsed.response);
   }
-
-  // Return stringified if it's something else
   return typeof parsed === "string" ? parsed : JSON.stringify(parsed);
 }
 
@@ -167,6 +153,7 @@ async function executeGeminiText(prompt: string): Promise<string> {
  * Generate a new blueprint
  */
 export async function generateBlueprint(
+  projectId: string,
   topic: string,
   targetDurationMs: number
 ): Promise<{ beats: Beat[] }> {
@@ -178,7 +165,7 @@ export async function generateBlueprint(
     beatCount,
   });
 
-  const stdout = await executeGeminiRaw(prompt);
+  const stdout = await executeGeminiRaw(projectId, "blueprint-generate", "PRO", prompt);
   const parsed = parseGeminiOutput(stdout);
   const validated = blueprintResponseSchema.parse(parsed);
   return validated;
@@ -188,6 +175,7 @@ export async function generateBlueprint(
  * Regenerate blueprint with feedback
  */
 export async function regenerateBlueprint(
+  projectId: string,
   topic: string,
   targetDurationMs: number,
   rejectionNotes: string
@@ -201,7 +189,7 @@ export async function regenerateBlueprint(
     rejectionNotes,
   });
 
-  const stdout = await executeGeminiRaw(prompt);
+  const stdout = await executeGeminiRaw(projectId, "blueprint-regenerate", "PRO", prompt);
   const parsed = parseGeminiOutput(stdout);
   const validated = blueprintResponseSchema.parse(parsed);
   return validated;
@@ -211,6 +199,7 @@ export async function regenerateBlueprint(
  * Execute a single beat based on its position
  */
 export async function executeBeat(
+  projectId: string,
   beat: Beat,
   previousContent: string,
   isFirst: boolean,
@@ -263,7 +252,7 @@ export async function executeBeat(
     prompt += `\n\n**Reviewer Guidance:** ${opts.guidance}`;
   }
 
-  const text = await executeGeminiText(prompt);
+  const text = await executeGeminiText(projectId, "beat-draft", "FLASH", prompt);
   const wordCount = estimateWordCount(text);
 
   return {
@@ -273,7 +262,7 @@ export async function executeBeat(
     beatIndex: beat.index,
     text,
     wordCount,
-    styleModifiersUsed: styleModifiers,
+    styleModifiersUsed: [],
     checkpoint: new Date(),
     guidanceApplied: opts?.guidance,
     regeneratedFromId: opts?.regenerateFromId ?? null,
@@ -284,6 +273,7 @@ export async function executeBeat(
  * Segment a polished script into TTS-optimized segments
  */
 export async function segmentScript(
+  projectId: string,
   polishedText: string,
   beats: Beat[]
 ): Promise<SegmentResponse> {
@@ -306,7 +296,7 @@ export async function segmentScript(
     targetSegmentCount,
   });
 
-  const stdout = await executeGeminiRaw(prompt);
+  const stdout = await executeGeminiRaw(projectId, "segment-script", "FLASH", prompt);
   const parsed = parseGeminiOutput(stdout);
   const validated = segmentResponseSchema.parse(parsed);
   return validated;

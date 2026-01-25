@@ -3,6 +3,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { ProjectGrid } from "@/components/projects/project-grid";
 import { EmptyState } from "@/components/projects/empty-state";
+import { Project } from "@/src/lib/storyflow/types";
 
 export default async function ProjectsPage() {
   const projects = await storyflowPrisma.project.findMany({
@@ -29,7 +30,7 @@ export default async function ProjectsPage() {
       {projects.length === 0 ? (
         <EmptyState />
       ) : (
-        <ProjectGrid projects={projects} />
+        <ProjectGrid projects={projects as unknown as Project[]} />
       )}
     </PageContainer>
   );

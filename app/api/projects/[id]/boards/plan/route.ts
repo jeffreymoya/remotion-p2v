@@ -11,6 +11,8 @@ import {
   DEFAULT_BOARDS_CONFIG,
   BoardPlanSchema,
 } from "@/src/lib/boards-types";
+import { boardsLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 /**
  * Request schema for board planning
@@ -48,7 +50,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  *
  * Plan board groupings from script segments using AI topic analysis.
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   try {
     const { id: projectId } = await params;
 
@@ -144,7 +146,9 @@ export async function POST(req: Request, { params }: RouteParams) {
       plan: validatedPlan,
     });
   } catch (error) {
-    console.error("[api/boards/plan] Error planning boards:", error);
+    const { id: projectId } = await params;
+    const message = error instanceof Error ? error.message : "Unknown error";
+    boardsLogger.error({ projectId, error: message }, "Error planning boards");
 
     // Handle specific error types
     if (error instanceof z.ZodError) {
@@ -157,19 +161,19 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json(
       {
         error: "Failed to plan boards",
-        message: error instanceof Error ? error.message : "Unknown error",
+        message,
       },
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * GET /api/projects/[id]/boards/plan
  *
  * Retrieve existing board plan (if stored in database)
  */
-export async function GET(_req: Request, { params }: RouteParams) {
+export const GET = withLogging(async (_req: Request, { params }: RouteParams) => {
   try {
     const { id: projectId } = await params;
 
@@ -214,10 +218,12 @@ export async function GET(_req: Request, { params }: RouteParams) {
       })),
     });
   } catch (error) {
-    console.error("[api/boards/plan] Error fetching plan:", error);
+    const { id: projectId } = await params;
+    const message = error instanceof Error ? error.message : "Unknown error";
+    boardsLogger.error({ projectId, error: message }, "Error fetching board plan");
     return NextResponse.json(
       { error: "Failed to fetch board plan" },
       { status: 500 }
     );
   }
-}
+});

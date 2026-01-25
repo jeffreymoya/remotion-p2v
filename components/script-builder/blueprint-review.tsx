@@ -58,7 +58,7 @@ export function BlueprintReview({
         return;
       }
 
-      const { blueprint: updated, requiresRegeneration } = await res.json();
+      const { blueprint: _updated, requiresRegeneration } = await res.json();
       toast({ title: "Blueprint approved", variant: "success" });
 
       if (!requiresRegeneration) {
@@ -93,7 +93,7 @@ export function BlueprintReview({
         return;
       }
 
-      const { blueprint: updated, requiresRegeneration } = await res.json();
+      const { blueprint: _updated, requiresRegeneration } = await res.json();
       toast({ title: "Reviews submitted", variant: "success" });
 
       if (requiresRegeneration) {

@@ -8,7 +8,7 @@ import {
   SegmentContext,
 } from '../boards-types';
 import { contentAnalysisPrompt, elementDescriptionPrompt } from '../../../config/prompts/boards-image.prompt';
-import { AIProviderFactory } from '../../services/ai';
+import { AIProviderFactory } from "@/src/lib/services/ai";
 
 export interface ScriptSegment {
   id: string;
@@ -117,8 +117,23 @@ export async function analyzeContent(
   boardPlan: BoardSegmentMapping,
   segments: ScriptSegment[]
 ): Promise<BoardContent> {
-  const boardSegments = boardPlan.segmentIndices.map(i => segments[i]);
-  const combinedText = boardSegments.map(s => s.text).join(' ');
+  const boardSegments = boardPlan.segmentIndices
+    .map((i) => {
+      // Prefer zero-based index lookup, fallback to order-based match
+      return (
+        segments[i] ||
+        segments.find((s) => s.order === i || s.order === i + 1)
+      );
+    })
+    .filter((s): s is ScriptSegment => Boolean(s));
+
+  if (boardSegments.length === 0) {
+    throw new Error(
+      `[PROMPTS] No matching segments found for board ${boardPlan.boardId}`
+    );
+  }
+
+  const combinedText = boardSegments.map((s) => s.text).join(" ");
 
   const aiProvider = await AIProviderFactory.getProviderWithFallback();
   aiProvider.setPipelineStage?.('boards-prompts-analysis');
@@ -211,7 +226,9 @@ export async function fillElementDescriptions(
   const descriptions = await callAIWithRetry(async () => {
     const raw = await aiProvider.complete(prompt);
     const parsed = parseJsonFromLLM(String(raw));
-    const validated = ElementDescriptionResponseSchema.safeParse(parsed);
+    // Gemini sometimes wraps arrays in an object - unwrap if needed
+    const unwrapped = unwrapArrayFromObject(parsed);
+    const validated = ElementDescriptionResponseSchema.safeParse(unwrapped);
     if (!validated.success) {
       throw new Error(`[PROMPTS] Element description response failed validation: ${validated.error.message}`);
     }
@@ -239,13 +256,17 @@ export function mapSegmentsToElements(
   elements: BoardElement[],
   segmentIndices: number[]
 ): SegmentContext[] {
+  const resolveSegment = (idx: number) =>
+    segments[idx] || segments.find((s) => s.order === idx || s.order === idx + 1);
+
   return segmentIndices.map((segIdx, i) => {
     const elementIndex = Math.floor(i * elements.length / segmentIndices.length);
     const targetElement = elements[elementIndex] ?? elements[0];
+    const segment = resolveSegment(segIdx);
 
     return {
       segmentIndex: segIdx,
-      text: segments[segIdx].text,
+      text: segment?.text ?? `Segment ${segIdx}`,
       focusElementId: targetElement.id,
     };
   });
@@ -320,4 +341,30 @@ function parseJsonFromLLM(raw: string): unknown {
   } catch (error) {
     throw new Error(`[LLM] Failed to parse LLM JSON: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+/**
+ * Unwrap array from object if LLM wrapped it (e.g., { "elements": [...] } -> [...])
+ */
+function unwrapArrayFromObject(parsed: unknown): unknown {
+  if (Array.isArray(parsed)) {
+    return parsed;
+  }
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    const values = Object.values(parsed as Record<string, unknown>);
+    // If object has exactly one property and it's an array, unwrap it
+    if (values.length === 1 && Array.isArray(values[0])) {
+      console.log('[PROMPTS] Unwrapped array from object wrapper');
+      return values[0];
+    }
+    // Check common wrapper keys
+    const obj = parsed as Record<string, unknown>;
+    for (const key of ['elements', 'results', 'data', 'items', 'descriptions']) {
+      if (Array.isArray(obj[key])) {
+        console.log(`[PROMPTS] Unwrapped array from "${key}" property`);
+        return obj[key];
+      }
+    }
+  }
+  return parsed;
 }

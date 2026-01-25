@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Asset, Board, Script } from "@/src/lib/storyflow/types";
 import { BoardPlannerWizard } from "./BoardPlannerWizard";
 import { SimpleBoardsEditor } from "../editors/boards/simple-boards-editor";
-import { SimpleAssetMapper } from "../editors/asset-mapper/simple-asset-mapper";
 import { Button } from "@/components/ui/button";
 
 interface BoardsWorkflowProps {
@@ -93,17 +93,19 @@ export function BoardsWorkflow({ projectId, script, images, initialBoards }: Boa
         <div className="space-y-8">
           <SimpleBoardsEditor projectId={projectId} images={images} initialBoards={initialBoards} />
 
-          {script && images.length > 0 && (
-            <div className="border-t border-slate-800 pt-8">
-              <h2 className="mb-4 text-lg font-semibold text-slate-200">Asset Mapping</h2>
-              <SimpleAssetMapper
-                projectId={projectId}
-                segments={script.segments}
-                assets={images}
-                initialMappings={(projectId as any).assetMappings || {}}
-              />
-            </div>
-          )}
+          <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-4 text-sm text-slate-300">
+            <p className="font-semibold text-slate-100">Asset mapping now lives in Media.</p>
+            <p className="mt-1">
+              Map images to script segments from the Media stage so mappings stay the single source of truth
+              for downstream boards and build steps.
+            </p>
+            <Link
+              href={`/projects/${projectId}/media`}
+              className="mt-3 inline-flex w-fit items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white shadow shadow-brand-600/30 transition hover:bg-brand-500"
+            >
+              Go to Media
+            </Link>
+          </div>
         </div>
       )}
     </div>

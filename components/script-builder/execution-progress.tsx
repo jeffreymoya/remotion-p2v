@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Blueprint, ScriptDraft, ExecutionStatus } from "@/src/lib/storyflow/script-builder-types";
+import { Blueprint, ScriptDraft } from "@/src/lib/storyflow/script-builder-types";
 import { BeatStatusIndicator, BeatStatus } from "./beat-status-indicator";
 import { useToast } from "@/components/ui/toast-provider";
 import { Play, Loader2 } from "lucide-react";
+import {
+  useExecutionStatus,
+  useScriptDraft,
+  useStartExecution,
+  useResumeExecution,
+} from "@/src/hooks/queries/use-execution-status";
 
 interface ExecutionProgressProps {
   blueprint: Blueprint;
@@ -31,111 +37,60 @@ export function ExecutionProgress({
   projectId,
   onComplete,
 }: ExecutionProgressProps) {
-  const [status, setStatus] = useState<ExecutionStatus | null>(null);
-  const [loading, setLoading] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(initialDraftId);
   const [notifiedComplete, setNotifiedComplete] = useState(false);
   const toast = useToast();
 
-  // Poll execution status
+  // React Query hooks
+  const { data: status } = useExecutionStatus(draftId);
+  const { data: scriptDraft } = useScriptDraft(
+    status && ["GLUING", "POLISHING", "COMPLETED"].includes(status.status) ? draftId : null
+  );
+  const startMutation = useStartExecution();
+  const resumeMutation = useResumeExecution();
+
+  // Notify parent when execution completes
   useEffect(() => {
-    if (!draftId) return;
-
-    const pollStatus = async () => {
-      try {
-        const res = await fetch(`/api/script-builder/execute/${draftId}/status`);
-        if (!res.ok) {
-          console.error("Failed to fetch status");
-          return;
-        }
-
-        const data = await res.json();
-        setStatus(data);
-
-        // If writing is finished, stop polling and notify parent so we can move to glue phase
-        if (["GLUING", "POLISHING", "COMPLETED"].includes(data.status) && !notifiedComplete) {
-          const draftRes = await fetch(`/api/script-builder/draft/${draftId}`);
-          if (draftRes.ok) {
-            const draftPayload = await draftRes.json();
-            if (draftPayload.draft) {
-              onComplete(draftPayload.draft);
-              setNotifiedComplete(true);
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Error polling status:", err);
-      }
-    };
-
-    // Initial poll
-    pollStatus();
-
-    // Poll every 2.5 seconds
-    const interval = setInterval(pollStatus, 2500);
-
-    return () => clearInterval(interval);
-  }, [draftId, onComplete]);
-
-  const handleStartExecution = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/script-builder/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blueprintId: blueprint.id }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to start execution", variant: "error" });
-        return;
-      }
-
-      const { scriptDraftId, status: execStatus, totalBeats } = await res.json();
-      setDraftId(scriptDraftId);
-      setNotifiedComplete(false);
-      setStatus({
-        status: execStatus,
-        currentBeatIndex: 0,
-        completedBeats: 0,
-        totalBeats,
-        lastCheckpoint: new Date().toISOString(),
-      });
-      toast({ title: "Script execution started", variant: "success" });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error starting execution", variant: "error" });
-    } finally {
-      setLoading(false);
+    if (scriptDraft && !notifiedComplete) {
+      onComplete(scriptDraft as ScriptDraft);
+      setNotifiedComplete(true);
     }
+  }, [scriptDraft, notifiedComplete, onComplete]);
+
+  const handleStartExecution = () => {
+    startMutation.mutate(blueprint.id, {
+      onSuccess: (data) => {
+        setDraftId(data.scriptDraftId);
+        setNotifiedComplete(false);
+        toast({ title: "Script execution started", variant: "success" });
+      },
+      onError: (error) => {
+        toast({
+          title: error.message || "Failed to start execution",
+          variant: "error",
+        });
+      },
+    });
   };
 
-  const handleResume = async () => {
+  const handleResume = () => {
     if (!draftId) return;
 
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/script-builder/execute/${draftId}/resume`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to resume execution", variant: "error" });
-        return;
-      }
-
-      const { status: execStatus, resumedFromBeat } = await res.json();
-      setNotifiedComplete(false);
-      toast({ title: `Resumed from beat ${resumedFromBeat}`, variant: "success" });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error resuming execution", variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    resumeMutation.mutate(draftId, {
+      onSuccess: (data) => {
+        setNotifiedComplete(false);
+        toast({
+          title: `Resumed from beat ${data.resumedFromBeat}`,
+          variant: "success",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: error.message || "Failed to resume execution",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const getBeatStatus = (beatIndex: number): BeatStatus => {
@@ -170,10 +125,10 @@ export function ExecutionProgress({
           {!draftId && (
             <button
               onClick={handleStartExecution}
-              disabled={loading}
+              disabled={startMutation.isPending}
               className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? (
+              {startMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Starting...
@@ -189,10 +144,10 @@ export function ExecutionProgress({
           {isPaused && (
             <button
               onClick={handleResume}
-              disabled={loading}
+              disabled={resumeMutation.isPending}
               className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? (
+              {resumeMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Resuming...

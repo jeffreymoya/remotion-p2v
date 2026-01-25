@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import stringSimilarity from "string-similarity";
-import { BeatDraft, GlueIssue, GlueIssueType } from "./storyflow/script-builder-types";
+import { BeatDraft, GlueIssue, GlueIssueType } from "./script-builder-types";
 
 const ROBOT_WORDS = [
   "Furthermore",

@@ -27,7 +27,7 @@ export function HistoryPanel({ blueprintId, draftId, className }: HistoryPanelPr
   const [blueprintHistory, setBlueprintHistory] = useState<HistoryItem[]>([]);
   const [draftHistory, setDraftHistory] = useState<HistoryItem[]>([]);
 
-  const activeId = tab === "blueprint" ? blueprintId : draftId;
+  const _activeId = tab === "blueprint" ? blueprintId : draftId;
   const activeHistory = tab === "blueprint" ? blueprintHistory : draftHistory;
   const disabled = (tab === "blueprint" && !blueprintId) || (tab === "draft" && !draftId);
 

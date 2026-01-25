@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { execFile } from "child_process";
-import { promisify } from "util";
 
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { refineTopicPrompt, RefinePromptVariables } from "@/config/prompts";
 import { getSettings } from "@/src/lib/storyflow/settings";
 import { parseGeminiOutputWithSchema } from "@/src/lib/storyflow/gemini-parser";
-
-const execFileAsync = promisify(execFile);
+import { geminiCall } from "@/src/lib/services/ai";
+import { aiLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 const requestSchema = z.object({
   projectId: z.string().min(1, "projectId is required"),
@@ -33,35 +32,28 @@ const refinementResponseSchema = z.object({
 export type RefinementResponse = z.infer<typeof refinementResponseSchema>;
 
 async function refineTopicWithGemini(
+  projectId: string,
   vars: RefinePromptVariables
 ): Promise<RefinementResponse> {
   const settings = await getSettings();
-  const model = settings.ai.model || "gemini-2.5-pro";
+  const model = settings.ai.proModel;
 
   const prompt = refineTopicPrompt(vars);
 
-  const args = [
-    "--yolo",
-    "--model",
-    model,
-    "--output-format",
-    "json",
+  const { rawResponse } = await geminiCall<Record<string, unknown>>(
+    {
+      projectId,
+      operation: "refine-topic",
+      metadata: { title: vars.title },
+    },
     prompt,
-  ];
+    { model }
+  );
 
-  const { stdout, stderr } = await execFileAsync("gemini", args, {
-    maxBuffer: 10 * 1024 * 1024,
-    timeout: 60000,
-  });
-
-  if (stderr) {
-    console.warn("[refineTopicWithGemini] stderr:", stderr);
-  }
-
-  return parseGeminiOutputWithSchema(stdout, refinementResponseSchema);
+  return parseGeminiOutputWithSchema(rawResponse!, refinementResponseSchema);
 }
 
-export async function POST(req: Request) {
+export const POST = withLogging(async (req: Request) => {
   const json = await req.json().catch(() => null);
   const parsed = requestSchema.safeParse(json);
 
@@ -94,7 +86,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const refinement = await refineTopicWithGemini({
+    const refinement = await refineTopicWithGemini(projectId, {
       title,
       description,
       category,
@@ -122,10 +114,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(refinement);
   } catch (error) {
-    console.error("[api/ai/refine] Error refining topic:", error);
-
     const errorMessage =
       error instanceof Error ? error.message : "Failed to refine topic";
+
+    aiLogger.error({ projectId, title, error: errorMessage }, "Failed to refine topic");
 
     if (errorMessage.includes("ENOENT") || errorMessage.includes("gemini")) {
       return NextResponse.json(
@@ -143,4 +135,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
+});

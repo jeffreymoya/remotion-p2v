@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildTimeline } from "@/src/lib/storyflow/timeline-builder";
-import { handleApiError, NotFoundError } from "../../lib/errors";
+import { handleApiError, NotFoundError } from "../../../lib/errors";
 
 type Params = { params: Promise<{ id: string }> };
 

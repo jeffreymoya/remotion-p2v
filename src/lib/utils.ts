@@ -1,6 +1,6 @@
 import { staticFile } from "remotion";
 import { BackgroundElement, Timeline } from "./types";
-import { FPS, DEFAULT_ASPECT_RATIO } from "./constants";
+import { FPS, DEFAULT_ASPECT_RATIO, INTRO_DURATION_MS } from "./constants";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -52,8 +52,9 @@ export const normalizeTimeline = (timeline: Record<string, unknown>): Timeline =
   }
 
   // Calculate duration from elements if not provided
-  if (!normalized.durationSeconds && normalized.elements && normalized.elements.length > 0) {
-    const lastElement = normalized.elements[normalized.elements.length - 1];
+  const elements = normalized.elements as Array<{ endMs: number }> | undefined;
+  if (!normalized.durationSeconds && elements && elements.length > 0) {
+    const lastElement = elements[elements.length - 1];
     normalized.durationSeconds = lastElement.endMs / 1000;
   }
 

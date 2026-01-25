@@ -58,6 +58,7 @@ export async function POST(
     // Generate new blueprint
     const topic = oldBlueprint.project.topic || "Untitled";
     const blueprintData = await regenerateBlueprint(
+      oldBlueprint.projectId,
       topic,
       oldBlueprint.targetDurationMs,
       combinedNotes

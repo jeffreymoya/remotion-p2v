@@ -7,7 +7,6 @@ import { MobileNav } from "./mobile-nav";
 
 const segments: Record<string, string> = {
   "/projects": "Projects",
-  "/discover": "Discover",
   "/settings": "Settings",
 };
 

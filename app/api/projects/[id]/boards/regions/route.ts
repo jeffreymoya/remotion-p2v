@@ -11,6 +11,8 @@ import {
   RegionDetectionResponseSchema,
 } from "@/src/lib/boards/regions-service";
 import { getBoardsAIService } from "@/src/lib/boards/ai-service";
+import { boardsLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 /**
  * Request body schema for region detection
@@ -49,7 +51,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  *   warnings: string[]
  * }
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
   // Parse and validate request body
@@ -73,7 +75,7 @@ export async function POST(req: Request, { params }: RouteParams) {
   try {
     await fs.access(absoluteImagePath);
   } catch {
-    console.error(`[REGIONS] Image not found: ${absoluteImagePath}`);
+    boardsLogger.error({ projectId, boardId, imagePath, absolutePath: absoluteImagePath }, "Board image not found");
     return NextResponse.json(
       {
         error: "Image file not found",
@@ -114,8 +116,7 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     // Log warnings if any
     if (result.warnings.length > 0) {
-      console.warn(`[REGIONS] Warnings for ${boardId}:`);
-      result.warnings.forEach((w) => console.warn(`  - ${w}`));
+      boardsLogger.warn({ projectId, boardId, warnings: result.warnings }, "Region detection completed with warnings");
     }
 
     // Construct response
@@ -132,7 +133,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json(response);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error(`[REGIONS] Detection failed for ${boardId}:`, message);
+    boardsLogger.error({ projectId, boardId, error: message }, "Region detection failed");
 
     // Check for specific error types
     if (message.includes("references unknown element")) {
@@ -155,4 +156,4 @@ export async function POST(req: Request, { params }: RouteParams) {
       { status: 500 }
     );
   }
-}
+});

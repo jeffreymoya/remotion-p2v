@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const beatCount = calculateBeatCount(targetDurationMs);
 
     // Generate blueprint
-    const blueprintData = await generateBlueprint(topic, targetDurationMs);
+    const blueprintData = await generateBlueprint(projectId, topic, targetDurationMs);
     const beatsWithStatus = blueprintData.beats.map((beat, i) => ({
       ...beat,
       index: beat.index ?? i + 1,

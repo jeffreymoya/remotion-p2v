@@ -5,6 +5,7 @@ import type { protos } from "@google-cloud/text-to-speech";
 import { ScriptSegment, TTSSettings, WordTimestamp } from "./types";
 import { getSettings } from "./settings";
 import { WORDS_PER_MINUTE } from "../constants";
+import { aiLogger } from "@/src/lib/services/ai";
 
 // Pre-generated 1s silent MP3 (base64) for offline/dev fallback
 const SILENT_MP3_BASE64 =
@@ -168,7 +169,23 @@ export async function generateAudioForSegment(
   let timestamps: WordTimestamp[];
 
   try {
-    ({ buffer, timestamps } = await synthesizeWithGoogle(segment.text, ttsSettings));
+    const { data } = await aiLogger.wrap<{ buffer: Buffer; timestamps: WordTimestamp[] }>(
+      {
+        projectId,
+        provider: "google-tts",
+        operation: "tts-generate",
+        metadata: { voice: ttsSettings.voice, speakingRate: ttsSettings.speakingRate },
+      },
+      segment.text,
+      async () => {
+        const result = await synthesizeWithGoogle(segment.text, ttsSettings);
+        return {
+          result,
+          rawResponse: JSON.stringify({ timepoints: result.timestamps.length }),
+        };
+      }
+    );
+    ({ buffer, timestamps } = data);
   } catch (error) {
     console.warn(
       `Google TTS failed for segment ${segment.index}, using mock audio. Reason:`,

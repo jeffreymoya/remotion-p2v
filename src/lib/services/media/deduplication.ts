@@ -3,7 +3,7 @@
  * Uses simple URL and dimension-based deduplication (no perceptual hashing for now)
  */
 
-import { StockImage, StockVideo } from '../../lib/media-types';
+import { StockImage, StockVideo } from '../../media-types';
 import { logger } from '../../utils/logger';
 
 /**

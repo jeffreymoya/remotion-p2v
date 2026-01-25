@@ -1,6 +1,4 @@
-import { execFile } from "child_process";
 import path from "path";
-import { promisify } from "util";
 import { z } from "zod";
 
 import { viewportAnalysisPrompt } from "@/config/prompts/viewport.prompt";
@@ -20,8 +18,8 @@ import {
   WORDS_PER_MINUTE,
   DEFAULT_SEGMENT_DURATION_MS,
 } from "../constants";
-
-const execFileAsync = promisify(execFile);
+import { geminiCall } from "@/src/lib/services/ai";
+import { getSettings } from "./settings";
 
 type SegmentTiming = {
   text: string;
@@ -183,27 +181,21 @@ function buildKeyframesFromRegions(
 }
 
 async function callGeminiViewport(
+  projectId: string,
   imagePath: string,
   segmentTimings: SegmentTiming[]
 ): Promise<z.infer<typeof viewportResponseSchema>> {
+  const settings = await getSettings();
   const prompt = viewportAnalysisPrompt(segmentTimings);
   const multimodalPrompt = `@${imagePath}\n\n${prompt}`;
 
-  const args = [
-    "--yolo",
-    "--model",
-    process.env.GEMINI_MODEL || "gemini-2.5-pro",
-    "--output-format",
-    "json",
+  const { rawResponse } = await geminiCall<string>(
+    { projectId, operation: "viewport-generate" },
     multimodalPrompt,
-  ];
+    { model: settings.ai.proModel }
+  );
 
-  const { stdout } = await execFileAsync("gemini", args, {
-    maxBuffer: 2_000_000,
-    timeout: 300_000,
-  });
-
-  return parseGeminiOutputWithSchema(stdout, viewportResponseSchema);
+  return parseGeminiOutputWithSchema(rawResponse ?? "", viewportResponseSchema);
 }
 
 export async function generateViewportForProject(
@@ -238,7 +230,7 @@ export async function generateViewportForProject(
   let source: "gemini" | "fallback" = "fallback";
 
   try {
-    const aiResult = await callGeminiViewport(absoluteImagePath, segmentTimings);
+    const aiResult = await callGeminiViewport(projectId, absoluteImagePath, segmentTimings);
     regions = aiResult.regions;
     keyframes =
       aiResult.keyframes && aiResult.keyframes.length > 0

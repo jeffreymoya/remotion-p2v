@@ -4,6 +4,8 @@ import { z } from "zod";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { generateScriptFromGemini } from "@/src/lib/storyflow/ai";
 import { generateDemoScript, saveScript } from "@/src/lib/storyflow/scripts";
+import { aiLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 const requestSchema = z.object({
   projectId: z.string().min(1, "projectId is required"),
@@ -11,7 +13,7 @@ const requestSchema = z.object({
   regenerate: z.boolean().optional(),
 });
 
-export async function POST(req: Request) {
+export const POST = withLogging(async (req: Request) => {
   const json = await req.json().catch(() => null);
   const parsed = requestSchema.safeParse(json);
 
@@ -36,12 +38,10 @@ export async function POST(req: Request) {
     let scriptPayload = null;
 
     try {
-      scriptPayload = await generateScriptFromGemini(topic);
+      scriptPayload = await generateScriptFromGemini(projectId, topic);
     } catch (error) {
-      console.warn(
-        "[api/ai/script] Gemini generation failed, returning demo script:",
-        (error as Error).message
-      );
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      aiLogger.warn({ projectId, topic, error: errorMsg }, "Gemini generation failed, returning demo script");
       scriptPayload = generateDemoScript(topic);
     }
 
@@ -56,10 +56,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ script });
   } catch (error) {
-    console.error("[api/ai/script] Error generating script:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    aiLogger.error({ projectId, topic, error: errorMsg }, "Failed to generate script");
     return NextResponse.json(
       { error: "Failed to generate script" },
       { status: 500 }
     );
   }
-}
+});

@@ -1,7 +1,13 @@
-import { Video, TrendingUp, Settings } from "lucide-react";
+import { Video, Settings, LucideIcon } from "lucide-react";
 
-export const navigation = [
+export interface NavItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  disabled?: boolean;
+}
+
+export const navigation: NavItem[] = [
   { name: "Projects", href: "/projects", icon: Video },
-  { name: "Discover", href: "/discover", icon: TrendingUp },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

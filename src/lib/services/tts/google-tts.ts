@@ -4,7 +4,7 @@
 
 import { v1beta1 } from '@google-cloud/text-to-speech';
 import type { google } from '@google-cloud/text-to-speech/build/protos/protos';
-import { TTSProvider, TTSOptions, TTSResult, WordTimestamp, CharacterTimestamp, TTSError } from '../../lib/media-types';
+import { TTSProvider, TTSOptions, TTSResult, WordTimestamp, CharacterTimestamp, TTSError } from '../../media-types';
 import { logger } from '../../utils/logger';
 
 export class GoogleTTSProvider implements TTSProvider {

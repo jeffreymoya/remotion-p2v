@@ -60,7 +60,11 @@ export async function POST(req: Request) {
     const beats = scriptDraft.blueprint.beats as Beat[];
 
     // Segment the script
-    const segmentData = await segmentScript(scriptDraft.polishedText, beats);
+    const segmentData = await segmentScript(
+      scriptDraft.blueprint.projectId,
+      scriptDraft.polishedText,
+      beats
+    );
 
     // Calculate estimated duration for each segment (140 WPM)
     const segments = segmentData.segments.map((seg) => ({

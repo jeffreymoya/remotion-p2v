@@ -1,9 +1,6 @@
-import { notFound } from "next/navigation";
-import { PageContainer } from "@/components/layout/page-container";
+import { notFound, redirect } from "next/navigation";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
-import { StatusBadge } from "@/components/projects/status-badge";
-import { ProjectOverview } from "@/components/projects/project-overview";
-import { formatDate } from "@/src/lib/storyflow/utils";
+import { getCurrentStage, PipelineStageId } from "@/src/lib/storyflow/stage-validation";
 import { ProjectStatus } from "@/src/lib/storyflow/types";
 
 type Params = { params: { id: string } };
@@ -12,35 +9,27 @@ export default async function ProjectDetailPage({ params }: Params) {
   const resolvedParams = await params;
   const project = await storyflowPrisma.project.findUnique({
     where: { id: resolvedParams.id },
+    select: { id: true, status: true },
   });
 
   if (!project) return notFound();
 
-  // Check if project has refinement data
-  const metadata = project.metadata as Record<string, unknown> | null;
-  const hasRefinement = !!(metadata?.refinement as Record<string, unknown> | undefined)?.refinedTitle;
+  const currentStage = getCurrentStage(project.status as ProjectStatus);
 
-  return (
-    <PageContainer>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">{project.name}</h1>
-            <p className="text-sm text-slate-400">
-              Created {formatDate(project.createdAt)} • Aspect {project.aspectRatio}
-            </p>
-          </div>
-          <StatusBadge status={project.status as ProjectStatus} />
-        </div>
+  return redirect(routeForStage(project.id, currentStage));
+}
 
-        <ProjectOverview
-          projectId={project.id}
-          projectName={project.name}
-          topic={project.topic}
-          status={project.status}
-          hasRefinement={hasRefinement}
-        />
-      </div>
-    </PageContainer>
-  );
+function routeForStage(projectId: string, stage: PipelineStageId) {
+  switch (stage) {
+    case "script":
+      return `/projects/${projectId}/script`;
+    case "media":
+      return `/projects/${projectId}/media`;
+    case "storyboard":
+      return `/projects/${projectId}/storyboard`;
+    case "build":
+      return `/projects/${projectId}/build`;
+    case "render":
+      return `/projects/${projectId}/render`;
+  }
 }

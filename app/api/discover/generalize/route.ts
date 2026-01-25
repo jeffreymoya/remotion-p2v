@@ -4,6 +4,7 @@ import { fetchTrendingTopics } from "@/src/lib/storyflow/discovery";
 import { generalizeTopics } from "@/src/lib/storyflow/ai";
 
 const requestSchema = z.object({
+  projectId: z.string().min(1, "projectId is required"),
   geo: z.string().min(2).max(10).optional(),
   category: z.number().int().optional(),
   suggestionsPerTopic: z.number().int().min(1).max(10).optional(),
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { geo = "US", category, suggestionsPerTopic = 4 } = parsed.data;
+    const { projectId, geo = "US", category, suggestionsPerTopic = 4 } = parsed.data;
 
     // Step 1: Fetch raw trending topics with news context
     const rawTopics = await fetchTrendingTopics(geo, category);
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     // Step 2: Generate generalized suggestions via AI
-    const generalizedTopics = await generalizeTopics(rawTopics, suggestionsPerTopic);
+    const generalizedTopics = await generalizeTopics(projectId, rawTopics, suggestionsPerTopic);
 
     return NextResponse.json({
       trendingTopics: generalizedTopics,

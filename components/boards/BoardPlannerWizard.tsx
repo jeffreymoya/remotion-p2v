@@ -106,7 +106,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
       }
 
       const data = await response.json();
-      setPrompts(data);
+      const promptsPayload = data.data ?? data;
+      setPrompts(promptsPayload);
       setCurrentStep("prompts");
       toast({ title: "Prompts generated", variant: "success" });
     } catch (error: any) {

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { ViewportAnimation } from "@/src/lib/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/src/lib/utils";
+import { FPS } from "@/src/lib/constants";
 
 interface ViewportPreviewProps {
   projectId: string;
@@ -23,8 +24,8 @@ export function ViewportPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
-  const imageRef = useRef<HTMLImageElement>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const imageRef = useRef<HTMLImageElement | undefined>(undefined);
   const startTimeRef = useRef<number>(0);
 
   // Load the board image
@@ -37,22 +38,27 @@ export function ViewportPreview({
     };
   }, [projectId, imagePath]);
 
+  // Helper to convert frame to time in ms
+  const frameToMs = (frame: number) => (frame / FPS) * 1000;
+
   // Calculate viewport position at a given time
   const calculateViewport = (timeMs: number) => {
-    const keyframes = viewportAnimation.keyframes;
-    if (keyframes.length === 0) {
+    if (!viewportAnimation || !viewportAnimation.keyframes || viewportAnimation.keyframes.length === 0) {
       return { x: 0.5, y: 0.5, scale: 1 };
     }
+
+    const keyframes = viewportAnimation.keyframes;
 
     // Find the two keyframes to interpolate between
     let beforeIdx = 0;
     let afterIdx = 0;
 
     for (let i = 0; i < keyframes.length; i++) {
-      if (keyframes[i].time <= timeMs) {
+      const kfTimeMs = frameToMs(keyframes[i].frameStart);
+      if (kfTimeMs <= timeMs) {
         beforeIdx = i;
       }
-      if (keyframes[i].time >= timeMs) {
+      if (kfTimeMs >= timeMs) {
         afterIdx = i;
         break;
       }
@@ -60,26 +66,29 @@ export function ViewportPreview({
 
     if (beforeIdx === afterIdx) {
       // Exact match or at boundary
+      const kf = keyframes[beforeIdx];
       return {
-        x: keyframes[beforeIdx].x,
-        y: keyframes[beforeIdx].y,
-        scale: keyframes[beforeIdx].scale,
+        x: kf.viewport.centerX,
+        y: kf.viewport.centerY,
+        scale: kf.viewport.zoom,
       };
     }
 
     // Interpolate between keyframes
     const before = keyframes[beforeIdx];
     const after = keyframes[afterIdx];
-    const timeDelta = after.time - before.time;
-    const progress = timeDelta > 0 ? (timeMs - before.time) / timeDelta : 0;
+    const beforeTimeMs = frameToMs(before.frameStart);
+    const afterTimeMs = frameToMs(after.frameStart);
+    const timeDelta = afterTimeMs - beforeTimeMs;
+    const progress = timeDelta > 0 ? (timeMs - beforeTimeMs) / timeDelta : 0;
 
     // Apply easing (simple ease-in-out)
     const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
     return {
-      x: before.x + (after.x - before.x) * eased,
-      y: before.y + (after.y - before.y) * eased,
-      scale: before.scale + (after.scale - before.scale) * eased,
+      x: before.viewport.centerX + (after.viewport.centerX - before.viewport.centerX) * eased,
+      y: before.viewport.centerY + (after.viewport.centerY - before.viewport.centerY) * eased,
+      scale: before.viewport.zoom + (after.viewport.zoom - before.viewport.zoom) * eased,
     };
   };
 
@@ -185,12 +194,21 @@ export function ViewportPreview({
     };
   }, []);
 
+  // Calculate average zoom from keyframes
+  const avgZoom = viewportAnimation?.keyframes?.length
+    ? viewportAnimation.keyframes.reduce((sum, kf) => sum + kf.viewport.zoom, 0) /
+      viewportAnimation.keyframes.length
+    : 1;
+
+  // Get easing from first keyframe
+  const easingStyle = viewportAnimation?.keyframes?.[0]?.easing || "ease-in-out";
+
   return (
     <div className={cn("space-y-4", className)}>
       <div>
         <h3 className="mb-2 text-lg font-semibold text-slate-100">Viewport Preview</h3>
         <p className="text-sm text-slate-400">
-          Preview the camera path animation with {viewportAnimation.keyframes.length} keyframes
+          Preview the camera path animation with {viewportAnimation?.keyframes?.length ?? 0} keyframes
         </p>
       </div>
 
@@ -258,7 +276,7 @@ export function ViewportPreview({
           <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
             <div className="rounded bg-slate-900/50 px-2 py-1">
               <div className="text-slate-500">Total</div>
-              <div className="font-semibold text-slate-300">{viewportAnimation.keyframes.length}</div>
+              <div className="font-semibold text-slate-300">{viewportAnimation?.keyframes?.length ?? 0}</div>
             </div>
             <div className="rounded bg-slate-900/50 px-2 py-1">
               <div className="text-slate-500">Duration</div>
@@ -267,18 +285,15 @@ export function ViewportPreview({
               </div>
             </div>
             <div className="rounded bg-slate-900/50 px-2 py-1">
-              <div className="text-slate-500">Avg Scale</div>
+              <div className="text-slate-500">Avg Zoom</div>
               <div className="font-semibold text-slate-300">
-                {(
-                  viewportAnimation.keyframes.reduce((sum, kf) => sum + kf.scale, 0) /
-                  viewportAnimation.keyframes.length
-                ).toFixed(2)}x
+                {avgZoom.toFixed(2)}x
               </div>
             </div>
             <div className="rounded bg-slate-900/50 px-2 py-1">
               <div className="text-slate-500">Easing</div>
               <div className="font-semibold text-slate-300">
-                {viewportAnimation.easing || "ease-in-out"}
+                {easingStyle}
               </div>
             </div>
           </div>

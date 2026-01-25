@@ -54,6 +54,7 @@ export async function POST(
       return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
     }
 
+    const projectId = scriptDraft.blueprint.projectId;
     const beats = scriptDraft.blueprint.beats as Beat[];
     const beatDrafts = (scriptDraft.beatDrafts as BeatDraft[]) ?? [];
 
@@ -78,6 +79,7 @@ export async function POST(
       .join("\n\n");
 
     const regenerated = await executeBeat(
+      projectId,
       { ...targetBeat, blueprintId: scriptDraft.blueprintId },
       previousContent,
       isFirst,

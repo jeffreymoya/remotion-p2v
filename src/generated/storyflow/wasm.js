@@ -186,6 +186,29 @@ exports.Prisma.RenderScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AiCallLogScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  provider: 'provider',
+  model: 'model',
+  operation: 'operation',
+  parentId: 'parentId',
+  prompt: 'prompt',
+  promptTokens: 'promptTokens',
+  response: 'response',
+  responseTokens: 'responseTokens',
+  status: 'status',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  durationMs: 'durationMs',
+  errorMessage: 'errorMessage',
+  errorCode: 'errorCode',
+  retryCount: 'retryCount',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ViewportScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
@@ -316,6 +339,14 @@ exports.RenderStatus = exports.$Enums.RenderStatus = {
   FAILED: 'FAILED'
 };
 
+exports.AiCallStatus = exports.$Enums.AiCallStatus = {
+  PENDING: 'PENDING',
+  STREAMING: 'STREAMING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.BlueprintStatus = exports.$Enums.BlueprintStatus = {
   GENERATING: 'GENERATING',
   PENDING_REVIEW: 'PENDING_REVIEW',
@@ -338,6 +369,7 @@ exports.Prisma.ModelName = {
   Asset: 'Asset',
   AppSettings: 'AppSettings',
   Render: 'Render',
+  AiCallLog: 'AiCallLog',
   Viewport: 'Viewport',
   Board: 'Board',
   Blueprint: 'Blueprint',

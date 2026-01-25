@@ -14,8 +14,6 @@ export function PromptDisplay({ prompts, className }: PromptDisplayProps) {
   const [selectedPromptIndex, setSelectedPromptIndex] = useState(0);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const selectedPrompt = prompts[selectedPromptIndex];
-
   const handleCopy = async (text: string, id: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -33,6 +31,9 @@ export function PromptDisplay({ prompts, className }: PromptDisplayProps) {
       </div>
     );
   }
+
+  const safeIndex = Math.min(selectedPromptIndex, prompts.length - 1);
+  const selectedPrompt = prompts[safeIndex];
 
   return (
     <div className={cn("space-y-4", className)}>

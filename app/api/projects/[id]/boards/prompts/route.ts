@@ -5,6 +5,8 @@ import fs from "fs/promises";
 
 import { generateBoardPrompts } from "@/src/lib/boards/prompts-service";
 import { BoardPromptsOutput } from "@/src/lib/boards-types";
+import { boardsLogger } from "@/src/lib/logger";
+import { withLogging } from "@/src/lib/api-logger";
 
 const requestSchema = z.object({
   boards: z.array(
@@ -36,7 +38,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * POST /api/projects/[id]/boards/prompts
  * Generate AI prompts for board image generation
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
   // Parse and validate request body
@@ -53,8 +55,7 @@ export async function POST(req: Request, { params }: RouteParams) {
   const { boards, segments, gridLayout } = parsed.data;
 
   try {
-    console.log(`[API] Generating board prompts for project ${projectId}`);
-    console.log(`[API] Boards: ${boards.length}, Segments: ${segments.length}`);
+    boardsLogger.info({ projectId, boardCount: boards.length, segmentCount: segments.length }, "Generating board prompts");
 
     // Generate prompts using the service
     const result: BoardPromptsOutput = await generateBoardPrompts(
@@ -74,8 +75,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     const outputPath = path.join(boardsDir, 'board-prompts.json');
     await fs.writeFile(outputPath, JSON.stringify(result, null, 2), 'utf-8');
 
-    console.log(`[API] Saved board prompts to ${outputPath}`);
-    console.log(`[API] Generated ${result.prompts.length} board prompts`);
+    boardsLogger.info({ projectId, outputPath, promptCount: result.prompts.length }, "Board prompts generated successfully");
 
     return NextResponse.json({
       success: true,
@@ -84,10 +84,10 @@ export async function POST(req: Request, { params }: RouteParams) {
     });
 
   } catch (error) {
-    console.error("[API] Error generating board prompts:", error);
-
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     const isAIError = errorMessage.includes('[AI]') || errorMessage.includes('[LLM]');
+
+    boardsLogger.error({ projectId, error: errorMessage, stage: isAIError ? "AI generation" : "Processing" }, "Failed to generate board prompts");
 
     return NextResponse.json(
       {
@@ -98,13 +98,13 @@ export async function POST(req: Request, { params }: RouteParams) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * GET /api/projects/[id]/boards/prompts
  * Retrieve existing board prompts
  */
-export async function GET(_req: Request, { params }: RouteParams) {
+export const GET = withLogging(async (_req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
   try {
@@ -131,12 +131,12 @@ export async function GET(_req: Request, { params }: RouteParams) {
     });
 
   } catch (error) {
-    console.error("[API] Error reading board prompts:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    boardsLogger.error({ projectId, error: errorMessage }, "Failed to read board prompts");
 
     return NextResponse.json(
       { error: "Failed to read board prompts", details: errorMessage },
       { status: 500 }
     );
   }
-}
+});

@@ -222,13 +222,13 @@ export class ConfigManager {
   /**
    * Load and validate a configuration file
    */
-  static async load<T>(
+  static async load<T extends z.ZodTypeAny>(
     configName: string,
-    schema?: z.ZodType<T>
-  ): Promise<T> {
+    schema?: T
+  ): Promise<z.output<T>> {
     // Check cache first
     if (this.configCache.has(configName)) {
-      return this.configCache.get(configName);
+      return this.configCache.get(configName) as z.output<T>;
     }
 
     // Determine config file path
@@ -277,7 +277,7 @@ export class ConfigManager {
    * Load AI configuration
    */
   static async loadAIConfig(): Promise<AIConfig> {
-    return this.load<AIConfig>('ai.config', AIConfigSchema);
+    return this.load('ai.config', AIConfigSchema);
   }
 
   /**
@@ -377,27 +377,27 @@ export class ConfigManager {
    * Load TTS configuration
    */
   static async loadTTSConfig(): Promise<TTSConfig> {
-    return this.load<TTSConfig>('tts.config', TTSConfigSchema);
+    return this.load('tts.config', TTSConfigSchema);
   }
 
   /**
    * Load Stock Assets configuration
    */
   static async loadStockAssetsConfig(): Promise<StockAssetsConfig> {
-    return this.load<StockAssetsConfig>('stock-assets.config', StockAssetsConfigSchema);
+    return this.load('stock-assets.config', StockAssetsConfigSchema);
   }
 
   /**
    * Load Music configuration
    */
   static async loadMusicConfig(): Promise<MusicConfig> {
-    return this.load<MusicConfig>('music.config', MusicConfigSchema);
+    return this.load('music.config', MusicConfigSchema);
   }
 
   /**
    * Load Video configuration
    */
   static async loadVideoConfig(): Promise<VideoConfig> {
-    return this.load<VideoConfig>('video.config', VideoConfigSchema);
+    return this.load('video.config', VideoConfigSchema);
   }
 }

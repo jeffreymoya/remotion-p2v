@@ -1,4 +1,5 @@
 import { PrismaClient } from "../../generated/storyflow/client";
+import { env } from "@/src/env";
 
 // Keep a single prisma instance during development to avoid exhausting connections.
 const globalForPrisma = globalThis as unknown as {
@@ -9,11 +10,11 @@ export const storyflowPrisma =
   globalForPrisma.storyflowPrisma ??
   new PrismaClient({
     log:
-      process.env.NODE_ENV === "development"
+      env.NODE_ENV === "development"
         ? ["query", "warn", "error"]
         : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
+if (env.NODE_ENV !== "production") {
   globalForPrisma.storyflowPrisma = storyflowPrisma;
 }

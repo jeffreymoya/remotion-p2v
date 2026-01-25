@@ -5,8 +5,8 @@
 export * from './google-tts';
 
 import { GoogleTTSProvider } from './google-tts';
-import { TTSProvider, TTSOptions, TTSResult, TTSError } from '../../lib/media-types';
-import { ConfigManager } from '../../lib/config';
+import { TTSProvider, TTSOptions, TTSResult, TTSError } from '../../media-types';
+import { ConfigManager } from '../../config';
 import { logger } from '../../utils/logger';
 import { withRetry, withTimeout } from '../media/timeout-wrapper';
 
@@ -42,10 +42,8 @@ export class TTSProviderFactory {
 
     switch (name) {
       case 'google': {
-        const apiKey = process.env.GOOGLE_TTS_API_KEY || providerConfig.apiKey;
-        if (!apiKey) {
-          throw new Error('Google TTS API key is required. Set GOOGLE_TTS_API_KEY in .env');
-        }
+        const { env } = await import('@/src/env');
+        const apiKey = env.GOOGLE_TTS_API_KEY || providerConfig.apiKey;
         provider = new GoogleTTSProvider(apiKey, providerConfig);
         break;
       }

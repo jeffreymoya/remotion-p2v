@@ -5,6 +5,8 @@ import * as path from 'path';
 
 import { storyflowPrisma } from '@/src/lib/storyflow/prisma';
 import { buildViewportJson } from '@/src/lib/boards/viewport-service';
+import { boardsLogger } from '@/src/lib/logger';
+import { withLogging } from '@/src/lib/api-logger';
 import {
   BoardPlan,
   BoardPlanSchema,
@@ -29,7 +31,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Build viewport.json from board plan, regions, and triggers.
  * Requires: board plan, regions, triggers, and board images (preferably 8K upscaled)
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   try {
     const { id: projectId } = await params;
 
@@ -160,8 +162,7 @@ export async function POST(req: Request, { params }: RouteParams) {
       );
     }
 
-    console.log('[BUILD] Loading board data...');
-    console.log(`[BUILD] Loaded ${plan.boards.length} boards, ${triggers.totalTriggers} triggers`);
+    boardsLogger.info({ projectId, boardCount: plan.boards.length, triggerCount: triggers.totalTriggers }, "Loading board data");
 
     // Build viewport.json
     const viewport = await buildViewportJson(plan, regionsData, triggers, {
@@ -173,10 +174,15 @@ export async function POST(req: Request, { params }: RouteParams) {
     const outputPath = path.join(projectPath, 'viewport.json');
     await fs.writeFile(outputPath, JSON.stringify(viewport, null, 2));
 
-    console.log('[BUILD] viewport.json created');
-    console.log(`  Boards: ${viewport.boards.length}`);
-    console.log(`  Triggers: ${viewport.wordTriggers.length}`);
-    console.log(`  Keyframes: ${viewport.keyframes.length}`);
+    boardsLogger.info(
+      {
+        projectId,
+        boards: viewport.boards.length,
+        triggers: viewport.wordTriggers.length,
+        keyframes: viewport.keyframes.length
+      },
+      "viewport.json created successfully"
+    );
 
     return NextResponse.json({
       viewportJson: viewport,
@@ -188,10 +194,11 @@ export async function POST(req: Request, { params }: RouteParams) {
       outputPath: `projects/${projectId}/viewport.json`,
     });
   } catch (error) {
-    console.error('[api/boards/viewport] Error building viewport:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
     // Handle specific error types
     if (error instanceof z.ZodError) {
+      boardsLogger.error({ error: error.format() }, "Viewport validation error");
       return NextResponse.json(
         { error: 'Validation error', details: error.format() },
         { status: 400 }
@@ -203,6 +210,7 @@ export async function POST(req: Request, { params }: RouteParams) {
       (error.message.includes('No image found') ||
         error.message.includes('Missing image info'))
     ) {
+      boardsLogger.error({ error: errorMessage }, "Board image not found");
       return NextResponse.json(
         {
           error: 'Board image not found',
@@ -213,15 +221,16 @@ export async function POST(req: Request, { params }: RouteParams) {
       );
     }
 
+    boardsLogger.error({ error: errorMessage }, "Failed to build viewport");
     return NextResponse.json(
       {
         error: 'Failed to build viewport',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: errorMessage,
       },
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * GET /api/projects/[id]/boards/viewport
@@ -263,7 +272,8 @@ export async function GET(_req: Request, { params }: RouteParams) {
       throw error;
     }
   } catch (error) {
-    console.error('[api/boards/viewport] Error fetching viewport:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    boardsLogger.error({ projectId, error: message }, 'Error fetching viewport');
     return NextResponse.json(
       { error: 'Failed to fetch viewport' },
       { status: 500 }

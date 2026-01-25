@@ -1,9 +1,15 @@
 import { storyflowPrisma } from "./prisma";
+import { env } from "@/src/env";
 
 const DEFAULT_SETTINGS = {
   ai: {
     provider: "gemini-cli",
-    model: process.env.GEMINI_MODEL ?? "gemini-2.5-pro",
+    // Flash tier - faster, simpler tasks
+    model: env.GEMINI_MODEL,
+    fallbackModel: env.GEMINI_FALLBACK_MODEL,
+    // Pro tier - complex tasks (blueprints, viewport, refinement)
+    proModel: env.GEMINI_PRO_MODEL,
+    proFallbackModel: env.GEMINI_PRO_FALLBACK_MODEL,
     temperature: 0.7,
   },
   tts: {

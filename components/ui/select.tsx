@@ -17,6 +17,8 @@ type SelectItemProps = {
   children: React.ReactNode;
 };
 
+type ChildProps = { children?: React.ReactNode; placeholder?: string };
+
 function collectOptions(children: React.ReactNode): React.ReactElement<SelectItemProps>[] {
   const result: React.ReactElement<SelectItemProps>[] = [];
 
@@ -26,8 +28,9 @@ function collectOptions(children: React.ReactNode): React.ReactElement<SelectIte
       result.push(child as React.ReactElement<SelectItemProps>);
       return;
     }
-    if (child.props?.children) {
-      result.push(...collectOptions(child.props.children));
+    const props = child.props as ChildProps;
+    if (props.children) {
+      result.push(...collectOptions(props.children));
     }
   });
 
@@ -38,11 +41,12 @@ function extractPlaceholder(children: React.ReactNode): string | undefined {
   let placeholder: string | undefined;
   React.Children.forEach(children, (child) => {
     if (!React.isValidElement(child)) return;
-    if (child.type === SelectValue && child.props?.placeholder) {
-      placeholder = child.props.placeholder;
+    const props = child.props as ChildProps;
+    if (child.type === SelectValue && props.placeholder) {
+      placeholder = props.placeholder;
     }
-    if (!placeholder && child.props?.children) {
-      placeholder = extractPlaceholder(child.props.children) ?? placeholder;
+    if (!placeholder && props.children) {
+      placeholder = extractPlaceholder(props.children) ?? placeholder;
     }
   });
   return placeholder;
@@ -91,7 +95,7 @@ export function Select({ value, defaultValue, onValueChange, disabled, className
   );
 }
 
-export function SelectTrigger({ children }: { children?: React.ReactNode }) {
+export function SelectTrigger({ children, className: _className }: { children?: React.ReactNode; className?: string }) {
   return <>{children}</>;
 }
 

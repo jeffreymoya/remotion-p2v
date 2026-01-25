@@ -178,3 +178,16 @@ export interface ContentItemWithDetails {
   uid: string;
   audioTimestamps: CharacterAlignmentResponseModel;
 }
+
+/**
+ * AI Provider Configuration
+ * Matches the schema in config.ts for AI providers
+ */
+export interface AIProviderConfig {
+  name: string;
+  cliCommand: string;
+  defaultModel?: string;
+  temperature?: number;
+  maxTokens?: number;
+  enabled: boolean;
+}

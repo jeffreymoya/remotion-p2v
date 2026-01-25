@@ -2,7 +2,7 @@
  * Quality scoring and ranking for stock media
  */
 
-import { StockImage, StockVideo, MediaAsset, QualityScore } from '../../lib/media-types';
+import { StockImage, StockVideo, MediaAsset, QualityScore } from '../../media-types';
 import * as stringSimilarity from 'string-similarity';
 
 /**

@@ -48,7 +48,9 @@ For each element, provide:
 - label: Short handwritten label text (or null)
 - connections: Array of element IDs this connects to (for visual strings)
 
-RETURN JSON ARRAY:
+IMPORTANT: Return ONLY a raw JSON array. Do NOT wrap in an object.
+
+CORRECT FORMAT (return exactly this structure):
 [
   {
     "id": "elem-1",
@@ -56,5 +58,9 @@ RETURN JSON ARRAY:
     "label": "2010",
     "connections": ["elem-3"]
   }
-]`;
+]
+
+WRONG (do NOT do this):
+{ "elements": [...] }
+{ "results": [...] }`;
 }

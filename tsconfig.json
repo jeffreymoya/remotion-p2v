@@ -9,7 +9,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "es2020"
+      "es2022"
     ],
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -32,14 +32,22 @@
     ]
   },
   "exclude": [
-    "remotion.config.ts"
+    "remotion.config.ts",
+    "node_modules",
+    ".next",
+    ".next-dev",
+    "tests",
+    "coverage",
+    "public/projects",
+    "build",
+    "out"
   ],
   "include": [
     "next-env.d.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ]
 }

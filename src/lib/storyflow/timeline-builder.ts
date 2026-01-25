@@ -16,6 +16,7 @@ import {
   WORDS_PER_MINUTE,
   MIN_SEGMENT_DURATION_MS,
   DEFAULT_SEGMENT_DURATION_MS,
+  DEFAULT_MUSIC_DUCKING,
   countWords,
 } from "../constants";
 

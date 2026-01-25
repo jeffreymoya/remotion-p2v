@@ -49,6 +49,28 @@ export async function saveAssetFile(
   return { filename, relativePath, absolutePath };
 }
 
+export async function saveAssetBuffer(
+  projectId: string,
+  type: AssetType,
+  filename: string,
+  buffer: Buffer
+) {
+  const subdir = getAssetSubdir(type);
+  const ext = path.extname(filename) || ".bin";
+  const safeName = sanitizeFilename(filename, ext.replace(".", ""));
+  const relativePath = path.join("projects", projectId, "assets", subdir, safeName);
+  const absolutePath = path.join(process.cwd(), "public", relativePath);
+
+  await mkdir(path.dirname(absolutePath), { recursive: true });
+  await writeFile(absolutePath, buffer);
+
+  if (type === "IMAGE") {
+    await stripImageMetadata(absolutePath);
+  }
+
+  return { filename: safeName, relativePath, absolutePath };
+}
+
 export async function extractMetadata(
   filePath: string,
   type: AssetType

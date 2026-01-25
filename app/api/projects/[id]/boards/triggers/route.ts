@@ -17,6 +17,8 @@ import {
   BoardRegionsOutputSchema,
   BoardTriggersOutputSchema,
 } from '@/src/lib/boards-types';
+import { boardsLogger } from '@/src/lib/logger';
+import { withLogging } from '@/src/lib/api-logger';
 
 /**
  * Request schema for trigger generation
@@ -47,7 +49,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Generate word-level triggers for camera movements based on TTS timestamps.
  * Requires: board plan, prompts, regions, and TTS word timestamps
  */
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
   try {
     const { id: projectId } = await params;
 
@@ -196,7 +198,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     const outputPath = path.join(boardsDir, 'board-triggers.json');
     await fs.writeFile(outputPath, JSON.stringify(validatedTriggers, null, 2));
 
-    console.log(`[api/boards/triggers] Saved ${validatedTriggers.totalTriggers} triggers`);
+    boardsLogger.info({ projectId, triggerCount: validatedTriggers.totalTriggers }, "Board triggers saved successfully");
 
     // Update database (store in Board.triggers field)
     // For now, we'll skip DB storage and rely on file system
@@ -208,7 +210,8 @@ export async function POST(req: Request, { params }: RouteParams) {
       generatedAt: validatedTriggers.generatedAt,
     });
   } catch (error) {
-    console.error('[api/boards/triggers] Error generating triggers:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    boardsLogger.error({ projectId, error: errorMessage }, "Failed to generate triggers");
 
     // Handle specific error types
     if (error instanceof z.ZodError) {
@@ -232,19 +235,19 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json(
       {
         error: 'Failed to generate triggers',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: errorMessage,
       },
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * GET /api/projects/[id]/boards/triggers
  *
  * Retrieve existing board triggers (if saved to file)
  */
-export async function GET(_req: Request, { params }: RouteParams) {
+export const GET = withLogging(async (_req: Request, { params }: RouteParams) => {
   try {
     const { id: projectId } = await params;
 
@@ -279,10 +282,11 @@ export async function GET(_req: Request, { params }: RouteParams) {
       throw error;
     }
   } catch (error) {
-    console.error('[api/boards/triggers] Error fetching triggers:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    boardsLogger.error({ error: errorMessage }, "Failed to fetch triggers");
     return NextResponse.json(
       { error: 'Failed to fetch triggers' },
       { status: 500 }
     );
   }
-}
+});

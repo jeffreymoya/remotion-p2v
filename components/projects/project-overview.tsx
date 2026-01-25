@@ -110,16 +110,16 @@ export function ProjectOverview({
             Go to Script
           </Link>
           <Link
-            href={`/projects/${projectId}/assets`}
+            href={`/projects/${projectId}/media`}
             className="inline-flex items-center justify-center rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/20 transition hover:-translate-y-0.5"
           >
-            Manage Assets
+            Manage Media
           </Link>
           <Link
-            href={`/projects/${projectId}/boards`}
+            href={`/projects/${projectId}/storyboard`}
             className="inline-flex items-center justify-center rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/20 transition hover:-translate-y-0.5"
           >
-            Boards Pipeline
+            Storyboard
           </Link>
         </div>
       </div>

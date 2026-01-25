@@ -44,6 +44,11 @@ export type AppSettings = $Result.DefaultSelection<Prisma.$AppSettingsPayload>
  */
 export type Render = $Result.DefaultSelection<Prisma.$RenderPayload>
 /**
+ * Model AiCallLog
+ * 
+ */
+export type AiCallLog = $Result.DefaultSelection<Prisma.$AiCallLogPayload>
+/**
  * Model Viewport
  * 
  */
@@ -78,7 +83,18 @@ export type ScriptDraftHistory = $Result.DefaultSelection<Prisma.$ScriptDraftHis
  * Enums
  */
 export namespace $Enums {
-  export const ProjectStatus: {
+  export const AiCallStatus: {
+  PENDING: 'PENDING',
+  STREAMING: 'STREAMING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+};
+
+export type AiCallStatus = (typeof AiCallStatus)[keyof typeof AiCallStatus]
+
+
+export const ProjectStatus: {
   DRAFT: 'DRAFT',
   SCRIPT_READY: 'SCRIPT_READY',
   ASSETS_READY: 'ASSETS_READY',
@@ -144,6 +160,10 @@ export const ScriptDraftStatus: {
 export type ScriptDraftStatus = (typeof ScriptDraftStatus)[keyof typeof ScriptDraftStatus]
 
 }
+
+export type AiCallStatus = $Enums.AiCallStatus
+
+export const AiCallStatus: typeof $Enums.AiCallStatus
 
 export type ProjectStatus = $Enums.ProjectStatus
 
@@ -353,6 +373,16 @@ export class PrismaClient<
     * ```
     */
   get render(): Prisma.RenderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aiCallLog`: Exposes CRUD operations for the **AiCallLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiCallLogs
+    * const aiCallLogs = await prisma.aiCallLog.findMany()
+    * ```
+    */
+  get aiCallLog(): Prisma.AiCallLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.viewport`: Exposes CRUD operations for the **Viewport** model.
@@ -859,6 +889,7 @@ export namespace Prisma {
     Asset: 'Asset',
     AppSettings: 'AppSettings',
     Render: 'Render',
+    AiCallLog: 'AiCallLog',
     Viewport: 'Viewport',
     Board: 'Board',
     Blueprint: 'Blueprint',
@@ -883,7 +914,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "project" | "projectSettings" | "script" | "asset" | "appSettings" | "render" | "viewport" | "board" | "blueprint" | "scriptDraft" | "blueprintHistory" | "scriptDraftHistory"
+      modelProps: "project" | "projectSettings" | "script" | "asset" | "appSettings" | "render" | "aiCallLog" | "viewport" | "board" | "blueprint" | "scriptDraft" | "blueprintHistory" | "scriptDraftHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1328,6 +1359,80 @@ export namespace Prisma {
           count: {
             args: Prisma.RenderCountArgs<ExtArgs>
             result: $Utils.Optional<RenderCountAggregateOutputType> | number
+          }
+        }
+      }
+      AiCallLog: {
+        payload: Prisma.$AiCallLogPayload<ExtArgs>
+        fields: Prisma.AiCallLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiCallLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiCallLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AiCallLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiCallLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          findMany: {
+            args: Prisma.AiCallLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>[]
+          }
+          create: {
+            args: Prisma.AiCallLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          createMany: {
+            args: Prisma.AiCallLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiCallLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AiCallLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          update: {
+            args: Prisma.AiCallLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AiCallLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiCallLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AiCallLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AiCallLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCallLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AiCallLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiCallLog>
+          }
+          groupBy: {
+            args: Prisma.AiCallLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiCallLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiCallLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AiCallLogCountAggregateOutputType> | number
           }
         }
       }
@@ -1865,6 +1970,7 @@ export namespace Prisma {
     asset?: AssetOmit
     appSettings?: AppSettingsOmit
     render?: RenderOmit
+    aiCallLog?: AiCallLogOmit
     viewport?: ViewportOmit
     board?: BoardOmit
     blueprint?: BlueprintOmit
@@ -1969,6 +2075,7 @@ export namespace Prisma {
     assets: number
     boards: number
     renders: number
+    aiCallLogs: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1976,6 +2083,7 @@ export namespace Prisma {
     assets?: boolean | ProjectCountOutputTypeCountAssetsArgs
     boards?: boolean | ProjectCountOutputTypeCountBoardsArgs
     renders?: boolean | ProjectCountOutputTypeCountRendersArgs
+    aiCallLogs?: boolean | ProjectCountOutputTypeCountAiCallLogsArgs
   }
 
   // Custom InputTypes
@@ -2015,6 +2123,44 @@ export namespace Prisma {
    */
   export type ProjectCountOutputTypeCountRendersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RenderWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountAiCallLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCallLogWhereInput
+  }
+
+
+  /**
+   * Count Type AiCallLogCountOutputType
+   */
+
+  export type AiCallLogCountOutputType = {
+    children: number
+  }
+
+  export type AiCallLogCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    children?: boolean | AiCallLogCountOutputTypeCountChildrenArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AiCallLogCountOutputType without action
+   */
+  export type AiCallLogCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLogCountOutputType
+     */
+    select?: AiCallLogCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AiCallLogCountOutputType without action
+   */
+  export type AiCallLogCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCallLogWhereInput
   }
 
 
@@ -2302,6 +2448,7 @@ export namespace Prisma {
     viewport?: boolean | Project$viewportArgs<ExtArgs>
     boards?: boolean | Project$boardsArgs<ExtArgs>
     renders?: boolean | Project$rendersArgs<ExtArgs>
+    aiCallLogs?: boolean | Project$aiCallLogsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -2347,6 +2494,7 @@ export namespace Prisma {
     viewport?: boolean | Project$viewportArgs<ExtArgs>
     boards?: boolean | Project$boardsArgs<ExtArgs>
     renders?: boolean | Project$rendersArgs<ExtArgs>
+    aiCallLogs?: boolean | Project$aiCallLogsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProjectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2362,6 +2510,7 @@ export namespace Prisma {
       viewport: Prisma.$ViewportPayload<ExtArgs> | null
       boards: Prisma.$BoardPayload<ExtArgs>[]
       renders: Prisma.$RenderPayload<ExtArgs>[]
+      aiCallLogs: Prisma.$AiCallLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2773,6 +2922,7 @@ export namespace Prisma {
     viewport<T extends Project$viewportArgs<ExtArgs> = {}>(args?: Subset<T, Project$viewportArgs<ExtArgs>>): Prisma__ViewportClient<$Result.GetResult<Prisma.$ViewportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     boards<T extends Project$boardsArgs<ExtArgs> = {}>(args?: Subset<T, Project$boardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     renders<T extends Project$rendersArgs<ExtArgs> = {}>(args?: Subset<T, Project$rendersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RenderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    aiCallLogs<T extends Project$aiCallLogsArgs<ExtArgs> = {}>(args?: Subset<T, Project$aiCallLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3346,6 +3496,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RenderScalarFieldEnum | RenderScalarFieldEnum[]
+  }
+
+  /**
+   * Project.aiCallLogs
+   */
+  export type Project$aiCallLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    where?: AiCallLogWhereInput
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    cursor?: AiCallLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCallLogScalarFieldEnum | AiCallLogScalarFieldEnum[]
   }
 
   /**
@@ -8929,6 +9103,1356 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: RenderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AiCallLog
+   */
+
+  export type AggregateAiCallLog = {
+    _count: AiCallLogCountAggregateOutputType | null
+    _avg: AiCallLogAvgAggregateOutputType | null
+    _sum: AiCallLogSumAggregateOutputType | null
+    _min: AiCallLogMinAggregateOutputType | null
+    _max: AiCallLogMaxAggregateOutputType | null
+  }
+
+  export type AiCallLogAvgAggregateOutputType = {
+    promptTokens: number | null
+    responseTokens: number | null
+    durationMs: number | null
+    retryCount: number | null
+  }
+
+  export type AiCallLogSumAggregateOutputType = {
+    promptTokens: number | null
+    responseTokens: number | null
+    durationMs: number | null
+    retryCount: number | null
+  }
+
+  export type AiCallLogMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    provider: string | null
+    model: string | null
+    operation: string | null
+    parentId: string | null
+    prompt: string | null
+    promptTokens: number | null
+    response: string | null
+    responseTokens: number | null
+    status: $Enums.AiCallStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
+    durationMs: number | null
+    errorMessage: string | null
+    errorCode: string | null
+    retryCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCallLogMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    provider: string | null
+    model: string | null
+    operation: string | null
+    parentId: string | null
+    prompt: string | null
+    promptTokens: number | null
+    response: string | null
+    responseTokens: number | null
+    status: $Enums.AiCallStatus | null
+    startedAt: Date | null
+    completedAt: Date | null
+    durationMs: number | null
+    errorMessage: string | null
+    errorCode: string | null
+    retryCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCallLogCountAggregateOutputType = {
+    id: number
+    projectId: number
+    provider: number
+    model: number
+    operation: number
+    parentId: number
+    prompt: number
+    promptTokens: number
+    response: number
+    responseTokens: number
+    status: number
+    startedAt: number
+    completedAt: number
+    durationMs: number
+    errorMessage: number
+    errorCode: number
+    retryCount: number
+    metadata: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AiCallLogAvgAggregateInputType = {
+    promptTokens?: true
+    responseTokens?: true
+    durationMs?: true
+    retryCount?: true
+  }
+
+  export type AiCallLogSumAggregateInputType = {
+    promptTokens?: true
+    responseTokens?: true
+    durationMs?: true
+    retryCount?: true
+  }
+
+  export type AiCallLogMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    provider?: true
+    model?: true
+    operation?: true
+    parentId?: true
+    prompt?: true
+    promptTokens?: true
+    response?: true
+    responseTokens?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    errorMessage?: true
+    errorCode?: true
+    retryCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCallLogMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    provider?: true
+    model?: true
+    operation?: true
+    parentId?: true
+    prompt?: true
+    promptTokens?: true
+    response?: true
+    responseTokens?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    errorMessage?: true
+    errorCode?: true
+    retryCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCallLogCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    provider?: true
+    model?: true
+    operation?: true
+    parentId?: true
+    prompt?: true
+    promptTokens?: true
+    response?: true
+    responseTokens?: true
+    status?: true
+    startedAt?: true
+    completedAt?: true
+    durationMs?: true
+    errorMessage?: true
+    errorCode?: true
+    retryCount?: true
+    metadata?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AiCallLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCallLog to aggregate.
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCallLogs to fetch.
+     */
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiCallLogs
+    **/
+    _count?: true | AiCallLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiCallLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiCallLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiCallLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiCallLogMaxAggregateInputType
+  }
+
+  export type GetAiCallLogAggregateType<T extends AiCallLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiCallLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiCallLog[P]>
+      : GetScalarType<T[P], AggregateAiCallLog[P]>
+  }
+
+
+
+
+  export type AiCallLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCallLogWhereInput
+    orderBy?: AiCallLogOrderByWithAggregationInput | AiCallLogOrderByWithAggregationInput[]
+    by: AiCallLogScalarFieldEnum[] | AiCallLogScalarFieldEnum
+    having?: AiCallLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiCallLogCountAggregateInputType | true
+    _avg?: AiCallLogAvgAggregateInputType
+    _sum?: AiCallLogSumAggregateInputType
+    _min?: AiCallLogMinAggregateInputType
+    _max?: AiCallLogMaxAggregateInputType
+  }
+
+  export type AiCallLogGroupByOutputType = {
+    id: string
+    projectId: string
+    provider: string
+    model: string | null
+    operation: string
+    parentId: string | null
+    prompt: string
+    promptTokens: number | null
+    response: string | null
+    responseTokens: number | null
+    status: $Enums.AiCallStatus
+    startedAt: Date
+    completedAt: Date | null
+    durationMs: number | null
+    errorMessage: string | null
+    errorCode: string | null
+    retryCount: number
+    metadata: JsonValue | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AiCallLogCountAggregateOutputType | null
+    _avg: AiCallLogAvgAggregateOutputType | null
+    _sum: AiCallLogSumAggregateOutputType | null
+    _min: AiCallLogMinAggregateOutputType | null
+    _max: AiCallLogMaxAggregateOutputType | null
+  }
+
+  type GetAiCallLogGroupByPayload<T extends AiCallLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiCallLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiCallLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiCallLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AiCallLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiCallLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    provider?: boolean
+    model?: boolean
+    operation?: boolean
+    parentId?: boolean
+    prompt?: boolean
+    promptTokens?: boolean
+    response?: boolean
+    responseTokens?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    errorMessage?: boolean
+    errorCode?: boolean
+    retryCount?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+    children?: boolean | AiCallLog$childrenArgs<ExtArgs>
+    _count?: boolean | AiCallLogCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCallLog"]>
+
+  export type AiCallLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    provider?: boolean
+    model?: boolean
+    operation?: boolean
+    parentId?: boolean
+    prompt?: boolean
+    promptTokens?: boolean
+    response?: boolean
+    responseTokens?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    errorMessage?: boolean
+    errorCode?: boolean
+    retryCount?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCallLog"]>
+
+  export type AiCallLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    provider?: boolean
+    model?: boolean
+    operation?: boolean
+    parentId?: boolean
+    prompt?: boolean
+    promptTokens?: boolean
+    response?: boolean
+    responseTokens?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    errorMessage?: boolean
+    errorCode?: boolean
+    retryCount?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCallLog"]>
+
+  export type AiCallLogSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    provider?: boolean
+    model?: boolean
+    operation?: boolean
+    parentId?: boolean
+    prompt?: boolean
+    promptTokens?: boolean
+    response?: boolean
+    responseTokens?: boolean
+    status?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    durationMs?: boolean
+    errorMessage?: boolean
+    errorCode?: boolean
+    retryCount?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AiCallLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "provider" | "model" | "operation" | "parentId" | "prompt" | "promptTokens" | "response" | "responseTokens" | "status" | "startedAt" | "completedAt" | "durationMs" | "errorMessage" | "errorCode" | "retryCount" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["aiCallLog"]>
+  export type AiCallLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+    children?: boolean | AiCallLog$childrenArgs<ExtArgs>
+    _count?: boolean | AiCallLogCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AiCallLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+  }
+  export type AiCallLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    parent?: boolean | AiCallLog$parentArgs<ExtArgs>
+  }
+
+  export type $AiCallLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiCallLog"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      parent: Prisma.$AiCallLogPayload<ExtArgs> | null
+      children: Prisma.$AiCallLogPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      provider: string
+      model: string | null
+      operation: string
+      parentId: string | null
+      prompt: string
+      promptTokens: number | null
+      response: string | null
+      responseTokens: number | null
+      status: $Enums.AiCallStatus
+      startedAt: Date
+      completedAt: Date | null
+      durationMs: number | null
+      errorMessage: string | null
+      errorCode: string | null
+      retryCount: number
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["aiCallLog"]>
+    composites: {}
+  }
+
+  type AiCallLogGetPayload<S extends boolean | null | undefined | AiCallLogDefaultArgs> = $Result.GetResult<Prisma.$AiCallLogPayload, S>
+
+  type AiCallLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AiCallLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AiCallLogCountAggregateInputType | true
+    }
+
+  export interface AiCallLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiCallLog'], meta: { name: 'AiCallLog' } }
+    /**
+     * Find zero or one AiCallLog that matches the filter.
+     * @param {AiCallLogFindUniqueArgs} args - Arguments to find a AiCallLog
+     * @example
+     * // Get one AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiCallLogFindUniqueArgs>(args: SelectSubset<T, AiCallLogFindUniqueArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AiCallLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AiCallLogFindUniqueOrThrowArgs} args - Arguments to find a AiCallLog
+     * @example
+     * // Get one AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiCallLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AiCallLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCallLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogFindFirstArgs} args - Arguments to find a AiCallLog
+     * @example
+     * // Get one AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiCallLogFindFirstArgs>(args?: SelectSubset<T, AiCallLogFindFirstArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCallLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogFindFirstOrThrowArgs} args - Arguments to find a AiCallLog
+     * @example
+     * // Get one AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiCallLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AiCallLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AiCallLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiCallLogs
+     * const aiCallLogs = await prisma.aiCallLog.findMany()
+     * 
+     * // Get first 10 AiCallLogs
+     * const aiCallLogs = await prisma.aiCallLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiCallLogWithIdOnly = await prisma.aiCallLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiCallLogFindManyArgs>(args?: SelectSubset<T, AiCallLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AiCallLog.
+     * @param {AiCallLogCreateArgs} args - Arguments to create a AiCallLog.
+     * @example
+     * // Create one AiCallLog
+     * const AiCallLog = await prisma.aiCallLog.create({
+     *   data: {
+     *     // ... data to create a AiCallLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiCallLogCreateArgs>(args: SelectSubset<T, AiCallLogCreateArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AiCallLogs.
+     * @param {AiCallLogCreateManyArgs} args - Arguments to create many AiCallLogs.
+     * @example
+     * // Create many AiCallLogs
+     * const aiCallLog = await prisma.aiCallLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiCallLogCreateManyArgs>(args?: SelectSubset<T, AiCallLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiCallLogs and returns the data saved in the database.
+     * @param {AiCallLogCreateManyAndReturnArgs} args - Arguments to create many AiCallLogs.
+     * @example
+     * // Create many AiCallLogs
+     * const aiCallLog = await prisma.aiCallLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiCallLogs and only return the `id`
+     * const aiCallLogWithIdOnly = await prisma.aiCallLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiCallLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCallLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AiCallLog.
+     * @param {AiCallLogDeleteArgs} args - Arguments to delete one AiCallLog.
+     * @example
+     * // Delete one AiCallLog
+     * const AiCallLog = await prisma.aiCallLog.delete({
+     *   where: {
+     *     // ... filter to delete one AiCallLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiCallLogDeleteArgs>(args: SelectSubset<T, AiCallLogDeleteArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AiCallLog.
+     * @param {AiCallLogUpdateArgs} args - Arguments to update one AiCallLog.
+     * @example
+     * // Update one AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiCallLogUpdateArgs>(args: SelectSubset<T, AiCallLogUpdateArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AiCallLogs.
+     * @param {AiCallLogDeleteManyArgs} args - Arguments to filter AiCallLogs to delete.
+     * @example
+     * // Delete a few AiCallLogs
+     * const { count } = await prisma.aiCallLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiCallLogDeleteManyArgs>(args?: SelectSubset<T, AiCallLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiCallLogs
+     * const aiCallLog = await prisma.aiCallLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiCallLogUpdateManyArgs>(args: SelectSubset<T, AiCallLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCallLogs and returns the data updated in the database.
+     * @param {AiCallLogUpdateManyAndReturnArgs} args - Arguments to update many AiCallLogs.
+     * @example
+     * // Update many AiCallLogs
+     * const aiCallLog = await prisma.aiCallLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AiCallLogs and only return the `id`
+     * const aiCallLogWithIdOnly = await prisma.aiCallLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AiCallLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AiCallLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AiCallLog.
+     * @param {AiCallLogUpsertArgs} args - Arguments to update or create a AiCallLog.
+     * @example
+     * // Update or create a AiCallLog
+     * const aiCallLog = await prisma.aiCallLog.upsert({
+     *   create: {
+     *     // ... data to create a AiCallLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiCallLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiCallLogUpsertArgs>(args: SelectSubset<T, AiCallLogUpsertArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AiCallLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogCountArgs} args - Arguments to filter AiCallLogs to count.
+     * @example
+     * // Count the number of AiCallLogs
+     * const count = await prisma.aiCallLog.count({
+     *   where: {
+     *     // ... the filter for the AiCallLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiCallLogCountArgs>(
+      args?: Subset<T, AiCallLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiCallLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiCallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiCallLogAggregateArgs>(args: Subset<T, AiCallLogAggregateArgs>): Prisma.PrismaPromise<GetAiCallLogAggregateType<T>>
+
+    /**
+     * Group by AiCallLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCallLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiCallLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiCallLogGroupByArgs['orderBy'] }
+        : { orderBy?: AiCallLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiCallLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiCallLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiCallLog model
+   */
+  readonly fields: AiCallLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiCallLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiCallLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    parent<T extends AiCallLog$parentArgs<ExtArgs> = {}>(args?: Subset<T, AiCallLog$parentArgs<ExtArgs>>): Prisma__AiCallLogClient<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    children<T extends AiCallLog$childrenArgs<ExtArgs> = {}>(args?: Subset<T, AiCallLog$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCallLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiCallLog model
+   */
+  interface AiCallLogFieldRefs {
+    readonly id: FieldRef<"AiCallLog", 'String'>
+    readonly projectId: FieldRef<"AiCallLog", 'String'>
+    readonly provider: FieldRef<"AiCallLog", 'String'>
+    readonly model: FieldRef<"AiCallLog", 'String'>
+    readonly operation: FieldRef<"AiCallLog", 'String'>
+    readonly parentId: FieldRef<"AiCallLog", 'String'>
+    readonly prompt: FieldRef<"AiCallLog", 'String'>
+    readonly promptTokens: FieldRef<"AiCallLog", 'Int'>
+    readonly response: FieldRef<"AiCallLog", 'String'>
+    readonly responseTokens: FieldRef<"AiCallLog", 'Int'>
+    readonly status: FieldRef<"AiCallLog", 'AiCallStatus'>
+    readonly startedAt: FieldRef<"AiCallLog", 'DateTime'>
+    readonly completedAt: FieldRef<"AiCallLog", 'DateTime'>
+    readonly durationMs: FieldRef<"AiCallLog", 'Int'>
+    readonly errorMessage: FieldRef<"AiCallLog", 'String'>
+    readonly errorCode: FieldRef<"AiCallLog", 'String'>
+    readonly retryCount: FieldRef<"AiCallLog", 'Int'>
+    readonly metadata: FieldRef<"AiCallLog", 'Json'>
+    readonly createdAt: FieldRef<"AiCallLog", 'DateTime'>
+    readonly updatedAt: FieldRef<"AiCallLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiCallLog findUnique
+   */
+  export type AiCallLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCallLog to fetch.
+     */
+    where: AiCallLogWhereUniqueInput
+  }
+
+  /**
+   * AiCallLog findUniqueOrThrow
+   */
+  export type AiCallLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCallLog to fetch.
+     */
+    where: AiCallLogWhereUniqueInput
+  }
+
+  /**
+   * AiCallLog findFirst
+   */
+  export type AiCallLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCallLog to fetch.
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCallLogs to fetch.
+     */
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCallLogs.
+     */
+    cursor?: AiCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCallLogs.
+     */
+    distinct?: AiCallLogScalarFieldEnum | AiCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * AiCallLog findFirstOrThrow
+   */
+  export type AiCallLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCallLog to fetch.
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCallLogs to fetch.
+     */
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCallLogs.
+     */
+    cursor?: AiCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCallLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCallLogs.
+     */
+    distinct?: AiCallLogScalarFieldEnum | AiCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * AiCallLog findMany
+   */
+  export type AiCallLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCallLogs to fetch.
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCallLogs to fetch.
+     */
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiCallLogs.
+     */
+    cursor?: AiCallLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCallLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCallLogs.
+     */
+    skip?: number
+    distinct?: AiCallLogScalarFieldEnum | AiCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * AiCallLog create
+   */
+  export type AiCallLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiCallLog.
+     */
+    data: XOR<AiCallLogCreateInput, AiCallLogUncheckedCreateInput>
+  }
+
+  /**
+   * AiCallLog createMany
+   */
+  export type AiCallLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiCallLogs.
+     */
+    data: AiCallLogCreateManyInput | AiCallLogCreateManyInput[]
+  }
+
+  /**
+   * AiCallLog createManyAndReturn
+   */
+  export type AiCallLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AiCallLogs.
+     */
+    data: AiCallLogCreateManyInput | AiCallLogCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCallLog update
+   */
+  export type AiCallLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiCallLog.
+     */
+    data: XOR<AiCallLogUpdateInput, AiCallLogUncheckedUpdateInput>
+    /**
+     * Choose, which AiCallLog to update.
+     */
+    where: AiCallLogWhereUniqueInput
+  }
+
+  /**
+   * AiCallLog updateMany
+   */
+  export type AiCallLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiCallLogs.
+     */
+    data: XOR<AiCallLogUpdateManyMutationInput, AiCallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCallLogs to update
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * Limit how many AiCallLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCallLog updateManyAndReturn
+   */
+  export type AiCallLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AiCallLogs.
+     */
+    data: XOR<AiCallLogUpdateManyMutationInput, AiCallLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCallLogs to update
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * Limit how many AiCallLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCallLog upsert
+   */
+  export type AiCallLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiCallLog to update in case it exists.
+     */
+    where: AiCallLogWhereUniqueInput
+    /**
+     * In case the AiCallLog found by the `where` argument doesn't exist, create a new AiCallLog with this data.
+     */
+    create: XOR<AiCallLogCreateInput, AiCallLogUncheckedCreateInput>
+    /**
+     * In case the AiCallLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiCallLogUpdateInput, AiCallLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AiCallLog delete
+   */
+  export type AiCallLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    /**
+     * Filter which AiCallLog to delete.
+     */
+    where: AiCallLogWhereUniqueInput
+  }
+
+  /**
+   * AiCallLog deleteMany
+   */
+  export type AiCallLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCallLogs to delete
+     */
+    where?: AiCallLogWhereInput
+    /**
+     * Limit how many AiCallLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCallLog.parent
+   */
+  export type AiCallLog$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    where?: AiCallLogWhereInput
+  }
+
+  /**
+   * AiCallLog.children
+   */
+  export type AiCallLog$childrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
+    where?: AiCallLogWhereInput
+    orderBy?: AiCallLogOrderByWithRelationInput | AiCallLogOrderByWithRelationInput[]
+    cursor?: AiCallLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCallLogScalarFieldEnum | AiCallLogScalarFieldEnum[]
+  }
+
+  /**
+   * AiCallLog without action
+   */
+  export type AiCallLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCallLog
+     */
+    select?: AiCallLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCallLog
+     */
+    omit?: AiCallLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCallLogInclude<ExtArgs> | null
   }
 
 
@@ -15935,6 +17459,32 @@ export namespace Prisma {
   export type RenderScalarFieldEnum = (typeof RenderScalarFieldEnum)[keyof typeof RenderScalarFieldEnum]
 
 
+  export const AiCallLogScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    provider: 'provider',
+    model: 'model',
+    operation: 'operation',
+    parentId: 'parentId',
+    prompt: 'prompt',
+    promptTokens: 'promptTokens',
+    response: 'response',
+    responseTokens: 'responseTokens',
+    status: 'status',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    durationMs: 'durationMs',
+    errorMessage: 'errorMessage',
+    errorCode: 'errorCode',
+    retryCount: 'retryCount',
+    metadata: 'metadata',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AiCallLogScalarFieldEnum = (typeof AiCallLogScalarFieldEnum)[keyof typeof AiCallLogScalarFieldEnum]
+
+
   export const ViewportScalarFieldEnum: {
     id: 'id',
     projectId: 'projectId',
@@ -16152,6 +17702,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'AiCallStatus'
+   */
+  export type EnumAiCallStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiCallStatus'>
+    
+
+
+  /**
    * Reference to a field of type 'BlueprintStatus'
    */
   export type EnumBlueprintStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BlueprintStatus'>
@@ -16187,6 +17744,7 @@ export namespace Prisma {
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
     boards?: BoardListRelationFilter
     renders?: RenderListRelationFilter
+    aiCallLogs?: AiCallLogListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -16205,6 +17763,7 @@ export namespace Prisma {
     viewport?: ViewportOrderByWithRelationInput
     boards?: BoardOrderByRelationAggregateInput
     renders?: RenderOrderByRelationAggregateInput
+    aiCallLogs?: AiCallLogOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -16226,6 +17785,7 @@ export namespace Prisma {
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
     boards?: BoardListRelationFilter
     renders?: RenderListRelationFilter
+    aiCallLogs?: AiCallLogListRelationFilter
   }, "id">
 
   export type ProjectOrderByWithAggregationInput = {
@@ -16626,6 +18186,144 @@ export namespace Prisma {
     startedAt?: DateTimeNullableWithAggregatesFilter<"Render"> | Date | string | null
     completedAt?: DateTimeNullableWithAggregatesFilter<"Render"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Render"> | Date | string
+  }
+
+  export type AiCallLogWhereInput = {
+    AND?: AiCallLogWhereInput | AiCallLogWhereInput[]
+    OR?: AiCallLogWhereInput[]
+    NOT?: AiCallLogWhereInput | AiCallLogWhereInput[]
+    id?: StringFilter<"AiCallLog"> | string
+    projectId?: StringFilter<"AiCallLog"> | string
+    provider?: StringFilter<"AiCallLog"> | string
+    model?: StringNullableFilter<"AiCallLog"> | string | null
+    operation?: StringFilter<"AiCallLog"> | string
+    parentId?: StringNullableFilter<"AiCallLog"> | string | null
+    prompt?: StringFilter<"AiCallLog"> | string
+    promptTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    response?: StringNullableFilter<"AiCallLog"> | string | null
+    responseTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    status?: EnumAiCallStatusFilter<"AiCallLog"> | $Enums.AiCallStatus
+    startedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"AiCallLog"> | Date | string | null
+    durationMs?: IntNullableFilter<"AiCallLog"> | number | null
+    errorMessage?: StringNullableFilter<"AiCallLog"> | string | null
+    errorCode?: StringNullableFilter<"AiCallLog"> | string | null
+    retryCount?: IntFilter<"AiCallLog"> | number
+    metadata?: JsonNullableFilter<"AiCallLog">
+    createdAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    parent?: XOR<AiCallLogNullableScalarRelationFilter, AiCallLogWhereInput> | null
+    children?: AiCallLogListRelationFilter
+  }
+
+  export type AiCallLogOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    provider?: SortOrder
+    model?: SortOrderInput | SortOrder
+    operation?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    prompt?: SortOrder
+    promptTokens?: SortOrderInput | SortOrder
+    response?: SortOrderInput | SortOrder
+    responseTokens?: SortOrderInput | SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    errorCode?: SortOrderInput | SortOrder
+    retryCount?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    parent?: AiCallLogOrderByWithRelationInput
+    children?: AiCallLogOrderByRelationAggregateInput
+  }
+
+  export type AiCallLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AiCallLogWhereInput | AiCallLogWhereInput[]
+    OR?: AiCallLogWhereInput[]
+    NOT?: AiCallLogWhereInput | AiCallLogWhereInput[]
+    projectId?: StringFilter<"AiCallLog"> | string
+    provider?: StringFilter<"AiCallLog"> | string
+    model?: StringNullableFilter<"AiCallLog"> | string | null
+    operation?: StringFilter<"AiCallLog"> | string
+    parentId?: StringNullableFilter<"AiCallLog"> | string | null
+    prompt?: StringFilter<"AiCallLog"> | string
+    promptTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    response?: StringNullableFilter<"AiCallLog"> | string | null
+    responseTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    status?: EnumAiCallStatusFilter<"AiCallLog"> | $Enums.AiCallStatus
+    startedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"AiCallLog"> | Date | string | null
+    durationMs?: IntNullableFilter<"AiCallLog"> | number | null
+    errorMessage?: StringNullableFilter<"AiCallLog"> | string | null
+    errorCode?: StringNullableFilter<"AiCallLog"> | string | null
+    retryCount?: IntFilter<"AiCallLog"> | number
+    metadata?: JsonNullableFilter<"AiCallLog">
+    createdAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    parent?: XOR<AiCallLogNullableScalarRelationFilter, AiCallLogWhereInput> | null
+    children?: AiCallLogListRelationFilter
+  }, "id">
+
+  export type AiCallLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    provider?: SortOrder
+    model?: SortOrderInput | SortOrder
+    operation?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    prompt?: SortOrder
+    promptTokens?: SortOrderInput | SortOrder
+    response?: SortOrderInput | SortOrder
+    responseTokens?: SortOrderInput | SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
+    errorCode?: SortOrderInput | SortOrder
+    retryCount?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AiCallLogCountOrderByAggregateInput
+    _avg?: AiCallLogAvgOrderByAggregateInput
+    _max?: AiCallLogMaxOrderByAggregateInput
+    _min?: AiCallLogMinOrderByAggregateInput
+    _sum?: AiCallLogSumOrderByAggregateInput
+  }
+
+  export type AiCallLogScalarWhereWithAggregatesInput = {
+    AND?: AiCallLogScalarWhereWithAggregatesInput | AiCallLogScalarWhereWithAggregatesInput[]
+    OR?: AiCallLogScalarWhereWithAggregatesInput[]
+    NOT?: AiCallLogScalarWhereWithAggregatesInput | AiCallLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AiCallLog"> | string
+    projectId?: StringWithAggregatesFilter<"AiCallLog"> | string
+    provider?: StringWithAggregatesFilter<"AiCallLog"> | string
+    model?: StringNullableWithAggregatesFilter<"AiCallLog"> | string | null
+    operation?: StringWithAggregatesFilter<"AiCallLog"> | string
+    parentId?: StringNullableWithAggregatesFilter<"AiCallLog"> | string | null
+    prompt?: StringWithAggregatesFilter<"AiCallLog"> | string
+    promptTokens?: IntNullableWithAggregatesFilter<"AiCallLog"> | number | null
+    response?: StringNullableWithAggregatesFilter<"AiCallLog"> | string | null
+    responseTokens?: IntNullableWithAggregatesFilter<"AiCallLog"> | number | null
+    status?: EnumAiCallStatusWithAggregatesFilter<"AiCallLog"> | $Enums.AiCallStatus
+    startedAt?: DateTimeWithAggregatesFilter<"AiCallLog"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"AiCallLog"> | Date | string | null
+    durationMs?: IntNullableWithAggregatesFilter<"AiCallLog"> | number | null
+    errorMessage?: StringNullableWithAggregatesFilter<"AiCallLog"> | string | null
+    errorCode?: StringNullableWithAggregatesFilter<"AiCallLog"> | string | null
+    retryCount?: IntWithAggregatesFilter<"AiCallLog"> | number
+    metadata?: JsonNullableWithAggregatesFilter<"AiCallLog">
+    createdAt?: DateTimeWithAggregatesFilter<"AiCallLog"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AiCallLog"> | Date | string
   }
 
   export type ViewportWhereInput = {
@@ -17106,6 +18804,7 @@ export namespace Prisma {
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -17124,6 +18823,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -17142,6 +18842,7 @@ export namespace Prisma {
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -17160,6 +18861,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -17598,6 +19300,169 @@ export namespace Prisma {
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCallLogCreateInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutAiCallLogsInput
+    parent?: AiCallLogCreateNestedOneWithoutChildrenInput
+    children?: AiCallLogCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogUncheckedCreateInput = {
+    id?: string
+    projectId: string
+    provider: string
+    model?: string | null
+    operation: string
+    parentId?: string | null
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: AiCallLogUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutAiCallLogsNestedInput
+    parent?: AiCallLogUpdateOneWithoutChildrenNestedInput
+    children?: AiCallLogUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: AiCallLogUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogCreateManyInput = {
+    id?: string
+    projectId: string
+    provider: string
+    model?: string | null
+    operation: string
+    parentId?: string | null
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCallLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCallLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ViewportCreateInput = {
@@ -18191,6 +20056,12 @@ export namespace Prisma {
     none?: RenderWhereInput
   }
 
+  export type AiCallLogListRelationFilter = {
+    every?: AiCallLogWhereInput
+    some?: AiCallLogWhereInput
+    none?: AiCallLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -18209,6 +20080,10 @@ export namespace Prisma {
   }
 
   export type RenderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiCallLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18675,6 +20550,163 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type EnumAiCallStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AiCallStatus | EnumAiCallStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AiCallStatus[]
+    notIn?: $Enums.AiCallStatus[]
+    not?: NestedEnumAiCallStatusFilter<$PrismaModel> | $Enums.AiCallStatus
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type AiCallLogNullableScalarRelationFilter = {
+    is?: AiCallLogWhereInput | null
+    isNot?: AiCallLogWhereInput | null
+  }
+
+  export type AiCallLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    provider?: SortOrder
+    model?: SortOrder
+    operation?: SortOrder
+    parentId?: SortOrder
+    prompt?: SortOrder
+    promptTokens?: SortOrder
+    response?: SortOrder
+    responseTokens?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    errorMessage?: SortOrder
+    errorCode?: SortOrder
+    retryCount?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCallLogAvgOrderByAggregateInput = {
+    promptTokens?: SortOrder
+    responseTokens?: SortOrder
+    durationMs?: SortOrder
+    retryCount?: SortOrder
+  }
+
+  export type AiCallLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    provider?: SortOrder
+    model?: SortOrder
+    operation?: SortOrder
+    parentId?: SortOrder
+    prompt?: SortOrder
+    promptTokens?: SortOrder
+    response?: SortOrder
+    responseTokens?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    errorMessage?: SortOrder
+    errorCode?: SortOrder
+    retryCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCallLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    provider?: SortOrder
+    model?: SortOrder
+    operation?: SortOrder
+    parentId?: SortOrder
+    prompt?: SortOrder
+    promptTokens?: SortOrder
+    response?: SortOrder
+    responseTokens?: SortOrder
+    status?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    durationMs?: SortOrder
+    errorMessage?: SortOrder
+    errorCode?: SortOrder
+    retryCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCallLogSumOrderByAggregateInput = {
+    promptTokens?: SortOrder
+    responseTokens?: SortOrder
+    durationMs?: SortOrder
+    retryCount?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumAiCallStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AiCallStatus | EnumAiCallStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AiCallStatus[]
+    notIn?: $Enums.AiCallStatus[]
+    not?: NestedEnumAiCallStatusWithAggregatesFilter<$PrismaModel> | $Enums.AiCallStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAiCallStatusFilter<$PrismaModel>
+    _max?: NestedEnumAiCallStatusFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type AssetNullableScalarRelationFilter = {
     is?: AssetWhereInput | null
     isNot?: AssetWhereInput | null
@@ -18704,17 +20736,6 @@ export namespace Prisma {
     imageAssetId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type BoardProjectIdIndexCompoundUniqueInput = {
@@ -18760,22 +20781,6 @@ export namespace Prisma {
 
   export type BoardSumOrderByAggregateInput = {
     index?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumBlueprintStatusFilter<$PrismaModel = never> = {
@@ -19066,6 +21071,13 @@ export namespace Prisma {
     connect?: RenderWhereUniqueInput | RenderWhereUniqueInput[]
   }
 
+  export type AiCallLogCreateNestedManyWithoutProjectInput = {
+    create?: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput> | AiCallLogCreateWithoutProjectInput[] | AiCallLogUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutProjectInput | AiCallLogCreateOrConnectWithoutProjectInput[]
+    createMany?: AiCallLogCreateManyProjectInputEnvelope
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+  }
+
   export type ProjectSettingsUncheckedCreateNestedOneWithoutProjectInput = {
     create?: XOR<ProjectSettingsCreateWithoutProjectInput, ProjectSettingsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: ProjectSettingsCreateOrConnectWithoutProjectInput
@@ -19110,6 +21122,13 @@ export namespace Prisma {
     connectOrCreate?: RenderCreateOrConnectWithoutProjectInput | RenderCreateOrConnectWithoutProjectInput[]
     createMany?: RenderCreateManyProjectInputEnvelope
     connect?: RenderWhereUniqueInput | RenderWhereUniqueInput[]
+  }
+
+  export type AiCallLogUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput> | AiCallLogCreateWithoutProjectInput[] | AiCallLogUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutProjectInput | AiCallLogCreateOrConnectWithoutProjectInput[]
+    createMany?: AiCallLogCreateManyProjectInputEnvelope
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -19214,6 +21233,20 @@ export namespace Prisma {
     deleteMany?: RenderScalarWhereInput | RenderScalarWhereInput[]
   }
 
+  export type AiCallLogUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput> | AiCallLogCreateWithoutProjectInput[] | AiCallLogUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutProjectInput | AiCallLogCreateOrConnectWithoutProjectInput[]
+    upsert?: AiCallLogUpsertWithWhereUniqueWithoutProjectInput | AiCallLogUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: AiCallLogCreateManyProjectInputEnvelope
+    set?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    disconnect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    delete?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    update?: AiCallLogUpdateWithWhereUniqueWithoutProjectInput | AiCallLogUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: AiCallLogUpdateManyWithWhereWithoutProjectInput | AiCallLogUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
+  }
+
   export type ProjectSettingsUncheckedUpdateOneWithoutProjectNestedInput = {
     create?: XOR<ProjectSettingsCreateWithoutProjectInput, ProjectSettingsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: ProjectSettingsCreateOrConnectWithoutProjectInput
@@ -19298,6 +21331,20 @@ export namespace Prisma {
     update?: RenderUpdateWithWhereUniqueWithoutProjectInput | RenderUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: RenderUpdateManyWithWhereWithoutProjectInput | RenderUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: RenderScalarWhereInput | RenderScalarWhereInput[]
+  }
+
+  export type AiCallLogUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput> | AiCallLogCreateWithoutProjectInput[] | AiCallLogUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutProjectInput | AiCallLogCreateOrConnectWithoutProjectInput[]
+    upsert?: AiCallLogUpsertWithWhereUniqueWithoutProjectInput | AiCallLogUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: AiCallLogCreateManyProjectInputEnvelope
+    set?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    disconnect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    delete?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    update?: AiCallLogUpdateWithWhereUniqueWithoutProjectInput | AiCallLogUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: AiCallLogUpdateManyWithWhereWithoutProjectInput | AiCallLogUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutSettingsInput = {
@@ -19432,6 +21479,98 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutRendersInput, ProjectUpdateWithoutRendersInput>, ProjectUncheckedUpdateWithoutRendersInput>
   }
 
+  export type ProjectCreateNestedOneWithoutAiCallLogsInput = {
+    create?: XOR<ProjectCreateWithoutAiCallLogsInput, ProjectUncheckedCreateWithoutAiCallLogsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAiCallLogsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type AiCallLogCreateNestedOneWithoutChildrenInput = {
+    create?: XOR<AiCallLogCreateWithoutChildrenInput, AiCallLogUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutChildrenInput
+    connect?: AiCallLogWhereUniqueInput
+  }
+
+  export type AiCallLogCreateNestedManyWithoutParentInput = {
+    create?: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput> | AiCallLogCreateWithoutParentInput[] | AiCallLogUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutParentInput | AiCallLogCreateOrConnectWithoutParentInput[]
+    createMany?: AiCallLogCreateManyParentInputEnvelope
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+  }
+
+  export type AiCallLogUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput> | AiCallLogCreateWithoutParentInput[] | AiCallLogUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutParentInput | AiCallLogCreateOrConnectWithoutParentInput[]
+    createMany?: AiCallLogCreateManyParentInputEnvelope
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumAiCallStatusFieldUpdateOperationsInput = {
+    set?: $Enums.AiCallStatus
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type ProjectUpdateOneRequiredWithoutAiCallLogsNestedInput = {
+    create?: XOR<ProjectCreateWithoutAiCallLogsInput, ProjectUncheckedCreateWithoutAiCallLogsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutAiCallLogsInput
+    upsert?: ProjectUpsertWithoutAiCallLogsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAiCallLogsInput, ProjectUpdateWithoutAiCallLogsInput>, ProjectUncheckedUpdateWithoutAiCallLogsInput>
+  }
+
+  export type AiCallLogUpdateOneWithoutChildrenNestedInput = {
+    create?: XOR<AiCallLogCreateWithoutChildrenInput, AiCallLogUncheckedCreateWithoutChildrenInput>
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutChildrenInput
+    upsert?: AiCallLogUpsertWithoutChildrenInput
+    disconnect?: AiCallLogWhereInput | boolean
+    delete?: AiCallLogWhereInput | boolean
+    connect?: AiCallLogWhereUniqueInput
+    update?: XOR<XOR<AiCallLogUpdateToOneWithWhereWithoutChildrenInput, AiCallLogUpdateWithoutChildrenInput>, AiCallLogUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type AiCallLogUpdateManyWithoutParentNestedInput = {
+    create?: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput> | AiCallLogCreateWithoutParentInput[] | AiCallLogUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutParentInput | AiCallLogCreateOrConnectWithoutParentInput[]
+    upsert?: AiCallLogUpsertWithWhereUniqueWithoutParentInput | AiCallLogUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: AiCallLogCreateManyParentInputEnvelope
+    set?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    disconnect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    delete?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    update?: AiCallLogUpdateWithWhereUniqueWithoutParentInput | AiCallLogUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: AiCallLogUpdateManyWithWhereWithoutParentInput | AiCallLogUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
+  }
+
+  export type AiCallLogUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput> | AiCallLogCreateWithoutParentInput[] | AiCallLogUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: AiCallLogCreateOrConnectWithoutParentInput | AiCallLogCreateOrConnectWithoutParentInput[]
+    upsert?: AiCallLogUpsertWithWhereUniqueWithoutParentInput | AiCallLogUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: AiCallLogCreateManyParentInputEnvelope
+    set?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    disconnect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    delete?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    connect?: AiCallLogWhereUniqueInput | AiCallLogWhereUniqueInput[]
+    update?: AiCallLogUpdateWithWhereUniqueWithoutParentInput | AiCallLogUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: AiCallLogUpdateManyWithWhereWithoutParentInput | AiCallLogUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
+  }
+
   export type ProjectCreateNestedOneWithoutViewportInput = {
     create?: XOR<ProjectCreateWithoutViewportInput, ProjectUncheckedCreateWithoutViewportInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutViewportInput
@@ -19466,14 +21605,6 @@ export namespace Prisma {
     create?: XOR<ProjectCreateWithoutBoardsInput, ProjectUncheckedCreateWithoutBoardsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutBoardsInput
     connect?: ProjectWhereUniqueInput
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ProjectUpdateOneRequiredWithoutBoardsNestedInput = {
@@ -20050,6 +22181,50 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumAiCallStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.AiCallStatus | EnumAiCallStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AiCallStatus[]
+    notIn?: $Enums.AiCallStatus[]
+    not?: NestedEnumAiCallStatusFilter<$PrismaModel> | $Enums.AiCallStatus
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumAiCallStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AiCallStatus | EnumAiCallStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AiCallStatus[]
+    notIn?: $Enums.AiCallStatus[]
+    not?: NestedEnumAiCallStatusWithAggregatesFilter<$PrismaModel> | $Enums.AiCallStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAiCallStatusFilter<$PrismaModel>
+    _max?: NestedEnumAiCallStatusFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -20321,6 +22496,61 @@ export namespace Prisma {
     data: RenderCreateManyProjectInput | RenderCreateManyProjectInput[]
   }
 
+  export type AiCallLogCreateWithoutProjectInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    parent?: AiCallLogCreateNestedOneWithoutChildrenInput
+    children?: AiCallLogCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogUncheckedCreateWithoutProjectInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    parentId?: string | null
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: AiCallLogUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogCreateOrConnectWithoutProjectInput = {
+    where: AiCallLogWhereUniqueInput
+    create: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput>
+  }
+
+  export type AiCallLogCreateManyProjectInputEnvelope = {
+    data: AiCallLogCreateManyProjectInput | AiCallLogCreateManyProjectInput[]
+  }
+
   export type ProjectSettingsUpsertWithoutProjectInput = {
     update: XOR<ProjectSettingsUpdateWithoutProjectInput, ProjectSettingsUncheckedUpdateWithoutProjectInput>
     create: XOR<ProjectSettingsCreateWithoutProjectInput, ProjectSettingsUncheckedCreateWithoutProjectInput>
@@ -20547,6 +22777,48 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Render"> | Date | string
   }
 
+  export type AiCallLogUpsertWithWhereUniqueWithoutProjectInput = {
+    where: AiCallLogWhereUniqueInput
+    update: XOR<AiCallLogUpdateWithoutProjectInput, AiCallLogUncheckedUpdateWithoutProjectInput>
+    create: XOR<AiCallLogCreateWithoutProjectInput, AiCallLogUncheckedCreateWithoutProjectInput>
+  }
+
+  export type AiCallLogUpdateWithWhereUniqueWithoutProjectInput = {
+    where: AiCallLogWhereUniqueInput
+    data: XOR<AiCallLogUpdateWithoutProjectInput, AiCallLogUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type AiCallLogUpdateManyWithWhereWithoutProjectInput = {
+    where: AiCallLogScalarWhereInput
+    data: XOR<AiCallLogUpdateManyMutationInput, AiCallLogUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type AiCallLogScalarWhereInput = {
+    AND?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
+    OR?: AiCallLogScalarWhereInput[]
+    NOT?: AiCallLogScalarWhereInput | AiCallLogScalarWhereInput[]
+    id?: StringFilter<"AiCallLog"> | string
+    projectId?: StringFilter<"AiCallLog"> | string
+    provider?: StringFilter<"AiCallLog"> | string
+    model?: StringNullableFilter<"AiCallLog"> | string | null
+    operation?: StringFilter<"AiCallLog"> | string
+    parentId?: StringNullableFilter<"AiCallLog"> | string | null
+    prompt?: StringFilter<"AiCallLog"> | string
+    promptTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    response?: StringNullableFilter<"AiCallLog"> | string | null
+    responseTokens?: IntNullableFilter<"AiCallLog"> | number | null
+    status?: EnumAiCallStatusFilter<"AiCallLog"> | $Enums.AiCallStatus
+    startedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    completedAt?: DateTimeNullableFilter<"AiCallLog"> | Date | string | null
+    durationMs?: IntNullableFilter<"AiCallLog"> | number | null
+    errorMessage?: StringNullableFilter<"AiCallLog"> | string | null
+    errorCode?: StringNullableFilter<"AiCallLog"> | string | null
+    retryCount?: IntFilter<"AiCallLog"> | number
+    metadata?: JsonNullableFilter<"AiCallLog">
+    createdAt?: DateTimeFilter<"AiCallLog"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCallLog"> | Date | string
+  }
+
   export type ProjectCreateWithoutSettingsInput = {
     id?: string
     name: string
@@ -20562,6 +22834,7 @@ export namespace Prisma {
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutSettingsInput = {
@@ -20579,6 +22852,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutSettingsInput = {
@@ -20612,6 +22886,7 @@ export namespace Prisma {
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutSettingsInput = {
@@ -20629,6 +22904,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutScriptInput = {
@@ -20646,6 +22922,7 @@ export namespace Prisma {
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutScriptInput = {
@@ -20663,6 +22940,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutScriptInput = {
@@ -20731,6 +23009,7 @@ export namespace Prisma {
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutScriptInput = {
@@ -20748,6 +23027,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type BlueprintUpsertWithoutScriptsInput = {
@@ -20806,6 +23086,7 @@ export namespace Prisma {
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutAssetsInput = {
@@ -20823,6 +23104,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutAssetsInput = {
@@ -20879,6 +23161,7 @@ export namespace Prisma {
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutAssetsInput = {
@@ -20896,6 +23179,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ViewportUpsertWithoutImageAssetInput = {
@@ -20942,6 +23226,7 @@ export namespace Prisma {
     assets?: AssetCreateNestedManyWithoutProjectInput
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutRendersInput = {
@@ -20959,6 +23244,7 @@ export namespace Prisma {
     assets?: AssetUncheckedCreateNestedManyWithoutProjectInput
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutRendersInput = {
@@ -20992,6 +23278,7 @@ export namespace Prisma {
     assets?: AssetUpdateManyWithoutProjectNestedInput
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutRendersInput = {
@@ -21009,6 +23296,274 @@ export namespace Prisma {
     assets?: AssetUncheckedUpdateManyWithoutProjectNestedInput
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectCreateWithoutAiCallLogsInput = {
+    id?: string
+    name: string
+    topic?: string | null
+    status?: $Enums.ProjectStatus
+    aspectRatio?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assetMappings?: NullableJsonNullValueInput | InputJsonValue
+    settings?: ProjectSettingsCreateNestedOneWithoutProjectInput
+    script?: ScriptCreateNestedOneWithoutProjectInput
+    blueprints?: BlueprintCreateNestedManyWithoutProjectInput
+    assets?: AssetCreateNestedManyWithoutProjectInput
+    viewport?: ViewportCreateNestedOneWithoutProjectInput
+    boards?: BoardCreateNestedManyWithoutProjectInput
+    renders?: RenderCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutAiCallLogsInput = {
+    id?: string
+    name: string
+    topic?: string | null
+    status?: $Enums.ProjectStatus
+    aspectRatio?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assetMappings?: NullableJsonNullValueInput | InputJsonValue
+    settings?: ProjectSettingsUncheckedCreateNestedOneWithoutProjectInput
+    script?: ScriptUncheckedCreateNestedOneWithoutProjectInput
+    blueprints?: BlueprintUncheckedCreateNestedManyWithoutProjectInput
+    assets?: AssetUncheckedCreateNestedManyWithoutProjectInput
+    viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
+    boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
+    renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutAiCallLogsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutAiCallLogsInput, ProjectUncheckedCreateWithoutAiCallLogsInput>
+  }
+
+  export type AiCallLogCreateWithoutChildrenInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutAiCallLogsInput
+    parent?: AiCallLogCreateNestedOneWithoutChildrenInput
+  }
+
+  export type AiCallLogUncheckedCreateWithoutChildrenInput = {
+    id?: string
+    projectId: string
+    provider: string
+    model?: string | null
+    operation: string
+    parentId?: string | null
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCallLogCreateOrConnectWithoutChildrenInput = {
+    where: AiCallLogWhereUniqueInput
+    create: XOR<AiCallLogCreateWithoutChildrenInput, AiCallLogUncheckedCreateWithoutChildrenInput>
+  }
+
+  export type AiCallLogCreateWithoutParentInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutAiCallLogsInput
+    children?: AiCallLogCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogUncheckedCreateWithoutParentInput = {
+    id?: string
+    projectId: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    children?: AiCallLogUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type AiCallLogCreateOrConnectWithoutParentInput = {
+    where: AiCallLogWhereUniqueInput
+    create: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput>
+  }
+
+  export type AiCallLogCreateManyParentInputEnvelope = {
+    data: AiCallLogCreateManyParentInput | AiCallLogCreateManyParentInput[]
+  }
+
+  export type ProjectUpsertWithoutAiCallLogsInput = {
+    update: XOR<ProjectUpdateWithoutAiCallLogsInput, ProjectUncheckedUpdateWithoutAiCallLogsInput>
+    create: XOR<ProjectCreateWithoutAiCallLogsInput, ProjectUncheckedCreateWithoutAiCallLogsInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutAiCallLogsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutAiCallLogsInput, ProjectUncheckedUpdateWithoutAiCallLogsInput>
+  }
+
+  export type ProjectUpdateWithoutAiCallLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    aspectRatio?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetMappings?: NullableJsonNullValueInput | InputJsonValue
+    settings?: ProjectSettingsUpdateOneWithoutProjectNestedInput
+    script?: ScriptUpdateOneWithoutProjectNestedInput
+    blueprints?: BlueprintUpdateManyWithoutProjectNestedInput
+    assets?: AssetUpdateManyWithoutProjectNestedInput
+    viewport?: ViewportUpdateOneWithoutProjectNestedInput
+    boards?: BoardUpdateManyWithoutProjectNestedInput
+    renders?: RenderUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutAiCallLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    aspectRatio?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetMappings?: NullableJsonNullValueInput | InputJsonValue
+    settings?: ProjectSettingsUncheckedUpdateOneWithoutProjectNestedInput
+    script?: ScriptUncheckedUpdateOneWithoutProjectNestedInput
+    blueprints?: BlueprintUncheckedUpdateManyWithoutProjectNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutProjectNestedInput
+    viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
+    boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
+    renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type AiCallLogUpsertWithoutChildrenInput = {
+    update: XOR<AiCallLogUpdateWithoutChildrenInput, AiCallLogUncheckedUpdateWithoutChildrenInput>
+    create: XOR<AiCallLogCreateWithoutChildrenInput, AiCallLogUncheckedCreateWithoutChildrenInput>
+    where?: AiCallLogWhereInput
+  }
+
+  export type AiCallLogUpdateToOneWithWhereWithoutChildrenInput = {
+    where?: AiCallLogWhereInput
+    data: XOR<AiCallLogUpdateWithoutChildrenInput, AiCallLogUncheckedUpdateWithoutChildrenInput>
+  }
+
+  export type AiCallLogUpdateWithoutChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutAiCallLogsNestedInput
+    parent?: AiCallLogUpdateOneWithoutChildrenNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateWithoutChildrenInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCallLogUpsertWithWhereUniqueWithoutParentInput = {
+    where: AiCallLogWhereUniqueInput
+    update: XOR<AiCallLogUpdateWithoutParentInput, AiCallLogUncheckedUpdateWithoutParentInput>
+    create: XOR<AiCallLogCreateWithoutParentInput, AiCallLogUncheckedCreateWithoutParentInput>
+  }
+
+  export type AiCallLogUpdateWithWhereUniqueWithoutParentInput = {
+    where: AiCallLogWhereUniqueInput
+    data: XOR<AiCallLogUpdateWithoutParentInput, AiCallLogUncheckedUpdateWithoutParentInput>
+  }
+
+  export type AiCallLogUpdateManyWithWhereWithoutParentInput = {
+    where: AiCallLogScalarWhereInput
+    data: XOR<AiCallLogUpdateManyMutationInput, AiCallLogUncheckedUpdateManyWithoutParentInput>
   }
 
   export type ProjectCreateWithoutViewportInput = {
@@ -21026,6 +23581,7 @@ export namespace Prisma {
     assets?: AssetCreateNestedManyWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutViewportInput = {
@@ -21043,6 +23599,7 @@ export namespace Prisma {
     assets?: AssetUncheckedCreateNestedManyWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutViewportInput = {
@@ -21105,6 +23662,7 @@ export namespace Prisma {
     assets?: AssetUpdateManyWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutViewportInput = {
@@ -21122,6 +23680,7 @@ export namespace Prisma {
     assets?: AssetUncheckedUpdateManyWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type AssetUpsertWithoutViewportInput = {
@@ -21174,6 +23733,7 @@ export namespace Prisma {
     assets?: AssetCreateNestedManyWithoutProjectInput
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutBoardsInput = {
@@ -21191,6 +23751,7 @@ export namespace Prisma {
     assets?: AssetUncheckedCreateNestedManyWithoutProjectInput
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutBoardsInput = {
@@ -21224,6 +23785,7 @@ export namespace Prisma {
     assets?: AssetUpdateManyWithoutProjectNestedInput
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutBoardsInput = {
@@ -21241,6 +23803,7 @@ export namespace Prisma {
     assets?: AssetUncheckedUpdateManyWithoutProjectNestedInput
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutBlueprintsInput = {
@@ -21258,6 +23821,7 @@ export namespace Prisma {
     viewport?: ViewportCreateNestedOneWithoutProjectInput
     boards?: BoardCreateNestedManyWithoutProjectInput
     renders?: RenderCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutBlueprintsInput = {
@@ -21275,6 +23839,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedCreateNestedOneWithoutProjectInput
     boards?: BoardUncheckedCreateNestedManyWithoutProjectInput
     renders?: RenderUncheckedCreateNestedManyWithoutProjectInput
+    aiCallLogs?: AiCallLogUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutBlueprintsInput = {
@@ -21424,6 +23989,7 @@ export namespace Prisma {
     viewport?: ViewportUpdateOneWithoutProjectNestedInput
     boards?: BoardUpdateManyWithoutProjectNestedInput
     renders?: RenderUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutBlueprintsInput = {
@@ -21441,6 +24007,7 @@ export namespace Prisma {
     viewport?: ViewportUncheckedUpdateOneWithoutProjectNestedInput
     boards?: BoardUncheckedUpdateManyWithoutProjectNestedInput
     renders?: RenderUncheckedUpdateManyWithoutProjectNestedInput
+    aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ScriptUpsertWithWhereUniqueWithoutBlueprintInput = {
@@ -21948,6 +24515,28 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AiCallLogCreateManyProjectInput = {
+    id?: string
+    provider: string
+    model?: string | null
+    operation: string
+    parentId?: string | null
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type BlueprintUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     version?: IntFieldUpdateOperationsInput | number
@@ -22097,6 +24686,164 @@ export namespace Prisma {
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCallLogUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parent?: AiCallLogUpdateOneWithoutChildrenNestedInput
+    children?: AiCallLogUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: AiCallLogUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCallLogCreateManyParentInput = {
+    id?: string
+    projectId: string
+    provider: string
+    model?: string | null
+    operation: string
+    prompt: string
+    promptTokens?: number | null
+    response?: string | null
+    responseTokens?: number | null
+    status?: $Enums.AiCallStatus
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+    durationMs?: number | null
+    errorMessage?: string | null
+    errorCode?: string | null
+    retryCount?: number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCallLogUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutAiCallLogsNestedInput
+    children?: AiCallLogUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    children?: AiCallLogUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type AiCallLogUncheckedUpdateManyWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    provider?: StringFieldUpdateOperationsInput | string
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    operation?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    promptTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    response?: NullableStringFieldUpdateOperationsInput | string | null
+    responseTokens?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumAiCallStatusFieldUpdateOperationsInput | $Enums.AiCallStatus
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
+    retryCount?: IntFieldUpdateOperationsInput | number
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ScriptCreateManyBlueprintInput = {

@@ -1,0 +1,117 @@
+"use client";
+
+import { useState } from "react";
+import { useToast } from "@/components/ui/toast-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAssetSearch } from "@/src/hooks/queries/use-asset-search";
+
+export type StockResult = {
+  id: string;
+  previewUrl: string;
+  downloadUrl: string;
+  photographer?: string;
+  type: "IMAGE" | "VIDEO";
+  source: "pexels";
+};
+
+type Props = {
+  projectId: string;
+  onImported: (asset: any) => void;
+};
+
+export function StockSearch({ projectId, onImported }: Props) {
+  const toast = useToast();
+  const [query, setQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [importingId, setImportingId] = useState<string | null>(null);
+
+  // React Query hook - only triggers when searchQuery is set
+  const { data: results = [], isLoading, error } = useAssetSearch(searchQuery);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setSearchQuery(query.trim());
+  };
+
+  const handleImport = async (item: StockResult) => {
+    setImportingId(item.id);
+    setError(null);
+    try {
+      const res = await fetch("/api/assets/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          url: item.downloadUrl,
+          filename: `stock-${item.id}.jpg`,
+          type: item.type,
+          source: item.source,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(typeof data.error === "string" ? data.error : "Import failed");
+      }
+      onImported(data.asset);
+      toast({ title: "Imported to library", description: data.asset.filename, variant: "success" });
+    } catch (err: any) {
+      setError(err?.message || "Import failed");
+      toast({ title: "Import error", description: err?.message || "Import failed", variant: "error" });
+    } finally {
+      setImportingId(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search stock media (e.g. cinematic city night)"
+          className="bg-slate-900 text-slate-100"
+          aria-label="Search stock media"
+        />
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Searching..." : "Search"}
+        </Button>
+      </form>
+
+      {error && <p className="text-sm text-amber-300">{error.message}</p>}
+      {searchQuery && results.length === 0 && !isLoading && !error && (
+        <p className="text-sm text-amber-300">No results found. Try different keywords.</p>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {results.map((item) => (
+          <div
+            key={item.id}
+            className="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 shadow-sm shadow-black/30"
+          >
+            <div className="relative aspect-video">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.previewUrl}
+                alt="Stock preview"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="flex items-center justify-between px-3 py-2 text-xs text-slate-300">
+              <span className="truncate">{item.photographer ?? "Pexels"}</span>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleImport(item)}
+                disabled={importingId === item.id}
+              >
+                {importingId === item.id ? "Importing..." : "Add to Library"}
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
