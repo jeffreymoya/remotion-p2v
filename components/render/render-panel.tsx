@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Loader2, PlayCircle, Download } from "lucide-react";
+import { Loader2, PlayCircle, Download, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Render, RenderQuality } from "@/src/lib/storyflow/types";
 import { useRenderStatus, useStartRender } from "@/src/hooks/queries/use-render";
 import { useToast } from "@/components/ui/toast-provider";
+import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 type Props = {
   projectId: string;
@@ -16,6 +17,7 @@ type Props = {
 export function RenderPanel({ projectId, initialRender }: Props) {
   const [renderId, setRenderId] = useState<string | null>(initialRender?.id ?? null);
   const toast = useToast();
+  const { runTask, isTaskRunning } = useBackgroundTask();
 
   // React Query hooks
   const { data: render } = useRenderStatus(renderId);
@@ -24,24 +26,23 @@ export function RenderPanel({ projectId, initialRender }: Props) {
   const isProcessing = render?.status === "PROCESSING";
   const displayRender = render ?? initialRender;
 
-  const handleStartRender = (quality: RenderQuality) => {
-    startRenderMutation.mutate(quality, {
-      onSuccess: (data) => {
-        setRenderId(data.id);
-        toast({
-          title: "Render started",
-          description: `${quality} render initiated`,
-          variant: "success",
+  const handleStartRender = async (quality: RenderQuality) => {
+    await runTask(
+      { projectId, category: "video-rendering", name: `Rendering ${quality.toLowerCase()} video`, icon: "film" },
+      async ({ signal }) => {
+        return new Promise<Render>((resolve, reject) => {
+          startRenderMutation.mutate(quality, {
+            onSuccess: (data) => {
+              setRenderId(data.id);
+              resolve(data);
+            },
+            onError: (error) => {
+              reject(error);
+            },
+          });
         });
-      },
-      onError: (error) => {
-        toast({
-          title: "Render failed",
-          description: error.message,
-          variant: "error",
-        });
-      },
-    });
+      }
+    );
   };
 
   const progressPct = useMemo(
@@ -61,7 +62,7 @@ export function RenderPanel({ projectId, initialRender }: Props) {
         </div>
         <div className="flex gap-2">
           <Button
-            disabled={startRenderMutation.isPending || isProcessing}
+            disabled={startRenderMutation.isPending || isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("DRAFT")}
           >
             {startRenderMutation.isPending ? (
@@ -73,7 +74,7 @@ export function RenderPanel({ projectId, initialRender }: Props) {
           </Button>
           <Button
             variant="secondary"
-            disabled={startRenderMutation.isPending || isProcessing}
+            disabled={startRenderMutation.isPending || isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("PRODUCTION")}
           >
             <PlayCircle className="mr-2 h-4 w-4" />
@@ -104,9 +105,9 @@ export function RenderPanel({ projectId, initialRender }: Props) {
               </a>
             )}
           </div>
-          {render.error && <p className="text-xs text-red-400">Error: {render.error}</p>}
-          {render.status === "FAILED" && (
-            <Button size="sm" variant="outline" onClick={() => startRender(render.quality)}>
+          {render?.error && <p className="text-xs text-red-400">Error: {render.error}</p>}
+          {render?.status === "FAILED" && (
+            <Button size="sm" variant="outline" onClick={() => handleStartRender(render.quality)}>
               <RefreshCcw className="mr-2 h-4 w-4" /> Retry
             </Button>
           )}

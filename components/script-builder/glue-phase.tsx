@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useAnalyzeGlue, useSavePolishedText } from "@/src/hooks/queries/use-execution-status";
+import { useBackgroundActivity } from "@/components/ui/background-activity-provider";
 
 const typeStyles: Record<string, { color: string; label: string }> = {
   robot_word: { color: "bg-amber-500/20 text-amber-200", label: "Robot word" },
@@ -81,16 +82,18 @@ function HighlightOverlay({
 }
 
 interface GluePhaseProps {
+  projectId: string;
   scriptDraft: ScriptDraft;
   onDraftUpdated: (draft: ScriptDraft) => void;
   onSegment: () => Promise<void> | void;
   onSkip?: () => void;
 }
 
-export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: GluePhaseProps) {
+export function GluePhase({ projectId, scriptDraft, onDraftUpdated, onSegment, onSkip }: GluePhaseProps) {
   const toast = useToast();
   const analyzeMutation = useAnalyzeGlue();
   const saveMutation = useSavePolishedText();
+  const { isTaskRunning } = useBackgroundActivity();
 
   const [text, setText] = useState<string>(
     scriptDraft.polishedText ?? (scriptDraft.beatDrafts as any[]).map((b: any) => b.text).join("\n\n")
@@ -101,6 +104,7 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
 
   const warningCount = issues.filter((i) => i.severity === "warning" && !i.resolved).length;
   const errorCount = issues.filter((i) => i.severity === "error" && !i.resolved).length;
+  const isSegmenting = isTaskRunning("script-segmentation", projectId);
 
   const toggleResolved = (id: string) => {
     setIssues((prev) => prev.map((issue) => (issue.id === id ? { ...issue, resolved: !issue.resolved } : issue)));
@@ -265,7 +269,7 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => handleSave(true)}
-          disabled={saveMutation.isPending}
+          disabled={saveMutation.isPending || isSegmenting}
           className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
         >
           {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -284,7 +288,8 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
             if (onSkip) onSkip();
             await onSegment();
           }}
-          className="inline-flex items-center gap-2 rounded-md border border-amber-600/60 bg-amber-600/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:-translate-y-0.5"
+          disabled={isSegmenting}
+          className="inline-flex items-center gap-2 rounded-md border border-amber-600/60 bg-amber-600/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:-translate-y-0.5 disabled:opacity-60"
         >
           <SkipForward className="h-4 w-4" />
           Skip Glue

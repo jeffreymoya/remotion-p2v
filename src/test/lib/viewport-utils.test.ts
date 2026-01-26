@@ -124,9 +124,9 @@ describe('Easing Functions', () => {
 
   it('all functions return 0-1 range for valid inputs', () => {
     const testValues = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1];
-    const functions = Object.entries(EASING_FUNCTIONS);
+    const functions = Object.values(EASING_FUNCTIONS);
 
-    for (const [name, fn] of functions) {
+    for (const fn of functions) {
       for (const t of testValues) {
         const result = fn(t);
         expect(result).toBeGreaterThanOrEqual(0);

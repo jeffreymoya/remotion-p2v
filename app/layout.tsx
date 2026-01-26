@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast-provider";
+import { BackgroundActivityProvider } from "@/components/ui/background-activity-provider";
 import { QueryProvider } from "@/src/providers/query-provider";
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-slate-950 text-slate-50 antialiased">
         <QueryProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <BackgroundActivityProvider>{children}</BackgroundActivityProvider>
+          </ToastProvider>
         </QueryProvider>
       </body>
     </html>

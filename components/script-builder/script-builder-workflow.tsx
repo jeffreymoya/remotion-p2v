@@ -22,6 +22,7 @@ import {
   useRegenerateBlueprint,
   useSegmentScript,
 } from "@/src/hooks/queries/use-execution-status";
+import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 interface ScriptBuilderWorkflowProps {
   projectId: string;
@@ -54,6 +55,9 @@ export function ScriptBuilderWorkflow({
   const generateBlueprintMutation = useGenerateBlueprint();
   const regenerateBlueprintMutation = useRegenerateBlueprint();
   const segmentScriptMutation = useSegmentScript();
+
+  // Background task tracking
+  const { runTask, isTaskRunning } = useBackgroundTask();
   const storageKey = useMemo(
     () => `storyflow:auto-save:project:${projectId}:builder-topic`,
     [projectId]
@@ -94,27 +98,48 @@ export function ScriptBuilderWorkflow({
     onError: (err) => toast({ title: err.message, variant: "error" }),
   });
 
-  const handleGenerateBlueprint = () => {
+  const handleGenerateBlueprint = async () => {
     if (!topic.trim()) {
       toast({ title: "Topic required", variant: "error" });
       return;
     }
 
-    generateBlueprintMutation.mutate(
+    await runTask(
       {
         projectId,
-        topic: topic.trim(),
-        targetDurationMs: targetDuration,
+        category: "blueprint-generation",
+        name: "Generating blueprint",
+        icon: "sparkles",
       },
-      {
-        onSuccess: ({ blueprint: newBlueprint }) => {
-          setBlueprint(newBlueprint);
-          setPhase("blueprint");
-          toast({ title: "Blueprint generated", variant: "success" });
-        },
-        onError: (error) => {
-          toast({ title: error.message, variant: "error" });
-        },
+      async ({ signal }) => {
+        return new Promise<void>((resolve, reject) => {
+          if (signal.aborted) {
+            reject(new Error("Cancelled"));
+            return;
+          }
+
+          generateBlueprintMutation.mutate(
+            {
+              projectId,
+              topic: topic.trim(),
+              targetDurationMs: targetDuration,
+            },
+            {
+              onSuccess: ({ blueprint: newBlueprint }) => {
+                if (signal.aborted) {
+                  reject(new Error("Cancelled"));
+                  return;
+                }
+                setBlueprint(newBlueprint);
+                setPhase("blueprint");
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            }
+          );
+        });
       }
     );
   };
@@ -123,29 +148,50 @@ export function ScriptBuilderWorkflow({
     setPhase("execution");
   };
 
-  const handleBlueprintRegenerate = () => {
+  const handleBlueprintRegenerate = async () => {
     if (!blueprint) {
-      handleGenerateBlueprint();
+      await handleGenerateBlueprint();
       return;
     }
 
-    regenerateBlueprintMutation.mutate(
+    await runTask(
       {
-        blueprintId: blueprint.id,
-        rejectionNotes: blueprint.rejectionNotes ?? undefined,
+        projectId,
+        category: "blueprint-regeneration",
+        name: "Regenerating blueprint",
+        icon: "sparkles",
       },
-      {
-        onSuccess: ({ blueprint: newBlueprint, message }) => {
-          setBlueprint(newBlueprint);
-          setScriptDraft(null);
-          setScript(null);
-          setPhase("blueprint");
-          registerEdit("script", "structural");
-          toast({ title: message ?? "Blueprint regenerated", variant: "success" });
-        },
-        onError: (error) => {
-          toast({ title: error.message, variant: "error" });
-        },
+      async ({ signal }) => {
+        return new Promise<void>((resolve, reject) => {
+          if (signal.aborted) {
+            reject(new Error("Cancelled"));
+            return;
+          }
+
+          regenerateBlueprintMutation.mutate(
+            {
+              blueprintId: blueprint.id,
+              rejectionNotes: blueprint.rejectionNotes ?? undefined,
+            },
+            {
+              onSuccess: ({ blueprint: newBlueprint }) => {
+                if (signal.aborted) {
+                  reject(new Error("Cancelled"));
+                  return;
+                }
+                setBlueprint(newBlueprint);
+                setScriptDraft(null);
+                setScript(null);
+                setPhase("blueprint");
+                registerEdit("script", "structural");
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            }
+          );
+        });
       }
     );
   };
@@ -156,28 +202,50 @@ export function ScriptBuilderWorkflow({
     toast({ title: "Execution finished. Run glue analysis before segmenting.", variant: "success" });
   };
 
-  const handleSegmentDraft = () => {
+  const handleSegmentDraft = async () => {
     if (!scriptDraft) return;
 
-    segmentScriptMutation.mutate(scriptDraft.id, {
-      onSuccess: ({ script: finalScript, message }) => {
-        registerScriptChange(script, finalScript);
-        setScript(finalScript);
-        setPhase("preview");
-        setTtsState({
-          running: true,
-          completed: 0,
-          total: finalScript.segments.length,
-          error: null,
-        });
-        toast({ title: message ?? "Script segmented", variant: "success" });
+    await runTask(
+      {
+        projectId,
+        category: "script-segmentation",
+        name: "Segmenting script",
+        icon: "scissors",
+      },
+      async ({ signal }) => {
+        return new Promise<void>((resolve, reject) => {
+          if (signal.aborted) {
+            reject(new Error("Cancelled"));
+            return;
+          }
 
-        runTtsForScript(finalScript);
-      },
-      onError: (error) => {
-        toast({ title: error.message, variant: "error" });
-      },
-    });
+          segmentScriptMutation.mutate(scriptDraft.id, {
+            onSuccess: ({ script: finalScript }) => {
+              if (signal.aborted) {
+                reject(new Error("Cancelled"));
+                return;
+              }
+              registerScriptChange(script, finalScript);
+              setScript(finalScript);
+              setPhase("preview");
+              setTtsState({
+                running: true,
+                completed: 0,
+                total: finalScript.segments.length,
+                error: null,
+              });
+
+              // Start TTS generation in background
+              runTtsForScript(finalScript);
+              resolve();
+            },
+            onError: (error) => {
+              reject(error);
+            },
+          });
+        });
+      }
+    );
   };
 
   const runTtsForScript = async (
@@ -198,58 +266,69 @@ export function ScriptBuilderWorkflow({
 
     setTtsState({ running: true, completed: 0, total: targets.length, error: null });
 
-    try {
-      for (let i = 0; i < targets.length; i++) {
-        const seg = targets[i];
-        const res = await fetch("/api/tts/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            projectId,
-            segmentIndex: seg.index,
-            force,
-          }),
-        });
+    await runTask(
+      {
+        projectId,
+        category: "tts-generation",
+        name: `Generating TTS audio`,
+        icon: "mic",
+      },
+      async ({ signal, updateProgress }) => {
+        for (let i = 0; i < targets.length; i++) {
+          if (signal.aborted) {
+            setTtsState({
+              running: false,
+              completed: i,
+              total: targets.length,
+              error: "Cancelled",
+            });
+            throw new Error("TTS generation cancelled");
+          }
 
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          const detail = typeof body.error === "string" ? body.error : "TTS failed";
-          setTtsState({
-            running: false,
-            completed: i,
-            total: targets.length,
-            error: detail,
+          const seg = targets[i];
+          updateProgress(i + 1, targets.length, `Segment ${i + 1}/${targets.length}`);
+
+          const res = await fetch("/api/tts/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              projectId,
+              segmentIndex: seg.index,
+              force,
+            }),
+            signal,
           });
-          toast({ title: detail, variant: "error" });
-          return;
+
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            const detail = typeof body.error === "string" ? body.error : "TTS failed";
+            setTtsState({
+              running: false,
+              completed: i,
+              total: targets.length,
+              error: detail,
+            });
+            throw new Error(detail);
+          }
+
+          const { segment: updated } = await res.json();
+          setScript((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  segments: prev.segments.map((s) =>
+                    s.index === updated.index ? updated : s
+                  ),
+                }
+              : prev
+          );
+          setTtsState((prev) => ({ ...prev, completed: prev.completed + 1 }));
         }
 
-        const { segment: updated } = await res.json();
-        setScript((prev) =>
-          prev
-            ? {
-                ...prev,
-                segments: prev.segments.map((s) =>
-                  s.index === updated.index ? updated : s
-                ),
-              }
-            : prev
-        );
-        setTtsState((prev) => ({ ...prev, completed: prev.completed + 1 }));
+        setTtsState((prev) => ({ ...prev, running: false, error: null }));
+        return undefined;
       }
-
-      setTtsState((prev) => ({ ...prev, running: false, error: null }));
-      toast({ title: force ? "Audio regenerated" : "Audio generated", variant: "success" });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Network error generating audio";
-      setTtsState({
-        running: false,
-        completed: 0,
-        total: targets.length,
-        error: errorMessage,
-      });
-      toast({ title: errorMessage, variant: "error" });
-    }
+    );
   };
 
   const handleBackToInput = () => {
@@ -325,7 +404,7 @@ export function ScriptBuilderWorkflow({
 
           <button
             onClick={handleGenerateBlueprint}
-            disabled={generateBlueprintMutation.isPending}
+            disabled={generateBlueprintMutation.isPending || isTaskRunning("blueprint-generation", projectId)}
             data-onboarding="ai-generate"
             className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
           >
@@ -348,6 +427,7 @@ export function ScriptBuilderWorkflow({
       {phase === "blueprint" && blueprint && (
         <div className="space-y-4">
           <BlueprintReview
+            projectId={projectId}
             blueprint={blueprint}
             onApproved={handleBlueprintApproved}
             onRegenerate={handleBlueprintRegenerate}
@@ -377,6 +457,7 @@ export function ScriptBuilderWorkflow({
             onDraftUpdated={(draft) => setScriptDraft(draft)}
           />
           <GluePhase
+            projectId={projectId}
             scriptDraft={scriptDraft}
             onDraftUpdated={(draft) => setScriptDraft(draft)}
             onSegment={handleSegmentDraft}
@@ -403,14 +484,14 @@ export function ScriptBuilderWorkflow({
               <div className="flex gap-2">
                 <button
                   onClick={() => runTtsForScript(script)}
-                  disabled={ttsState.running}
+                  disabled={ttsState.running || isTaskRunning("tts-generation", projectId)}
                   className="rounded-md bg-brand-600 px-3 py-2 text-xs font-semibold text-white shadow hover:-translate-y-0.5 disabled:opacity-60"
                 >
                   {ttsState.running ? "Generating…" : "Generate Audio"}
                 </button>
                 <button
                   onClick={() => runTtsForScript(script, { force: true })}
-                  disabled={ttsState.running}
+                  disabled={ttsState.running || isTaskRunning("tts-generation", projectId)}
                   className="rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow hover:-translate-y-0.5 disabled:opacity-60"
                 >
                   Regenerate All

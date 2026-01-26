@@ -6,20 +6,24 @@ import { BlueprintBeatCard } from "./blueprint-beat-card";
 import { useToast } from "@/components/ui/toast-provider";
 import { RotateCcw, CheckCircle } from "lucide-react";
 import { useReviewBlueprint } from "@/src/hooks/queries/use-execution-status";
+import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 interface BlueprintReviewProps {
+  projectId: string;
   blueprint: Blueprint;
   onApproved: () => void;
   onRegenerate: () => void;
 }
 
 export function BlueprintReview({
+  projectId,
   blueprint,
   onApproved,
   onRegenerate,
 }: BlueprintReviewProps) {
   const [beatReviews, setBeatReviews] = useState<Map<number, BeatReviewInput>>(new Map());
   const toast = useToast();
+  const { isTaskRunning } = useBackgroundTask();
   const reviewMutation = useReviewBlueprint();
 
   const handleApprove = (beatIndex: number) => {
@@ -126,7 +130,7 @@ export function BlueprintReview({
           </button>
           <button
             onClick={onRegenerate}
-            disabled={reviewMutation.isPending}
+            disabled={reviewMutation.isPending || isTaskRunning("blueprint-regeneration", projectId)}
             className="inline-flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RotateCcw className="h-4 w-4" />

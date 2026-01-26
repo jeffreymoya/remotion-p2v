@@ -12,6 +12,7 @@ import { ImageUploader } from "./ImageUploader";
 import { RegionEditor } from "./RegionEditor";
 import { ViewportPreview } from "./ViewportPreview";
 import { useToast } from "@/components/ui/toast-provider";
+import { useBackgroundTask } from "@/src/hooks/use-background-task";
 import { cn } from "@/src/lib/utils";
 
 interface BoardPlannerWizardProps {
@@ -24,6 +25,7 @@ type WizardStep = "config" | "plan" | "prompts" | "upload" | "regions" | "trigge
 
 export function BoardPlannerWizard({ projectId, script, className }: BoardPlannerWizardProps) {
   const toast = useToast();
+  const { runTask, isTaskRunning } = useBackgroundTask();
   const [currentStep, setCurrentStep] = useState<WizardStep>("config");
   const [loading, setLoading] = useState(false);
 
@@ -45,76 +47,78 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
 
   const handleGeneratePlan = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(`/api/projects/${projectId}/boards/plan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          scriptSegments: script.segments,
-          options: {
-            maxBoardDuration,
-          },
-        }),
-      });
+    await runTask(
+      { projectId, category: "board-plan-generation", name: "Generating board plan", icon: "cog" },
+      async ({ signal }) => {
+        const response = await fetch(`/api/projects/${projectId}/boards/plan`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scriptSegments: script.segments,
+            options: {
+              maxBoardDuration,
+            },
+          }),
+          signal,
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to generate plan");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to generate plan");
+        }
+
+        const data = await response.json();
+        setBoardPlan(data.plan); // API returns { boards, plan }
+        setCurrentStep("plan");
+        return data;
       }
-
-      const data = await response.json();
-      setBoardPlan(data.plan); // API returns { boards, plan }
-      setCurrentStep("plan");
-      toast({ title: "Plan generated", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
+    setLoading(false);
   };
 
   const handleGeneratePrompts = async () => {
     if (!boardPlan) return;
 
     setLoading(true);
-    try {
-      // Convert board plan to the format expected by prompts API
-      const segments = script.segments.map((seg, idx) => ({
-        id: `seg-${idx}`,
-        order: idx + 1,
-        text: seg.text,
-        estimatedDurationMs: seg.estimatedDuration || 5000,
-        speakingNotes: "",
-      }));
+    await runTask(
+      { projectId, category: "board-prompts-generation", name: "Generating image prompts", icon: "sparkles" },
+      async ({ signal }) => {
+        // Convert board plan to the format expected by prompts API
+        const segments = script.segments.map((seg, idx) => ({
+          id: `seg-${idx}`,
+          order: idx + 1,
+          text: seg.text,
+          estimatedDurationMs: seg.estimatedDuration || 5000,
+          speakingNotes: "",
+        }));
 
-      const response = await fetch(`/api/projects/${projectId}/boards/prompts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          boards: boardPlan.boards,
-          segments,
-          gridLayout: {
-            rows: 2,
-            cols: 3,
-          },
-        }),
-      });
+        const response = await fetch(`/api/projects/${projectId}/boards/prompts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            boards: boardPlan.boards,
+            segments,
+            gridLayout: {
+              rows: 2,
+              cols: 3,
+            },
+          }),
+          signal,
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to generate prompts");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to generate prompts");
+        }
+
+        const data = await response.json();
+        const promptsPayload = data.data ?? data;
+        setPrompts(promptsPayload);
+        setCurrentStep("prompts");
+        return data;
       }
-
-      const data = await response.json();
-      const promptsPayload = data.data ?? data;
-      setPrompts(promptsPayload);
-      setCurrentStep("prompts");
-      toast({ title: "Prompts generated", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
+    setLoading(false);
   };
 
   const handleImageUpload = (boardId: string, imagePath: string) => {
@@ -141,86 +145,89 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     }
 
     setLoading(true);
-    try {
-      const response = await fetch(`/api/projects/${projectId}/boards/regions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          boardId,
+    await runTask(
+      { projectId, category: "board-region-detection", name: "Detecting board regions", icon: "cog" },
+      async ({ signal }) => {
+        const response = await fetch(`/api/projects/${projectId}/boards/regions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            boardId,
+            imagePath,
+            elements: boardPrompt.elements,
+            gridLayout: boardPrompt.gridLayout,
+          }),
+          signal,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to detect regions");
+        }
+
+        const data = await response.json();
+        setRegionsData({
           imagePath,
-          elements: boardPrompt.elements,
-          gridLayout: boardPrompt.gridLayout,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to detect regions");
+          regions: data.regions,
+          imageMetadata: data.imageMetadata,
+        });
+        setCurrentStep("regions");
+        return data;
       }
-
-      const data = await response.json();
-      setRegionsData({
-        imagePath,
-        regions: data.regions,
-        imageMetadata: data.imageMetadata,
-      });
-      setCurrentStep("regions");
-      toast({ title: "Regions detected", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
+    setLoading(false);
   };
 
   const handleGenerateTriggers = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(`/api/projects/${projectId}/boards/triggers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
+    await runTask(
+      { projectId, category: "board-triggers-generation", name: "Generating camera triggers", icon: "cog" },
+      async ({ signal }) => {
+        const response = await fetch(`/api/projects/${projectId}/boards/triggers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+          signal,
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to generate triggers");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to generate triggers");
+        }
+
+        const data = await response.json();
+        setTriggers(data);
+        setCurrentStep("triggers");
+        return data;
       }
-
-      const data = await response.json();
-      setTriggers(data);
-      setCurrentStep("triggers");
-      toast({ title: "Triggers generated", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
+    setLoading(false);
   };
 
   const handleBuildViewport = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(`/api/projects/${projectId}/boards/viewport`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fps: 30 }),
-      });
+    await runTask(
+      { projectId, category: "board-viewport-build", name: "Building viewport animation", icon: "film" },
+      async ({ signal }) => {
+        const response = await fetch(`/api/projects/${projectId}/boards/viewport`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fps: 30 }),
+          signal,
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to build viewport");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to build viewport");
+        }
+
+        const data = await response.json();
+        setViewport(data.viewportJson);
+        setCurrentStep("viewport");
+        return data;
       }
-
-      const data = await response.json();
-      setViewport(data.viewportJson);
-      setCurrentStep("viewport");
-      toast({ title: "Viewport built successfully", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
+    setLoading(false);
   };
 
   const handleReset = () => {
@@ -361,7 +368,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleGeneratePlan} disabled={loading || !script.segments.length}>
+              <Button onClick={handleGeneratePlan} disabled={loading || !script.segments.length || isTaskRunning("board-plan-generation", projectId)}>
                 {loading ? "Generating..." : "Generate Board Plan"}
               </Button>
             </div>
@@ -385,7 +392,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             <BoardPlanView plan={boardPlan} />
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleGeneratePrompts} disabled={loading}>
+              <Button onClick={handleGeneratePrompts} disabled={loading || isTaskRunning("board-prompts-generation", projectId)}>
                 {loading ? "Generating..." : "Generate Image Prompts"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("config")}>
@@ -479,7 +486,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             <div className="flex gap-3 border-t border-slate-800 pt-6">
               <Button
                 onClick={handleDetectRegions}
-                disabled={loading || Object.keys(uploadedImages).length === 0}
+                disabled={loading || Object.keys(uploadedImages).length === 0 || isTaskRunning("board-region-detection", projectId)}
               >
                 {loading ? "Detecting..." : "Detect Regions"}
               </Button>
@@ -517,7 +524,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             />
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleGenerateTriggers} disabled={loading}>
+              <Button onClick={handleGenerateTriggers} disabled={loading || isTaskRunning("board-triggers-generation", projectId)}>
                 {loading ? "Generating..." : "Generate Triggers"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("upload")}>
@@ -597,7 +604,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleBuildViewport} disabled={loading}>
+              <Button onClick={handleBuildViewport} disabled={loading || isTaskRunning("board-viewport-build", projectId)}>
                 {loading ? "Building..." : "Build Viewport"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("regions")}>

@@ -149,13 +149,13 @@ describe('GeminiResponseSchema - Tone Validation', () => {
   });
 
   it('accepts all valid tone values', () => {
-    const validTones = ['dramatic', 'narrative', 'action', 'contemplative', 'energetic'];
+    const validTones = ['dramatic', 'narrative', 'action', 'contemplative', 'energetic'] as const;
 
     for (const tone of validTones) {
       const response = {
         ...baseResponse,
         segmentGroups: [
-          { segmentIndices: [0], regionId: 'r1', tone: tone as any, focusReason: 'test' },
+          { segmentIndices: [0], regionId: 'r1', tone, focusReason: 'test' },
         ],
       };
 
