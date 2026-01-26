@@ -8,7 +8,7 @@ Create short-form AI videos with Remotion, AI for script generation, and Google 
 - Install dependencies: `npm install`
 - Copy env template: `cp .env.example .env` (or `.env.local`) and fill at least:
   - `GOOGLE_TTS_API_KEY`
-  - One stock media key (`PEXELS_API_KEY`, `UNSPLASH_ACCESS_KEY`, or `PIXABAY_API_KEY`)
+- Stock media API keys are no longer required (online providers deprecated)
   - `DATABASE_URL` or `STORYFLOW_DATABASE_URL` for SQLite database
   - (Optional) `ENABLE_SCRIPT_BUILDER=true` to enable the multi-phase Script Builder workflow
 - Install and authenticate the Gemini CLI (required for AI steps like topic refinement, script generation, and boards prompts/regions). Verify with `gemini --version`.

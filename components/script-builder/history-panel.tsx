@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/storyflow/utils";
+import { useBlueprintHistory, useDraftHistory } from "@/src/hooks/queries/use-execution-status";
 
 type HistoryItem = {
   id: string;
@@ -23,56 +24,30 @@ type Tab = "blueprint" | "draft";
 export function HistoryPanel({ blueprintId, draftId, className }: HistoryPanelProps) {
   const toast = useToast();
   const [tab, setTab] = useState<Tab>("blueprint");
-  const [loading, setLoading] = useState(false);
-  const [blueprintHistory, setBlueprintHistory] = useState<HistoryItem[]>([]);
-  const [draftHistory, setDraftHistory] = useState<HistoryItem[]>([]);
 
-  const _activeId = tab === "blueprint" ? blueprintId : draftId;
+  const {
+    data: blueprintHistory = [],
+    isLoading: blueprintLoading,
+    refetch: refetchBlueprint,
+  } = useBlueprintHistory(tab === "blueprint" ? blueprintId ?? null : null);
+
+  const {
+    data: draftHistory = [],
+    isLoading: draftLoading,
+    refetch: refetchDraft,
+  } = useDraftHistory(tab === "draft" ? draftId ?? null : null);
+
   const activeHistory = tab === "blueprint" ? blueprintHistory : draftHistory;
+  const loading = tab === "blueprint" ? blueprintLoading : draftLoading;
   const disabled = (tab === "blueprint" && !blueprintId) || (tab === "draft" && !draftId);
 
-  const fetchHistory = async (target: Tab) => {
-    const id = target === "blueprint" ? blueprintId : draftId;
-    if (!id) return;
-    setLoading(true);
-    try {
-      const endpoint =
-        target === "blueprint"
-          ? `/api/script-builder/blueprint/${id}/history`
-          : `/api/script-builder/draft/${id}/history`;
-      const res = await fetch(endpoint);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to load history", variant: "error" });
-        return;
-      }
-      const { history } = await res.json();
-      const items: HistoryItem[] = history.map((h: any) => ({
-        id: h.id,
-        version: h.version,
-        event: h.event,
-        createdAt: h.createdAt,
-        snapshot: h.snapshot,
-      }));
-      if (target === "blueprint") setBlueprintHistory(items);
-      else setDraftHistory(items);
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error loading history", variant: "error" });
-    } finally {
-      setLoading(false);
+  const handleRefresh = () => {
+    if (tab === "blueprint") {
+      refetchBlueprint();
+    } else {
+      refetchDraft();
     }
   };
-
-  useEffect(() => {
-    if (blueprintId) fetchHistory("blueprint");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blueprintId]);
-
-  useEffect(() => {
-    if (draftId) fetchHistory("draft");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draftId]);
 
   const handleDownload = (item: HistoryItem) => {
     const blob = new Blob([JSON.stringify(item.snapshot, null, 2)], {
@@ -120,7 +95,7 @@ export function HistoryPanel({ blueprintId, draftId, className }: HistoryPanelPr
           </button>
         </div>
         <button
-          onClick={() => fetchHistory(tab)}
+          onClick={handleRefresh}
           disabled={disabled || loading}
           className="text-xs font-semibold text-brand-300 hover:text-brand-200 disabled:opacity-50"
         >

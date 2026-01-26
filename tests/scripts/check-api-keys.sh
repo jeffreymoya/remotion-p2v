@@ -15,9 +15,6 @@
 #
 # Environment Variables:
 #   GOOGLE_TTS_API_KEY      - Required for TTS generation
-#   PEXELS_API_KEY          - Required for media search
-#   PIXABAY_API_KEY         - Required for media fallback
-#   UNSPLASH_ACCESS_KEY     - Required for media fallback
 #   SKIP_API_KEY_CHECK      - Set to 'true' to skip validation (use with caution)
 ###############################################################################
 
@@ -97,9 +94,6 @@ check_api_key() {
 
 echo -e "${BLUE}Required API Keys:${NC}"
 check_api_key "GOOGLE_TTS_API_KEY" || VALIDATION_FAILED=1
-check_api_key "PEXELS_API_KEY" || VALIDATION_FAILED=1
-check_api_key "PIXABAY_API_KEY" || VALIDATION_FAILED=1
-check_api_key "UNSPLASH_ACCESS_KEY" || VALIDATION_FAILED=1
 
 echo ""
 

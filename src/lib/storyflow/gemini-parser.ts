@@ -53,6 +53,45 @@ function extractJsonFromText(text: string): string {
 }
 
 /**
+ * Replace raw newlines that appear inside JSON string literals
+ * with escaped \n so JSON.parse can accept pretty-printed strings.
+ */
+function escapeNewlinesInJsonStrings(text: string): string {
+  let result = "";
+  let inString = false;
+  let escaped = false;
+
+  for (const char of text) {
+    if (escaped) {
+      result += char;
+      escaped = false;
+      continue;
+    }
+
+    if (char === "\\") {
+      result += char;
+      escaped = true;
+      continue;
+    }
+
+    if (char === '"') {
+      result += char;
+      inString = !inString;
+      continue;
+    }
+
+    if (inString && (char === "\n" || char === "\r")) {
+      result += "\\n";
+      continue;
+    }
+
+    result += char;
+  }
+
+  return result;
+}
+
+/**
  * Parse Gemini CLI output robustly
  *
  * Handles:
@@ -78,6 +117,17 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
   try {
     parsed = JSON.parse(text);
   } catch (firstError) {
+    // Step 3a: Try escaping raw newlines that may appear inside string values
+    try {
+      const newlineEscaped = escapeNewlinesInJsonStrings(text);
+      parsed = JSON.parse(newlineEscaped);
+    } catch {
+      /* fallback to next attempts */
+    }
+
+    if (parsed !== undefined) {
+      // Successfully parsed after newline escaping
+    } else {
     // Step 4: Try unescaping common escape sequences that might be double-escaped
     try {
       // Replace literal \n, \t, \r with actual characters
@@ -96,6 +146,7 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
         text.substring(0, 500)
       );
       throw firstError;
+    }
     }
   }
 

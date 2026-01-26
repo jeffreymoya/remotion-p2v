@@ -10,6 +10,7 @@ import { MusicLibrary } from "@/components/assets/music-library";
 import { MusicSettings } from "@/components/assets/music-settings";
 import { SimpleAssetMapper } from "@/components/editors/asset-mapper/simple-asset-mapper";
 import { StockSearch } from "./stock-search";
+import { useAssets, useDeleteAsset, useUpscaleAsset } from "@/src/hooks/queries/use-assets";
 
 type Props = {
   projectId: string;
@@ -41,10 +42,13 @@ export function MediaManager({
   const toast = useToast();
   const [tab, setTab] = useState<MediaTab>("upload");
   const [activeType, setActiveType] = useState<AssetType | "ALL">("ALL");
-  const [assets, setAssets] = useState<Asset[]>(initialAssets);
-  const [upscaling, setUpscaling] = useState<Set<string>>(new Set());
   const [selectedMusicId, setSelectedMusicId] = useState<string | null>(selectedMusicAssetId ?? null);
   const [musicVolume, setMusicVolume] = useState(initialMusicVolume);
+
+  // Use React Query for assets with initialData from RSC
+  const { data: assets = initialAssets } = useAssets(projectId);
+  const deleteMutation = useDeleteAsset(projectId);
+  const upscaleMutation = useUpscaleAsset(projectId);
 
   const filteredAssets = useMemo(() => {
     if (activeType === "ALL") return assets;
@@ -53,26 +57,23 @@ export function MediaManager({
 
   const images = useMemo(() => assets.filter((a) => a.type === "IMAGE"), [assets]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/assets/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Delete failed");
-      }
-      setAssets((prev) => prev.filter((a) => a.id !== id));
-      toast({ title: "Asset deleted", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Delete error",
-        description: error?.message || "Unable to delete asset",
-        variant: "error",
-      });
-    }
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        toast({ title: "Asset deleted", variant: "success" });
+      },
+      onError: (error) => {
+        toast({
+          title: "Delete error",
+          description: error.message || "Unable to delete asset",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const handleUploaded = (asset: Asset) => {
-    setAssets((prev) => [asset, ...prev]);
+    // React Query cache automatically updated by useUploadAsset hook in UploadZone
     if (activeType !== "ALL" && activeType !== asset.type) {
       setActiveType("ALL");
     }
@@ -81,40 +82,23 @@ export function MediaManager({
     }
   };
 
-  const handleUpscale = async (id: string) => {
-    setUpscaling((prev) => new Set(prev).add(id));
-    try {
-      const res = await fetch("/api/assets/upscale", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId: id }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Upscale failed");
-      }
-
-      const { asset } = await res.json();
-      setAssets((prev) => prev.map((item) => (item.id === id ? asset : item)));
-      toast({
-        title: "Image upscaled",
-        description: "Replaced with 8K version",
-        variant: "success",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Upscale error",
-        description: error?.message || "Unable to upscale image",
-        variant: "error",
-      });
-    } finally {
-      setUpscaling((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }
+  const handleUpscale = (id: string) => {
+    upscaleMutation.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "Image upscaled",
+          description: "Replaced with 8K version",
+          variant: "success",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Upscale error",
+          description: error.message || "Unable to upscale image",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const handleSelectMusicAsset = async (assetId: string) => {
@@ -140,7 +124,7 @@ export function MediaManager({
   };
 
   const handleLibrarySelected = (asset: Asset) => {
-    setAssets((prev) => [asset, ...prev.filter((item) => item.id !== asset.id)]);
+    // Asset added to cache by MusicLibrary's useSelectMusicTrack mutation
     setSelectedMusicId(asset.id);
     if (activeType !== "ALL" && activeType !== "MUSIC") {
       setActiveType("MUSIC");
@@ -153,7 +137,7 @@ export function MediaManager({
   };
 
   const handleImportedFromStock = (asset: Asset) => {
-    setAssets((prev) => [asset, ...prev]);
+    // Asset added to cache by StockSearch's import mutation
     setActiveType("ALL");
     toast({ title: "Added to library", description: asset.filename, variant: "success" });
     setTab("library");
@@ -232,7 +216,11 @@ export function MediaManager({
                   assets={filteredAssets}
                   onDelete={handleDelete}
                   onUpscale={handleUpscale}
-                  upscalingIds={upscaling}
+                  upscalingIds={new Set(
+                    upscaleMutation.isPending && upscaleMutation.variables
+                      ? [upscaleMutation.variables]
+                      : []
+                  )}
                   onSelectMusic={handleSelectMusicAsset}
                   selectedMusicId={selectedMusicId}
                 />
@@ -256,7 +244,11 @@ export function MediaManager({
               assets={filteredAssets}
               onDelete={handleDelete}
               onUpscale={handleUpscale}
-              upscalingIds={upscaling}
+              upscalingIds={new Set(
+                upscaleMutation.isPending && upscaleMutation.variables
+                  ? [upscaleMutation.variables]
+                  : []
+              )}
               onSelectMusic={handleSelectMusicAsset}
               selectedMusicId={selectedMusicId}
             />

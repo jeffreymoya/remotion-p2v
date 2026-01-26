@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast-provider";
+import { useGenerateViewport, useSaveViewport } from "@/src/hooks/queries/use-viewport";
 
 type Props = {
   projectId: string;
@@ -61,6 +62,8 @@ function regionToKeyframe(region: DetectedRegion, frameStart: number, durationFr
 export function SimpleViewportEditor({ projectId, images, initialViewport }: Props) {
   const toast = useToast();
   const previewRef = useRef<HTMLDivElement>(null);
+  const generateMutation = useGenerateViewport();
+  const saveMutation = useSaveViewport(projectId);
 
   const [imageAssetId, setImageAssetId] = useState(initialViewport?.imageAssetId ?? images[0]?.id ?? "");
   const [keyframes, setKeyframes] = useState<ViewportKeyframe[]>(
@@ -71,8 +74,6 @@ export function SimpleViewportEditor({ projectId, images, initialViewport }: Pro
   const [selectedKeyframeIndex, setSelectedKeyframeIndex] = useState(0);
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [generating, setGenerating] = useState(false);
   const [rawKeyframes, setRawKeyframes] = useState(() => JSON.stringify(initialViewport?.keyframes ?? [DEFAULT_KEYFRAME], null, 2));
   const [rawRegions, setRawRegions] = useState(() => JSON.stringify(initialViewport?.regions ?? [], null, 2));
   const [previewSize, setPreviewSize] = useState({ width: 960, height: 540 });
@@ -137,68 +138,57 @@ export function SimpleViewportEditor({ projectId, images, initialViewport }: Pro
     setRawRegions(JSON.stringify(regions, null, 2));
   }, [regions]);
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!imageAssetId) return;
-    setGenerating(true);
-    try {
-      const res = await fetch("/api/ai/viewport", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, imageAssetId }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body?.error || "Generation failed");
+    generateMutation.mutate(
+      { projectId, imageAssetId },
+      {
+        onSuccess: (data) => {
+          if (data.viewport?.keyframes) {
+            setKeyframes(sortKeyframes(data.viewport.keyframes as ViewportKeyframe[]));
+          }
+          if (data.viewport?.regions) {
+            setRegions(data.viewport.regions as DetectedRegion[]);
+          }
+          setSelectedKeyframeIndex(0);
+          setCurrentFrame(0);
 
-      if (body.viewport?.keyframes) {
-        setKeyframes(sortKeyframes(body.viewport.keyframes as ViewportKeyframe[]));
+          toast({
+            title: "Viewport generated",
+            description:
+              data.source === "fallback"
+                ? "AI unavailable, used safe fallback keyframes."
+                : "AI analyzed your image and script.",
+            variant: "success",
+          });
+        },
+        onError: (error: Error) => {
+          toast({
+            title: "Generation error",
+            description: error.message || "Unable to generate viewport",
+            variant: "error",
+          });
+        },
       }
-      if (body.viewport?.regions) {
-        setRegions(body.viewport.regions as DetectedRegion[]);
-      }
-      setSelectedKeyframeIndex(0);
-      setCurrentFrame(0);
-
-      toast({
-        title: "Viewport generated",
-        description:
-          body.source === "fallback"
-            ? "AI unavailable, used safe fallback keyframes."
-            : "AI analyzed your image and script.",
-        variant: "success",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Generation error",
-        description: error?.message || "Unable to generate viewport",
-        variant: "error",
-      });
-    } finally {
-      setGenerating(false);
-    }
+    );
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/projects/${projectId}/viewport`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageAssetId, keyframes: sortedKeyframes, regions }),
-      });
-
-      const body = await res.json();
-      if (!res.ok) throw new Error(body?.error || "Save failed");
-
-      toast({ title: "Viewport saved", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Save error",
-        description: error?.message || "Unable to save viewport",
-        variant: "error",
-      });
-    } finally {
-      setSaving(false);
-    }
+  const handleSave = () => {
+    saveMutation.mutate(
+      { imageAssetId, keyframes: sortedKeyframes, regions },
+      {
+        onSuccess: () => {
+          toast({ title: "Viewport saved", variant: "success" });
+        },
+        onError: (error: Error) => {
+          toast({
+            title: "Save error",
+            description: error.message || "Unable to save viewport",
+            variant: "error",
+          });
+        },
+      }
+    );
   };
 
   const handleAddKeyframe = () => {
@@ -283,13 +273,13 @@ export function SimpleViewportEditor({ projectId, images, initialViewport }: Pro
           )}
         </div>
         <div className="flex items-end gap-2">
-          <Button onClick={handleGenerate} disabled={!imageAssetId || generating} className="flex-1">
+          <Button onClick={handleGenerate} disabled={!imageAssetId || generateMutation.isPending} className="flex-1">
             <Sparkles className="h-4 w-4" />
-            {generating ? "Generating…" : "Generate with AI"}
+            {generateMutation.isPending ? "Generating…" : "Generate with AI"}
           </Button>
-          <Button onClick={handleSave} disabled={saving || !imageAssetId} variant="secondary">
+          <Button onClick={handleSave} disabled={saveMutation.isPending || !imageAssetId} variant="secondary">
             <Save className="h-4 w-4" />
-            Save
+            {saveMutation.isPending ? "Saving…" : "Save"}
           </Button>
         </div>
       </div>

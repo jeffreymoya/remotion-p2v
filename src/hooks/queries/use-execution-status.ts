@@ -4,6 +4,15 @@ import {
   fetchScriptDraft,
   startExecution,
   resumeExecution,
+  generateBlueprint,
+  regenerateBlueprint,
+  segmentScript,
+  regenerateBeat,
+  reviewBlueprint,
+  fetchBlueprintHistory,
+  fetchDraftHistory,
+  analyzeGlue,
+  savePolishedText,
   ExecutionStatus,
 } from "@/src/lib/api/script-builder";
 
@@ -61,6 +70,81 @@ export function useResumeExecution() {
     onSuccess: (_data, draftId) => {
       // Invalidate to refetch status
       queryClient.invalidateQueries({ queryKey: ["execution-status", draftId] });
+    },
+  });
+}
+
+export function useGenerateBlueprint() {
+  return useMutation({
+    mutationFn: generateBlueprint,
+  });
+}
+
+export function useRegenerateBlueprint() {
+  return useMutation({
+    mutationFn: regenerateBlueprint,
+  });
+}
+
+export function useSegmentScript() {
+  return useMutation({
+    mutationFn: segmentScript,
+  });
+}
+
+// Beat regeneration
+export function useRegenerateBeat() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: regenerateBeat,
+    onSuccess: (data) => {
+      // Invalidate script draft to refetch with updated beat
+      const draftId = data.draft.id;
+      queryClient.invalidateQueries({ queryKey: ["script-draft", draftId] });
+    },
+  });
+}
+
+// Blueprint review
+export function useReviewBlueprint() {
+  return useMutation({
+    mutationFn: reviewBlueprint,
+  });
+}
+
+// History queries
+export function useBlueprintHistory(blueprintId: string | null) {
+  return useQuery({
+    queryKey: ["blueprint-history", blueprintId],
+    queryFn: () => fetchBlueprintHistory(blueprintId!),
+    enabled: !!blueprintId,
+  });
+}
+
+export function useDraftHistory(draftId: string | null) {
+  return useQuery({
+    queryKey: ["draft-history", draftId],
+    queryFn: () => fetchDraftHistory(draftId!),
+    enabled: !!draftId,
+  });
+}
+
+// Glue phase
+export function useAnalyzeGlue() {
+  return useMutation({
+    mutationFn: analyzeGlue,
+  });
+}
+
+export function useSavePolishedText() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: savePolishedText,
+    onSuccess: (data) => {
+      // Update script draft cache
+      queryClient.setQueryData(["script-draft", data.draft.id], data.draft);
     },
   });
 }

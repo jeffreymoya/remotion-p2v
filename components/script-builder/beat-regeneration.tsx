@@ -5,6 +5,7 @@ import { BeatDraft, ScriptDraft } from "@/src/lib/storyflow/script-builder-types
 import { useToast } from "@/components/ui/toast-provider";
 import { RotateCcw, Wand2 } from "lucide-react";
 import { cn } from "@/src/lib/storyflow/utils";
+import { useRegenerateBeat } from "@/src/hooks/queries/use-execution-status";
 
 interface BeatRegenerationProps {
   scriptDraft: ScriptDraft;
@@ -18,12 +19,14 @@ export function BeatRegeneration({
   disabled = false,
 }: BeatRegenerationProps) {
   const toast = useToast();
+  const regenerateMutation = useRegenerateBeat();
+
   const beatDrafts = useMemo(
     () => (scriptDraft.beatDrafts as BeatDraft[]).sort((a, b) => a.beatIndex - b.beatIndex),
     [scriptDraft.beatDrafts]
   );
 
-  const handleRegenerate = async (beatDraft: BeatDraft) => {
+  const handleRegenerate = (beatDraft: BeatDraft) => {
     if (disabled) return;
 
     const guidance = window.prompt(
@@ -31,32 +34,27 @@ export function BeatRegeneration({
       beatDraft.guidanceApplied ?? ""
     );
 
-    try {
-      const res = await fetch(`/api/script-builder/beat/${beatDraft.id}/regenerate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guidance: guidance?.trim() || undefined }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({
-          title: body.error || "Failed to regenerate beat",
-          variant: "error",
-        });
-        return;
+    regenerateMutation.mutate(
+      {
+        beatDraftId: beatDraft.id,
+        guidance: guidance?.trim() || undefined,
+      },
+      {
+        onSuccess: (data) => {
+          onDraftUpdated(data.draft);
+          toast({
+            title: data.message || `Beat ${beatDraft.beatIndex} regenerated`,
+            variant: "success",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: error.message || "Failed to regenerate beat",
+            variant: "error",
+          });
+        },
       }
-
-      const payload = await res.json();
-      onDraftUpdated(payload.draft);
-      toast({
-        title: payload.message || `Beat ${beatDraft.beatIndex} regenerated`,
-        variant: "success",
-      });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error regenerating beat", variant: "error" });
-    }
+    );
   };
 
   return (

@@ -5,6 +5,7 @@ import { Asset, ScriptSegment } from "@/src/lib/storyflow/types";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast-provider";
+import { useSaveAssetMappings } from "@/src/hooks/queries/use-mappings";
 
 type Props = {
   projectId: string;
@@ -16,7 +17,7 @@ type Props = {
 export function SimpleAssetMapper({ projectId, segments, assets, initialMappings }: Props) {
   const toast = useToast();
   const [mappings, setMappings] = useState<Record<number, string>>(initialMappings ?? {});
-  const [saving, setSaving] = useState(false);
+  const saveMutation = useSaveAssetMappings(projectId);
 
   useEffect(() => {
     setMappings(initialMappings ?? {});
@@ -26,26 +27,19 @@ export function SimpleAssetMapper({ projectId, segments, assets, initialMappings
     setMappings((prev) => ({ ...prev, [index]: assetId }));
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/projects/${projectId}/mappings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mappings }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Save failed");
-      toast({ title: "Asset mappings saved", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Save error",
-        description: error?.message || "Unable to save mappings",
-        variant: "error",
-      });
-    } finally {
-      setSaving(false);
-    }
+  const handleSave = () => {
+    saveMutation.mutate(mappings, {
+      onSuccess: () => {
+        toast({ title: "Asset mappings saved", variant: "success" });
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Save error",
+          description: error.message || "Unable to save mappings",
+          variant: "error",
+        });
+      },
+    });
   };
 
   return (
@@ -55,8 +49,8 @@ export function SimpleAssetMapper({ projectId, segments, assets, initialMappings
           <h3 className="text-lg font-semibold text-slate-50">Asset-to-Segment Mapping</h3>
           <p className="text-sm text-slate-400">Choose which image backs each script segment.</p>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save Mappings"}
+        <Button onClick={handleSave} disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? "Saving..." : "Save Mappings"}
         </Button>
       </div>
 

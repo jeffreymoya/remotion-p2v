@@ -6,6 +6,7 @@ import { TTSProgressIndicator } from "./tts-progress-indicator";
 import { AudioPreview } from "./audio-preview";
 import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/storyflow/utils";
+import { useRegenerateSegment } from "@/src/hooks/queries/use-tts";
 
 type ScriptSegment = {
   index: number;
@@ -23,8 +24,8 @@ type Props = {
 
 export function TTSManager({ projectId, segments, onSegmentsUpdate }: Props) {
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
-  const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
   const toast = useToast();
+  const regenerateMutation = useRegenerateSegment(projectId);
 
   const generatedCount = segments.filter((s) => s.audioUrl).length;
   const totalCount = segments.length;
@@ -50,39 +51,27 @@ export function TTSManager({ projectId, segments, onSegmentsUpdate }: Props) {
     });
   };
 
-  const handleRegenerateSegment = async (segmentIndex: number) => {
-    setRegeneratingIndex(segmentIndex);
-
-    try {
-      const res = await fetch("/api/tts/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, segmentIndex, force: true }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Regeneration failed");
+  const handleRegenerateSegment = (segmentIndex: number) => {
+    regenerateMutation.mutate(
+      { projectId, segmentIndex, force: true },
+      {
+        onSuccess: ({ segment }) => {
+          // Update local segments
+          const updated = segments.map((s) =>
+            s.index === segmentIndex ? { ...s, ...segment } : s
+          );
+          onSegmentsUpdate?.(updated);
+          toast({ title: "Segment regenerated", variant: "success" });
+        },
+        onError: (error) => {
+          toast({
+            title: "Regeneration failed",
+            description: error.message || "Unable to regenerate segment",
+            variant: "error",
+          });
+        },
       }
-
-      const { segment } = await res.json();
-
-      // Update local segments
-      const updated = segments.map((s) =>
-        s.index === segmentIndex ? { ...s, ...segment } : s
-      );
-      onSegmentsUpdate?.(updated);
-
-      toast({ title: "Segment regenerated", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Regeneration failed",
-        description: error?.message || "Unable to regenerate segment",
-        variant: "error",
-      });
-    } finally {
-      setRegeneratingIndex(null);
-    }
+    );
   };
 
   return (
@@ -137,14 +126,24 @@ export function TTSManager({ projectId, segments, onSegmentsUpdate }: Props) {
               {segment.audioUrl && (
                 <button
                   onClick={() => handleRegenerateSegment(segment.index)}
-                  disabled={regeneratingIndex === segment.index}
+                  disabled={
+                    regenerateMutation.isPending &&
+                    regenerateMutation.variables?.segmentIndex === segment.index
+                  }
                   className={cn(
                     "inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-200 transition hover:border-brand-500 hover:text-brand-100",
-                    regeneratingIndex === segment.index && "opacity-50 cursor-not-allowed"
+                    regenerateMutation.isPending &&
+                      regenerateMutation.variables?.segmentIndex === segment.index &&
+                      "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <RefreshCw
-                    className={cn("h-3 w-3", regeneratingIndex === segment.index && "animate-spin")}
+                    className={cn(
+                      "h-3 w-3",
+                      regenerateMutation.isPending &&
+                        regenerateMutation.variables?.segmentIndex === segment.index &&
+                        "animate-spin"
+                    )}
                   />
                   Regenerate
                 </button>

@@ -35,6 +35,6 @@
 
 ## Security & Configuration Tips
 - Primary AI path uses the **Gemini CLI subscription**. Install/auth `gemini`; use `gemini --yolo --model gemini-2.5-pro --output-format json "<prompt>"` (no API-style flags like `--temperature`).
-- Copy `.env.example` to `.env`; set `GOOGLE_TTS_API_KEY`, one stock media key (`PEXELS_API_KEY`/`UNSPLASH_ACCESS_KEY`/`PIXABAY_API_KEY`), and `DATABASE_URL` or `STORYFLOW_DATABASE_URL`. Optional: provider keys (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`) if switching away from the CLI.
+- Copy `.env.example` to `.env`; set `GOOGLE_TTS_API_KEY` and `DATABASE_URL` or `STORYFLOW_DATABASE_URL`. Stock media keys are deprecated. Optional: provider keys (`GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`) if switching away from the CLI.
 - Never commit secrets; trim local logs if they capture sensitive input.
 - Prefer `prisma` migrations over ad hoc SQL and document new env vars in `.env.example`.

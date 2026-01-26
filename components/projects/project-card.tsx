@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { StatusBadge } from "./status-badge";
@@ -10,37 +10,30 @@ import { useToast } from "@/components/ui/toast-provider";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { InlineError } from "@/components/ui/inline-error";
+import { useDeleteProject } from "@/src/hooks/queries/use-projects";
 
 export function ProjectCard({ project }: { project: Project }) {
-  const [deleting, startDelete] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+  const deleteMutation = useDeleteProject();
 
-  const performDelete = async () => {
-    setError(null);
-    await new Promise<void>((resolve) => {
-      startDelete(async () => {
-        const res = await fetch(`/api/projects/${project.id}`, {
-          method: "DELETE",
-        });
-
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          setError(body.error ?? "Failed to delete");
-          resolve();
-          return;
-        }
-
+  const performDelete = () => {
+    deleteMutation.mutate(project.id, {
+      onSuccess: () => {
         toast({
           title: "Project deleted",
           description: `${project.name} was removed.`,
           variant: "success",
         });
-
-        resolve();
         window.location.reload();
-      });
+      },
+      onError: (error) => {
+        toast({
+          title: "Delete failed",
+          description: error.message || "Failed to delete project",
+          variant: "error",
+        });
+      },
     });
   };
 
@@ -58,10 +51,10 @@ export function ProjectCard({ project }: { project: Project }) {
             Created {formatDate(project.createdAt)}
           </div>
         </div>
-        <Dialog open={confirmOpen} onOpenChange={(open) => !deleting && setConfirmOpen(open)}>
+        <Dialog open={confirmOpen} onOpenChange={(open) => !deleteMutation.isPending && setConfirmOpen(open)}>
           <button
             onClick={() => setConfirmOpen(true)}
-            disabled={deleting}
+            disabled={deleteMutation.isPending}
             className="rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-red-300 disabled:opacity-50"
             aria-label="Delete project"
           >
@@ -72,7 +65,7 @@ export function ProjectCard({ project }: { project: Project }) {
               <DialogTitle>Delete project</DialogTitle>
             </DialogHeader>
             <p className="text-sm text-slate-400">
-              Delete “{project.name}”? This removes its assets directory. This action cannot be undone.
+              Delete "{project.name}"? This removes its assets directory. This action cannot be undone.
             </p>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
@@ -83,11 +76,11 @@ export function ProjectCard({ project }: { project: Project }) {
                 variant="destructive"
                 onClick={() => {
                   setConfirmOpen(false);
-                  void performDelete();
+                  performDelete();
                 }}
-                disabled={deleting}
+                disabled={deleteMutation.isPending}
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -102,20 +95,17 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.topic}
         </div>
       )}
-      {error && (
+      {deleteMutation.error && (
         <div className="mt-3">
           <InlineError
             title="Could not delete project"
-            message={error}
+            message={deleteMutation.error.message}
             suggestions={[
               "Check your connection and try again.",
               "Make sure the project still exists and you have permission to delete it.",
             ]}
             retryLabel="Retry delete"
-            onRetry={() => {
-              if (deleting) return;
-              return performDelete();
-            }}
+            onRetry={performDelete}
           />
         </div>
       )}

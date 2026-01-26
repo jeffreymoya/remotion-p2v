@@ -41,11 +41,16 @@ export function ImageUploader({ projectId, boardId, onUploadComplete, className 
   };
 
   const handleUpload = async (file: File) => {
+    try {
+      // Validate the image first
+      await validateImage(file);
+    } catch (error: any) {
+      toast({ title: "Validation failed", description: error.message, variant: "error" });
+      return;
+    }
+
     setUploading(true);
     try {
-      // Validate the image
-      await validateImage(file);
-
       // Create form data for upload
       const formData = new FormData();
       formData.append("file", file);

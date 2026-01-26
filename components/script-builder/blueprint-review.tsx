@@ -5,6 +5,7 @@ import { Blueprint, BeatReviewInput, Beat } from "@/src/lib/storyflow/script-bui
 import { BlueprintBeatCard } from "./blueprint-beat-card";
 import { useToast } from "@/components/ui/toast-provider";
 import { RotateCcw, CheckCircle } from "lucide-react";
+import { useReviewBlueprint } from "@/src/hooks/queries/use-execution-status";
 
 interface BlueprintReviewProps {
   blueprint: Blueprint;
@@ -17,9 +18,9 @@ export function BlueprintReview({
   onApproved,
   onRegenerate,
 }: BlueprintReviewProps) {
-  const [loading, setLoading] = useState(false);
   const [beatReviews, setBeatReviews] = useState<Map<number, BeatReviewInput>>(new Map());
   const toast = useToast();
+  const reviewMutation = useReviewBlueprint();
 
   const handleApprove = (beatIndex: number) => {
     setBeatReviews((prev) => {
@@ -37,76 +38,52 @@ export function BlueprintReview({
     });
   };
 
-  const handleApproveAll = async () => {
-    setLoading(true);
-    try {
-      // Mark all beats as approved
-      const reviews: BeatReviewInput[] = blueprint.beats.map((beat) => ({
-        beatIndex: beat.index,
-        status: "approved" as const,
-      }));
+  const handleApproveAll = () => {
+    // Mark all beats as approved
+    const reviews: BeatReviewInput[] = blueprint.beats.map((beat) => ({
+      beatIndex: beat.index,
+      status: "approved" as const,
+    }));
 
-      const res = await fetch(`/api/script-builder/blueprint/${blueprint.id}/review`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviews }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to approve blueprint", variant: "error" });
-        return;
+    reviewMutation.mutate(
+      { blueprintId: blueprint.id, reviews },
+      {
+        onSuccess: (data) => {
+          toast({ title: "Blueprint approved", variant: "success" });
+          if (!data.requiresRegeneration) {
+            onApproved();
+          }
+        },
+        onError: (error) => {
+          toast({ title: error.message || "Failed to approve blueprint", variant: "error" });
+        },
       }
-
-      const { blueprint: _updated, requiresRegeneration } = await res.json();
-      toast({ title: "Blueprint approved", variant: "success" });
-
-      if (!requiresRegeneration) {
-        onApproved();
-      }
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error approving blueprint", variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
-  const handleSubmitReviews = async () => {
+  const handleSubmitReviews = () => {
     if (beatReviews.size === 0) {
       toast({ title: "Please review at least one beat", variant: "error" });
       return;
     }
 
-    setLoading(true);
-    try {
-      const reviews = Array.from(beatReviews.values());
-      const res = await fetch(`/api/script-builder/blueprint/${blueprint.id}/review`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviews }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to submit reviews", variant: "error" });
-        return;
+    const reviews = Array.from(beatReviews.values());
+    reviewMutation.mutate(
+      { blueprintId: blueprint.id, reviews },
+      {
+        onSuccess: (data) => {
+          toast({ title: "Reviews submitted", variant: "success" });
+          if (data.requiresRegeneration) {
+            onRegenerate();
+          } else {
+            onApproved();
+          }
+        },
+        onError: (error) => {
+          toast({ title: error.message || "Failed to submit reviews", variant: "error" });
+        },
       }
-
-      const { blueprint: _updated, requiresRegeneration } = await res.json();
-      toast({ title: "Reviews submitted", variant: "success" });
-
-      if (requiresRegeneration) {
-        onRegenerate();
-      } else {
-        onApproved();
-      }
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error submitting reviews", variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const totalDuration = blueprint.beats.reduce(
@@ -141,7 +118,7 @@ export function BlueprintReview({
         <div className="flex gap-2">
           <button
             onClick={handleApproveAll}
-            disabled={loading || allApproved}
+            disabled={reviewMutation.isPending || allApproved}
             className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-green-600/30 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <CheckCircle className="h-4 w-4" />
@@ -149,7 +126,7 @@ export function BlueprintReview({
           </button>
           <button
             onClick={onRegenerate}
-            disabled={loading}
+            disabled={reviewMutation.isPending}
             className="inline-flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RotateCcw className="h-4 w-4" />
@@ -168,7 +145,7 @@ export function BlueprintReview({
             {!allApproved && (
               <button
                 onClick={handleSubmitReviews}
-                disabled={loading}
+                disabled={reviewMutation.isPending}
                 className="text-brand-400 hover:text-brand-300 disabled:opacity-60"
               >
                 Submit Reviews
@@ -202,7 +179,7 @@ export function BlueprintReview({
               beat={effectiveBeat}
               onApprove={handleApprove}
               onReject={handleReject}
-              disabled={loading}
+              disabled={reviewMutation.isPending}
             />
           );
         })}

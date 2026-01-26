@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/utils";
+import { useBoards, useCreateBoard, useUpdateBoard } from "@/src/hooks/queries/use-boards";
 
 type Props = {
   projectId: string;
@@ -55,17 +56,24 @@ function safeJson<T>(value: string, fallback: T): T {
 
 export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) {
   const toast = useToast();
-  const [boards, setBoards] = useState<Board[]>(normalizeBoards(initialBoards));
+  const { data: boards = normalizeBoards(initialBoards), isLoading: loading } = useBoards(projectId);
+  const createBoardMutation = useCreateBoard(projectId);
+  const updateBoardMutation = useUpdateBoard(projectId);
+
   const [selectedBoardId, setSelectedBoardId] = useState<string | null>(initialBoards[0]?.id ?? null);
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [layoutDraft, setLayoutDraft] = useState<{ columns: number; rows: number }>({ columns: 2, rows: 2 });
   const [rawRegions, setRawRegions] = useState<string>("[]");
+  const [localBoards, setLocalBoards] = useState<Board[]>(normalizeBoards(boards));
+
+  // Sync localBoards with server data
+  useEffect(() => {
+    setLocalBoards(normalizeBoards(boards));
+  }, [boards]);
 
   const selectedBoard = useMemo(
-    () => boards.find((b) => b.id === selectedBoardId) ?? null,
-    [boards, selectedBoardId]
+    () => localBoards.find((b) => b.id === selectedBoardId) ?? null,
+    [localBoards, selectedBoardId]
   );
 
   const selectedRegion = useMemo(() => {
@@ -83,36 +91,19 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
     }
   }, [selectedBoardId, selectedBoard]);
 
-  const refreshBoards = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/projects/${projectId}/boards`);
-      const data = await res.json();
-      setBoards(normalizeBoards(data.boards ?? []));
-      if (!selectedBoardId && data.boards?.[0]) setSelectedBoardId(data.boards[0].id);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateBoard = async () => {
-    try {
-      const res = await fetch(`/api/projects/${projectId}/boards`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ layout: layoutDraft }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Create failed");
-      toast({ title: "Board created", variant: "success" });
-      await refreshBoards();
-    } catch (error: any) {
-      toast({ title: "Create error", description: error?.message, variant: "error" });
-    }
+  const handleCreateBoard = () => {
+    createBoardMutation.mutate(layoutDraft, {
+      onSuccess: () => {
+        toast({ title: "Board created", variant: "success" });
+      },
+      onError: (error: Error) => {
+        toast({ title: "Create error", description: error.message, variant: "error" });
+      },
+    });
   };
 
   const upsertRegion = (boardId: string, row: number, col: number, assetId: string) => {
-    setBoards((prev) =>
+    setLocalBoards((prev) =>
       prev.map((board) => {
         if (board.id !== boardId) return board;
         const { columns, rows } = board.layout;
@@ -134,7 +125,7 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
   };
 
   const clearRegion = (boardId: string, row: number, col: number) => {
-    setBoards((prev) =>
+    setLocalBoards((prev) =>
       prev.map((board) => {
         if (board.id !== boardId) return board;
         const regions = board.regions.filter((r) => !(r.position.row === row && r.position.col === col));
@@ -156,7 +147,7 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
     setLayoutDraft(updatedLayout);
 
     if (!selectedBoard) return;
-    setBoards((prev) =>
+    setLocalBoards((prev) =>
       prev.map((board) => {
         if (board.id !== selectedBoard.id) return board;
         const filteredRegions = (board.regions || []).filter(
@@ -173,7 +164,7 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
 
   const handleRegionChange = (regionId: string, partial: Partial<BoardRegion["bounds"]>) => {
     if (!selectedBoard) return;
-    setBoards((prev) =>
+    setLocalBoards((prev) =>
       prev.map((board) => {
         if (board.id !== selectedBoard.id) return board;
         const regions = board.regions.map((r) => {
@@ -198,39 +189,40 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
     );
   };
 
-  const handleSaveBoard = async () => {
+  const handleSaveBoard = () => {
     if (!selectedBoard) return;
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/projects/${projectId}/boards/${selectedBoard.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ layout: selectedBoard.layout, regions: selectedBoard.regions }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Save failed");
-      toast({ title: "Board saved", description: "Layout and regions updated", variant: "success" });
-      await refreshBoards();
-    } catch (error: any) {
-      toast({ title: "Save error", description: error?.message, variant: "error" });
-    } finally {
-      setSaving(false);
-    }
+    updateBoardMutation.mutate(
+      {
+        boardId: selectedBoard.id,
+        layout: selectedBoard.layout,
+        regions: selectedBoard.regions,
+      },
+      {
+        onSuccess: () => {
+          toast({ title: "Board saved", description: "Layout and regions updated", variant: "success" });
+        },
+        onError: (error: Error) => {
+          toast({ title: "Save error", description: error.message, variant: "error" });
+        },
+      }
+    );
   };
 
   const handleApplyRaw = () => {
     if (!selectedBoard) return;
     const parsed = safeJson<BoardRegion[]>(rawRegions, selectedBoard.regions);
-    setBoards((prev) =>
+    setLocalBoards((prev) =>
       prev.map((board) => (board.id === selectedBoard.id ? { ...board, regions: parsed } : board))
     );
     toast({ title: "Applied regions JSON", variant: "success" });
   };
 
+  const saving = updateBoardMutation.isPending;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        {boards.map((board) => (
+        {localBoards.map((board) => (
           <Button
             key={board.id}
             size="sm"
@@ -365,7 +357,7 @@ export function SimpleBoardsEditor({ projectId, images, initialBoards }: Props) 
 
             <AssetPalette images={images} />
 
-            <BoardPreviewStrip boards={boards} images={images} onSelect={(id) => setSelectedBoardId(id)} />
+            <BoardPreviewStrip boards={localBoards} images={images} onSelect={(id) => setSelectedBoardId(id)} />
           </div>
 
           <div className="space-y-4 rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-inner shadow-black/40">

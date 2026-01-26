@@ -17,6 +17,11 @@ import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useStageInvalidation } from "@/components/pipeline/stage-invalidation-context";
 import { SaveIndicator } from "@/components/ui/save-indicator";
 import { useAutoSave } from "@/src/hooks/use-auto-save";
+import {
+  useGenerateBlueprint,
+  useRegenerateBlueprint,
+  useSegmentScript,
+} from "@/src/hooks/queries/use-execution-status";
 
 interface ScriptBuilderWorkflowProps {
   projectId: string;
@@ -36,8 +41,6 @@ export function ScriptBuilderWorkflow({
   const [blueprint, setBlueprint] = useState<Blueprint | null>(initialState.blueprint);
   const [scriptDraft, setScriptDraft] = useState<ScriptDraft | null>(initialState.scriptDraft);
   const [script, setScript] = useState<Script | null>(initialState.script);
-  const [loading, setLoading] = useState(false);
-  const [_segmenting, _setSegmenting] = useState(false);
   const [ttsState, setTtsState] = useState({
     running: false,
     completed: 0,
@@ -46,6 +49,11 @@ export function ScriptBuilderWorkflow({
   });
   const toast = useToast();
   const { registerScriptChange, registerEdit } = useStageInvalidation();
+
+  // React Query mutations
+  const generateBlueprintMutation = useGenerateBlueprint();
+  const regenerateBlueprintMutation = useRegenerateBlueprint();
+  const segmentScriptMutation = useSegmentScript();
   const storageKey = useMemo(
     () => `storyflow:auto-save:project:${projectId}:builder-topic`,
     [projectId]
@@ -86,86 +94,60 @@ export function ScriptBuilderWorkflow({
     onError: (err) => toast({ title: err.message, variant: "error" }),
   });
 
-  const handleGenerateBlueprint = async () => {
+  const handleGenerateBlueprint = () => {
     if (!topic.trim()) {
       toast({ title: "Topic required", variant: "error" });
       return;
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch("/api/script-builder/blueprint", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId,
-          topic: topic.trim(),
-          targetDurationMs: targetDuration,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const detail =
-          typeof body.error === "string"
-            ? body.error
-            : body.error?.topic?.[0] || "Failed to generate blueprint";
-        toast({ title: detail, variant: "error" });
-        return;
+    generateBlueprintMutation.mutate(
+      {
+        projectId,
+        topic: topic.trim(),
+        targetDurationMs: targetDuration,
+      },
+      {
+        onSuccess: ({ blueprint: newBlueprint }) => {
+          setBlueprint(newBlueprint);
+          setPhase("blueprint");
+          toast({ title: "Blueprint generated", variant: "success" });
+        },
+        onError: (error) => {
+          toast({ title: error.message, variant: "error" });
+        },
       }
-
-      const { blueprint: newBlueprint } = await res.json();
-      setBlueprint(newBlueprint);
-      setPhase("blueprint");
-      toast({ title: "Blueprint generated", variant: "success" });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error generating blueprint", variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const handleBlueprintApproved = () => {
     setPhase("execution");
   };
 
-  const handleBlueprintRegenerate = async () => {
+  const handleBlueprintRegenerate = () => {
     if (!blueprint) {
-      await handleGenerateBlueprint();
+      handleGenerateBlueprint();
       return;
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/script-builder/blueprint/${blueprint.id}/regenerate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rejectionNotes: blueprint.rejectionNotes ?? undefined,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const detail = typeof body.error === "string" ? body.error : "Failed to regenerate blueprint";
-        toast({ title: detail, variant: "error" });
-        return;
+    regenerateBlueprintMutation.mutate(
+      {
+        blueprintId: blueprint.id,
+        rejectionNotes: blueprint.rejectionNotes ?? undefined,
+      },
+      {
+        onSuccess: ({ blueprint: newBlueprint, message }) => {
+          setBlueprint(newBlueprint);
+          setScriptDraft(null);
+          setScript(null);
+          setPhase("blueprint");
+          registerEdit("script", "structural");
+          toast({ title: message ?? "Blueprint regenerated", variant: "success" });
+        },
+        onError: (error) => {
+          toast({ title: error.message, variant: "error" });
+        },
       }
-
-      const { blueprint: newBlueprint, message } = await res.json();
-      setBlueprint(newBlueprint);
-      setScriptDraft(null);
-      setScript(null);
-      setPhase("blueprint");
-      registerEdit("script", "structural");
-      toast({ title: message ?? "Blueprint regenerated", variant: "success" });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error regenerating blueprint", variant: "error" });
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const handleExecutionComplete = (completedDraft: ScriptDraft) => {
@@ -174,45 +156,28 @@ export function ScriptBuilderWorkflow({
     toast({ title: "Execution finished. Run glue analysis before segmenting.", variant: "success" });
   };
 
-  const handleSegmentDraft = async () => {
+  const handleSegmentDraft = () => {
     if (!scriptDraft) return;
-    setSegmenting(true);
-    try {
-      const res = await fetch("/api/script-builder/segment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ draftId: scriptDraft.id }),
-      });
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const detail =
-          typeof body.error === "string"
-            ? body.error
-            : body.error?.draftId?.[0] || "Failed to segment script";
-        toast({ title: detail, variant: "error" });
-        return;
-      }
+    segmentScriptMutation.mutate(scriptDraft.id, {
+      onSuccess: ({ script: finalScript, message }) => {
+        registerScriptChange(script, finalScript);
+        setScript(finalScript);
+        setPhase("preview");
+        setTtsState({
+          running: true,
+          completed: 0,
+          total: finalScript.segments.length,
+          error: null,
+        });
+        toast({ title: message ?? "Script segmented", variant: "success" });
 
-      const { script: finalScript, message } = await res.json();
-      registerScriptChange(script, finalScript);
-      setScript(finalScript);
-      setPhase("preview");
-      setTtsState({
-        running: true,
-        completed: 0,
-        total: finalScript.segments.length,
-        error: null,
-      });
-      toast({ title: message ?? "Script segmented", variant: "success" });
-
-      await runTtsForScript(finalScript);
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error creating segments", variant: "error" });
-    } finally {
-      setSegmenting(false);
-    }
+        runTtsForScript(finalScript);
+      },
+      onError: (error) => {
+        toast({ title: error.message, variant: "error" });
+      },
+    });
   };
 
   const runTtsForScript = async (
@@ -276,14 +241,14 @@ export function ScriptBuilderWorkflow({
       setTtsState((prev) => ({ ...prev, running: false, error: null }));
       toast({ title: force ? "Audio regenerated" : "Audio generated", variant: "success" });
     } catch (error) {
-      console.error(error);
+      const errorMessage = error instanceof Error ? error.message : "Network error generating audio";
       setTtsState({
         running: false,
         completed: 0,
         total: targets.length,
-        error: "Network error generating audio",
+        error: errorMessage,
       });
-      toast({ title: "Network error generating audio", variant: "error" });
+      toast({ title: errorMessage, variant: "error" });
     }
   };
 
@@ -346,7 +311,7 @@ export function ScriptBuilderWorkflow({
               placeholder="e.g. When Fandom Goes Too Far: The Psychology of Toxic Fan Culture"
               rows={6}
               className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-white shadow-inner shadow-black/20 focus:border-brand-500 focus:outline-none font-mono text-sm resize-vertical"
-              disabled={loading}
+              disabled={generateBlueprintMutation.isPending}
             />
             <p className="text-xs text-slate-400">
               This topic will be used to generate an engagement-focused blueprint with narrative beats.
@@ -360,11 +325,11 @@ export function ScriptBuilderWorkflow({
 
           <button
             onClick={handleGenerateBlueprint}
-            disabled={loading}
+            disabled={generateBlueprintMutation.isPending}
             data-onboarding="ai-generate"
             className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
           >
-            {loading ? (
+            {generateBlueprintMutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Generating Blueprint...

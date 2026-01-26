@@ -4,7 +4,7 @@ export async function searchMusicTracks(query: string): Promise<MusicTrack[]> {
   const res = await fetch(`/api/music/library?q=${encodeURIComponent(query || "background")}`);
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || "Unable to load library");
+    throw new Error(data.error || "Music library search is unavailable");
   }
   const data = await res.json();
   return data.tracks || [];

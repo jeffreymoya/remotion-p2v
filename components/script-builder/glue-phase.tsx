@@ -13,6 +13,7 @@ import {
   RefreshCcw,
   CheckCircle2,
 } from "lucide-react";
+import { useAnalyzeGlue, useSavePolishedText } from "@/src/hooks/queries/use-execution-status";
 
 const typeStyles: Record<string, { color: string; label: string }> = {
   robot_word: { color: "bg-amber-500/20 text-amber-200", label: "Robot word" },
@@ -88,12 +89,13 @@ interface GluePhaseProps {
 
 export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: GluePhaseProps) {
   const toast = useToast();
+  const analyzeMutation = useAnalyzeGlue();
+  const saveMutation = useSavePolishedText();
+
   const [text, setText] = useState<string>(
     scriptDraft.polishedText ?? (scriptDraft.beatDrafts as any[]).map((b: any) => b.text).join("\n\n")
   );
   const [issues, setIssues] = useState<GlueIssue[]>(() => (scriptDraft.glueIssues as GlueIssue[]) ?? []);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
@@ -124,74 +126,47 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
     toast({ title: "Robot words removed", variant: "success" });
   };
 
-  const runAnalysis = async () => {
-    setAnalyzing(true);
-    try {
-      // Save the current text before analyzing to keep DB in sync
-      await fetch(`/api/script-builder/draft/${scriptDraft.id}/polish`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ polishedText: text, resolvedIssues: issues.filter((i) => i.resolved).map((i) => i.id) }),
-      });
-
-      const res = await fetch(`/api/script-builder/draft/${scriptDraft.id}/glue-analysis`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Glue analysis failed", variant: "error" });
-        return;
-      }
-
-      const payload = await res.json();
-      setText(payload.polishedText ?? text);
-      setIssues(payload.issues ?? []);
-      toast({ title: "Glue analysis complete", variant: "success" });
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error running analysis", variant: "error" });
-    } finally {
-      setAnalyzing(false);
-    }
+  const runAnalysis = () => {
+    analyzeMutation.mutate(scriptDraft.id, {
+      onSuccess: (data) => {
+        setText(data.polishedText ?? text);
+        setIssues((data.issues as GlueIssue[]) ?? []);
+        toast({ title: "Glue analysis complete", variant: "success" });
+      },
+      onError: (error) => {
+        toast({ title: error.message || "Glue analysis failed", variant: "error" });
+      },
+    });
   };
 
-  const handleSave = async (segmentAfterSave = false) => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/script-builder/draft/${scriptDraft.id}/polish`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          polishedText: text,
-          resolvedIssues: issues.filter((i) => i.resolved).map((i) => i.id),
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        toast({ title: body.error || "Failed to save", variant: "error" });
-        return;
+  const handleSave = (segmentAfterSave = false) => {
+    saveMutation.mutate(
+      {
+        draftId: scriptDraft.id,
+        polishedText: text,
+        resolvedIssues: issues.filter((i) => i.resolved).map((i) => i.id),
+      },
+      {
+        onSuccess: async (data) => {
+          onDraftUpdated(data.draft);
+          toast({ title: data.message || "Polished text saved", variant: "success" });
+          if (segmentAfterSave) {
+            await onSegment();
+          }
+        },
+        onError: (error) => {
+          toast({ title: error.message || "Failed to save", variant: "error" });
+        },
       }
-
-      const payload = await res.json();
-      onDraftUpdated(payload.draft);
-      toast({ title: payload.message || "Polished text saved", variant: "success" });
-
-      if (segmentAfterSave) {
-        await onSegment();
-      }
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Network error saving", variant: "error" });
-    } finally {
-      setSaving(false);
-    }
+    );
   };
 
   useEffect(() => {
-    if (!issues.length) {
+    if (!issues.length && !analyzeMutation.isPending) {
       runAnalysis();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [issues.length]);
 
   return (
     <div className="space-y-6">
@@ -215,10 +190,10 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
           <div className="flex gap-2">
             <button
               onClick={runAnalysis}
-              disabled={analyzing}
+              disabled={analyzeMutation.isPending}
               className="inline-flex items-center gap-2 rounded-md border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-brand-500 hover:text-brand-200 disabled:opacity-60"
             >
-              {analyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />} 
+              {analyzeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
               Re-run analysis
             </button>
             <button
@@ -290,15 +265,15 @@ export function GluePhase({ scriptDraft, onDraftUpdated, onSegment, onSkip }: Gl
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => handleSave(true)}
-          disabled={saving}
+          disabled={saveMutation.isPending}
           className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
         >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} 
+          {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           Save & Continue to Segmentation
         </button>
         <button
           onClick={() => handleSave(false)}
-          disabled={saving}
+          disabled={saveMutation.isPending}
           className="inline-flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 disabled:opacity-60"
         >
           <Save className="h-4 w-4" />

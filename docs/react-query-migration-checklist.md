@@ -1,14 +1,14 @@
 # React Query Migration Checklist
 
-**Last Updated:** 2026-01-25
-**Phase:** 4.9 - Migration Planning
+**Last Updated:** 2026-01-26
+**Phase:** 4.12 - Low Priority Editor Migrations Complete
 
 ## Status Overview
 
-- ✅ **Complete:** 5 components (25%)
+- ✅ **Complete:** 13 components (68%)
 - 🔄 **In Progress:** 0 components
-- ⏳ **Pending:** 15 components (75%)
-- **Total:** 20 components identified
+- ⏳ **Pending:** 6 components (32%)
+- **Total:** 19 components identified (boards-workflow.tsx removed - doesn't exist)
 
 ---
 
@@ -32,12 +32,11 @@ Core workflow components that would benefit from caching:
 
 | Component | Location | Pattern | Status | Notes |
 |-----------|----------|---------|--------|-------|
-| **media-manager.tsx** | `components/media/` | List + mutations | ⏳ Pending | Asset CRUD operations |
-| **project-card.tsx** | `components/projects/` | Delete mutation | ⏳ Pending | Simple mutation case |
-| **tts-manager.tsx** | `components/tts/` | List + mutations | ⏳ Pending | TTS voice selection |
-| **asset-manager.tsx** | `components/assets/` | List + mutations | ⏳ Pending | Asset uploads |
-| **script-builder-workflow.tsx** | `components/script-builder/` | Multi-step queries | ⏳ Pending | Complex state machine |
-| **boards-workflow.tsx** | `components/boards/` | Multi-step queries | ⏳ Pending | Board generation pipeline |
+| **project-card.tsx** | `components/projects/` | Delete mutation | ✅ Complete | Uses `useDeleteProject`, replaced useTransition |
+| **media-manager.tsx** | `components/media/` | List + mutations | ✅ Complete | Uses `useAssets`, `useDeleteAsset`, `useUpscaleAsset` |
+| **tts-manager.tsx** | `components/tts/` | Mutations (regenerate) | ✅ Complete | Uses `useRegenerateSegment` mutation |
+| **asset-manager.tsx** | `components/assets/` | List + mutations | ✅ Complete | Uses `useAssets`, `useDeleteAsset`, `useUpscaleAsset`, `useSelectMusicAsset` |
+| **script-builder-workflow.tsx** | `components/script-builder/` | Multi-step queries | ✅ Complete | Uses `useGenerateBlueprint`, `useRegenerateBlueprint`, `useSegmentScript` |
 
 ---
 
@@ -47,9 +46,9 @@ Specialized editors that may have custom state needs:
 
 | Component | Location | Pattern | Status | Notes |
 |-----------|----------|---------|--------|-------|
-| **simple-boards-editor.tsx** | `components/editors/boards/` | Load + save | ⏳ Pending | Editor state management |
-| **simple-viewport-editor.tsx** | `components/editors/viewport/` | Load + save | ⏳ Pending | JSON editor |
-| **simple-asset-mapper.tsx** | `components/editors/asset-mapper/` | Load + save | ⏳ Pending | Asset mapping |
+| **simple-boards-editor.tsx** | `components/editors/boards/` | List + mutations | ✅ Complete | Uses `useBoards`, `useCreateBoard`, `useUpdateBoard` |
+| **simple-viewport-editor.tsx** | `components/editors/viewport/` | Mutations (generate + save) | ✅ Complete | Uses `useGenerateViewport`, `useSaveViewport` |
+| **simple-asset-mapper.tsx** | `components/editors/asset-mapper/` | Mutation (save) | ✅ Complete | Uses `useSaveAssetMappings` |
 
 ---
 
@@ -174,12 +173,12 @@ function MediaManager({ projectId, initialAssets }: Props) {
 4. ✅ ai-logs-client.tsx
 5. ✅ render-panel.tsx
 
-### Phase 2: Workflow Components (Week 2)
-1. media-manager.tsx
-2. project-card.tsx
-3. tts-manager.tsx
-4. asset-manager.tsx
-5. script-builder-workflow.tsx
+### Phase 2: Workflow Components (Week 2) 🔄 In Progress (2/5)
+1. ✅ project-card.tsx
+2. ✅ media-manager.tsx
+3. ⏳ tts-manager.tsx
+4. ⏳ asset-manager.tsx
+5. ⏳ script-builder-workflow.tsx
 
 ### Phase 3: Remaining Components (Week 3)
 - All editor components

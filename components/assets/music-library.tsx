@@ -63,7 +63,7 @@ export function MusicLibrary({ projectId, selectedAssetId, onSelected }: Props) 
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-brand-300">Music Library</p>
           <p className="text-sm text-slate-400">
-            Browse royalty-free tracks from Pixabay. Configure PIXABAY_API_KEY to enable search.
+            Online music search has been deprecated—upload your own tracks or reuse existing assets.
           </p>
         </div>
         <button
@@ -117,7 +117,7 @@ export function MusicLibrary({ projectId, selectedAssetId, onSelected }: Props) 
         </div>
       ) : (
         <p className="text-sm text-slate-500">
-          No tracks yet. Add PIXABAY_API_KEY or upload your own music on the left.
+          No tracks yet. Upload your own music on the left to build your library.
         </p>
       )}
     </div>

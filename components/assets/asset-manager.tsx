@@ -8,6 +8,12 @@ import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/storyflow/utils";
 import { MusicLibrary } from "./music-library";
 import { MusicSettings } from "./music-settings";
+import {
+  useAssets,
+  useDeleteAsset,
+  useUpscaleAsset,
+  useSelectMusicAsset,
+} from "@/src/hooks/queries/use-assets";
 
 const TABS: { key: AssetType | "ALL"; label: string }[] = [
   { key: "ALL", label: "All" },
@@ -26,18 +32,22 @@ type Props = {
 
 export function AssetManager({
   projectId,
-  assets,
+  assets: initialAssets,
   selectedMusicAssetId,
   initialMusicVolume = 0.3,
 }: Props) {
   const [activeTab, setActiveTab] = useState<AssetType | "ALL">("ALL");
-  const [items, setItems] = useState<Asset[]>(assets);
-  const [upscaling, setUpscaling] = useState<Set<string>>(new Set());
   const [selectedMusicId, setSelectedMusicId] = useState<string | null>(
     selectedMusicAssetId ?? null
   );
   const [musicVolume, setMusicVolume] = useState(initialMusicVolume);
   const toast = useToast();
+
+  // React Query hooks
+  const { data: items = initialAssets } = useAssets(projectId);
+  const deleteMutation = useDeleteAsset(projectId);
+  const upscaleMutation = useUpscaleAsset(projectId);
+  const selectMusicMutation = useSelectMusicAsset(projectId);
 
   useEffect(() => {
     setSelectedMusicId(selectedMusicAssetId ?? null);
@@ -48,26 +58,23 @@ export function AssetManager({
     return items.filter((asset) => asset.type === activeTab);
   }, [items, activeTab]);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/assets/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Delete failed");
-      }
-      setItems((prev) => prev.filter((a) => a.id !== id));
-      toast({ title: "Asset deleted", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Delete error",
-        description: error?.message || "Unable to delete asset",
-        variant: "error",
-      });
-    }
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        toast({ title: "Asset deleted", variant: "success" });
+      },
+      onError: (error) => {
+        toast({
+          title: "Delete error",
+          description: error.message || "Unable to delete asset",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const handleUploaded = (asset: Asset) => {
-    setItems((prev) => [asset, ...prev]);
+    // Upload mutation already updates cache, just handle UI state
     if (activeTab !== "ALL" && activeTab !== asset.type) {
       setActiveTab("ALL");
     }
@@ -76,66 +83,44 @@ export function AssetManager({
   const uploadType: AssetType =
     activeTab === "ALL" ? "IMAGE" : activeTab; // default to images when "All"
 
-  const handleUpscale = async (id: string) => {
-    setUpscaling((prev) => new Set(prev).add(id));
-    try {
-      const res = await fetch("/api/assets/upscale", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId: id }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Upscale failed");
-      }
-
-      const { asset } = await res.json();
-      setItems((prev) => prev.map((item) => (item.id === id ? asset : item)));
-      toast({
-        title: "Image upscaled",
-        description: "Replaced with 8K version",
-        variant: "success",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Upscale error",
-        description: error?.message || "Unable to upscale image",
-        variant: "error",
-      });
-    } finally {
-      setUpscaling((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }
+  const handleUpscale = (id: string) => {
+    upscaleMutation.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "Image upscaled",
+          description: "Replaced with 8K version",
+          variant: "success",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Upscale error",
+          description: error.message || "Unable to upscale image",
+          variant: "error",
+        });
+      },
+    });
   };
 
-  const handleSelectMusicAsset = async (assetId: string) => {
-    try {
-      const res = await fetch(`/api/projects/${projectId}/music`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error || "Unable to set soundtrack");
-      }
-      setSelectedMusicId(assetId);
-      toast({ title: "Soundtrack selected", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Music selection error",
-        description: error?.message || "Unable to set soundtrack",
-        variant: "error",
-      });
-    }
+  const handleSelectMusicAsset = (assetId: string) => {
+    selectMusicMutation.mutate(assetId, {
+      onSuccess: () => {
+        setSelectedMusicId(assetId);
+        toast({ title: "Soundtrack selected", variant: "success" });
+      },
+      onError: (error) => {
+        toast({
+          title: "Music selection error",
+          description: error.message || "Unable to set soundtrack",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const handleLibrarySelected = (asset: Asset) => {
-    setItems((prev) => [asset, ...prev.filter((item) => item.id !== asset.id)]);
+    // Music library already handles asset creation and selection
+    // Just update local UI state
     setSelectedMusicId(asset.id);
     if (activeTab !== "ALL" && activeTab !== "MUSIC") {
       setActiveTab("MUSIC");
@@ -174,7 +159,13 @@ export function AssetManager({
               assets={filtered}
               onDelete={handleDelete}
               onUpscale={handleUpscale}
-              upscalingIds={upscaling}
+              upscalingIds={
+                new Set(
+                  upscaleMutation.isPending && upscaleMutation.variables
+                    ? [upscaleMutation.variables]
+                    : []
+                )
+              }
               onSelectMusic={handleSelectMusicAsset}
               selectedMusicId={selectedMusicId}
             />
@@ -205,7 +196,13 @@ export function AssetManager({
             assets={filtered}
             onDelete={handleDelete}
             onUpscale={handleUpscale}
-            upscalingIds={upscaling}
+            upscalingIds={
+              new Set(
+                upscaleMutation.isPending && upscaleMutation.variables
+                  ? [upscaleMutation.variables]
+                  : []
+              )
+            }
             onSelectMusic={handleSelectMusicAsset}
             selectedMusicId={selectedMusicId}
           />
