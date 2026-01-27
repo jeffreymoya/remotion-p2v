@@ -5,7 +5,14 @@ import { PageContainer } from "@/components/layout/page-container";
 import { useToast } from "@/components/ui/toast-provider";
 
 type Settings = {
-  ai: { provider: string; model: string; temperature: number };
+  ai: {
+    provider: string;
+    model: string;
+    fallbackModel: string;
+    proModel: string;
+    proFallbackModel: string;
+    temperature: number;
+  };
   tts: { voice: string; speakingRate: number; pitch: number };
   render: { defaultQuality: string; defaultAspectRatio: string };
 };
@@ -137,19 +144,6 @@ export default function SettingsPage() {
               </label>
 
               <label className="space-y-1 text-sm">
-                <span className="text-slate-300">Model</span>
-                <input
-                  className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
-                  value={settings.ai.model}
-                  onChange={(e) =>
-                    setSettings((s) =>
-                      s ? { ...s, ai: { ...s.ai, model: e.target.value } } : s
-                    )
-                  }
-                />
-              </label>
-
-              <label className="space-y-1 text-sm">
                 <span className="text-slate-300">Temperature</span>
                 <input
                   type="number"
@@ -164,6 +158,71 @@ export default function SettingsPage() {
                         ? {
                             ...s,
                             ai: { ...s.ai, temperature: Number(e.target.value) },
+                          }
+                        : s
+                    )
+                  }
+                />
+              </label>
+
+              <label className="space-y-1 text-sm">
+                <span className="text-slate-300">Model for basic prompts</span>
+                <input
+                  className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
+                  placeholder="e.g. gemini-3-flash"
+                  value={settings.ai.model}
+                  onChange={(e) =>
+                    setSettings((s) =>
+                      s ? { ...s, ai: { ...s.ai, model: e.target.value } } : s
+                    )
+                  }
+                />
+              </label>
+
+              <label className="space-y-1 text-sm">
+                <span className="text-slate-300">Fallback for basic prompts</span>
+                <input
+                  className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
+                  placeholder="e.g. gemini-2.5-flash"
+                  value={settings.ai.fallbackModel}
+                  onChange={(e) =>
+                    setSettings((s) =>
+                      s
+                        ? { ...s, ai: { ...s.ai, fallbackModel: e.target.value } }
+                        : s
+                    )
+                  }
+                />
+              </label>
+
+              <label className="space-y-1 text-sm">
+                <span className="text-slate-300">Model for complex prompts</span>
+                <input
+                  className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
+                  placeholder="e.g. gemini-3-pro"
+                  value={settings.ai.proModel}
+                  onChange={(e) =>
+                    setSettings((s) =>
+                      s
+                        ? { ...s, ai: { ...s.ai, proModel: e.target.value } }
+                        : s
+                    )
+                  }
+                />
+              </label>
+
+              <label className="space-y-1 text-sm">
+                <span className="text-slate-300">Fallback for complex prompts</span>
+                <input
+                  className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
+                  placeholder="e.g. gemini-2.5-pro"
+                  value={settings.ai.proFallbackModel}
+                  onChange={(e) =>
+                    setSettings((s) =>
+                      s
+                        ? {
+                            ...s,
+                            ai: { ...s.ai, proFallbackModel: e.target.value },
                           }
                         : s
                     )

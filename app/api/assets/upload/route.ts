@@ -5,6 +5,7 @@ import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { extractMetadata, saveAssetFile } from "@/src/lib/storyflow/assets";
 import { validateUpload } from "@/src/lib/storyflow/file-validation";
 import { AssetType } from "@/src/lib/storyflow/types";
+import { toJsonObject } from "@/src/lib/storyflow/prisma-json";
 
 const typeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO", "MUSIC"]);
 
@@ -64,7 +65,7 @@ export async function POST(req: Request) {
         type: parsedType.data as AssetType,
         filename: stored.filename,
         path: `/${stored.relativePath.replace(/\\/g, "/")}`,
-        metadata,
+        metadata: toJsonObject(metadata),
       },
     });
 

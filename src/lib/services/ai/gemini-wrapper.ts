@@ -4,6 +4,7 @@ import { promisify } from "node:util";
 import { aiLogger as dbAILogger, AiCallContext } from "./ai-logger";
 import { aiLogger } from "@/src/lib/logger";
 import { getSettings } from "@/src/lib/storyflow/settings";
+import { parseGeminiOutput } from "@/src/lib/storyflow/gemini-parser";
 
 const execFileAsync = promisify(execFile);
 
@@ -104,7 +105,7 @@ export async function geminiCall<T>(
         aiLogger.info({ fallbackModel: usedModel }, "Used fallback model successfully");
       }
 
-      const result = format === "json" ? JSON.parse(rawResponse) : ((rawResponse as unknown) as T);
+      const result = format === "json" ? parseGeminiOutput<T>(rawResponse) : ((rawResponse as unknown) as T);
       return { result, rawResponse, tokens };
     }
   );

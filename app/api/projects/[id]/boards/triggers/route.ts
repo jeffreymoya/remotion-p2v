@@ -50,8 +50,9 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Requires: board plan, prompts, regions, and TTS word timestamps
  */
 export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
+  const { id: projectId } = await params;
+
   try {
-    const { id: projectId } = await params;
 
     // Parse and validate request body
     const json = await (req.json().catch(() => ({})));

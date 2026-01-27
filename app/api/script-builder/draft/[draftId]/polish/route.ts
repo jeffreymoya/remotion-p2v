@@ -3,6 +3,7 @@ import { z } from "zod";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { GlueIssue } from "@/src/lib/storyflow/script-builder-types";
 import { recordScriptDraftHistory } from "@/src/lib/storyflow/history";
+import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
 
 const requestSchema = z.object({
   polishedText: z.string().min(10, "polishedText is required"),
@@ -36,7 +37,7 @@ export async function PUT(
       return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
     }
 
-    const existingIssues = (scriptDraft.glueIssues as GlueIssue[] | null) ?? [];
+    const existingIssues = fromJsonArray<GlueIssue>(scriptDraft.glueIssues);
     const updatedIssues = existingIssues.map((issue) => ({
       ...issue,
       resolved: resolvedIssues.includes(issue.id) ? true : issue.resolved,
@@ -46,7 +47,7 @@ export async function PUT(
       where: { id: draftId },
       data: {
         polishedText,
-        glueIssues: updatedIssues,
+        glueIssues: toJsonArray(updatedIssues),
         status: "POLISHING",
         version: { increment: 1 },
         updatedAt: new Date(),

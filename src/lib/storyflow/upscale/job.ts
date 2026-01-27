@@ -3,6 +3,7 @@ import { mkdir } from "fs/promises";
 import { storyflowPrisma } from "../prisma";
 import { extractMetadata } from "../assets";
 import { RealESRGANService } from "./realesrgan";
+import { toJsonObject } from "../prisma-json";
 
 export async function processUpscaleJob(assetId: string) {
   const asset = await storyflowPrisma.asset.findUnique({ where: { id: assetId } });
@@ -46,7 +47,7 @@ export async function processUpscaleJob(assetId: string) {
     data: {
       upscaled: true,
       upscaledPath: `/${outputRelative.replace(/\\/g, "/")}`,
-      metadata,
+      metadata: toJsonObject(metadata),
     },
   });
 

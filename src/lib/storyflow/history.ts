@@ -28,8 +28,8 @@ type ScriptDraftSnapshot = {
 
 function normalizeDates<T extends { createdAt?: Date; updatedAt?: Date }>(
   snapshot: T
-): Record<string, unknown> {
-  return {
+): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify({
     ...snapshot,
     createdAt:
       snapshot.createdAt instanceof Date
@@ -39,7 +39,7 @@ function normalizeDates<T extends { createdAt?: Date; updatedAt?: Date }>(
       snapshot.updatedAt instanceof Date
         ? snapshot.updatedAt.toISOString()
         : snapshot.updatedAt,
-  };
+  }));
 }
 
 export async function recordBlueprintHistory(
@@ -52,7 +52,7 @@ export async function recordBlueprintHistory(
         blueprintId: blueprint.id,
         version: blueprint.version,
         event,
-        snapshot: normalizeDates(blueprint) as Prisma.JsonValue,
+        snapshot: normalizeDates(blueprint),
       },
     });
   } catch (error) {
@@ -71,7 +71,7 @@ export async function recordScriptDraftHistory(
         blueprintId: draft.blueprintId,
         version: draft.version,
         event,
-        snapshot: normalizeDates(draft) as Prisma.JsonValue,
+        snapshot: normalizeDates(draft),
       },
     });
   } catch (error) {

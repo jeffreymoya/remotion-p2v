@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
 import {
   executeBeat,
   type Beat,
@@ -55,8 +56,8 @@ export async function POST(
     }
 
     const projectId = scriptDraft.blueprint.projectId;
-    const beats = scriptDraft.blueprint.beats as Beat[];
-    const beatDrafts = (scriptDraft.beatDrafts as BeatDraft[]) ?? [];
+    const beats = fromJsonArray<Beat>(scriptDraft.blueprint.beats);
+    const beatDrafts = fromJsonArray<BeatDraft>(scriptDraft.beatDrafts);
 
     const targetDraft = beatDrafts.find((bd) => bd.id === beatDraftId);
     if (!targetDraft) {
@@ -80,7 +81,7 @@ export async function POST(
 
     const regenerated = await executeBeat(
       projectId,
-      { ...targetBeat, blueprintId: scriptDraft.blueprintId },
+      targetBeat,
       previousContent,
       isFirst,
       isLast,
@@ -98,7 +99,7 @@ export async function POST(
     const updatedDraft = await storyflowPrisma.scriptDraft.update({
       where: { id: scriptDraft.id },
       data: {
-        beatDrafts: updatedBeatDrafts,
+        beatDrafts: toJsonArray(updatedBeatDrafts),
         polishedText,
         version: { increment: 1 },
         updatedAt: new Date(),

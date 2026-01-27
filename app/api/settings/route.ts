@@ -7,6 +7,9 @@ const settingsSchema = z.object({
     .object({
       provider: z.enum(["gemini-cli", "claude-code"]).optional(),
       model: z.string().optional(),
+      fallbackModel: z.string().optional(),
+      proModel: z.string().optional(),
+      proFallbackModel: z.string().optional(),
       temperature: z.number().min(0).max(2).optional(),
     })
     .optional(),

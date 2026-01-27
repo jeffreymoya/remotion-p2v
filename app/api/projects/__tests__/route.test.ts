@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET, PATCH, DELETE } from "../[id]/route";
 import { NextRequest } from "next/server";
+import { Prisma, ProjectStatus } from "@/src/generated/storyflow";
 
 // Mock Prisma
 vi.mock("@/src/lib/storyflow/prisma", () => ({
@@ -24,7 +25,10 @@ import { deleteProjectDirectory } from "@/src/lib/storyflow/projects";
 type MockProject = {
   id: string;
   name: string;
-  status: string;
+  topic: string | null;
+  status: ProjectStatus;
+  aspectRatio: string;
+  assetMappings: Prisma.JsonValue;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -39,7 +43,10 @@ describe("Projects API - /api/projects/[id]", () => {
       const mockProject = {
         id: "123",
         name: "Test Project",
+        topic: null,
         status: "DRAFT",
+        aspectRatio: "16:9",
+        assetMappings: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -75,7 +82,10 @@ describe("Projects API - /api/projects/[id]", () => {
       const mockProject = {
         id: "123",
         name: "Old Name",
+        topic: null,
         status: "DRAFT",
+        aspectRatio: "16:9",
+        assetMappings: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -144,7 +154,10 @@ describe("Projects API - /api/projects/[id]", () => {
       const mockProject = {
         id: "123",
         name: "Test Project",
+        topic: null,
         status: "DRAFT",
+        aspectRatio: "16:9",
+        assetMappings: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

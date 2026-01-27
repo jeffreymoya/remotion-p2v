@@ -3,6 +3,7 @@ import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { analyzeGlue } from "@/src/lib/storyflow/glue";
 import { BeatDraft } from "@/src/lib/storyflow/script-builder-types";
 import { recordScriptDraftHistory } from "@/src/lib/storyflow/history";
+import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
 
 /**
  * GET /api/script-builder/draft/[draftId]/glue-analysis
@@ -23,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
     }
 
-    const beatDrafts = (scriptDraft.beatDrafts as BeatDraft[] | null) ?? [];
+    const beatDrafts = fromJsonArray<BeatDraft>(scriptDraft.beatDrafts);
     if (beatDrafts.length === 0) {
       return NextResponse.json({ error: "No beat drafts to analyze" }, { status: 400 });
     }
@@ -38,7 +39,7 @@ export async function GET(
     const updatedDraft = await storyflowPrisma.scriptDraft.update({
       where: { id: draftId },
       data: {
-        glueIssues: issues,
+        glueIssues: toJsonArray(issues),
         status: scriptDraft.status === "COMPLETED" ? "GLUING" : scriptDraft.status,
         polishedText,
         version: { increment: 1 },

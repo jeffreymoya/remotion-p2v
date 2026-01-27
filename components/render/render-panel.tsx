@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Loader2, PlayCircle, Download, RefreshCcw } from "lucide-react";
+import { PlayCircle, Download, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Render, RenderQuality } from "@/src/lib/storyflow/types";
-import { useRenderStatus, useStartRender } from "@/src/hooks/queries/use-render";
-import { useToast } from "@/components/ui/toast-provider";
+import { useRenderStatus } from "@/src/hooks/queries/use-render";
+import { startRender } from "@/src/lib/api/render";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 type Props = {
@@ -16,12 +16,10 @@ type Props = {
 
 export function RenderPanel({ projectId, initialRender }: Props) {
   const [renderId, setRenderId] = useState<string | null>(initialRender?.id ?? null);
-  const toast = useToast();
   const { runTask, isTaskRunning } = useBackgroundTask();
 
   // React Query hooks
   const { data: render } = useRenderStatus(renderId);
-  const startRenderMutation = useStartRender(projectId);
 
   const isProcessing = render?.status === "PROCESSING";
   const displayRender = render ?? initialRender;
@@ -30,17 +28,14 @@ export function RenderPanel({ projectId, initialRender }: Props) {
     await runTask(
       { projectId, category: "video-rendering", name: `Rendering ${quality.toLowerCase()} video`, icon: "film" },
       async ({ signal }) => {
-        return new Promise<Render>((resolve, reject) => {
-          startRenderMutation.mutate(quality, {
-            onSuccess: (data) => {
-              setRenderId(data.id);
-              resolve(data);
-            },
-            onError: (error) => {
-              reject(error);
-            },
-          });
-        });
+        if (signal.aborted) throw new Error("Cancelled");
+
+        const data = await startRender(projectId, quality);
+
+        if (signal.aborted) throw new Error("Cancelled");
+
+        setRenderId(data.id);
+        return data;
       }
     );
   };
@@ -62,19 +57,15 @@ export function RenderPanel({ projectId, initialRender }: Props) {
         </div>
         <div className="flex gap-2">
           <Button
-            disabled={startRenderMutation.isPending || isProcessing || isTaskRunning("video-rendering", projectId)}
+            disabled={isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("DRAFT")}
           >
-            {startRenderMutation.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <PlayCircle className="mr-2 h-4 w-4" />
-            )}
+            <PlayCircle className="mr-2 h-4 w-4" />
             Render Draft
           </Button>
           <Button
             variant="secondary"
-            disabled={startRenderMutation.isPending || isProcessing || isTaskRunning("video-rendering", projectId)}
+            disabled={isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("PRODUCTION")}
           >
             <PlayCircle className="mr-2 h-4 w-4" />

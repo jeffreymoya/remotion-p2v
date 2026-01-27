@@ -32,8 +32,9 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Requires: board plan, regions, triggers, and board images (preferably 8K upscaled)
  */
 export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
+  const { id: projectId } = await params;
+
   try {
-    const { id: projectId } = await params;
 
     // Parse and validate request body
     const json = await req.json().catch(() => ({}));
@@ -238,8 +239,9 @@ export const POST = withLogging(async (req: Request, { params }: RouteParams) =>
  * Retrieve existing viewport.json (if built)
  */
 export async function GET(_req: Request, { params }: RouteParams) {
+  const { id: projectId } = await params;
+
   try {
-    const { id: projectId } = await params;
 
     const project = await storyflowPrisma.project.findUnique({
       where: { id: projectId },

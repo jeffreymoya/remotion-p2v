@@ -6,7 +6,7 @@
  */
 
 import { Prisma } from "@/src/generated/storyflow";
-import type { JsonValue } from "@/src/generated/storyflow";
+type JsonValue = Prisma.JsonValue;
 
 /**
  * Safely cast a JsonValue to a typed array.

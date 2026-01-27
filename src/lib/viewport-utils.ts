@@ -1,5 +1,8 @@
 import { ViewportKeyframe } from './viewport-types';
 
+// Re-export ViewportKeyframe for external use
+export type { ViewportKeyframe };
+
 /**
  * ============================================================================
  * Section 6: Viewport Rendering Utilities

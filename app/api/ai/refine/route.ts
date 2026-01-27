@@ -95,20 +95,11 @@ export const POST = withLogging(async (req: Request) => {
       maxDuration: maxDuration!,
     });
 
-    // Store refinement data in project metadata
+    // Store refinement data in project
     await storyflowPrisma.project.update({
       where: { id: projectId },
       data: {
         topic: refinement.refinedTitle,
-        metadata: {
-          ...(project.metadata as object),
-          refinement: {
-            originalTitle: title,
-            originalDescription: description,
-            ...refinement,
-            refinedAt: new Date().toISOString(),
-          },
-        },
       },
     });
 

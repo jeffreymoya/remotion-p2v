@@ -4,6 +4,7 @@ import { z } from "zod";
 import { viewportAnalysisPrompt } from "@/config/prompts/viewport.prompt";
 import { parseGeminiOutputWithSchema } from "./gemini-parser";
 import { storyflowPrisma } from "./prisma";
+import { toJsonArray } from "./prisma-json";
 import {
   Asset,
   DetectedRegion,
@@ -223,7 +224,7 @@ export async function generateViewportForProject(
   }
 
   const absoluteImagePath = path.join(process.cwd(), "public", imageAsset.path);
-  const segmentTimings = buildSegmentTimings(project.script as Script);
+  const segmentTimings = buildSegmentTimings(project.script as unknown as Script);
 
   let regions: DetectedRegion[] = [];
   let keyframes: ViewportKeyframe[] = [];
@@ -245,8 +246,8 @@ export async function generateViewportForProject(
 
   const viewport = await storyflowPrisma.viewport.upsert({
     where: { projectId },
-    update: { imageAssetId, keyframes, regions },
-    create: { projectId, imageAssetId, keyframes, regions },
+    update: { imageAssetId, keyframes: toJsonArray(keyframes), regions: toJsonArray(regions) },
+    create: { projectId, imageAssetId, keyframes: toJsonArray(keyframes), regions: toJsonArray(regions) },
   });
 
   if (project.status === "ASSETS_READY") {

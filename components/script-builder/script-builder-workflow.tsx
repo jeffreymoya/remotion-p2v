@@ -17,11 +17,7 @@ import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useStageInvalidation } from "@/components/pipeline/stage-invalidation-context";
 import { SaveIndicator } from "@/components/ui/save-indicator";
 import { useAutoSave } from "@/src/hooks/use-auto-save";
-import {
-  useGenerateBlueprint,
-  useRegenerateBlueprint,
-  useSegmentScript,
-} from "@/src/hooks/queries/use-execution-status";
+import { segmentScript, generateBlueprint, regenerateBlueprint } from "@/src/lib/api/script-builder";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 interface ScriptBuilderWorkflowProps {
@@ -51,10 +47,7 @@ export function ScriptBuilderWorkflow({
   const toast = useToast();
   const { registerScriptChange, registerEdit } = useStageInvalidation();
 
-  // React Query mutations
-  const generateBlueprintMutation = useGenerateBlueprint();
-  const regenerateBlueprintMutation = useRegenerateBlueprint();
-  const segmentScriptMutation = useSegmentScript();
+  // React Query mutations (none - background tasks use direct API calls)
 
   // Background task tracking
   const { runTask, isTaskRunning } = useBackgroundTask();
@@ -112,34 +105,18 @@ export function ScriptBuilderWorkflow({
         icon: "sparkles",
       },
       async ({ signal }) => {
-        return new Promise<void>((resolve, reject) => {
-          if (signal.aborted) {
-            reject(new Error("Cancelled"));
-            return;
-          }
+        if (signal.aborted) throw new Error("Cancelled");
 
-          generateBlueprintMutation.mutate(
-            {
-              projectId,
-              topic: topic.trim(),
-              targetDurationMs: targetDuration,
-            },
-            {
-              onSuccess: ({ blueprint: newBlueprint }) => {
-                if (signal.aborted) {
-                  reject(new Error("Cancelled"));
-                  return;
-                }
-                setBlueprint(newBlueprint);
-                setPhase("blueprint");
-                resolve();
-              },
-              onError: (error) => {
-                reject(error);
-              },
-            }
-          );
+        const { blueprint: newBlueprint } = await generateBlueprint({
+          projectId,
+          topic: topic.trim(),
+          targetDurationMs: targetDuration,
         });
+
+        if (signal.aborted) throw new Error("Cancelled");
+
+        setBlueprint(newBlueprint);
+        setPhase("blueprint");
       }
     );
   };
@@ -162,36 +139,20 @@ export function ScriptBuilderWorkflow({
         icon: "sparkles",
       },
       async ({ signal }) => {
-        return new Promise<void>((resolve, reject) => {
-          if (signal.aborted) {
-            reject(new Error("Cancelled"));
-            return;
-          }
+        if (signal.aborted) throw new Error("Cancelled");
 
-          regenerateBlueprintMutation.mutate(
-            {
-              blueprintId: blueprint.id,
-              rejectionNotes: blueprint.rejectionNotes ?? undefined,
-            },
-            {
-              onSuccess: ({ blueprint: newBlueprint }) => {
-                if (signal.aborted) {
-                  reject(new Error("Cancelled"));
-                  return;
-                }
-                setBlueprint(newBlueprint);
-                setScriptDraft(null);
-                setScript(null);
-                setPhase("blueprint");
-                registerEdit("script", "structural");
-                resolve();
-              },
-              onError: (error) => {
-                reject(error);
-              },
-            }
-          );
+        const { blueprint: newBlueprint } = await regenerateBlueprint({
+          blueprintId: blueprint.id,
+          rejectionNotes: blueprint.rejectionNotes ?? undefined,
         });
+
+        if (signal.aborted) throw new Error("Cancelled");
+
+        setBlueprint(newBlueprint);
+        setScriptDraft(null);
+        setScript(null);
+        setPhase("blueprint");
+        registerEdit("script", "structural");
       }
     );
   };
@@ -213,37 +174,28 @@ export function ScriptBuilderWorkflow({
         icon: "scissors",
       },
       async ({ signal }) => {
-        return new Promise<void>((resolve, reject) => {
-          if (signal.aborted) {
-            reject(new Error("Cancelled"));
-            return;
-          }
+        if (signal.aborted) {
+          throw new Error("Cancelled");
+        }
 
-          segmentScriptMutation.mutate(scriptDraft.id, {
-            onSuccess: ({ script: finalScript }) => {
-              if (signal.aborted) {
-                reject(new Error("Cancelled"));
-                return;
-              }
-              registerScriptChange(script, finalScript);
-              setScript(finalScript);
-              setPhase("preview");
-              setTtsState({
-                running: true,
-                completed: 0,
-                total: finalScript.segments.length,
-                error: null,
-              });
+        const { script: finalScript } = await segmentScript(scriptDraft.id);
 
-              // Start TTS generation in background
-              runTtsForScript(finalScript);
-              resolve();
-            },
-            onError: (error) => {
-              reject(error);
-            },
-          });
+        if (signal.aborted) {
+          throw new Error("Cancelled");
+        }
+
+        registerScriptChange(script, finalScript);
+        setScript(finalScript);
+        setPhase("preview");
+        setTtsState({
+          running: true,
+          completed: 0,
+          total: finalScript.segments.length,
+          error: null,
         });
+
+        // Start TTS generation in background
+        runTtsForScript(finalScript);
       }
     );
   };
@@ -390,7 +342,7 @@ export function ScriptBuilderWorkflow({
               placeholder="e.g. When Fandom Goes Too Far: The Psychology of Toxic Fan Culture"
               rows={6}
               className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-white shadow-inner shadow-black/20 focus:border-brand-500 focus:outline-none font-mono text-sm resize-vertical"
-              disabled={generateBlueprintMutation.isPending}
+              disabled={isTaskRunning("blueprint-generation", projectId)}
             />
             <p className="text-xs text-slate-400">
               This topic will be used to generate an engagement-focused blueprint with narrative beats.
@@ -404,11 +356,11 @@ export function ScriptBuilderWorkflow({
 
           <button
             onClick={handleGenerateBlueprint}
-            disabled={generateBlueprintMutation.isPending || isTaskRunning("blueprint-generation", projectId)}
+            disabled={isTaskRunning("blueprint-generation", projectId)}
             data-onboarding="ai-generate"
             className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 disabled:opacity-60"
           >
-            {generateBlueprintMutation.isPending ? (
+            {isTaskRunning("blueprint-generation", projectId) ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Generating Blueprint...

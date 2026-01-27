@@ -106,6 +106,10 @@ function escapeNewlinesInJsonStrings(text: string): string {
 export function parseGeminiOutput<T = unknown>(stdout: string): T {
   let text = stdout.trim();
 
+  // Step 0: Strip BOM, zero-width characters, and other invisible prefixes
+  text = text.replace(/^\uFEFF/, ""); // UTF-8 BOM
+  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, ""); // zero-width chars
+
   // Step 1: Strip markdown fences if present
   text = stripMarkdownBlocks(text);
 
@@ -141,8 +145,15 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
       parsed = JSON.parse(extracted);
     } catch {
       // Log the problematic output for debugging
+      const hexPrefix = Array.from(text.substring(0, 20))
+        .map((c) => `0x${c.charCodeAt(0).toString(16).padStart(2, "0")}`)
+        .join(" ");
       console.error(
-        "[gemini-parser] Failed to parse output. First 500 chars:",
+        "[gemini-parser] Failed to parse output. First 20 byte codes:",
+        hexPrefix
+      );
+      console.error(
+        "[gemini-parser] First 500 chars:",
         text.substring(0, 500)
       );
       throw firstError;
