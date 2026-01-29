@@ -10,8 +10,8 @@ const execFileAsync = promisify(execFile);
 
 // Default models (can be overridden via settings)
 export const GEMINI_MODELS = {
-  PRO: "gemini-3-pro",
-  FLASH: "gemini-3-flash",
+  PRO: "gemini-2.5-pro",
+  FLASH: "gemini-2.5-flash",
 } as const;
 
 type GeminiModel = (typeof GEMINI_MODELS)[keyof typeof GEMINI_MODELS] | string;

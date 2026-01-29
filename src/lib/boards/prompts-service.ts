@@ -9,6 +9,7 @@ import {
 } from '../boards-types';
 import { contentAnalysisPrompt, elementDescriptionPrompt } from '../../../config/prompts/boards-image.prompt';
 import { AIProviderFactory } from "@/src/lib/services/ai";
+import { parseJsonFromLLM } from "@/src/lib/boards/ai-service";
 
 export interface ScriptSegment {
   id: string;
@@ -327,21 +328,6 @@ async function callAIWithRetry<T>(
   throw new Error(`[AI] Failed to complete ${label}`);
 }
 
-/**
- * Parse JSON from LLM response, handling markdown code blocks
- */
-function parseJsonFromLLM(raw: string): unknown {
-  const trimmed = raw.trim();
-  const clean = trimmed.startsWith('```')
-    ? trimmed.replace(/^```(?:json)?\s*/i, '').replace(/```$/, '').trim()
-    : trimmed;
-
-  try {
-    return JSON.parse(clean);
-  } catch (error) {
-    throw new Error(`[LLM] Failed to parse LLM JSON: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
 
 /**
  * Unwrap array from object if LLM wrapped it (e.g., { "elements": [...] } -> [...])

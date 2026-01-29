@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Blueprint, ScriptDraft } from "@/src/lib/storyflow/script-builder-types";
 import { Script } from "@/src/lib/storyflow/types";
 import { WorkflowError } from "./workflow-error";
@@ -40,11 +41,12 @@ export function ScriptBuilderWorkflow({
   const [script, setScript] = useState<Script | null>(initialState.script);
   const [ttsState, setTtsState] = useState({
     running: false,
-    completed: 0,
+    completed: initialState.script?.segments.filter((s) => s.audioUrl).length ?? 0,
     total: initialState.script?.segments.length ?? 0,
     error: null as string | null,
   });
   const toast = useToast();
+  const router = useRouter();
   const { registerScriptChange, registerEdit } = useStageInvalidation();
 
   // React Query mutations (none - background tasks use direct API calls)
@@ -238,7 +240,6 @@ export function ScriptBuilderWorkflow({
           }
 
           const seg = targets[i];
-          updateProgress(i + 1, targets.length, `Segment ${i + 1}/${targets.length}`);
 
           const res = await fetch("/api/tts/generate", {
             method: "POST",
@@ -275,6 +276,7 @@ export function ScriptBuilderWorkflow({
               : prev
           );
           setTtsState((prev) => ({ ...prev, completed: prev.completed + 1 }));
+          updateProgress(i + 1, targets.length, `Segment ${i + 1}/${targets.length}`);
         }
 
         setTtsState((prev) => ({ ...prev, running: false, error: null }));
@@ -282,6 +284,26 @@ export function ScriptBuilderWorkflow({
       }
     );
   };
+
+  const handleContinueToMedia = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "SCRIPT_READY" }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(typeof body.error === "string" ? body.error : "Failed to update project status");
+      }
+      router.push(`/projects/${projectId}/media`);
+    } catch (err) {
+      toast({
+        title: err instanceof Error ? err.message : "Failed to continue",
+        variant: "error",
+      });
+    }
+  }, [projectId, router, toast]);
 
   const handleBackToInput = () => {
     setPhase("input");
@@ -477,12 +499,12 @@ export function ScriptBuilderWorkflow({
             >
               Start New Script
             </button>
-            <a
-              href={`/projects/${projectId}/media`}
+            <button
+              onClick={handleContinueToMedia}
               className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 hover:-translate-y-0.5"
             >
               Continue to Media
-            </a>
+            </button>
           </div>
         </div>
       )}

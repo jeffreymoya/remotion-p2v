@@ -104,14 +104,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // Update project status
-    await storyflowPrisma.project.update({
-      where: { id: scriptDraft.blueprint.projectId },
-      data: {
-        status: "SCRIPT_READY",
-      },
-    });
-
     const completedDraft = await storyflowPrisma.scriptDraft.update({
       where: { id: scriptDraft.id },
       data: {

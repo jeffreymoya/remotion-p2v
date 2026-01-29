@@ -6,6 +6,7 @@ import { ScriptSegment, TTSSettings, WordTimestamp } from "./types";
 import { getSettings } from "./settings";
 import { WORDS_PER_MINUTE } from "../constants";
 import { aiLogger } from "@/src/lib/services/ai";
+import { env } from "@/src/env";
 
 // Pre-generated 1s silent MP3 (base64) for offline/dev fallback
 const SILENT_MP3_BASE64 =
@@ -18,7 +19,9 @@ let cachedClient: GoogleClient | null = null;
 function getGoogleClient(): GoogleClient | null {
   if (cachedClient) return cachedClient;
   try {
-    cachedClient = new v1beta1.TextToSpeechClient();
+    cachedClient = new v1beta1.TextToSpeechClient({
+      apiKey: env.GOOGLE_TTS_API_KEY,
+    });
     return cachedClient;
   } catch (error) {
     console.warn("Google TTS client unavailable, falling back to mock:", error);

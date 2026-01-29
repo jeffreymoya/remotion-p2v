@@ -53,6 +53,31 @@ function extractJsonFromText(text: string): string {
 }
 
 /**
+ * Unescape a string that contains JSON string escape sequences (e.g. literal \n, \", \\).
+ * Uses a single-pass regex so that \\\", \\n, etc. are handled correctly
+ * (the \\\\ is consumed first, preventing the following \" from being misinterpreted).
+ */
+export function unescapeJsonString(text: string): string {
+  return text.replace(
+    /\\(["\\\/nrtbf]|u[0-9a-fA-F]{4})/g,
+    (_, seq: string) => {
+      switch (seq[0]) {
+        case '"': return '"';
+        case '\\': return '\\';
+        case '/': return '/';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'b': return '\b';
+        case 'f': return '\f';
+        case 'u': return String.fromCharCode(parseInt(seq.substring(1), 16));
+        default: return seq;
+      }
+    }
+  );
+}
+
+/**
  * Replace raw newlines that appear inside JSON string literals
  * with escaped \n so JSON.parse can accept pretty-printed strings.
  */
@@ -132,14 +157,22 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
     if (parsed !== undefined) {
       // Successfully parsed after newline escaping
     } else {
-    // Step 4: Try unescaping common escape sequences that might be double-escaped
+    // Step 4: Try unescaping double-escaped JSON string content
+    // The text may be the inner content of a JSON string (with \n, \", \\\", etc.)
+
+    // Step 4a: Try JSON.parse with wrapping quotes - handles all JSON escapes correctly
     try {
-      // Replace literal \n, \t, \r with actual characters
-      const unescaped = text
-        .replace(/\\n/g, "\n")
-        .replace(/\\t/g, "\t")
-        .replace(/\\r/g, "\r")
-        .replace(/\\"/g, '"');
+      const unescaped = JSON.parse('"' + text + '"');
+      const extracted = extractJsonFromText(unescaped);
+      parsed = JSON.parse(extracted);
+    } catch {
+      /* fall through to manual unescape */
+    }
+
+    if (parsed === undefined) {
+    // Step 4b: Single-pass unescape that correctly handles \\ before \" and other sequences
+    try {
+      const unescaped = unescapeJsonString(text);
 
       const extracted = extractJsonFromText(unescaped);
       parsed = JSON.parse(extracted);
@@ -157,6 +190,7 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
         text.substring(0, 500)
       );
       throw firstError;
+    }
     }
     }
   }
@@ -179,12 +213,7 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
       } catch {
         // Try unescaping the inner content
         try {
-          const unescaped = innerCleaned
-            .replace(/\\n/g, "\n")
-            .replace(/\\t/g, "\t")
-            .replace(/\\r/g, "\r")
-            .replace(/\\"/g, '"');
-
+          const unescaped = unescapeJsonString(innerCleaned);
           const unescapedExtracted = extractJsonFromText(unescaped);
           return JSON.parse(unescapedExtracted) as T;
         } catch {

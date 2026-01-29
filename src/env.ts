@@ -14,9 +14,9 @@ export const env = createEnv({
     // Deprecated: stock media providers removed. Left undocumented intentionally.
 
     // AI (optional - uses Gemini CLI)
-    GEMINI_MODEL: z.string().default("gemini-3-flash"),
+    GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
     GEMINI_FALLBACK_MODEL: z.string().default("gemini-2.5-flash"),
-    GEMINI_PRO_MODEL: z.string().default("gemini-3-pro"),
+    GEMINI_PRO_MODEL: z.string().default("gemini-2.5-pro"),
     GEMINI_PRO_FALLBACK_MODEL: z.string().default("gemini-2.5-pro"),
     BOARDS_AI_PROVIDER: z.string().optional(),
     AI_PROVIDER: z.string().optional(),

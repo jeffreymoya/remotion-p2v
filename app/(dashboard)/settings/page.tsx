@@ -169,7 +169,7 @@ export default function SettingsPage() {
                 <span className="text-slate-300">Model for basic prompts</span>
                 <input
                   className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
-                  placeholder="e.g. gemini-3-flash"
+                  placeholder="e.g. gemini-2.5-flash"
                   value={settings.ai.model}
                   onChange={(e) =>
                     setSettings((s) =>
@@ -199,7 +199,7 @@ export default function SettingsPage() {
                 <span className="text-slate-300">Model for complex prompts</span>
                 <input
                   className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
-                  placeholder="e.g. gemini-3-pro"
+                  placeholder="e.g. gemini-2.5-pro"
                   value={settings.ai.proModel}
                   onChange={(e) =>
                     setSettings((s) =>

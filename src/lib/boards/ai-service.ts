@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AIProviderFactory } from "@/src/lib/services/ai";
 import type { AIProvider } from "@/src/lib/ai-types";
+import { unescapeJsonString } from "@/src/lib/storyflow/gemini-parser";
 
 /**
  * AI service wrapper for boards functionality.
@@ -110,7 +111,7 @@ export async function callWithRetry<T>(
 }
 
 /**
- * Parse JSON from LLM response, handling markdown code blocks
+ * Parse JSON from LLM response, handling markdown code blocks and double-escaped content
  */
 export function parseJsonFromLLM(raw: string): unknown {
   const trimmed = raw.trim();
@@ -123,10 +124,17 @@ export function parseJsonFromLLM(raw: string): unknown {
 
   try {
     return JSON.parse(clean);
-  } catch (error) {
-    throw new Error(
-      `[AI] Failed to parse LLM JSON: ${error instanceof Error ? error.message : String(error)}`
-    );
+  } catch (firstError) {
+    // Try unescaping double-escaped JSON string content (e.g. literal \n, \", \\\" from Gemini CLI)
+    try {
+      const unescaped = unescapeJsonString(clean);
+      return JSON.parse(unescaped);
+    } catch {
+      // throw the original error for clarity
+      throw new Error(
+        `[AI] Failed to parse LLM JSON: ${firstError instanceof Error ? firstError.message : String(firstError)}`
+      );
+    }
   }
 }
 

@@ -52,3 +52,5 @@ tests/fixtures/*.jpg
 tests/fixtures/*.webp
 tests/fixtures/*.png
 !tests/fixtures/README.md
+
+docs/archive
