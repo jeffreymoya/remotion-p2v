@@ -1,3 +1,6 @@
+import type { AppSettings } from "./settings";
+import type { Milliseconds, Seconds } from "@/src/lib/types/units";
+
 export type AspectRatio = "16:9" | "9:16";
 
 export type ProjectStatus =
@@ -32,47 +35,29 @@ export interface Project {
   renders?: Render[];
 }
 
-export interface AISettings {
-  provider: "gemini-cli" | "claude-code";
-  model: string;
-  temperature: number;
-}
-
-export interface TTSSettings {
-  voice: string;
-  speakingRate: number;
-  pitch: number;
-}
-
-export interface RenderSettings {
-  defaultQuality: "draft" | "medium" | "high" | "production";
-  defaultAspectRatio: AspectRatio;
-}
-
-export interface ProjectSettings {
+export type ProjectSettings = {
   id: string;
   projectId: string;
-  voice: string;
-  speakingRate: number;
-  pitch: number;
   musicTrackId?: string | null;
   musicVolume?: number;
-}
+} & Partial<AppSettings["ai"]> &
+  Partial<AppSettings["tts"]> &
+  Partial<AppSettings["render"]>;
 
 export interface ScriptSegment {
   index: number;
   text: string;
   wordCount?: number;
-  estimatedDuration?: number;
+  estimatedDuration?: Seconds;
   audioUrl?: string;
-  actualDuration?: number;
+  actualDuration?: Seconds;
   timestamps?: WordTimestamp[];
 }
 
 export interface WordTimestamp {
   word: string;
-  startMs: number;
-  endMs: number;
+  startMs: Milliseconds;
+  endMs: Milliseconds;
 }
 
 export interface Script {
@@ -135,12 +120,32 @@ export type EasingType =
   | "slowDramatic"
   | "fastAction";
 
+export type ViewportTriggerType =
+  | "segment_start"
+  | "topic_shift"
+  | "emphasis"
+  | "manual";
+
 export interface ViewportKeyframe {
   frameStart: number;
   frameEnd: number;
   viewport: { centerX: number; centerY: number; zoom: number };
   easing: EasingType;
-  transitionDurationMs: number;
+  transitionDurationMs: Milliseconds;
+}
+
+export interface ViewportTrigger {
+  triggerId: string;
+  wordId: string;
+  globalWordIndex: number;
+  segmentIndex: number;
+  localWordIndex: number;
+  word: string;
+  wordStartMs: Milliseconds;
+  targetRegionId: string;
+  targetBoardId: string;
+  transitionMs: Milliseconds;
+  triggerType: ViewportTriggerType;
 }
 
 export interface Viewport {
@@ -153,12 +158,99 @@ export interface Viewport {
   updatedAt: Date;
 }
 
+export interface RegionBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface BoardRegion {
   id: string;
-  position: { row: number; col: number };
-  assetId: string;
-  bounds: { x: number; y: number; width: number; height: number };
-  animation?: Record<string, unknown>;
+  elementId: string;
+  gridPosition: GridPosition;
+  bounds: RegionBounds;
+  label: string;
+  salience: number;
+}
+
+export interface BoardPlan {
+  version: "1.0";
+  scriptPath: string;
+  totalSegments: number;
+  totalDurationMs: number;
+  boards: BoardSegmentMapping[];
+  generatedAt: string;
+}
+
+export interface BoardRegionsOutput {
+  version: "1.0";
+  boardId: string;
+  imagePath: string;
+  imageMetadata: {
+    width: number;
+    height: number;
+    aspectRatio: number;
+  };
+  regions: BoardRegion[];
+  generatedAt: string;
+}
+
+export interface GridPosition {
+  row: number;
+  col: number;
+  rowSpan?: number;
+  colSpan?: number;
+}
+
+export type BoardElementType =
+  | "photo"
+  | "note"
+  | "clipping"
+  | "string"
+  | "map"
+  | "document"
+  | "diagram"
+  | "headline";
+
+export interface BoardElement {
+  id: string;
+  type: BoardElementType;
+  gridPosition: GridPosition;
+  description: string;
+  label?: string;
+  connectionTo?: string[];
+}
+
+export interface SegmentContext {
+  segmentIndex: number;
+  text: string;
+  focusElementId: string;
+}
+
+export interface BoardSegmentMapping {
+  boardId: string;
+  segmentIndices: number[];
+  totalDurationMs: number;
+  topicSummary: string;
+}
+
+export interface BoardPrompt {
+  boardId: string;
+  gridLayout: {
+    rows: number;
+    cols: number;
+  };
+  styleGuide: string;
+  elements: BoardElement[];
+  segmentContexts: SegmentContext[];
+  fullPromptText: string;
+}
+
+export interface BoardPromptsOutput {
+  version: "1.0";
+  prompts: BoardPrompt[];
+  generatedAt: string;
 }
 
 export interface Board {

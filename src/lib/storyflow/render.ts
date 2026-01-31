@@ -1,10 +1,15 @@
-import path from "path";
 import { mkdir, writeFile } from "fs/promises";
 import { spawn } from "child_process";
+import path from "path";
 
+import { ApiError, NotFoundError } from "@/app/api/lib";
 import { storyflowPrisma } from "./prisma";
 import { buildTimeline } from "./timeline-builder";
 import { RenderQuality } from "./types";
+import { getProjectPaths, getPublicDir } from "@/src/lib/paths";
+import { runStage } from "@/src/lib/storyflow/pipeline/runner";
+import type { PipelineStage, PipelineStageOptions } from "@/src/lib/storyflow/pipeline/types";
+import type { Render } from "@/src/lib/storyflow/types";
 
 const QUALITY_PRESETS: Record<RenderQuality, { crf: number; preset?: string; codec: string; audioBitrate: string }> = {
   DRAFT: { crf: 28, preset: "veryfast", codec: "h264", audioBitrate: "128k" },
@@ -13,18 +18,13 @@ const QUALITY_PRESETS: Record<RenderQuality, { crf: number; preset?: string; cod
   PRODUCTION: { crf: 18, preset: "slow", codec: "h265", audioBitrate: "256k" },
 };
 
-export async function startRenderJob(projectId: string, quality: RenderQuality = "DRAFT") {
-  const project = await storyflowPrisma.project.findUnique({ where: { id: projectId } });
-  if (!project) throw Object.assign(new Error("Project not found"), { status: 404 });
+type RenderStageOptions = PipelineStageOptions & { quality?: RenderQuality };
+type RenderStageInput = { projectId: string };
 
-  if (project.status !== "RENDER_READY" && project.status !== "COMPLETED") {
-    throw Object.assign(new Error("Project is not render-ready"), { status: 400 });
-  }
-
-  // sequential queue: only one active render
+async function createRenderJob(projectId: string, quality: RenderQuality = "DRAFT") {
   const inFlight = await storyflowPrisma.render.findFirst({ where: { status: "PROCESSING" } });
   if (inFlight) {
-    throw Object.assign(new Error("Another render is already in progress"), { status: 429 });
+    throw new ApiError("Another render is already in progress", 429, "RENDER_IN_PROGRESS");
   }
 
   const render = await storyflowPrisma.render.create({
@@ -57,22 +57,27 @@ export async function startRenderJob(projectId: string, quality: RenderQuality =
   return render;
 }
 
+export async function startRenderJob(projectId: string, quality: RenderQuality = "DRAFT") {
+  return runStage(renderStage, projectId, { quality });
+}
+
 export async function getRenderStatus(renderId: string) {
   const render = await storyflowPrisma.render.findUnique({ where: { id: renderId } });
-  if (!render) throw Object.assign(new Error("Render not found"), { status: 404 });
+  if (!render) throw new NotFoundError("Render", renderId);
   return render;
 }
 
 async function runRenderWorker(projectId: string, renderId: string, quality: RenderQuality) {
   const preset = QUALITY_PRESETS[quality];
-  const outputDir = path.join(process.cwd(), "public", "projects", projectId, "renders");
+  const paths = getProjectPaths(projectId);
+  const outputDir = paths.renders;
   const outputPath = path.join(outputDir, `${renderId}.mp4`);
 
   const timeline = await buildTimeline(projectId);
   await mkdir(outputDir, { recursive: true });
 
   // Persist timeline for Remotion staticFile resolution
-  const timelinePath = path.join(process.cwd(), "public", "projects", projectId, "timeline.json");
+  const timelinePath = paths.timeline;
   await writeFile(timelinePath, JSON.stringify(timeline, null, 2));
 
   await updateProgress(renderId, 0.02);
@@ -104,7 +109,7 @@ async function runRenderWorker(projectId: string, renderId: string, quality: Ren
       status: "COMPLETED",
       completedAt: new Date(),
       progress: 1,
-      outputPath: path.relative(path.join(process.cwd(), "public"), outputPath),
+      outputPath: path.relative(getPublicDir(), outputPath),
     },
   });
 
@@ -146,3 +151,20 @@ async function updateProgress(renderId: string, progress: number) {
     data: { progress, status: "PROCESSING" },
   });
 }
+
+export const renderStage = {
+  id: "render",
+  requiredStatus: "RENDER_READY",
+  allowedStatuses: ["RENDER_READY", "COMPLETED"],
+  targetStatus: "RENDERING",
+  async prepare(projectId: string): Promise<RenderStageInput> {
+    return { projectId };
+  },
+  async execute(input: RenderStageInput, options?: RenderStageOptions): Promise<Render> {
+    const quality = options?.quality ?? "DRAFT";
+    return createRenderJob(input.projectId, quality);
+  },
+  async commit(): Promise<void> {
+    // No additional commit work; creation already persisted and worker launched.
+  },
+} satisfies PipelineStage<RenderStageInput, Render, RenderStageOptions>;

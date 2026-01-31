@@ -1,5 +1,5 @@
 /**
- * Timeout and retry utilities for resilient media operations
+ * Timeout and retry utilities for resilient operations across the app.
  */
 
 /**

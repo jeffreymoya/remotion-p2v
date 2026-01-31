@@ -1,4 +1,4 @@
-import { Project } from "@/src/lib/types";
+import { Project } from "@/src/lib/storyflow/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchProjects, fetchProject, updateProject, deleteProject } from "@/src/lib/api/projects";
 

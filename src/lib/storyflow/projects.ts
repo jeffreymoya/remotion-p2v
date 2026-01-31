@@ -1,15 +1,14 @@
 import { mkdir, rm } from "fs/promises";
-import path from "path";
+
+import { ensureProjectDirs, getProjectDir, getProjectPaths } from "@/src/lib/paths";
 
 export async function createProjectDirectory(projectId: string) {
-  const projectPath = path.join(process.cwd(), "public", "projects", projectId);
-  await mkdir(path.join(projectPath, "assets", "images"), { recursive: true });
-  await mkdir(path.join(projectPath, "assets", "audio"), { recursive: true });
-  await mkdir(path.join(projectPath, "assets", "videos"), { recursive: true });
-  await mkdir(path.join(projectPath, "assets", "music"), { recursive: true });
+  await ensureProjectDirs(projectId);
+  const paths = getProjectPaths(projectId);
+  await mkdir(paths.assetsVideos, { recursive: true });
 }
 
 export async function deleteProjectDirectory(projectId: string) {
-  const projectPath = path.join(process.cwd(), "public", "projects", projectId);
+  const projectPath = getProjectDir(projectId);
   await rm(projectPath, { recursive: true, force: true });
 }

@@ -7,12 +7,25 @@ import type { google } from '@google-cloud/text-to-speech/build/protos/protos';
 import { TTSProvider, TTSOptions, TTSResult, WordTimestamp, CharacterTimestamp, TTSError } from '../../media-types';
 import { logger } from '../../utils/logger';
 
+type GoogleTtsConfig = {
+  defaultVoice?: {
+    languageCode?: string;
+    name?: string;
+    ssmlGender?: string;
+  };
+  audioConfig?: {
+    speakingRate?: number;
+    pitch?: number;
+    volumeGainDb?: number;
+  };
+};
+
 export class GoogleTTSProvider implements TTSProvider {
   name = 'google-tts';
   private client: v1beta1.TextToSpeechClient;
-  private config: Record<string, unknown>;
+  private config: GoogleTtsConfig;
 
-  constructor(apiKey?: string, config?: Record<string, unknown>) {
+  constructor(apiKey?: string, config?: GoogleTtsConfig) {
     // Initialize v1beta1 client for timepoint support
     this.client = new v1beta1.TextToSpeechClient(
       apiKey ? { apiKey } : undefined
@@ -99,12 +112,12 @@ export class GoogleTTSProvider implements TTSProvider {
         timestamps: characterTimestamps,
       };
     } catch (error) {
-      const err = error as Error;
-      logger.error('Google TTS generation failed:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Google TTS generation failed:', err);
       throw new TTSError(
         `Google TTS failed: ${err.message}`,
         'google-tts',
-        error
+        err
       );
     }
   }
@@ -121,7 +134,10 @@ export class GoogleTTSProvider implements TTSProvider {
   /**
    * Parse word timestamps from SSML mark timepoints
    */
-  private parseWordTimestamps(text: string, timepoints: Array<Record<string, unknown>>): WordTimestamp[] {
+  private parseWordTimestamps(
+    text: string,
+    timepoints: google.cloud.texttospeech.v1beta1.ITimepoint[]
+  ): WordTimestamp[] {
     const words = text.split(/\s+/);
     const timestamps: WordTimestamp[] = [];
 
@@ -135,8 +151,11 @@ export class GoogleTTSProvider implements TTSProvider {
       const timepoint = timepoints[i];
       const nextTimepoint = timepoints[i + 1];
 
-      const startMs = (timepoint.timeSeconds || 0) * 1000;
-      const endMs = nextTimepoint ? nextTimepoint.timeSeconds * 1000 : startMs + 500; // Estimate end time
+      const startMs = (timepoint.timeSeconds ?? 0) * 1000;
+      const endMs =
+        nextTimepoint && typeof nextTimepoint.timeSeconds === "number"
+          ? nextTimepoint.timeSeconds * 1000
+          : startMs + 500; // Estimate end time
 
       if (i < words.length) {
         timestamps.push({

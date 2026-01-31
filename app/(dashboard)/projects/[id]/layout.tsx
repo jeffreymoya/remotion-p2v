@@ -8,6 +8,7 @@ import { StageInvalidationProvider } from "@/components/pipeline/stage-invalidat
 import { KeyboardNavigation } from "@/components/pipeline/keyboard-navigation";
 import { PageContainer } from "@/components/layout/page-container";
 import { getCurrentStage } from "@/src/lib/storyflow/stage-validation";
+import { NotFoundError } from "@/app/api/lib";
 
 type LayoutProps = {
   children: ReactNode;
@@ -16,13 +17,14 @@ type LayoutProps = {
 
 export default async function ProjectLayout({ children, params }: LayoutProps) {
   const resolvedParams = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: resolvedParams.id },
-    select: { id: true, name: true, status: true },
-  });
-
-  if (!project) {
-    return notFound();
+  let project;
+  try {
+    project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
+      select: { id: true, name: true, status: true },
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) return notFound();
+    throw error;
   }
 
   const currentStage = getCurrentStage(project.status as never);

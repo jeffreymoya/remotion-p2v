@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import path from "path";
 import fs from "fs/promises";
+import path from "path";
 
+import { NotFoundError, parseBody, withErrorHandler } from "@/app/api/lib";
 import { generateBoardPrompts } from "@/src/lib/boards/prompts-service";
 import { BoardPromptsOutput } from "@/src/lib/boards-types";
 import { boardsLogger } from "@/src/lib/logger";
-import { withLogging } from "@/src/lib/api-logger";
+import { ensureProjectDirs, getProjectPaths, getPublicDir } from "@/src/lib/paths";
 
 const requestSchema = z.object({
   boards: z.array(
@@ -38,105 +39,54 @@ type RouteParams = { params: Promise<{ id: string }> };
  * POST /api/projects/[id]/boards/prompts
  * Generate AI prompts for board image generation
  */
-export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
+export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
-  // Parse and validate request body
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
+  const { boards, segments, gridLayout } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid request body", details: parsed.error.format() },
-      { status: 400 }
-    );
-  }
+  boardsLogger.info({ projectId, boardCount: boards.length, segmentCount: segments.length }, "Generating board prompts");
 
-  const { boards, segments, gridLayout } = parsed.data;
+  const result: BoardPromptsOutput = await generateBoardPrompts(
+    boards,
+    segments,
+    gridLayout || { rows: 2, cols: 3 }
+  );
 
-  try {
-    boardsLogger.info({ projectId, boardCount: boards.length, segmentCount: segments.length }, "Generating board prompts");
+  const paths = await ensureProjectDirs(projectId);
+  const outputPath = `${paths.boards}/board-prompts.json`;
 
-    // Generate prompts using the service
-    const result: BoardPromptsOutput = await generateBoardPrompts(
-      boards,
-      segments,
-      gridLayout || { rows: 2, cols: 3 }
-    );
+  await fs.writeFile(outputPath, JSON.stringify(result, null, 2), "utf-8");
 
-    // Save the result to the project's boards directory
-    const projectDir = path.join(process.cwd(), 'public', 'projects', projectId);
-    const boardsDir = path.join(projectDir, 'boards');
+  boardsLogger.info({ projectId, outputPath, promptCount: result.prompts.length }, "Board prompts generated successfully");
 
-    // Ensure boards directory exists
-    await fs.mkdir(boardsDir, { recursive: true });
-
-    // Save board-prompts.json
-    const outputPath = path.join(boardsDir, 'board-prompts.json');
-    await fs.writeFile(outputPath, JSON.stringify(result, null, 2), 'utf-8');
-
-    boardsLogger.info({ projectId, outputPath, promptCount: result.prompts.length }, "Board prompts generated successfully");
-
-    return NextResponse.json({
-      success: true,
-      data: result,
-      saved: outputPath.replace(process.cwd(), ''),
-    });
-
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    const isAIError = errorMessage.includes('[AI]') || errorMessage.includes('[LLM]');
-
-    boardsLogger.error({ projectId, error: errorMessage, stage: isAIError ? "AI generation" : "Processing" }, "Failed to generate board prompts");
-
-    return NextResponse.json(
-      {
-        error: "Failed to generate board prompts",
-        details: errorMessage,
-        stage: isAIError ? "AI generation" : "Processing",
-      },
-      { status: 500 }
-    );
-  }
-});
+  return NextResponse.json({
+    success: true,
+    data: result,
+    saved: `/${path.relative(getPublicDir(), outputPath).replace(/\\/g, "/")}`,
+  });
+}, "api/projects/[id]/boards/prompts");
 
 /**
  * GET /api/projects/[id]/boards/prompts
  * Retrieve existing board prompts
  */
-export const GET = withLogging(async (_req: Request, { params }: RouteParams) => {
+export const GET = withErrorHandler(async (_req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
+  const { boards } = getProjectPaths(projectId);
+  const promptsPath = `${boards}/board-prompts.json`;
+
   try {
-    const projectDir = path.join(process.cwd(), 'public', 'projects', projectId);
-    const promptsPath = path.join(projectDir, 'boards', 'board-prompts.json');
-
-    // Check if file exists
-    try {
-      await fs.access(promptsPath);
-    } catch {
-      return NextResponse.json(
-        { error: "Board prompts not found. Generate them first using POST." },
-        { status: 404 }
-      );
-    }
-
-    // Read and return the file
-    const content = await fs.readFile(promptsPath, 'utf-8');
-    const data: BoardPromptsOutput = JSON.parse(content);
-
-    return NextResponse.json({
-      success: true,
-      data,
-    });
-
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    boardsLogger.error({ projectId, error: errorMessage }, "Failed to read board prompts");
-
-    return NextResponse.json(
-      { error: "Failed to read board prompts", details: errorMessage },
-      { status: 500 }
-    );
+    await fs.access(promptsPath);
+  } catch {
+    throw new NotFoundError("Board prompts", projectId);
   }
-});
+
+  const content = await fs.readFile(promptsPath, "utf-8");
+  const data: BoardPromptsOutput = JSON.parse(content);
+
+  return NextResponse.json({
+    success: true,
+    data,
+  });
+}, "api/projects/[id]/boards/prompts");

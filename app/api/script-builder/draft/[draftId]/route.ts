@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
+
+import { NotFoundError, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 /**
  * GET /api/script-builder/draft/[draftId]
  * Retrieve a script draft with its blueprint and beat drafts
  */
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ draftId: string }> }
-) {
-  const { draftId } = await params;
+export const GET = withErrorHandler(
+  async (_req: Request, { params }: { params: Promise<{ draftId: string }> }) => {
+    const { draftId } = await params;
 
-  try {
-    // Find script draft with blueprint
     const scriptDraft = await storyflowPrisma.scriptDraft.findUnique({
       where: { id: draftId },
       include: {
@@ -21,21 +19,13 @@ export async function GET(
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", draftId);
     }
 
     return NextResponse.json({
       draft: scriptDraft,
       message: "Draft retrieved successfully",
     });
-  } catch (error) {
-    console.error("[api/script-builder/draft] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to retrieve draft",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/draft/[draftId]"
+);

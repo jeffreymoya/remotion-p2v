@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { NotFoundError, parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { GlueIssue } from "@/src/lib/storyflow/script-builder-types";
 import { recordScriptDraftHistory } from "@/src/lib/storyflow/history";
@@ -14,27 +16,17 @@ const requestSchema = z.object({
  * PUT /api/script-builder/draft/[draftId]/polish
  * Save edited script text and mark resolved glue issues
  */
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ draftId: string }> }
-) {
-  const { draftId } = await params;
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
+export const PUT = withErrorHandler(
+  async (req: Request, { params }: { params: Promise<{ draftId: string }> }) => {
+    const { draftId } = await params;
+    const { polishedText, resolvedIssues = [] } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
-  }
-
-  const { polishedText, resolvedIssues = [] } = parsed.data;
-
-  try {
     const scriptDraft = await storyflowPrisma.scriptDraft.findUnique({
       where: { id: draftId },
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", draftId);
     }
 
     const existingIssues = fromJsonArray<GlueIssue>(scriptDraft.glueIssues);
@@ -59,14 +51,6 @@ export async function PUT(
       draft: updated,
       message: "Polished script saved",
     });
-  } catch (error) {
-    console.error("[api/script-builder/polish] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to save polished script",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/draft/[draftId]/polish"
+);

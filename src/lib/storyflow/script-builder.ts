@@ -10,7 +10,7 @@
 import { randomUUID } from "crypto";
 import { z } from "zod";
 import { getSettings } from "./settings";
-import { parseGeminiOutput, stripMarkdownBlocks } from "./gemini-parser";
+import { stripMarkdownBlocks } from "./gemini-parser";
 import {
   blueprintPrompt,
   blueprintRegeneratePrompt,
@@ -20,7 +20,8 @@ import {
   segmentPrompt,
 } from "../../../config/prompts";
 import { WORDS_PER_MINUTE, countWords } from "../constants";
-import { geminiCall } from "@/src/lib/services/ai";
+import { aiGenerate } from "@/src/lib/services/ai";
+import type { Milliseconds } from "@/src/lib/types/units";
 
 // Constants
 const MS_PER_MINUTE = 60000;
@@ -95,7 +96,7 @@ function estimateWordCount(text: string): number {
   return countWords(text);
 }
 
-function calculateTargetWordCount(durationMs: number): number {
+function calculateTargetWordCount(durationMs: Milliseconds): number {
   return Math.round((durationMs / MS_PER_MINUTE) * SCRIPT_WPM);
 }
 
@@ -103,50 +104,50 @@ function calculateTargetWordCount(durationMs: number): number {
  * Calculate beat count based on target duration
  * Formula: max(4, ceil(targetDurationMs / 120000))
  */
-export function calculateBeatCount(targetDurationMs: number): number {
+export function calculateBeatCount(targetDurationMs: Milliseconds): number {
   return Math.max(4, Math.ceil(targetDurationMs / 120000));
 }
 
-/**
- * Execute Gemini CLI command and return raw stdout for further parsing
- */
-async function executeGeminiRaw(
+async function aiCallJson<T>(
   projectId: string,
   operation: string,
   modelTier: "PRO" | "FLASH",
-  prompt: string
-) {
+  prompt: string,
+  schema: z.ZodSchema<T>
+): Promise<T> {
   const settings = await getSettings();
-  const chosenModel =
-    modelTier === "PRO"
-      ? settings.ai.proModel
-      : settings.ai.model;
+  const model = modelTier === "PRO" ? settings.ai.proModel : settings.ai.model;
 
-  const { rawResponse } = await geminiCall<string>(
-    { projectId, operation },
+  const { data } = await aiGenerate<T>({
+    projectId,
+    operation,
     prompt,
-    { model: chosenModel }
-  );
+    model,
+    outputFormat: "json",
+    schema,
+  });
 
-  return rawResponse ?? "";
+  return data;
 }
 
-async function executeGeminiText(
+async function aiCallText(
   projectId: string,
   operation: string,
   modelTier: "PRO" | "FLASH",
   prompt: string
-) {
-  const stdout = await executeGeminiRaw(projectId, operation, modelTier, prompt);
+): Promise<string> {
+  const settings = await getSettings();
+  const model = modelTier === "PRO" ? settings.ai.proModel : settings.ai.model;
 
-  const parsed = parseGeminiOutput<{ response?: string }>(stdout);
-  if (typeof parsed === "string") {
-    return stripMarkdownBlocks(parsed);
-  }
-  if (parsed && typeof parsed === "object" && "response" in parsed && typeof parsed.response === "string") {
-    return stripMarkdownBlocks(parsed.response);
-  }
-  return typeof parsed === "string" ? parsed : JSON.stringify(parsed);
+  const { data } = await aiGenerate<string>({
+    projectId,
+    operation,
+    prompt,
+    model,
+    outputFormat: "text",
+  });
+
+  return stripMarkdownBlocks(data);
 }
 
 /**
@@ -165,10 +166,7 @@ export async function generateBlueprint(
     beatCount,
   });
 
-  const stdout = await executeGeminiRaw(projectId, "blueprint-generate", "PRO", prompt);
-  const parsed = parseGeminiOutput(stdout);
-  const validated = blueprintResponseSchema.parse(parsed);
-  return validated;
+  return aiCallJson(projectId, "blueprint-generate", "PRO", prompt, blueprintResponseSchema);
 }
 
 /**
@@ -189,10 +187,7 @@ export async function regenerateBlueprint(
     rejectionNotes,
   });
 
-  const stdout = await executeGeminiRaw(projectId, "blueprint-regenerate", "PRO", prompt);
-  const parsed = parseGeminiOutput(stdout);
-  const validated = blueprintResponseSchema.parse(parsed);
-  return validated;
+  return aiCallJson(projectId, "blueprint-regenerate", "PRO", prompt, blueprintResponseSchema);
 }
 
 /**
@@ -252,7 +247,7 @@ export async function executeBeat(
     prompt += `\n\n**Reviewer Guidance:** ${opts.guidance}`;
   }
 
-  const text = await executeGeminiText(projectId, "beat-draft", "FLASH", prompt);
+  const text = await aiCallText(projectId, "beat-draft", "FLASH", prompt);
   const wordCount = estimateWordCount(text);
 
   return {
@@ -296,8 +291,5 @@ export async function segmentScript(
     targetSegmentCount,
   });
 
-  const stdout = await executeGeminiRaw(projectId, "segment-script", "FLASH", prompt);
-  const parsed = parseGeminiOutput(stdout);
-  const validated = segmentResponseSchema.parse(parsed);
-  return validated;
+  return aiCallJson(projectId, "segment-script", "FLASH", prompt, segmentResponseSchema);
 }

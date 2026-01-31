@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Asset, Board, BoardRegion } from "@/src/lib/storyflow/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/utils";
 import { useBoards, useCreateBoard, useUpdateBoard } from "@/src/hooks/queries/use-boards";
+import type { Asset } from "@/src/lib/storyflow/types";
+import type { Board, BoardRegion } from "@/src/lib/api/boards";
 
 type Props = {
   projectId: string;

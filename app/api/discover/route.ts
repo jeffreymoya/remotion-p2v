@@ -1,37 +1,27 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { parseBody, parseQuery, withErrorHandler } from "@/app/api/lib";
 import { fetchTrendingTopics } from "@/src/lib/storyflow/discovery";
 
-const requestSchema = z
-  .object({
-    geo: z.string().min(2).max(10).optional(),
-    category: z.number().int().optional(),
-  })
-  .optional();
+const requestSchema = z.object({
+  geo: z.string().min(2).max(10).optional(),
+  category: z.coerce.number().int().optional(),
+}).partial().default({});
 
 async function getTopics(payload: z.infer<typeof requestSchema>) {
-  const geo = payload?.geo ?? "US";
-  const category = payload?.category;
+  const geo = payload.geo ?? "US";
+  const category = payload.category;
   const topics = await fetchTrendingTopics(geo, category);
   return NextResponse.json({ topics });
 }
 
-export async function GET() {
-  return getTopics(undefined);
-}
+export const GET = withErrorHandler(async (req: Request) => {
+  const data = parseQuery(req, requestSchema);
+  return getTopics(data);
+}, "discover");
 
-export async function POST(req: Request) {
-  const body = await req
-    .json()
-    .catch(() => null) as z.infer<typeof requestSchema>;
-
-  const parsed = requestSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  return getTopics(parsed.data);
-}
+export const POST = withErrorHandler(async (req: Request) => {
+  const data = await parseBody(req, requestSchema);
+  return getTopics(data);
+}, "discover");

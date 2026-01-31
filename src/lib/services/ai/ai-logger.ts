@@ -1,6 +1,9 @@
-import { AiCallStatus, Prisma } from "@/src/generated/storyflow";
+import { AiCallStatus } from "@/src/generated/storyflow";
 
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { toJsonObject } from "@/src/lib/storyflow/prisma-json";
+import type { Milliseconds } from "@/src/lib/types/units";
+import { ms } from "@/src/lib/types/units";
 
 export interface AiCallContext {
   projectId: string;
@@ -14,7 +17,7 @@ export interface AiCallContext {
 export interface AiCallResult<T> {
   data: T;
   logId: string;
-  durationMs: number;
+  durationMs: Milliseconds;
   tokens?: { prompt: number; response: number };
   rawResponse?: string;
 }
@@ -63,7 +66,7 @@ class AiLogger {
         promptTokens: estimateTokens(prompt),
         status: AiCallStatus.PENDING,
         startedAt,
-        metadata: (context.metadata ?? {}) as Prisma.JsonValue,
+        metadata: toJsonObject(context.metadata),
       },
     });
 
@@ -72,7 +75,7 @@ class AiLogger {
     try {
       const { result, rawResponse, tokens } = await executor();
       const completedAt = new Date();
-      const durationMs = completedAt.getTime() - startedAt.getTime();
+      const durationMs = ms(completedAt.getTime() - startedAt.getTime());
 
       await storyflowPrisma.aiCallLog.update({
         where: { id: log.id },
@@ -91,7 +94,7 @@ class AiLogger {
       return { data: result, logId: log.id, durationMs, tokens, rawResponse };
     } catch (error) {
       const completedAt = new Date();
-      const durationMs = completedAt.getTime() - startedAt.getTime();
+      const durationMs = ms(completedAt.getTime() - startedAt.getTime());
 
       await storyflowPrisma.aiCallLog.update({
         where: { id: log.id },

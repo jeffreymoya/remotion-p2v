@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Script } from "@/src/lib/storyflow/types";
-import { BoardPlan, BoardPromptsOutput, BoardRegion, BoardTriggersOutput } from "@/src/lib/boards-types";
+import { BoardPlan, BoardPromptsOutput, BoardTriggersOutput } from "@/src/lib/boards-types";
 import { ViewportAnimation } from "@/src/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,13 @@ import { RegionEditor } from "./RegionEditor";
 import { ViewportPreview } from "./ViewportPreview";
 import { useToast } from "@/components/ui/toast-provider";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
+import {
+  useBuildViewport,
+  useDetectBoardRegions,
+  useGenerateBoardPrompts,
+  useGenerateBoardTriggers,
+  usePlanBoards,
+} from "@/src/hooks/queries/use-boards";
 import { cn } from "@/src/lib/utils";
 
 interface BoardPlannerWizardProps {
@@ -26,6 +33,11 @@ type WizardStep = "config" | "plan" | "prompts" | "upload" | "regions" | "trigge
 export function BoardPlannerWizard({ projectId, script, className }: BoardPlannerWizardProps) {
   const toast = useToast();
   const { runTask, isTaskRunning } = useBackgroundTask();
+  const planBoardsMutation = usePlanBoards(projectId);
+  const promptsMutation = useGenerateBoardPrompts(projectId);
+  const regionsMutation = useDetectBoardRegions(projectId);
+  const triggersMutation = useGenerateBoardTriggers(projectId);
+  const viewportMutation = useBuildViewport(projectId);
   const [currentStep, setCurrentStep] = useState<WizardStep>("config");
   const [loading, setLoading] = useState(false);
 
@@ -50,25 +62,14 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     await runTask(
       { projectId, category: "board-plan-generation", name: "Generating board plan", icon: "cog" },
       async ({ signal }) => {
-        const response = await fetch(`/api/projects/${projectId}/boards/plan`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        const data = await planBoardsMutation.mutateAsync({
+          payload: {
             scriptSegments: script.segments,
-            options: {
-              maxBoardDuration,
-            },
-          }),
+            options: { maxBoardDuration },
+          },
           signal,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to generate plan");
-        }
-
-        const data = await response.json();
-        setBoardPlan(data.plan); // API returns { boards, plan }
+        setBoardPlan(data.plan);
         setCurrentStep("plan");
         return data;
       }
@@ -92,28 +93,15 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
           speakingNotes: "",
         }));
 
-        const response = await fetch(`/api/projects/${projectId}/boards/prompts`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        const data = await promptsMutation.mutateAsync({
+          payload: {
             boards: boardPlan.boards,
             segments,
-            gridLayout: {
-              rows: 2,
-              cols: 3,
-            },
-          }),
+            gridLayout: { rows: 2, cols: 3 },
+          },
           signal,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to generate prompts");
-        }
-
-        const data = await response.json();
-        const promptsPayload = data.data ?? data;
-        setPrompts(promptsPayload);
+        setPrompts(data);
         setCurrentStep("prompts");
         return data;
       }
@@ -148,24 +136,15 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     await runTask(
       { projectId, category: "board-region-detection", name: "Detecting board regions", icon: "cog" },
       async ({ signal }) => {
-        const response = await fetch(`/api/projects/${projectId}/boards/regions`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        const data = await regionsMutation.mutateAsync({
+          payload: {
             boardId,
             imagePath,
             elements: boardPrompt.elements,
             gridLayout: boardPrompt.gridLayout,
-          }),
+          },
           signal,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to detect regions");
-        }
-
-        const data = await response.json();
         setRegionsData({
           imagePath,
           regions: data.regions,
@@ -183,19 +162,10 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     await runTask(
       { projectId, category: "board-triggers-generation", name: "Generating camera triggers", icon: "cog" },
       async ({ signal }) => {
-        const response = await fetch(`/api/projects/${projectId}/boards/triggers`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
+        const data = await triggersMutation.mutateAsync({
+          payload: {},
           signal,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to generate triggers");
-        }
-
-        const data = await response.json();
         setTriggers(data);
         setCurrentStep("triggers");
         return data;
@@ -209,19 +179,10 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     await runTask(
       { projectId, category: "board-viewport-build", name: "Building viewport animation", icon: "film" },
       async ({ signal }) => {
-        const response = await fetch(`/api/projects/${projectId}/boards/viewport`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fps: 30 }),
+        const data = await viewportMutation.mutateAsync({
+          payload: { fps: 30 },
           signal,
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to build viewport");
-        }
-
-        const data = await response.json();
         setViewport(data.viewportJson);
         setCurrentStep("viewport");
         return data;
@@ -239,6 +200,24 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     setViewport(null);
     setCurrentStep("config");
   };
+
+  const isAnyMutationPending = useMemo(
+    () =>
+      planBoardsMutation.isPending ||
+      promptsMutation.isPending ||
+      regionsMutation.isPending ||
+      triggersMutation.isPending ||
+      viewportMutation.isPending,
+    [
+      planBoardsMutation.isPending,
+      promptsMutation.isPending,
+      regionsMutation.isPending,
+      triggersMutation.isPending,
+      viewportMutation.isPending,
+    ]
+  );
+
+  const isBusy = loading || isAnyMutationPending;
 
   return (
     <div className={cn("space-y-6", className)}>
@@ -368,8 +347,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleGeneratePlan} disabled={loading || !script.segments.length || isTaskRunning("board-plan-generation", projectId)}>
-                {loading ? "Generating..." : "Generate Board Plan"}
+              <Button onClick={handleGeneratePlan} disabled={isBusy || !script.segments.length || isTaskRunning("board-plan-generation", projectId)}>
+                {isBusy ? "Generating..." : "Generate Board Plan"}
               </Button>
             </div>
           </div>
@@ -392,8 +371,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             <BoardPlanView plan={boardPlan} />
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleGeneratePrompts} disabled={loading || isTaskRunning("board-prompts-generation", projectId)}>
-                {loading ? "Generating..." : "Generate Image Prompts"}
+              <Button onClick={handleGeneratePrompts} disabled={isBusy || isTaskRunning("board-prompts-generation", projectId)}>
+                {isBusy ? "Generating..." : "Generate Image Prompts"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("config")}>
                 Back to Config
@@ -486,9 +465,9 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             <div className="flex gap-3 border-t border-slate-800 pt-6">
               <Button
                 onClick={handleDetectRegions}
-                disabled={loading || Object.keys(uploadedImages).length === 0 || isTaskRunning("board-region-detection", projectId)}
+                disabled={isBusy || Object.keys(uploadedImages).length === 0 || isTaskRunning("board-region-detection", projectId)}
               >
-                {loading ? "Detecting..." : "Detect Regions"}
+                {isBusy ? "Detecting..." : "Detect Regions"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("prompts")}>
                 Back to Prompts
@@ -524,8 +503,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             />
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleGenerateTriggers} disabled={loading || isTaskRunning("board-triggers-generation", projectId)}>
-                {loading ? "Generating..." : "Generate Triggers"}
+              <Button onClick={handleGenerateTriggers} disabled={isBusy || isTaskRunning("board-triggers-generation", projectId)}>
+                {isBusy ? "Generating..." : "Generate Triggers"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("upload")}>
                 Back to Upload
@@ -604,8 +583,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={handleBuildViewport} disabled={loading || isTaskRunning("board-viewport-build", projectId)}>
-                {loading ? "Building..." : "Build Viewport"}
+              <Button onClick={handleBuildViewport} disabled={isBusy || isTaskRunning("board-viewport-build", projectId)}>
+                {isBusy ? "Building..." : "Build Viewport"}
               </Button>
               <Button variant="outline" onClick={() => setCurrentStep("regions")}>
                 Back to Regions

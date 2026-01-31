@@ -1,124 +1,20 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-// Shared grid position representation
-export interface GridPosition {
-  row: number;      // 0-indexed
-  col: number;      // 0-indexed
-  rowSpan?: number; // Default 1
-  colSpan?: number; // Default 1
-}
-
-export type BoardElementType =
-  | 'photo'
-  | 'note'
-  | 'clipping'
-  | 'string'
-  | 'map'
-  | 'document'
-  | 'diagram'
-  | 'headline';
-
-export interface BoardElement {
-  id: string;
-  type: BoardElementType;
-  gridPosition: GridPosition;
-  description: string;
-  label?: string;
-  connectionTo?: string[];
-}
-
-export interface SegmentContext {
-  segmentIndex: number;
-  text: string;
-  focusElementId: string;
-}
-
-export interface BoardPrompt {
-  boardId: string;
-  gridLayout: {
-    rows: number;
-    cols: number;
-  };
-  styleGuide: string;
-  elements: BoardElement[];
-  segmentContexts: SegmentContext[];
-  fullPromptText: string;
-}
-
-export interface BoardPromptsOutput {
-  version: '1.0';
-  prompts: BoardPrompt[];
-  generatedAt: string;
-}
-
-export interface BoardSegmentMapping {
-  boardId: string; // "board-1", "board-2", etc.
-  segmentIndices: number[];
-  totalDurationMs: number;
-  topicSummary: string;
-}
-
-export interface BoardPlan {
-  version: '1.0';
-  scriptPath: string;
-  totalSegments: number;
-  totalDurationMs: number;
-  boards: BoardSegmentMapping[];
-  generatedAt: string;
-}
-
-export interface RegionBounds {
-  x: number;      // 0-1 normalized, top-left
-  y: number;      // 0-1 normalized, top-left
-  width: number;  // 0-1 normalized
-  height: number; // 0-1 normalized
-}
-
-export interface BoardRegion {
-  id: string; // "region-1", "region-2"
-  elementId: string;
-  gridPosition: GridPosition;
-  bounds: RegionBounds;
-  label: string;
-  salience: number; // 0-1
-}
-
-export interface BoardRegionsOutput {
-  version: '1.0';
-  boardId: string;
-  imagePath: string;
-  imageMetadata: {
-    width: number;
-    height: number;
-    aspectRatio: number;
-  };
-  regions: BoardRegion[];
-  generatedAt: string;
-}
-
-export type TriggerType = 'segment_start' | 'topic_shift' | 'emphasis' | 'manual';
-
-export interface ViewportTrigger {
-  triggerId: string;
-  wordId: string; // "seg-{segIdx}-w-{wordIdx}"
-  globalWordIndex: number;
-  segmentIndex: number;
-  localWordIndex: number;
-  word: string;
-  wordStartMs: number;
-  targetRegionId: string;
-  targetBoardId: string;
-  transitionMs: number;
-  triggerType: TriggerType;
-}
-
-export interface BoardTriggersOutput {
-  version: '1.0';
-  triggers: ViewportTrigger[];
-  totalWords: number;
-  totalTriggers: number;
-  generatedAt: string;
-}
+export type {
+  BoardElement,
+  BoardElementType,
+  BoardPlan,
+  BoardPrompt,
+  BoardPromptsOutput,
+  BoardRegion,
+  BoardRegionsOutput,
+  BoardSegmentMapping,
+  GridPosition,
+  RegionBounds,
+  SegmentContext,
+  ViewportTrigger,
+  ViewportTriggerType,
+} from "@/src/lib/storyflow/types";
 
 export interface BoardsConfig {
   gridLayout: {

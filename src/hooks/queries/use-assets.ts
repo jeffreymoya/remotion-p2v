@@ -5,6 +5,7 @@ import {
   deleteAsset,
   upscaleAsset,
   selectMusicAsset,
+  importAsset,
   Asset,
 } from "@/src/lib/api/assets";
 
@@ -28,6 +29,20 @@ export function useUploadAsset(projectId: string) {
     mutationFn: (file: File) => uploadAsset(projectId, file),
     onSuccess: (newAsset) => {
       // Add to cache (prepend to list)
+      queryClient.setQueryData<Asset[]>(
+        assetKeys.byProject(projectId),
+        (old = []) => [newAsset, ...old]
+      );
+    },
+  });
+}
+
+export function useImportAsset(projectId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof importAsset>[0]) => importAsset(payload),
+    onSuccess: (newAsset) => {
       queryClient.setQueryData<Asset[]>(
         assetKeys.byProject(projectId),
         (old = []) => [newAsset, ...old]

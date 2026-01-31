@@ -1,6 +1,6 @@
-import { ViewportKeyframe } from './viewport-types';
+import { ViewportKeyframe } from "@/src/lib/storyflow/types";
 
-// Re-export ViewportKeyframe for external use
+// Re-export for existing consumers
 export type { ViewportKeyframe };
 
 /**

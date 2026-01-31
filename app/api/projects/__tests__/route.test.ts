@@ -2,12 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET, PATCH, DELETE } from "../[id]/route";
 import { NextRequest } from "next/server";
 import { Prisma, ProjectStatus } from "@/src/generated/storyflow";
+import { NotFoundError } from "@/app/api/lib";
 
 // Mock Prisma
 vi.mock("@/src/lib/storyflow/prisma", () => ({
   storyflowPrisma: {
     project: {
-      findUnique: vi.fn(),
+      findByIdOrThrow: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     },
@@ -50,7 +51,7 @@ describe("Projects API - /api/projects/[id]", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
 
       const request = new NextRequest("http://localhost:3000/api/projects/123");
       const response = await GET(request, { params: Promise.resolve({ id: "123" }) });
@@ -60,20 +61,20 @@ describe("Projects API - /api/projects/[id]", () => {
       expect(data.project.id).toBe("123");
       expect(data.project.name).toBe("Test Project");
       expect(data.project.status).toBe("DRAFT");
-      expect(storyflowPrisma.project.findUnique).toHaveBeenCalledWith({
-        where: { id: "123" },
-      });
+      expect(storyflowPrisma.project.findByIdOrThrow).toHaveBeenCalledWith("123");
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(null);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
 
       const request = new NextRequest("http://localhost:3000/api/projects/999");
       const response = await GET(request, { params: Promise.resolve({ id: "999" }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
-      expect(data.error).toBe("Not found");
+      expect(data.error).toBe("Project not found: 999");
+      expect(data.code).toBe("NOT_FOUND");
+      expect(data.requestId).toBeDefined();
     });
   });
 
@@ -91,7 +92,7 @@ describe("Projects API - /api/projects/[id]", () => {
       };
       const updatedProject = { ...mockProject, name: "New Name" };
 
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
       vi.mocked(storyflowPrisma.project.update).mockResolvedValue(updatedProject as MockProject);
 
       const request = new NextRequest("http://localhost:3000/api/projects/123", {
@@ -110,7 +111,7 @@ describe("Projects API - /api/projects/[id]", () => {
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(null);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
 
       const request = new NextRequest("http://localhost:3000/api/projects/999", {
         method: "PATCH",
@@ -120,7 +121,8 @@ describe("Projects API - /api/projects/[id]", () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
-      expect(data.error).toBe("Not found");
+      expect(data.error).toBe("Project not found: 999");
+      expect(data.code).toBe("NOT_FOUND");
     });
 
     it("validates input and returns 400 on invalid data", async () => {
@@ -132,8 +134,8 @@ describe("Projects API - /api/projects/[id]", () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBeDefined();
-      expect(data.error.name).toContain("Name is required");
+      expect(data.code).toBe("VALIDATION_ERROR");
+      expect(data.details?.name?._errors?.[0]).toBe("Name is required");
     });
 
     it("rejects invalid characters in name", async () => {
@@ -145,7 +147,8 @@ describe("Projects API - /api/projects/[id]", () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBeDefined();
+      expect(data.code).toBe("VALIDATION_ERROR");
+      expect(data.details?.name?._errors?.length).toBeGreaterThan(0);
     });
   });
 
@@ -161,7 +164,7 @@ describe("Projects API - /api/projects/[id]", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
       vi.mocked(storyflowPrisma.project.delete).mockResolvedValue(mockProject as MockProject);
       vi.mocked(deleteProjectDirectory).mockResolvedValue(undefined);
 
@@ -178,7 +181,7 @@ describe("Projects API - /api/projects/[id]", () => {
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findUnique).mockResolvedValue(null);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
 
       const request = new NextRequest("http://localhost:3000/api/projects/999", {
         method: "DELETE",
@@ -187,7 +190,8 @@ describe("Projects API - /api/projects/[id]", () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
-      expect(data.error).toBe("Not found");
+      expect(data.error).toBe("Project not found: 999");
+      expect(data.code).toBe("NOT_FOUND");
     });
   });
 });

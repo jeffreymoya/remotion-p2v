@@ -61,6 +61,3 @@ export {
 
 // Trigger service
 export * from './trigger-service';
-
-// AI service
-export { getBoardsAIService, BoardsAIService } from './ai-service';

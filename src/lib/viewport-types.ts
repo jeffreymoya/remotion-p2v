@@ -1,4 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
+import {
+  DetectedRegion,
+  SentenceGroup,
+  SentenceGroupBase,
+  ViewportAnalysis,
+  ViewportKeyframe,
+} from "@/src/lib/storyflow/types";
 
 // ============================================================================
 // Section 1.0: Manifest Schema (TTS Output)
@@ -44,75 +51,8 @@ export type Manifest = z.infer<typeof ManifestSchema>;
 // Section 1.1: Viewport Analysis Types
 // ============================================================================
 
-/**
- * A detected region of visual interest in the image
- * Represents distinct objects or areas that can be focused on
- */
-export interface DetectedRegion {
-  id: string; // "region-1", "region-2", etc.
-  label: string; // "athlete's face", "football", "jersey number"
-  bounds: {
-    x: number; // 0-1 normalized (left edge)
-    y: number; // 0-1 normalized (top edge)
-    width: number; // 0-1 normalized
-    height: number; // 0-1 normalized
-  };
-  salience: number; // 0-1 visual importance score
-}
-
-/**
- * Base sentence group before keyframe generation
- * Represents grouped audio segments that focus on a specific region
- */
-export interface SentenceGroupBase {
-  groupIndex: number;
-  segmentIndices: number[]; // [0, 1] = first two segments grouped
-  regionId: string; // Which region this group focuses on
-  tone: 'dramatic' | 'narrative' | 'action' | 'contemplative' | 'energetic';
-  focusReason: string; // "Describes the athlete's expression"
-  startMs: number;
-  endMs: number;
-  wpm: number; // Average words-per-minute for this group (computed from segments)
-  emphasisDensity?: number; // Optional: ratio of emphasized words (future enhancement)
-}
-
-/**
- * Complete sentence group after keyframe generation
- * Extends SentenceGroupBase with frame information
- */
-export interface SentenceGroup extends SentenceGroupBase {
-  startFrame: number; // populated in generateKeyframes (single source of truth)
-  endFrame: number;
-}
-
-/**
- * A keyframe definition for viewport animation
- * Specifies the camera position and zoom at specific frame ranges
- */
-export interface ViewportKeyframe {
-  frameStart: number;
-  frameEnd: number;
-  viewport: {
-    centerX: number; // 0-1 (center of viewport on image)
-    centerY: number; // 0-1
-    zoom: number; // 1.0 = full image, 2.0 = 2x magnification
-  };
-  easing: 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' | 'slowDramatic' | 'fastAction';
-  transitionDurationMs: number; // How long to transition TO this keyframe
-}
-
-/**
- * Complete viewport analysis output
- * Contains detected regions, sentence groupings, and generated keyframes
- */
-export interface ViewportAnalysis {
-  version: '1.0';
-  imageSource: string; // Path to source image
-  imageMetadata: { width: number; height: number; aspectRatio: number };
-  detectedRegions: DetectedRegion[];
-  sentenceGroups: SentenceGroup[];
-  keyframes: ViewportKeyframe[];
-}
+// Canonical viewport types live in src/lib/storyflow/types.ts
+export type { DetectedRegion, SentenceGroupBase, SentenceGroup, ViewportKeyframe, ViewportAnalysis };
 
 // ============================================================================
 // Section 1.2: Gemini Response Validation Schemas

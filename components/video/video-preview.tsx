@@ -91,8 +91,6 @@ export function VideoPreview({ projectId, timeline }: Props) {
           controls
           clickToPlay
           doubleClickToFullscreen
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
         />
       </div>
 

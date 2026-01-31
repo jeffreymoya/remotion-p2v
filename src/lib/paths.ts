@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { mkdir, access, writeFile } from 'fs/promises';
 import path from 'path';
 
 /**
@@ -22,9 +23,13 @@ export interface ProjectPaths {
   assetsVideos: string;
   assetsAudio: string;
   assetsMusic: string;
+  renders: string;
   boards: string;
   tags: string;
   timeline: string;
+  viewport: string;
+  preview: string;
+  final: string;
 }
 
 /**
@@ -32,6 +37,18 @@ export interface ProjectPaths {
  */
 export function getProjectDir(projectId: string): string {
   return path.join(PROJECTS_DIR, projectId);
+}
+
+export function getPublicDir(): string {
+  return PUBLIC_DIR;
+}
+
+export function getConfigPath(configName: string): string {
+  return path.join(PROJECT_ROOT, 'config', `${configName}.json`);
+}
+
+export function getBinPath(binaryName: string): string {
+  return path.join(PROJECT_ROOT, 'bin', binaryName);
 }
 
 
@@ -53,20 +70,24 @@ export function getProjectPaths(projectId: string): ProjectPaths {
     assetsVideos: path.join(root, 'assets', 'videos'),
     assetsAudio: path.join(root, 'assets', 'audio'),
     assetsMusic: path.join(root, 'assets', 'music'),
+    renders: path.join(root, 'renders'),
     boards: path.join(root, 'boards'),
     tags: path.join(root, 'tags.json'),
     timeline: path.join(root, 'timeline.json'),
+    viewport: path.join(root, 'viewport.json'),
+    preview: path.join(root, 'preview.mp4'),
+    final: path.join(root, 'final.mp4'),
   };
 }
 
 /**
  * Ensure all project directories exist
  */
-export function ensureProjectDirs(projectId: string): ProjectPaths {
+export async function ensureProjectDirs(projectId: string): Promise<ProjectPaths> {
   const paths = getProjectPaths(projectId);
 
   // Create root directory
-  fs.mkdirSync(paths.root, { recursive: true });
+  await mkdir(paths.root, { recursive: true });
 
   // Create subdirectories
   const dirsToCreate = [
@@ -76,16 +97,19 @@ export function ensureProjectDirs(projectId: string): ProjectPaths {
     paths.assetsVideos,
     paths.assetsAudio,
     paths.assetsMusic,
+    paths.renders,
     paths.boards,
   ];
 
   for (const dir of dirsToCreate) {
-    fs.mkdirSync(dir, { recursive: true });
+    await mkdir(dir, { recursive: true });
 
     // Create .keep file to preserve empty directories in git
     const keepFile = path.join(dir, '.keep');
-    if (!fs.existsSync(keepFile)) {
-      fs.writeFileSync(keepFile, '');
+    try {
+      await access(keepFile);
+    } catch {
+      await writeFile(keepFile, '');
     }
   }
 

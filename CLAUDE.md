@@ -83,3 +83,104 @@ Models: `Project` (status: DRAFT → SCRIPT_READY → ASSETS_READY → BOARDS_RE
 **AI:** Uses Gemini CLI with subscription. Ensure `gemini` is installed and authenticated.
 
 **Optional:** `GEMINI_MODEL`, `ENABLE_SCRIPT_BUILDER=true`
+
+## Coding Conventions (MUST follow)
+
+### API Routes
+
+Every route handler in `app/api/` MUST use `withErrorHandler` and `parseBody`/`parseQuery` from `@/app/api/lib`. Do NOT write manual try/catch blocks or inline `safeParse` calls in routes.
+
+```typescript
+// CORRECT — use this pattern for ALL routes
+import { withErrorHandler, parseBody, NotFoundError } from "@/app/api/lib";
+
+export const POST = withErrorHandler(async (req, ctx) => {
+  const data = await parseBody(req, mySchema);
+  const { id } = await ctx!.params!;
+  // ... business logic — throw errors, don't return NextResponse error objects
+  if (!project) throw new NotFoundError("Project", id);
+  return NextResponse.json(result);
+}, "descriptive/route-name");
+```
+
+```typescript
+// WRONG — never do this in routes
+export async function POST(req: Request) {
+  try {
+    const json = await req.json();
+    const parsed = schema.safeParse(json);
+    if (!parsed.success) return NextResponse.json({ error: ... }, { status: 400 });
+    // ...
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+```
+
+Available error classes: `ValidationError` (400), `NotFoundError` (404), `ConflictError` (409), `UnauthorizedError` (401), `ForbiddenError` (403), `ServiceUnavailableError` (503).
+
+### File Paths
+
+Always use `@/src/lib/paths` for project file system paths. Never construct paths with `path.join(process.cwd(), "public", "projects", ...)`.
+
+```typescript
+// CORRECT
+import { getProjectPaths, getProjectDir, ensureProjectDirs } from "@/src/lib/paths";
+const paths = getProjectPaths(projectId);
+const audioDir = paths.assetsAudio;
+
+// WRONG
+const dir = path.join(process.cwd(), "public", "projects", projectId, "assets", "audio");
+```
+
+### React Components — Data Fetching
+
+Use TanStack Query hooks from `src/hooks/queries/` for ALL data fetching and mutations. Never use raw `useState` + `useEffect` + `fetch()` for server data.
+
+```typescript
+// CORRECT — use existing hooks
+import { useProject } from "@/src/hooks/queries/use-projects";
+import { useBoards } from "@/src/hooks/queries/use-boards";
+
+const { data: project, isLoading, error } = useProject(id);
+
+// WRONG — manual fetch state
+const [project, setProject] = useState(null);
+const [loading, setLoading] = useState(false);
+useEffect(() => { fetch(`/api/projects/${id}`).then(...) }, [id]);
+```
+
+Available query hooks: `use-projects`, `use-boards`, `use-assets`, `use-render`, `use-tts`, `use-viewport`, `use-execution-status`, `use-ai-logs`, `use-asset-search`, `use-music-library`, `use-mappings`.
+
+If a query/mutation doesn't exist yet, add it to the appropriate hook file in `src/hooks/queries/` following the existing pattern (query key factory + `useQuery`/`useMutation` + cache invalidation).
+
+API client functions go in `src/lib/api/` — hooks in `src/hooks/queries/` call those functions.
+
+### Retry / Resilience
+
+Use `withRetry`, `withTimeout`, `withTimeoutAndRetry` from `@/src/lib/utils/retry` for any operation that needs retries. Do NOT implement custom retry loops.
+
+```typescript
+// CORRECT
+import { withRetry } from "@/src/lib/utils/retry";
+const result = await withRetry(() => externalCall(), {
+  maxRetries: 3, retryDelayMs: 1000, exponentialBackoff: true
+}, "operation-name");
+
+// WRONG
+let attempts = 0;
+while (attempts < 3) { try { ... } catch { attempts++; await sleep(1000); } }
+```
+
+### AI / Gemini Calls
+
+- Use `aiGenerate()` from `src/lib/services/ai/ai-gateway.ts` for all AI operations — it wraps logging, schema validation, and retry.
+- `geminiCall()` in `src/lib/services/ai/gemini-wrapper.ts` is the low-level helper; avoid bypassing the gateway unless you are extending the gateway itself.
+- JSON parsing: `parseGeminiOutput()` from `src/lib/storyflow/gemini-parser.ts`
+- Call logging: `AiLogger` from `src/lib/services/ai/ai-logger.ts`
+- Do NOT shell out to `gemini` directly from routes or components.
+
+### Database Access
+
+Use `storyflowPrisma` from `@/src/lib/storyflow/prisma`. For repeated query patterns (find project by ID, update status), check if a Prisma client extension method exists before writing raw queries.

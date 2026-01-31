@@ -2,7 +2,7 @@ import path from "path";
 import { z } from "zod";
 
 import { viewportAnalysisPrompt } from "@/config/prompts/viewport.prompt";
-import { parseGeminiOutputWithSchema } from "./gemini-parser";
+import { Prisma } from "@/src/generated/storyflow";
 import { storyflowPrisma } from "./prisma";
 import { toJsonArray } from "./prisma-json";
 import {
@@ -19,14 +19,17 @@ import {
   WORDS_PER_MINUTE,
   DEFAULT_SEGMENT_DURATION_MS,
 } from "../constants";
-import { geminiCall } from "@/src/lib/services/ai";
 import { getSettings } from "./settings";
+import { getProjectPaths } from "@/src/lib/paths";
+import { aiGenerate } from "@/src/lib/services/ai";
+import type { Milliseconds } from "@/src/lib/types/units";
+import { ms } from "@/src/lib/types/units";
 
 type SegmentTiming = {
   text: string;
-  startMs: number;
-  endMs: number;
-  durationMs: number;
+  startMs: Milliseconds;
+  endMs: Milliseconds;
+  durationMs: Milliseconds;
   wpm: number;
 };
 
@@ -74,13 +77,14 @@ function buildSegmentTimings(script: Script): SegmentTiming[] {
   let cursor = 0;
 
   for (const segment of segments) {
-    const durationMs =
+    const durationMs = ms(
       typeof segment.estimatedDuration === "number"
         ? segment.estimatedDuration * 1000
-        : Math.max(DEFAULT_SEGMENT_DURATION_MS, Math.round((countWords(segment.text) / WORDS_PER_MINUTE.TIMELINE_FALLBACK) * 60000));
+        : Math.max(DEFAULT_SEGMENT_DURATION_MS, Math.round((countWords(segment.text) / WORDS_PER_MINUTE.TIMELINE_FALLBACK) * 60000))
+    );
 
-    const startMs = cursor;
-    const endMs = cursor + durationMs;
+    const startMs = ms(cursor);
+    const endMs = ms(cursor + durationMs);
 
     timings.push({
       text: segment.text,
@@ -190,27 +194,26 @@ async function callGeminiViewport(
   const prompt = viewportAnalysisPrompt(segmentTimings);
   const multimodalPrompt = `@${imagePath}\n\n${prompt}`;
 
-  const { rawResponse } = await geminiCall<string>(
-    { projectId, operation: "viewport-generate" },
-    multimodalPrompt,
-    { model: settings.ai.proModel }
-  );
+  const { data } = await aiGenerate<z.infer<typeof viewportResponseSchema>>({
+    projectId,
+    operation: "viewport-generate",
+    prompt: multimodalPrompt,
+    model: settings.ai.proModel,
+    outputFormat: "json",
+    schema: viewportResponseSchema,
+    metadata: { imagePath },
+  });
 
-  return parseGeminiOutputWithSchema(rawResponse ?? "", viewportResponseSchema);
+  return data;
 }
 
 export async function generateViewportForProject(
   projectId: string,
   imageAssetId: string
 ): Promise<{ viewport: Viewport; source: "gemini" | "fallback" }> {
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: projectId },
+  const project = await storyflowPrisma.project.findByIdOrThrow(projectId, {
     include: { script: true, assets: true, viewport: true },
   });
-
-  if (!project) {
-    throw Object.assign(new Error("Project not found"), { status: 404 });
-  }
 
   if (!project.script) {
     throw Object.assign(new Error("Script is required before generating viewport"), {
@@ -223,7 +226,8 @@ export async function generateViewportForProject(
     throw Object.assign(new Error("Image asset not found for project"), { status: 404 });
   }
 
-  const absoluteImagePath = path.join(process.cwd(), "public", imageAsset.path);
+  const paths = getProjectPaths(projectId);
+  const absoluteImagePath = path.join(paths.root, imageAsset.path.replace(/^\/projects\//, ""));
   const segmentTimings = buildSegmentTimings(project.script as unknown as Script);
 
   let regions: DetectedRegion[] = [];
@@ -246,8 +250,17 @@ export async function generateViewportForProject(
 
   const viewport = await storyflowPrisma.viewport.upsert({
     where: { projectId },
-    update: { imageAssetId, keyframes: toJsonArray(keyframes), regions: toJsonArray(regions) },
-    create: { projectId, imageAssetId, keyframes: toJsonArray(keyframes), regions: toJsonArray(regions) },
+    update: {
+      imageAssetId,
+      keyframes: (toJsonArray(keyframes) as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+      regions: (toJsonArray(regions) as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+    },
+    create: {
+      projectId,
+      imageAssetId,
+      keyframes: (toJsonArray(keyframes) as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+      regions: (toJsonArray(regions) as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+    },
   });
 
   if (project.status === "ASSETS_READY") {

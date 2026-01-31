@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { recordBlueprintHistory } from "@/src/lib/storyflow/history";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { regenerateBlueprint } from "@/src/lib/storyflow/script-builder";
 
 const requestSchema = z.object({
@@ -12,34 +14,16 @@ const requestSchema = z.object({
  * POST /api/script-builder/blueprint/[id]/regenerate
  * Regenerate a blueprint with feedback
  */
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export const POST = withErrorHandler(
+  async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
 
-  const json = await req.json().catch(() => ({}));
-  const parsed = requestSchema.safeParse(json);
+    const { rejectionNotes } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const { rejectionNotes } = parsed.data;
-
-  try {
     // Find existing blueprint
-    const oldBlueprint = await storyflowPrisma.blueprint.findUnique({
-      where: { id },
+    const oldBlueprint = await storyflowPrisma.blueprint.findByIdOrThrow(id, {
       include: { project: true },
     });
-
-    if (!oldBlueprint) {
-      return NextResponse.json({ error: "Blueprint not found" }, { status: 404 });
-    }
 
     // Use stored rejection notes if none provided in request
     const combinedNotes =
@@ -86,14 +70,6 @@ export async function POST(
       blueprint: newBlueprint,
       message: `Blueprint regenerated (v${newBlueprint.version})`,
     });
-  } catch (error) {
-    console.error("[api/script-builder/blueprint/regenerate] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to regenerate blueprint",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/blueprint/[id]/regenerate"
+);

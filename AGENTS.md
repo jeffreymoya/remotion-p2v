@@ -39,6 +39,99 @@
 - Never commit secrets; trim local logs if they capture sensitive input.
 - Prefer `prisma` migrations over ad hoc SQL and document new env vars in `.env.example`.
 
+## Coding Conventions (MUST follow)
+
+These conventions are mandatory for all code changes. Violating them creates technical debt.
+
+### API Routes — Required Pattern
+
+Every route handler in `app/api/` MUST use `withErrorHandler` and `parseBody`/`parseQuery` from `@/app/api/lib`. Do NOT write manual try/catch blocks, inline `safeParse` calls, or raw `NextResponse.json({ error }, { status })` error responses in routes.
+
+```typescript
+// REQUIRED pattern for ALL API routes
+import { withErrorHandler, parseBody, NotFoundError } from "@/app/api/lib";
+
+export const POST = withErrorHandler(async (req, ctx) => {
+  const data = await parseBody(req, mySchema);        // Zod validation — throws on failure
+  const { id } = await ctx!.params!;
+  const project = await storyflowPrisma.project.findUnique({ where: { id } });
+  if (!project) throw new NotFoundError("Project", id); // throws, don't return error responses
+  // ... business logic
+  return NextResponse.json(result);
+}, "descriptive/route-name");
+```
+
+Available error classes (all from `@/app/api/lib`):
+- `ValidationError` (400) — invalid input
+- `NotFoundError` (404) — resource missing
+- `ConflictError` (409) — state conflict
+- `UnauthorizedError` (401), `ForbiddenError` (403)
+- `ServiceUnavailableError` (503) — external service down
+
+### File Paths — Use `src/lib/paths.ts`
+
+NEVER construct project paths manually with `path.join(process.cwd(), ...)`. Always use:
+
+```typescript
+import { getProjectPaths, getProjectDir, ensureProjectDirs } from "@/src/lib/paths";
+
+const paths = getProjectPaths(projectId);
+// paths.root, paths.scripts, paths.assets, paths.assetsImages,
+// paths.assetsAudio, paths.assetsMusic, paths.boards, etc.
+```
+
+If a path is not in `ProjectPaths`, add it to `src/lib/paths.ts` instead of hardcoding.
+
+### React Components — Use TanStack Query
+
+For ALL data fetching and server mutations, use the hooks in `src/hooks/queries/`. Never use `useState` + `useEffect` + `fetch()` for server data.
+
+```typescript
+// REQUIRED
+import { useProject } from "@/src/hooks/queries/use-projects";
+const { data, isLoading, error } = useProject(id);
+```
+
+Available hooks: `use-projects`, `use-boards`, `use-assets`, `use-render`, `use-tts`, `use-viewport`, `use-execution-status`, `use-ai-logs`, `use-asset-search`, `use-music-library`, `use-mappings`.
+
+When adding a new query/mutation:
+1. Add the API client function to `src/lib/api/<domain>.ts`
+2. Add the hook to `src/hooks/queries/use-<domain>.ts`
+3. Follow the query key factory pattern (see `use-projects.ts` for reference)
+
+### Retry / Resilience — Use `retry.ts`
+
+For any operation that needs retries or timeouts, use `withRetry` / `withTimeout` / `withTimeoutAndRetry` from `@/src/lib/utils/retry`. Do NOT implement custom retry loops or backoff logic.
+
+### AI / Gemini
+
+- Use `aiGenerate()` from `src/lib/services/ai/ai-gateway.ts` for all AI calls — it wraps logging, schema validation, and retry.
+- `geminiCall()` in `src/lib/services/ai/gemini-wrapper.ts` is the low-level helper; avoid bypassing the gateway unless adding new gateway features.
+- JSON parsing: `parseGeminiOutput()` from `src/lib/storyflow/gemini-parser.ts`
+- Call logging: `AiLogger` from `src/lib/services/ai/ai-logger.ts`
+- Do NOT shell out to `gemini` directly from routes or components
+- Do NOT use `--temperature` or other API-style params with Gemini CLI
+
+### Database Access
+
+- Use `storyflowPrisma` from `@/src/lib/storyflow/prisma`
+- Never import `PrismaClient` directly — use the singleton
+- JSON fields: use helpers from `@/src/lib/storyflow/prisma-json`
+- Do NOT edit generated files in `src/generated/`
+
+### Where Things Go
+
+| What | Where |
+|------|-------|
+| API route handlers | `app/api/<domain>/route.ts` |
+| API client functions (fetch wrappers) | `src/lib/api/<domain>.ts` |
+| TanStack Query hooks | `src/hooks/queries/use-<domain>.ts` |
+| UI utility hooks | `src/hooks/use-<name>.ts` |
+| Business logic / services | `src/lib/storyflow/<domain>.ts` or `src/lib/boards/<domain>.ts` |
+| Shared types | `src/lib/types.ts`, `src/lib/boards-types.ts`, `src/lib/storyflow/types.ts` |
+| AI prompt templates | `config/prompts/` |
+| Project file artifacts | `public/projects/<id>/` (via `src/lib/paths.ts`) |
+
 ## Skills
 A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill.
 

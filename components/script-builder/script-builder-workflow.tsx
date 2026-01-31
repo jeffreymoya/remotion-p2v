@@ -18,7 +18,13 @@ import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useStageInvalidation } from "@/components/pipeline/stage-invalidation-context";
 import { SaveIndicator } from "@/components/ui/save-indicator";
 import { useAutoSave } from "@/src/hooks/use-auto-save";
-import { segmentScript, generateBlueprint, regenerateBlueprint } from "@/src/lib/api/script-builder";
+import {
+  segmentScript,
+  generateBlueprint,
+  regenerateBlueprint,
+} from "@/src/lib/api/script-builder";
+import { generateTTS } from "@/src/lib/api/tts";
+import { useUpdateProject } from "@/src/hooks/queries/use-projects";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
 interface ScriptBuilderWorkflowProps {
@@ -48,6 +54,7 @@ export function ScriptBuilderWorkflow({
   const toast = useToast();
   const router = useRouter();
   const { registerScriptChange, registerEdit } = useStageInvalidation();
+  const updateProject = useUpdateProject();
 
   // React Query mutations (none - background tasks use direct API calls)
 
@@ -68,20 +75,7 @@ export function ScriptBuilderWorkflow({
   };
 
   const persistTopic = async (payload: { topic: string }) => {
-    const res = await fetch(`/api/projects/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      const detail =
-        typeof body.error === "string"
-          ? body.error
-          : body.error?.topic?.[0] || "Failed to save topic";
-      throw new Error(detail);
-    }
+    await updateProject.mutateAsync({ id: projectId, data: payload });
   };
 
   const { status: saveStatus, lastSavedAt, error: saveError } = useAutoSave({
@@ -241,30 +235,11 @@ export function ScriptBuilderWorkflow({
 
           const seg = targets[i];
 
-          const res = await fetch("/api/tts/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              projectId,
-              segmentIndex: seg.index,
-              force,
-            }),
-            signal,
+          const { segment: updated } = await generateTTS({
+            projectId,
+            segmentIndex: seg.index,
+            force,
           });
-
-          if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            const detail = typeof body.error === "string" ? body.error : "TTS failed";
-            setTtsState({
-              running: false,
-              completed: i,
-              total: targets.length,
-              error: detail,
-            });
-            throw new Error(detail);
-          }
-
-          const { segment: updated } = await res.json();
           setScript((prev) =>
             prev
               ? {
@@ -287,15 +262,7 @@ export function ScriptBuilderWorkflow({
 
   const handleContinueToMedia = useCallback(async () => {
     try {
-      const res = await fetch(`/api/projects/${projectId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "SCRIPT_READY" }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(typeof body.error === "string" ? body.error : "Failed to update project status");
-      }
+      await updateProject.mutateAsync({ id: projectId, data: { status: "SCRIPT_READY" } });
       router.push(`/projects/${projectId}/media`);
     } catch (err) {
       toast({
@@ -303,7 +270,7 @@ export function ScriptBuilderWorkflow({
         variant: "error",
       });
     }
-  }, [projectId, router, toast]);
+  }, [projectId, router, toast, updateProject]);
 
   const handleBackToInput = () => {
     setPhase("input");

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast-provider";
+import { useUploadBoardImage } from "@/src/hooks/queries/use-boards";
 import { cn } from "@/src/lib/utils";
 
 interface ImageUploaderProps {
@@ -14,6 +15,7 @@ interface ImageUploaderProps {
 
 export function ImageUploader({ projectId, boardId, onUploadComplete, className }: ImageUploaderProps) {
   const toast = useToast();
+  const uploadMutation = useUploadBoardImage(projectId);
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -48,34 +50,22 @@ export function ImageUploader({ projectId, boardId, onUploadComplete, className 
       toast({ title: "Validation failed", description: error.message, variant: "error" });
       return;
     }
-
     setUploading(true);
-    try {
-      // Create form data for upload
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("boardId", boardId);
-
-      // Upload to server
-      const response = await fetch(`/api/projects/${projectId}/boards/upload-image`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Upload failed");
+    uploadMutation.mutate(
+      { file, boardId },
+      {
+        onSuccess: (data) => {
+          setUploadedImage(data.imagePath);
+          onUploadComplete(data.imagePath);
+          toast({ title: "Image uploaded successfully", variant: "success" });
+        },
+        onError: (error) => {
+          const message = error instanceof Error ? error.message : "Upload failed";
+          toast({ title: "Upload failed", description: message, variant: "error" });
+        },
+        onSettled: () => setUploading(false),
       }
-
-      const data = await response.json();
-      setUploadedImage(data.imagePath);
-      onUploadComplete(data.imagePath);
-      toast({ title: "Image uploaded successfully", variant: "success" });
-    } catch (error: any) {
-      toast({ title: "Upload failed", description: error.message, variant: "error" });
-    } finally {
-      setUploading(false);
-    }
+    );
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

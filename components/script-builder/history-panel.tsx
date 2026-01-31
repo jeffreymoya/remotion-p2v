@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useToast } from "@/components/ui/toast-provider";
 import { cn } from "@/src/lib/storyflow/utils";
 import { useBlueprintHistory, useDraftHistory } from "@/src/hooks/queries/use-execution-status";
 
@@ -22,7 +21,6 @@ interface HistoryPanelProps {
 type Tab = "blueprint" | "draft";
 
 export function HistoryPanel({ blueprintId, draftId, className }: HistoryPanelProps) {
-  const toast = useToast();
   const [tab, setTab] = useState<Tab>("blueprint");
 
   const {

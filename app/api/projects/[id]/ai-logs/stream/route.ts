@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 
 import { aiLogger } from "@/src/lib/services/ai";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { withStreamErrorHandler } from "@/app/api/lib";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withStreamErrorHandler(async (request: NextRequest, { params }: { params: { id: string } }) => {
   const resolvedParams = await params;
   const projectId = resolvedParams.id;
 
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       Connection: "keep-alive",
     },
   });
-}
+}, "api/projects/[id]/ai-logs/stream");
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

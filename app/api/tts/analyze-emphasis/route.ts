@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getBoardsAIService } from "@/src/lib/boards/ai-service";
+
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { emphasisTaggingPrompt } from "@/config/prompts/emphasis.prompt";
+import { aiGenerate } from "@/src/lib/services/ai";
 
 const requestSchema = z.object({
   projectId: z.string().min(1),
@@ -81,59 +83,42 @@ function validateEmphasisConstraints(
   return finalFiltered;
 }
 
-export async function POST(req: Request) {
-  const body = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(body);
+export const POST = withErrorHandler(async (req: Request) => {
+  const { text, projectId, segmentIndex } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
+  // Get emphasis tags from AI
+  const prompt = emphasisTaggingPrompt(text);
+  const { data: result } = await aiGenerate<z.infer<typeof emphasisResponseSchema>>({
+    projectId,
+    operation: "tts-emphasis",
+    prompt,
+    schema: emphasisResponseSchema,
+    outputFormat: "json",
+    metadata: { segmentIndex },
+  });
 
-  const { text } = parsed.data;
+  // Extract words from text
+  const words = text
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
-  try {
-    // Get emphasis tags from AI
-    const aiService = getBoardsAIService();
-    const prompt = emphasisTaggingPrompt(text);
-    const result = await aiService.structuredComplete(
-      prompt,
-      emphasisResponseSchema,
-      "tts-emphasis"
-    );
+  // Convert to full emphasis data with word strings
+  const rawEmphases: EmphasisData[] = result.emphasisTags.map((tag) => ({
+    wordIndex: tag.wordIndex,
+    word: words[tag.wordIndex] || "",
+    level: tag.level,
+    tone: tag.tone,
+  }));
 
-    // Extract words from text
-    const words = text
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+  // Validate and enforce constraints
+  const validatedEmphases = validateEmphasisConstraints(rawEmphases, words.length);
 
-    // Convert to full emphasis data with word strings
-    const rawEmphases: EmphasisData[] = result.emphasisTags.map((tag) => ({
-      wordIndex: tag.wordIndex,
-      word: words[tag.wordIndex] || "",
-      level: tag.level,
-      tone: tag.tone,
-    }));
-
-    // Validate and enforce constraints
-    const validatedEmphases = validateEmphasisConstraints(rawEmphases, words.length);
-
-    return NextResponse.json({
-      emphasisMarkers: validatedEmphases,
-      totalWords: words.length,
-      emphasisCount: validatedEmphases.length,
-      highCount: validatedEmphases.filter((e) => e.level === "high").length,
-      medCount: validatedEmphases.filter((e) => e.level === "med").length,
-    });
-  } catch (error) {
-    console.error("[api/tts/analyze-emphasis] Error:", error);
-    const err = error as Error;
-    return NextResponse.json(
-      { error: err.message || "Failed to analyze emphasis" },
-      { status: 500 }
-    );
-  }
-}
+  return NextResponse.json({
+    emphasisMarkers: validatedEmphases,
+    totalWords: words.length,
+    emphasisCount: validatedEmphases.length,
+    highCount: validatedEmphases.filter((e) => e.level === "high").length,
+    medCount: validatedEmphases.filter((e) => e.level === "med").length,
+  });
+}, "tts/analyze-emphasis");

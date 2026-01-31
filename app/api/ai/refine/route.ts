@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { refineTopicPrompt, RefinePromptVariables } from "@/config/prompts";
-import { getSettings } from "@/src/lib/storyflow/settings";
-import { parseGeminiOutputWithSchema } from "@/src/lib/storyflow/gemini-parser";
-import { geminiCall } from "@/src/lib/services/ai";
+import { parseBody, withErrorHandler, ServiceUnavailableError } from "@/app/api/lib";
 import { aiLogger } from "@/src/lib/logger";
-import { withLogging } from "@/src/lib/api-logger";
+import { aiGenerate } from "@/src/lib/services/ai";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { getSettings } from "@/src/lib/storyflow/settings";
 
 const requestSchema = z.object({
   projectId: z.string().min(1, "projectId is required"),
@@ -40,30 +39,20 @@ async function refineTopicWithGemini(
 
   const prompt = refineTopicPrompt(vars);
 
-  const { rawResponse } = await geminiCall<Record<string, unknown>>(
-    {
-      projectId,
-      operation: "refine-topic",
-      metadata: { title: vars.title },
-    },
+  const { data } = await aiGenerate<z.infer<typeof refinementResponseSchema>>({
+    projectId,
+    operation: "refine-topic",
     prompt,
-    { model }
-  );
+    model,
+    outputFormat: "json",
+    schema: refinementResponseSchema,
+    metadata: { title: vars.title },
+  });
 
-  return parseGeminiOutputWithSchema(rawResponse!, refinementResponseSchema);
+  return data;
 }
 
-export const POST = withLogging(async (req: Request) => {
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
-
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors, code: "VALIDATION_ERROR" },
-      { status: 400 }
-    );
-  }
-
+export const POST = withErrorHandler(async (req: Request) => {
   const {
     projectId,
     title,
@@ -72,18 +61,9 @@ export const POST = withLogging(async (req: Request) => {
     targetAudience,
     minDuration,
     maxDuration,
-  } = parsed.data;
+  } = await parseBody(req, requestSchema);
 
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: projectId },
-  });
-
-  if (!project) {
-    return NextResponse.json(
-      { error: "Project not found", code: "PROJECT_NOT_FOUND" },
-      { status: 404 }
-    );
-  }
+  await storyflowPrisma.project.findByIdOrThrow(projectId);
 
   try {
     const refinement = await refineTopicWithGemini(projectId, {
@@ -111,19 +91,9 @@ export const POST = withLogging(async (req: Request) => {
     aiLogger.error({ projectId, title, error: errorMessage }, "Failed to refine topic");
 
     if (errorMessage.includes("ENOENT") || errorMessage.includes("gemini")) {
-      return NextResponse.json(
-        {
-          error: "Gemini CLI not available",
-          code: "GEMINI_CLI_NOT_AVAILABLE",
-          details: "Please ensure gemini CLI is installed and in PATH",
-        },
-        { status: 503 }
-      );
+      throw new ServiceUnavailableError("Gemini CLI", errorMessage);
     }
 
-    return NextResponse.json(
-      { error: "Failed to refine topic", code: "REFINEMENT_FAILED" },
-      { status: 500 }
-    );
+    throw error;
   }
-});
+}, "api/ai/refine");

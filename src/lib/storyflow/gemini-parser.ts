@@ -59,7 +59,7 @@ function extractJsonFromText(text: string): string {
  */
 export function unescapeJsonString(text: string): string {
   return text.replace(
-    /\\(["\\\/nrtbf]|u[0-9a-fA-F]{4})/g,
+    /\\(["/\\nrtbf]|u[0-9a-fA-F]{4})/g,
     (_, seq: string) => {
       switch (seq[0]) {
         case '"': return '"';

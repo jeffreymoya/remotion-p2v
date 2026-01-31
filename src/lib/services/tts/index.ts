@@ -8,7 +8,7 @@ import { GoogleTTSProvider } from './google-tts';
 import { TTSProvider, TTSOptions, TTSResult, TTSError } from '../../media-types';
 import { ConfigManager } from '../../config';
 import { logger } from '../../utils/logger';
-import { withRetry, withTimeout } from '../media/timeout-wrapper';
+import { withRetry, withTimeout } from '@/src/lib/utils/retry';
 
 /**
  * Factory for creating TTS provider instances

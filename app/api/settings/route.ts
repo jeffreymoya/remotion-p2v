@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { getSettings, updateSettings } from "@/src/lib/storyflow/settings";
 
 const settingsSchema = z.object({
@@ -28,22 +30,13 @@ const settingsSchema = z.object({
     .optional(),
 });
 
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const settings = await getSettings();
   return NextResponse.json({ settings });
-}
+}, "settings");
 
-export async function PUT(req: Request) {
-  const json = await req.json();
-  const parsed = settingsSchema.safeParse(json);
-
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const settings = await updateSettings(parsed.data);
+export const PUT = withErrorHandler(async (req: Request) => {
+  const data = await parseBody(req, settingsSchema);
+  const settings = await updateSettings(data);
   return NextResponse.json({ settings });
-}
+}, "settings");

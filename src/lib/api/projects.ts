@@ -1,4 +1,4 @@
-import { Project } from "@/src/lib/types";
+import { Project } from "@/src/lib/storyflow/types";
 
 const API_BASE = "/api";
 

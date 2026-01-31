@@ -79,7 +79,6 @@ describe("MusicLibrary", () => {
       } as Response)
     );
 
-    const user = userEvent.setup();
     renderWithProviders(
       <MusicLibrary projectId="test-project" onSelected={mockOnSelected} />
     );

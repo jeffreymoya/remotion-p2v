@@ -1,32 +1,8 @@
-export interface Viewport {
-  id: string;
-  imageAssetId: string;
-  keyframes: ViewportKeyframe[];
-  regions: DetectedRegion[];
-}
-
-export interface ViewportKeyframe {
-  frameStart: number;
-  frameEnd: number;
-  viewport: {
-    centerX: number;
-    centerY: number;
-    zoom: number;
-  };
-  easing: "linear" | "easeIn" | "easeOut" | "easeInOut" | "slowDramatic" | "fastAction";
-  transitionDurationMs: number;
-}
-
-export interface DetectedRegion {
-  id: string;
-  label: string;
-  bounds: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-}
+import {
+  DetectedRegion,
+  Viewport,
+  ViewportKeyframe,
+} from "@/src/lib/storyflow/types";
 
 export async function generateViewport(
   projectId: string,

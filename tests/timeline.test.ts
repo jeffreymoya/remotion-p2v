@@ -8,6 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getProjectDir } from '../src/lib/paths';
 import { normalizeTimeline } from '../src/lib/utils';
 import { TimelineSchema, TextElementSchema, type Timeline } from '../src/lib/types';
 import { DEFAULT_ASPECT_RATIO } from '../src/lib/constants';
@@ -212,7 +213,7 @@ test('Timeline with explicit duration overrides calculated', () => {
 
 // Test Element Timing
 test('Timeline elements have valid timing', () => {
-  const projectsDir = path.join(process.cwd(), 'public', 'projects');
+  const projectsDir = getProjectDir('');
 
   if (!fs.existsSync(projectsDir)) {
     console.log('⚠ No projects directory found, skipping timing validation');
@@ -254,7 +255,7 @@ test('Timeline elements have valid timing', () => {
 
 // Test Aspect Ratio Consistency
 test('Timeline aspect ratio is valid', () => {
-  const projectsDir = path.join(process.cwd(), 'public', 'projects');
+  const projectsDir = getProjectDir('');
 
   if (!fs.existsSync(projectsDir)) {
     console.log('⚠ No projects directory found, skipping aspect ratio validation');

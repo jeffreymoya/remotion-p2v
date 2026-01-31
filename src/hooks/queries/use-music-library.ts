@@ -1,5 +1,10 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { searchMusicTracks, selectMusicTrack, MusicTrack } from "@/src/lib/api/music";
+import {
+  searchMusicTracks,
+  selectMusicTrack,
+  updateMusicVolume,
+  MusicTrack,
+} from "@/src/lib/api/music";
 
 export function useMusicSearch(query: string, enabled = true) {
   return useQuery({
@@ -13,5 +18,12 @@ export function useMusicSearch(query: string, enabled = true) {
 export function useSelectMusicTrack(projectId: string) {
   return useMutation({
     mutationFn: (track: MusicTrack) => selectMusicTrack(projectId, track),
+  });
+}
+
+export function useUpdateMusicVolume(projectId: string) {
+  return useMutation({
+    mutationFn: ({ assetId, volume }: { assetId: string; volume: number }) =>
+      updateMusicVolume(projectId, assetId, volume),
   });
 }

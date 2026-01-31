@@ -10,7 +10,12 @@ import { MusicLibrary } from "@/components/assets/music-library";
 import { MusicSettings } from "@/components/assets/music-settings";
 import { SimpleAssetMapper } from "@/components/editors/asset-mapper/simple-asset-mapper";
 import { StockSearch } from "./stock-search";
-import { useAssets, useDeleteAsset, useUpscaleAsset } from "@/src/hooks/queries/use-assets";
+import {
+  useAssets,
+  useDeleteAsset,
+  useSelectMusicAsset,
+  useUpscaleAsset,
+} from "@/src/hooks/queries/use-assets";
 
 type Props = {
   projectId: string;
@@ -49,6 +54,7 @@ export function MediaManager({
   const { data: assets = initialAssets } = useAssets(projectId);
   const deleteMutation = useDeleteAsset(projectId);
   const upscaleMutation = useUpscaleAsset(projectId);
+  const selectMusicMutation = useSelectMusicAsset(projectId);
 
   const filteredAssets = useMemo(() => {
     if (activeType === "ALL") return assets;
@@ -102,25 +108,19 @@ export function MediaManager({
   };
 
   const handleSelectMusicAsset = async (assetId: string) => {
-    try {
-      const res = await fetch(`/api/projects/${projectId}/music`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error || "Unable to set soundtrack");
-      }
-      setSelectedMusicId(assetId);
-      toast({ title: "Soundtrack selected", variant: "success" });
-    } catch (error: any) {
-      toast({
-        title: "Music selection error",
-        description: error?.message || "Unable to set soundtrack",
-        variant: "error",
-      });
-    }
+    selectMusicMutation.mutate(assetId, {
+      onSuccess: () => {
+        setSelectedMusicId(assetId);
+        toast({ title: "Soundtrack selected", variant: "success" });
+      },
+      onError: (error) => {
+        toast({
+          title: "Music selection error",
+          description: error.message || "Unable to set soundtrack",
+          variant: "error",
+        });
+      },
+    });
   };
 
   const handleLibrarySelected = (asset: Asset) => {

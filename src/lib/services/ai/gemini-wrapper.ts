@@ -5,6 +5,7 @@ import { aiLogger as dbAILogger, AiCallContext } from "./ai-logger";
 import { aiLogger } from "@/src/lib/logger";
 import { getSettings } from "@/src/lib/storyflow/settings";
 import { parseGeminiOutput } from "@/src/lib/storyflow/gemini-parser";
+import type { Milliseconds } from "@/src/lib/types/units";
 
 const execFileAsync = promisify(execFile);
 
@@ -25,7 +26,7 @@ interface GeminiOptions {
 interface GeminiResult<T> {
   data: T;
   logId: string;
-  durationMs: number;
+  durationMs: Milliseconds;
   tokens?: { prompt: number; response: number };
   rawResponse?: string;
 }
@@ -47,65 +48,72 @@ async function executeGeminiCall(
   return { rawResponse, tokens };
 }
 
+export async function runGemini(
+  prompt: string,
+  options: GeminiOptions = {}
+): Promise<{ rawResponse: string; tokens?: { prompt: number; response: number }; usedModel: string }> {
+  const settings = await getSettings();
+
+  const primaryModel = options.model ?? settings.ai.model;
+  const isProTier = primaryModel === settings.ai.proModel || primaryModel.includes("-pro");
+  const fallbackModel =
+    options.fallbackModel ?? (isProTier ? settings.ai.proFallbackModel : settings.ai.fallbackModel);
+
+  const format = options.outputFormat ?? "json";
+
+  let rawResponse: string;
+  let tokens: { prompt: number; response: number } | undefined;
+  let usedModel = primaryModel;
+
+  try {
+    const result = await executeGeminiCall(primaryModel, format, prompt);
+    rawResponse = result.rawResponse;
+    tokens = result.tokens;
+  } catch (primaryError) {
+    if (fallbackModel) {
+      aiLogger.warn(
+        {
+          primaryModel,
+          fallbackModel,
+          error: primaryError instanceof Error ? primaryError.message : String(primaryError),
+        },
+        "Primary model failed, trying fallback"
+      );
+      try {
+        const result = await executeGeminiCall(fallbackModel, format, prompt);
+        rawResponse = result.rawResponse;
+        tokens = result.tokens;
+        usedModel = fallbackModel;
+      } catch {
+        throw primaryError;
+      }
+    } else {
+      throw primaryError;
+    }
+  }
+
+  if (usedModel !== primaryModel) {
+    aiLogger.info({ fallbackModel: usedModel }, "Used fallback model successfully");
+  }
+
+  return { rawResponse, tokens, usedModel };
+}
+
 export async function geminiCall<T>(
   context: Omit<AiCallContext, "provider">,
   prompt: string,
   options: GeminiOptions = {}
 ): Promise<GeminiResult<T>> {
-  const settings = await getSettings();
-
-  // Use options > settings > defaults
-  const primaryModel = options.model ?? settings.ai.model;
-
-  // Select fallback based on tier: if using proModel, use proFallbackModel
-  const isProTier = primaryModel === settings.ai.proModel || primaryModel.includes("-pro");
-  const fallbackModel = options.fallbackModel ??
-    (isProTier ? settings.ai.proFallbackModel : settings.ai.fallbackModel);
-
-  const format = options.outputFormat ?? "json";
-
   return dbAILogger.wrap<T>(
-    { ...context, provider: "gemini-cli", model: primaryModel },
+    { ...context, provider: "gemini-cli", model: options.model },
     prompt,
     async () => {
-      let rawResponse: string;
-      let tokens: { prompt: number; response: number } | undefined;
-      let usedModel = primaryModel;
-
-      try {
-        const result = await executeGeminiCall(primaryModel, format, prompt);
-        rawResponse = result.rawResponse;
-        tokens = result.tokens;
-      } catch (primaryError) {
-        // If primary model fails and we have a fallback, try it
-        if (fallbackModel) {
-          aiLogger.warn(
-            {
-              primaryModel,
-              fallbackModel,
-              error: primaryError instanceof Error ? primaryError.message : String(primaryError),
-            },
-            "Primary model failed, trying fallback"
-          );
-          try {
-            const result = await executeGeminiCall(fallbackModel, format, prompt);
-            rawResponse = result.rawResponse;
-            tokens = result.tokens;
-            usedModel = fallbackModel;
-          } catch {
-            // Both failed, throw the original error
-            throw primaryError;
-          }
-        } else {
-          throw primaryError;
-        }
-      }
-
-      if (usedModel !== primaryModel) {
-        aiLogger.info({ fallbackModel: usedModel }, "Used fallback model successfully");
-      }
-
-      const result = format === "json" ? parseGeminiOutput<T>(rawResponse) : ((rawResponse as unknown) as T);
+      const { rawResponse, tokens } = await runGemini(prompt, options);
+      const format = options.outputFormat ?? "json";
+      const result =
+        format === "json"
+          ? parseGeminiOutput<T>(rawResponse)
+          : ((rawResponse as unknown) as T);
       return { result, rawResponse, tokens };
     }
   );

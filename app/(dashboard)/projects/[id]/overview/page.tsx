@@ -6,6 +6,7 @@ import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { formatDate } from "@/src/lib/storyflow/utils";
 import { getCurrentStage, PipelineStageId } from "@/src/lib/storyflow/stage-validation";
 import { ProjectStatus } from "@/src/lib/storyflow/types";
+import { NotFoundError } from "@/app/api/lib";
 
 const stageLabels: Record<PipelineStageId, string> = {
   script: "Script",
@@ -19,12 +20,15 @@ type Params = { params: { id: string } };
 
 export default async function ProjectOverviewPage({ params }: Params) {
   const resolvedParams = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: resolvedParams.id },
-    include: { settings: true },
-  });
-
-  if (!project) return notFound();
+  let project;
+  try {
+    project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
+      include: { settings: true },
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) return notFound();
+    throw error;
+  }
 
   const status = project.status as ProjectStatus;
   const currentStage = getCurrentStage(status);

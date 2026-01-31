@@ -7,17 +7,22 @@ import { StageGate } from "@/components/pipeline/stage-gate";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { Asset, Board as BoardType, Script, ProjectStatus } from "@/src/lib/storyflow/types";
 import { getStageGateState } from "@/src/lib/storyflow/stage-validation";
+import { NotFoundError } from "@/app/api/lib";
+import { StoryboardStageButton } from "@/components/pipeline/storyboard-stage-button";
 
 type Params = { params: { id: string } };
 
 export default async function StoryboardPage({ params }: Params) {
   const resolvedParams = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: resolvedParams.id },
-    include: { assets: true, boards: { orderBy: { index: "asc" } }, script: true },
-  });
-
-  if (!project) return notFound();
+  let project;
+  try {
+    project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
+      include: { assets: true, boards: { orderBy: { index: "asc" } }, script: true },
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) return notFound();
+    throw error;
+  }
 
   const images = (project.assets || []).filter((a) => a.type === "IMAGE") as Asset[];
   const boards = project.boards as unknown as BoardType[];
@@ -36,6 +41,9 @@ export default async function StoryboardPage({ params }: Params) {
 
       <StageGate locked={gate.locked} message={gate.message}>
         <DesktopOnlyGate>
+          <div className="mb-3 flex justify-end">
+            <StoryboardStageButton projectId={project.id} />
+          </div>
           <BoardsWorkflow
             projectId={project.id}
             script={script}

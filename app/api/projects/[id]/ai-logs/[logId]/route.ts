@@ -1,13 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-import { handleApiError, NotFoundError } from "@/app/api/lib";
+import { NotFoundError, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string; logId: string } }
-) {
-  try {
+export const GET = withErrorHandler(
+  async (_request: Request, { params }: { params: { id: string; logId: string } }) => {
     const resolvedParams = await params;
     const log = await storyflowPrisma.aiCallLog.findUnique({
       where: { id: resolvedParams.logId },
@@ -22,10 +19,9 @@ export async function GET(
     }
 
     return NextResponse.json({ log });
-  } catch (error) {
-    return handleApiError(error, "projects/[id]/ai-logs/[logId]");
-  }
-}
+  },
+  "projects/[id]/ai-logs/[logId]"
+);
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

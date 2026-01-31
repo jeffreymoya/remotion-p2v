@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { getSettings } from "./settings";
-import { parseGeminiOutput } from "./gemini-parser";
 import { scriptSchema, ScriptPayload } from "./scripts";
 import { TrendingTopic, GeneralizedTrendingTopic, TopicSuggestion } from "./discovery";
 import { countWords, WORDS_PER_MINUTE } from "../constants";
-import { geminiCall } from "@/src/lib/services/ai";
+import { aiGenerate } from "@/src/lib/services/ai";
 import { aiLogger } from "@/src/lib/logger";
 
 function estimateWordCount(text: string): { wordCount: number; estimatedDuration: number } {
@@ -67,14 +66,16 @@ Requirements:
 `;
 
   try {
-    const { rawResponse } = await geminiCall<Record<string, unknown>>(
-      { projectId, operation: "script-generate" },
+    const { data } = await aiGenerate<Record<string, unknown>>({
+      projectId,
+      operation: "script-generate",
       prompt,
-      { model }
-    );
+      model,
+      outputFormat: "json",
+      metadata: { topic },
+    });
 
-    const parsed = parseGeminiOutput(rawResponse ?? "");
-    return normalizeScript(parsed, topic);
+    return normalizeScript(data, topic);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown Gemini error";
@@ -165,24 +166,28 @@ IMPORTANT:
 - Prioritize topics that are educational, thought-provoking, or solve problems`;
 
   try {
-    const { rawResponse } = await geminiCall<Record<string, unknown>>(
-      { projectId, operation: "topic-generalize" },
-      prompt,
-      { model }
-    );
-
-    aiLogger.debug({
+    const { data, rawResponse } = await aiGenerate<z.infer<typeof generalizedTopicsSchema>>({
       projectId,
       operation: "topic-generalize",
-      rawOutputPreview: (rawResponse ?? "").substring(0, 500)
-    }, "Raw Gemini output received");
+      prompt,
+      model,
+      outputFormat: "json",
+      schema: generalizedTopicsSchema,
+      metadata: { suggestionsPerTopic },
+    });
 
-    const parsed = parseGeminiOutput(rawResponse ?? "");
-    const validated = generalizedTopicsSchema.parse(parsed);
+    aiLogger.debug(
+      {
+        projectId,
+        operation: "topic-generalize",
+        rawOutputPreview: (rawResponse ?? "").substring(0, 500),
+      },
+      "Raw Gemini output received"
+    );
 
     let suggestionCounter = 0;
 
-    return validated.trendingTopics.map((topic, trendIdx) => {
+    return data.trendingTopics.map((topic, trendIdx) => {
       const rawTrend = trends.find(r =>
         r.query.toLowerCase() === topic.originalTrend.toLowerCase()
       ) || trends[trendIdx];

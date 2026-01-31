@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { logger } from "@/src/lib/logger";
+
 // =============================================================================
 // ERROR TYPES
 // =============================================================================
@@ -89,6 +91,7 @@ interface ErrorResponse {
   error: string;
   code: string;
   details?: unknown;
+  requestId?: string;
 }
 
 /**
@@ -98,9 +101,11 @@ function createErrorResponse(
   error: string,
   code: string,
   statusCode: number,
+  requestId?: string,
   details?: unknown
 ): NextResponse<ErrorResponse> {
   const body: ErrorResponse = { error, code };
+  if (requestId) body.requestId = requestId;
   if (details !== undefined) {
     body.details = details;
   }
@@ -125,50 +130,72 @@ function createErrorResponse(
  * }
  * ```
  */
+const isDev = process.env.NODE_ENV === "development";
+
+type Logger = ReturnType<typeof logger.child>;
+
+function normalizeError(
+  error: unknown
+): { error: string; code: string; statusCode: number; details?: unknown } {
+  if (error instanceof z.ZodError) {
+    return {
+      error: "Validation error",
+      code: "VALIDATION_ERROR",
+      statusCode: 400,
+      details: error.format(),
+    };
+  }
+
+  if (error instanceof ApiError) {
+    return {
+      error: error.message,
+      code: error.code,
+      statusCode: error.statusCode,
+      details: error.details,
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      error: isDev ? error.message : "An unexpected error occurred",
+      code: "INTERNAL_ERROR",
+      statusCode: 500,
+      details: isDev ? error.stack : undefined,
+    };
+  }
+
+  return {
+    error: "An unexpected error occurred",
+    code: "INTERNAL_ERROR",
+    statusCode: 500,
+  };
+}
+
 export function handleApiError(
   error: unknown,
-  context: string = "api"
+  context: string = "api",
+  options?: { logger?: Logger; requestId?: string; startedAt?: number }
 ): NextResponse<ErrorResponse> {
-  // Zod validation errors
-  if (error instanceof z.ZodError) {
-    console.warn(`[${context}] Validation error:`, error.format());
-    return createErrorResponse(
-      "Validation error",
-      "VALIDATION_ERROR",
-      400,
-      error.format()
-    );
-  }
+  const { error: message, code, statusCode, details } = normalizeError(error);
 
-  // Custom API errors
-  if (error instanceof ApiError) {
-    const level = error.statusCode >= 500 ? "error" : "warn";
-    console[level](`[${context}] ${error.code}:`, error.message);
-    return createErrorResponse(
-      error.message,
-      error.code,
-      error.statusCode,
-      error.details
-    );
-  }
+  const requestId = options?.requestId ?? crypto.randomUUID();
+  const durationMs = options?.startedAt
+    ? Date.now() - options.startedAt
+    : undefined;
 
-  // Standard errors
-  if (error instanceof Error) {
-    console.error(`[${context}] Unhandled error:`, error.message, error.stack);
-    return createErrorResponse(
-      error.message || "An unexpected error occurred",
-      "INTERNAL_ERROR",
-      500
-    );
-  }
+  const log = options?.logger ?? logger.child({ context, requestId });
+  const logPayload = {
+    requestId,
+    code,
+    statusCode,
+    durationMs,
+    details,
+  };
 
-  // Unknown errors
-  console.error(`[${context}] Unknown error:`, error);
-  return createErrorResponse(
-    "An unexpected error occurred",
-    "INTERNAL_ERROR",
-    500
-  );
+  const level = statusCode >= 500 ? "error" : "warn";
+  log[level]({ ...logPayload, error }, `${context} request failed`);
+
+  return createErrorResponse(message, code, statusCode, requestId, details);
 }
 
 // =============================================================================
@@ -198,10 +225,101 @@ export function withErrorHandler(
   context: string
 ): RouteHandler {
   return async (req, ctx) => {
+    const startedAt = Date.now();
+    const path = new URL(req.url).pathname;
+    const requestId = crypto.randomUUID();
+    const log = logger.child({
+      requestId,
+      method: req.method,
+      path,
+      context,
+    });
+
+    log.info("Request started");
+
     try {
-      return await handler(req, ctx);
+      const response = await handler(req, ctx);
+
+      log.info(
+        {
+          statusCode: response.status,
+          durationMs: Date.now() - startedAt,
+        },
+        "Request completed"
+      );
+
+      return response;
     } catch (error) {
-      return handleApiError(error, context);
+      return handleApiError(error, context, { logger: log, requestId, startedAt });
+    }
+  };
+}
+
+export function withStreamErrorHandler(
+  handler: (
+    req: Request,
+    context?: { params?: Promise<Record<string, string>> }
+  ) => Promise<Response>,
+  context: string
+) {
+  return async (req: Request, ctx?: { params?: Promise<Record<string, string>> }) => {
+    const startedAt = Date.now();
+    const path = new URL(req.url).pathname;
+    const requestId = crypto.randomUUID();
+    const log = logger.child({ requestId, method: req.method, path, context });
+
+    log.info("Request started");
+
+    try {
+      const response = await handler(req, ctx);
+
+      log.info(
+        {
+          statusCode: response.status,
+          durationMs: Date.now() - startedAt,
+        },
+        "Request completed"
+      );
+
+      return response;
+    } catch (error) {
+      const normalized = normalizeError(error);
+
+      log[normalized.statusCode >= 500 ? "error" : "warn"](
+        {
+          requestId,
+          code: normalized.code,
+          statusCode: normalized.statusCode,
+          durationMs: Date.now() - startedAt,
+          details: normalized.details,
+          error,
+        },
+        `${context} stream failed`
+      );
+
+      const encoder = new TextEncoder();
+      const body = `event: error\ndata: ${JSON.stringify({
+        error: normalized.error,
+        code: normalized.code,
+        requestId,
+        details: normalized.details,
+      })}\n\n`;
+
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(body));
+          controller.close();
+        },
+      });
+
+      return new Response(stream, {
+        status: normalized.statusCode,
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache, no-transform",
+          Connection: "keep-alive",
+        },
+      });
     }
   };
 }
@@ -247,7 +365,18 @@ export function parseQuery<T>(
   schema: z.ZodType<T>
 ): T {
   const url = new URL(req.url);
-  const params = Object.fromEntries(url.searchParams.entries());
+  const params: Record<string, string | string[]> = {};
+
+  for (const [key, value] of url.searchParams.entries()) {
+    const existing = params[key];
+    if (existing === undefined) {
+      params[key] = value;
+    } else if (Array.isArray(existing)) {
+      existing.push(value);
+    } else {
+      params[key] = [existing, value];
+    }
+  }
 
   const result = schema.safeParse(params);
   if (!result.success) {

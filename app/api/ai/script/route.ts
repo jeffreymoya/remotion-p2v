@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
-import { generateScriptFromGemini } from "@/src/lib/storyflow/ai";
-import { generateDemoScript, saveScript } from "@/src/lib/storyflow/scripts";
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { aiLogger } from "@/src/lib/logger";
-import { withLogging } from "@/src/lib/api-logger";
+import { generateScriptFromGemini } from "@/src/lib/storyflow/ai";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { generateDemoScript, saveScript } from "@/src/lib/storyflow/scripts";
 
 const requestSchema = z.object({
   projectId: z.string().min(1, "projectId is required"),
@@ -13,26 +13,10 @@ const requestSchema = z.object({
   regenerate: z.boolean().optional(),
 });
 
-export const POST = withLogging(async (req: Request) => {
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
+export const POST = withErrorHandler(async (req: Request) => {
+  const { projectId, topic } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const { projectId, topic } = parsed.data;
-
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: projectId },
-  });
-
-  if (!project) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
-  }
+  const project = await storyflowPrisma.project.findByIdOrThrow(projectId);
 
   try {
     let scriptPayload = null;
@@ -58,9 +42,6 @@ export const POST = withLogging(async (req: Request) => {
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     aiLogger.error({ projectId, topic, error: errorMsg }, "Failed to generate script");
-    return NextResponse.json(
-      { error: "Failed to generate script" },
-      { status: 500 }
-    );
+    throw error;
   }
-});
+}, "api/ai/script");

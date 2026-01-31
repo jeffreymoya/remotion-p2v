@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+import { NotFoundError, ValidationError, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { analyzeGlue } from "@/src/lib/storyflow/glue";
 import { BeatDraft } from "@/src/lib/storyflow/script-builder-types";
@@ -9,24 +11,21 @@ import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
  * GET /api/script-builder/draft/[draftId]/glue-analysis
  * Run heuristic glue analysis (robot words + seams + optional repetition/pacing)
  */
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ draftId: string }> }
-) {
-  const { draftId } = await params;
+export const GET = withErrorHandler(
+  async (_req: Request, { params }: { params: Promise<{ draftId: string }> }) => {
+    const { draftId } = await params;
 
-  try {
     const scriptDraft = await storyflowPrisma.scriptDraft.findUnique({
       where: { id: draftId },
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", draftId);
     }
 
     const beatDrafts = fromJsonArray<BeatDraft>(scriptDraft.beatDrafts);
     if (beatDrafts.length === 0) {
-      return NextResponse.json({ error: "No beat drafts to analyze" }, { status: 400 });
+      throw new ValidationError("No beat drafts to analyze");
     }
 
     const polishedText = scriptDraft.polishedText ?? beatDrafts.map((b) => b.text).join("\n\n");
@@ -58,14 +57,6 @@ export async function GET(
       issueCount,
       polishedText,
     });
-  } catch (error) {
-    console.error("[api/script-builder/glue-analysis] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to run glue analysis",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/draft/[draftId]/glue-analysis"
+);

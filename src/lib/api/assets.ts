@@ -38,6 +38,29 @@ export async function fetchAssets(projectId: string): Promise<Asset[]> {
   return data.assets || [];
 }
 
+export interface ImportAssetPayload {
+  projectId: string;
+  url: string;
+  filename: string;
+  type: "IMAGE" | "VIDEO";
+  source?: string;
+}
+
+export async function importAsset(payload: ImportAssetPayload): Promise<Asset> {
+  const res = await fetch("/api/assets/import", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to import asset");
+  }
+
+  return data.asset;
+}
+
 export async function uploadAsset(
   projectId: string,
   file: File

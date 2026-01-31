@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
+
+import { NotFoundError, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { fromJsonArray } from "@/src/lib/storyflow/prisma-json";
 import { type Beat, type BeatDraft } from "@/src/lib/storyflow/script-builder";
 
 /**
  * GET /api/script-builder/execute/[draftId]/status
  * Get execution progress status
  */
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ draftId: string }> }
-) {
-  const { draftId } = await params;
+export const GET = withErrorHandler(
+  async (_req: Request, { params }: { params: Promise<{ draftId: string }> }) => {
+    const { draftId } = await params;
 
-  try {
-    // Find script draft
     const scriptDraft = await storyflowPrisma.scriptDraft.findUnique({
       where: { id: draftId },
       include: {
@@ -22,11 +21,11 @@ export async function GET(
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", draftId);
     }
 
     const beats = scriptDraft.blueprint.beats as Beat[];
-    const beatDrafts = scriptDraft.beatDrafts as BeatDraft[];
+    const beatDrafts = fromJsonArray<BeatDraft>(scriptDraft.beatDrafts);
     const totalBeats = beats.length;
     const completedBeats = beatDrafts.length;
 
@@ -38,14 +37,6 @@ export async function GET(
       lastCheckpoint: scriptDraft.updatedAt,
       progress: totalBeats > 0 ? (completedBeats / totalBeats) * 100 : 0,
     });
-  } catch (error) {
-    console.error("[api/script-builder/execute/status] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to get execution status",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/execute/[draftId]/status"
+);

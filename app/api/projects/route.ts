@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { withErrorHandler, parseBody } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { createProjectDirectory } from "@/src/lib/storyflow/projects";
 
@@ -20,32 +22,26 @@ const createProjectSchema = z.object({
   aspectRatio: z.enum(["16:9", "9:16"]).default("16:9"),
 });
 
-export async function GET() {
+export const GET = withErrorHandler(async () => {
   const projects = await storyflowPrisma.project.findMany({
     orderBy: { updatedAt: "desc" },
   });
-  return NextResponse.json({ projects });
-}
 
-export async function POST(req: Request) {
-  const data = await req.json();
-  const parsed = createProjectSchema.safeParse(data);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
+  return NextResponse.json({ projects });
+}, "projects");
+
+export const POST = withErrorHandler(async (req) => {
+  const data = await parseBody(req, createProjectSchema);
 
   const project = await storyflowPrisma.project.create({
     data: {
-      name: parsed.data.name,
-      aspectRatio: parsed.data.aspectRatio,
-      topic: parsed.data.topic ?? null,
+      name: data.name,
+      aspectRatio: data.aspectRatio,
+      topic: data.topic ?? null,
     },
   });
 
   await createProjectDirectory(project.id);
 
   return NextResponse.json({ project }, { status: 201 });
-}
+}, "projects");

@@ -1,8 +1,10 @@
 import { existsSync } from "fs";
 import { mkdir } from "fs/promises";
-import path from "path";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import path from "path";
+
+import { getBinPath } from "@/src/lib/paths";
 
 const execFileAsync = promisify(execFile);
 
@@ -18,7 +20,7 @@ const DEFAULT_PATHS = [
   "/usr/local/bin/realesrgan-ncnn-vulkan",
   "/opt/homebrew/bin/realesrgan-ncnn-vulkan",
   "/usr/bin/realesrgan-ncnn-vulkan",
-  path.join(process.cwd(), "bin", "realesrgan-ncnn-vulkan"),
+  getBinPath("realesrgan-ncnn-vulkan"),
 ].filter(Boolean) as string[];
 
 export class RealESRGANService {

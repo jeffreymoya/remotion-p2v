@@ -1,7 +1,27 @@
 import { storyflowPrisma } from "./prisma";
 import { env } from "@/src/env";
 
-const DEFAULT_SETTINGS = {
+export type AppSettings = {
+  ai: {
+    provider: "gemini-cli" | "claude-code";
+    model: string;
+    fallbackModel: string;
+    proModel: string;
+    proFallbackModel: string;
+    temperature: number;
+  };
+  tts: {
+    voice: string;
+    speakingRate: number;
+    pitch: number;
+  };
+  render: {
+    defaultQuality: "draft" | "medium" | "high" | "production";
+    defaultAspectRatio: "16:9" | "9:16";
+  };
+};
+
+export const DEFAULT_SETTINGS: AppSettings = {
   ai: {
     provider: "gemini-cli",
     // Flash tier - faster, simpler tasks
@@ -21,9 +41,7 @@ const DEFAULT_SETTINGS = {
     defaultQuality: "draft",
     defaultAspectRatio: "16:9",
   },
-} as const;
-
-export type AppSettings = typeof DEFAULT_SETTINGS;
+};
 
 export async function getSettings(): Promise<AppSettings> {
   const rows = await storyflowPrisma.appSettings.findMany();
@@ -41,7 +59,13 @@ export async function getSettings(): Promise<AppSettings> {
   };
 }
 
-export async function updateSettings(payload: Partial<AppSettings>) {
+export type SettingsPatch = {
+  ai?: Partial<AppSettings["ai"]>;
+  tts?: Partial<AppSettings["tts"]>;
+  render?: Partial<AppSettings["render"]>;
+};
+
+export async function updateSettings(payload: SettingsPatch) {
   const current = await getSettings();
   const next = {
     ai: { ...current.ai, ...(payload.ai ?? {}) },

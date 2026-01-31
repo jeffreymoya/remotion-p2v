@@ -11,6 +11,7 @@ import {
   sanitizeFilename,
   stripImageMetadata,
 } from "./file-validation";
+import { ensureProjectDirs, getPublicDir } from "@/src/lib/paths";
 
 let ffprobeConfigured = false;
 function ensureFfprobe() {
@@ -34,12 +35,14 @@ export async function saveAssetFile(
   buffer: Buffer,
   ext: string
 ) {
+  const paths = await ensureProjectDirs(projectId);
   const subdir = getAssetSubdir(type);
   const filename = sanitizeFilename(file.name, ext);
-  const relativePath = path.join("projects", projectId, "assets", subdir, filename);
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
+  const assetDir = path.join(paths.assets, subdir);
+  const absolutePath = path.join(assetDir, filename);
+  const relativePath = path.relative(getPublicDir(), absolutePath);
 
-  await mkdir(path.dirname(absolutePath), { recursive: true });
+  await mkdir(assetDir, { recursive: true });
   await writeFile(absolutePath, buffer);
 
   if (type === "IMAGE") {
@@ -55,13 +58,15 @@ export async function saveAssetBuffer(
   filename: string,
   buffer: Buffer
 ) {
+  const paths = await ensureProjectDirs(projectId);
   const subdir = getAssetSubdir(type);
   const ext = path.extname(filename) || ".bin";
   const safeName = sanitizeFilename(filename, ext.replace(".", ""));
-  const relativePath = path.join("projects", projectId, "assets", subdir, safeName);
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
+  const assetDir = path.join(paths.assets, subdir);
+  const absolutePath = path.join(assetDir, safeName);
+  const relativePath = path.relative(getPublicDir(), absolutePath);
 
-  await mkdir(path.dirname(absolutePath), { recursive: true });
+  await mkdir(assetDir, { recursive: true });
   await writeFile(absolutePath, buffer);
 
   if (type === "IMAGE") {
@@ -122,10 +127,11 @@ export async function deleteAsset(assetId: string) {
 
   // File deletion is best-effort after successful DB delete
   // Orphaned files are acceptable; orphaned DB rows pointing to missing files are not
-  const absolutePath = path.join(process.cwd(), "public", asset.path);
+  const publicDir = getPublicDir();
+  const absolutePath = path.join(publicDir, asset.path.replace(/^\//, ""));
   await rm(absolutePath, { force: true }).catch(() => {});
   if (asset.upscaledPath) {
-    const upscaledAbs = path.join(process.cwd(), "public", asset.upscaledPath);
+    const upscaledAbs = path.join(publicDir, asset.upscaledPath.replace(/^\//, ""));
     await rm(upscaledAbs, { force: true }).catch(() => {});
   }
 

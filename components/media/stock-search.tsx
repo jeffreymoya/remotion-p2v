@@ -5,15 +5,10 @@ import { useToast } from "@/components/ui/toast-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAssetSearch } from "@/src/hooks/queries/use-asset-search";
+import { useImportAsset } from "@/src/hooks/queries/use-assets";
+import type { AssetSearchResult } from "@/src/lib/api/assets";
 
-export type StockResult = {
-  id: string;
-  previewUrl: string;
-  downloadUrl: string;
-  photographer?: string;
-  type: "IMAGE" | "VIDEO";
-  source: "pexels";
-};
+export type StockResult = AssetSearchResult;
 
 type Props = {
   projectId: string;
@@ -25,9 +20,12 @@ export function StockSearch({ projectId, onImported }: Props) {
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [importingId, setImportingId] = useState<string | null>(null);
+  // Track import-specific errors separate from query errors
+  const [importError, setImportError] = useState<string | null>(null);
 
   // React Query hook - only triggers when searchQuery is set
   const { data: results = [], isLoading, error } = useAssetSearch(searchQuery);
+  const importMutation = useImportAsset(projectId);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,27 +35,19 @@ export function StockSearch({ projectId, onImported }: Props) {
 
   const handleImport = async (item: StockResult) => {
     setImportingId(item.id);
-    setError(null);
+    setImportError(null);
     try {
-      const res = await fetch("/api/assets/import", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId,
-          url: item.downloadUrl,
-          filename: `stock-${item.id}.jpg`,
-          type: item.type,
-          source: item.source,
-        }),
+      const asset = await importMutation.mutateAsync({
+        projectId,
+        url: item.downloadUrl,
+        filename: `stock-${item.id}.jpg`,
+        type: item.type,
+        source: item.source,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "Import failed");
-      }
-      onImported(data.asset);
-      toast({ title: "Imported to library", description: data.asset.filename, variant: "success" });
+      onImported(asset);
+      toast({ title: "Imported to library", description: asset.filename, variant: "success" });
     } catch (err: any) {
-      setError(err?.message || "Import failed");
+      setImportError(err?.message || "Import failed");
       toast({ title: "Import error", description: err?.message || "Import failed", variant: "error" });
     } finally {
       setImportingId(null);
@@ -79,7 +69,11 @@ export function StockSearch({ projectId, onImported }: Props) {
         </Button>
       </form>
 
-      {error && <p className="text-sm text-amber-300">{error.message}</p>}
+      {(error || importError) && (
+        <p className="text-sm text-amber-300">
+          {error instanceof Error ? error.message : importError}
+        </p>
+      )}
       {searchQuery && results.length === 0 && !isLoading && !error && (
         <p className="text-sm text-amber-300">No results found. Try different keywords.</p>
       )}

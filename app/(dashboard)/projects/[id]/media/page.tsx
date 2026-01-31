@@ -7,17 +7,22 @@ import { StageGate } from "@/components/pipeline/stage-gate";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { getStageGateState } from "@/src/lib/storyflow/stage-validation";
 import { Asset, ProjectStatus, Script } from "@/src/lib/storyflow/types";
+import { NotFoundError } from "@/app/api/lib";
+import { MediaStageButton } from "@/components/pipeline/media-stage-button";
 
 type Params = { params: { id: string } };
 
 export default async function MediaPage({ params }: Params) {
   const resolvedParams = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: resolvedParams.id },
-    include: { assets: true, settings: true, script: true },
-  });
-
-  if (!project) return notFound();
+  let project;
+  try {
+    project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
+      include: { assets: true, settings: true, script: true },
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) return notFound();
+    throw error;
+  }
 
   const assets = (project.assets as unknown as Asset[]) ?? [];
   const script = project.script as Script | null;
@@ -35,6 +40,9 @@ export default async function MediaPage({ params }: Params) {
 
       <StageGate locked={gate.locked} message={gate.message}>
         <DesktopOnlyGate>
+          <div className="mb-3 flex justify-end">
+            <MediaStageButton projectId={project.id} />
+          </div>
           <MediaManager
             projectId={project.id}
             assets={assets}

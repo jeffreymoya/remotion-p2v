@@ -21,8 +21,9 @@ export const handlers = [
 
   http.patch(`${API_BASE}/api/projects/:id`, async ({ request, params }) => {
     const body = await request.json();
+    const updates = (body && typeof body === "object") ? body : {};
     return HttpResponse.json({
-      project: { id: params.id, ...body },
+      project: { id: params.id, ...(updates as Record<string, unknown>) },
     });
   }),
 

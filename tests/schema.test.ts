@@ -8,6 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getProjectDir } from '../src/lib/paths';
 import {
   TimelineSchema,
   BackgroundElementSchema,
@@ -338,7 +339,7 @@ test('Config files have valid schemas', async () => {
 
 // Test actual timeline files
 test('Demo timeline files validate correctly', async () => {
-  const projectsDir = path.join(process.cwd(), 'public', 'projects');
+  const projectsDir = getProjectDir('');
 
   if (!fs.existsSync(projectsDir)) {
     console.log('⚠ No projects directory found, skipping timeline validation');

@@ -10,7 +10,9 @@ import {
   boardsPlanPrompt,
   topicSummaryPrompt,
 } from "@/config/prompts/boards-plan.prompt";
-import { getBoardsAIService } from "./ai-service";
+import { aiGenerate } from "@/src/lib/services/ai";
+import type { Milliseconds, Seconds } from "@/src/lib/types/units";
+import { sec, ms, secToMs } from "@/src/lib/types/units";
 
 /**
  * Script segment interface matching database schema
@@ -18,7 +20,7 @@ import { getBoardsAIService } from "./ai-service";
 export interface ScriptSegment {
   index: number;
   text: string;
-  estimatedDuration?: number; // in seconds
+  estimatedDuration?: Seconds;
   wordCount?: number;
 }
 
@@ -27,8 +29,8 @@ export interface ScriptSegment {
  */
 interface SegmentMetrics {
   index: number;
-  durationMs: number;
-  cumulativeDurationMs: number;
+  durationMs: Milliseconds;
+  cumulativeDurationMs: Milliseconds;
   text: string;
 }
 
@@ -61,6 +63,7 @@ const TopicBreakResponseSchema = z.object({
  * Plan board groups from script content using LLM topic breaks and duration rules.
  */
 export async function planBoards(
+  projectId: string,
   segments: ScriptSegment[],
   config: BoardsConfig = DEFAULT_BOARDS_CONFIG
 ): Promise<BoardPlan> {
@@ -68,7 +71,7 @@ export async function planBoards(
   const metrics = calculateMetrics(segments);
 
   // Detect topic breaks using AI
-  const topicBreaks = await detectTopicBreaks(segments);
+  const topicBreaks = await detectTopicBreaks(projectId, segments);
 
   // Group segments into boards
   const boardGroups = groupSegments(metrics, topicBreaks, {
@@ -80,7 +83,7 @@ export async function planBoards(
   // Generate topic summaries for each board
   const boards: BoardSegmentMapping[] = [];
   for (const group of boardGroups) {
-    const summary = await generateTopicSummary(segments, group.indices);
+    const summary = await generateTopicSummary(projectId, segments, group.indices);
     boards.push({
       boardId: `board-${boards.length + 1}`,
       segmentIndices: group.indices,
@@ -111,12 +114,12 @@ export function calculateMetrics(segments: ScriptSegment[]): SegmentMetrics[] {
   let cumulative = 0;
   return segments.map((seg) => {
     // Convert estimatedDuration from seconds to milliseconds
-    const durationMs = (seg.estimatedDuration || 0) * 1000;
+    const durationMs = secToMs(sec(seg.estimatedDuration || 0));
     cumulative += durationMs;
     return {
       index: seg.index,
       durationMs,
-      cumulativeDurationMs: cumulative,
+      cumulativeDurationMs: ms(cumulative),
       text: seg.text,
     };
   });
@@ -126,30 +129,30 @@ export function calculateMetrics(segments: ScriptSegment[]): SegmentMetrics[] {
  * Detect topic breaks using AI
  */
 export async function detectTopicBreaks(
+  projectId: string,
   segments: ScriptSegment[]
 ): Promise<TopicBreak[]> {
   if (segments.length === 0) return [];
-
-  const aiService = getBoardsAIService();
-  await aiService.initialize();
 
   const prompt = boardsPlanPrompt(
     segments.map((s) => ({ index: s.index, text: s.text }))
   );
 
-  const response = await aiService.completeJson(
+  const { data: response } = await aiGenerate<z.infer<typeof TopicBreakResponseSchema>>({
+    projectId,
+    operation: "boards-plan",
     prompt,
-    TopicBreakResponseSchema,
-    "boards-plan"
-  );
+    schema: TopicBreakResponseSchema,
+    outputFormat: "json",
+  });
 
   // Filter out invalid breaks
-  const topicBreaks = response.topicBreaks
+  const topicBreaks = (response.topicBreaks ?? [])
     .filter((tb) => tb.afterSegmentIndex < segments.length - 1)
     .map((tb) => ({
       afterSegmentIndex: tb.afterSegmentIndex,
       reason: tb.reason,
-      confidence: tb.confidence,
+      confidence: tb.confidence ?? 0,
     }));
 
   return topicBreaks;
@@ -161,9 +164,9 @@ export async function detectTopicBreaks(
 export function groupSegments(
   metrics: SegmentMetrics[],
   topicBreaks: TopicBreak[],
-  config: { targetDurationMs: number; minSegments: number; maxSegments: number }
-): Array<{ indices: number[]; durationMs: number }> {
-  const boards: Array<{ indices: number[]; durationMs: number }> = [];
+  config: { targetDurationMs: Milliseconds; minSegments: number; maxSegments: number }
+): Array<{ indices: number[]; durationMs: Milliseconds }> {
+  const boards: Array<{ indices: number[]; durationMs: Milliseconds }> = [];
   const validMetrics = metrics.filter((m) => {
     if (m.durationMs <= 0) {
       console.warn(`[PLAN] Skipping segment ${m.index} with zero duration`);
@@ -225,11 +228,11 @@ function createBoardMapping(
   boardNumber: number,
   segmentIndices: number[],
   metrics: SegmentMetrics[]
-): { indices: number[]; durationMs: number } {
+): { indices: number[]; durationMs: Milliseconds } {
   const durationMs = segmentIndices.reduce((sum, idx) => {
     const metric = metrics.find((m) => m.index === idx);
-    return sum + (metric?.durationMs ?? 0);
-  }, 0);
+    return ms(sum + (metric?.durationMs ?? 0));
+  }, 0 as number) as Milliseconds;
 
   return {
     indices: [...segmentIndices],
@@ -241,13 +244,11 @@ function createBoardMapping(
  * Generate topic summary for a group of segments using AI
  */
 export async function generateTopicSummary(
+  projectId: string,
   segments: ScriptSegment[],
   indices: number[]
 ): Promise<string> {
   if (indices.length === 0) return "No segments";
-
-  const aiService = getBoardsAIService();
-  await aiService.initialize();
 
   const texts = indices
     .map((i) => segments.find((s) => s.index === i)?.text)
@@ -255,7 +256,13 @@ export async function generateTopicSummary(
 
   const prompt = topicSummaryPrompt(texts);
 
-  const summary = await aiService.complete(prompt, "boards-plan-summary");
+  const { data: summary } = await aiGenerate<string>({
+    projectId,
+    operation: "boards-plan-summary",
+    prompt,
+    outputFormat: "text",
+    metadata: { indices },
+  });
 
   return summary.trim();
 }

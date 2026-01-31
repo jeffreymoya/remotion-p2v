@@ -1,3 +1,10 @@
+import type {
+  BeatDraft,
+  Blueprint as ScriptBlueprint,
+  ScriptDraft as ScriptBuilderDraft,
+} from "@/src/lib/storyflow/script-builder-types";
+import type { Script as StoryflowScript } from "@/src/lib/storyflow/types";
+
 export interface ExecutionStatus {
   status: "PENDING" | "DRAFTING" | "GLUING" | "POLISHING" | "COMPLETED" | "FAILED";
   currentBeatIndex: number;
@@ -6,14 +13,7 @@ export interface ExecutionStatus {
   lastCheckpoint: string;
 }
 
-export interface ScriptDraft {
-  id: string;
-  status: string;
-  content: Record<string, unknown>;
-  beatDrafts: Array<Record<string, unknown>>;
-  createdAt: string;
-  updatedAt: string;
-}
+export type ScriptDraft = ScriptBuilderDraft;
 
 export async function fetchExecutionStatus(draftId: string): Promise<ExecutionStatus> {
   const res = await fetch(`/api/script-builder/execute/${draftId}/status`);
@@ -60,16 +60,7 @@ export async function resumeExecution(draftId: string): Promise<{
   return res.json();
 }
 
-export interface Blueprint {
-  id: string;
-  projectId: string;
-  topic: string;
-  targetDurationMs: number;
-  beats: Array<Record<string, unknown>>;
-  rejectionNotes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type Blueprint = ScriptBlueprint;
 
 export async function generateBlueprint(params: {
   projectId: string;
@@ -109,18 +100,8 @@ export async function regenerateBlueprint(params: {
   return res.json();
 }
 
-export interface Script {
-  id: string;
-  projectId: string;
-  segments: Array<{
-    index: number;
-    text: string;
-    audioUrl?: string;
-    words?: Array<{ word: string; start: number; end: number }>;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-}
+export type Beat = BeatDraft;
+export type Script = StoryflowScript;
 
 export async function segmentScript(draftId: string): Promise<{
   script: Script;

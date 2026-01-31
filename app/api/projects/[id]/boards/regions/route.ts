@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import path from "path";
 import fs from "fs/promises";
+
+import {
+  NotFoundError,
+  ValidationError,
+  parseBody,
+  withErrorHandler,
+} from "@/app/api/lib";
 import {
   BoardElementSchema,
   BoardRegionsOutput,
@@ -10,9 +17,9 @@ import {
   detectBoardRegions,
   RegionDetectionResponseSchema,
 } from "@/src/lib/boards/regions-service";
-import { getBoardsAIService } from "@/src/lib/boards/ai-service";
+import { aiGenerate } from "@/src/lib/services/ai";
 import { boardsLogger } from "@/src/lib/logger";
-import { withLogging } from "@/src/lib/api-logger";
+import { getProjectPaths } from "@/src/lib/paths";
 
 /**
  * Request body schema for region detection
@@ -51,109 +58,71 @@ type RouteParams = { params: Promise<{ id: string }> };
  *   warnings: string[]
  * }
  */
-export const POST = withLogging(async (req: Request, { params }: RouteParams) => {
+export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
-  // Parse and validate request body
-  const json = await req.json().catch(() => null);
-  const parsed = detectRegionsRequestSchema.safeParse(json);
+  const { boardId, imagePath, elements, gridLayout } = await parseBody(
+    req,
+    detectRegionsRequestSchema
+  );
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid request body", details: parsed.error.format() },
-      { status: 400 }
-    );
-  }
+  const { root } = getProjectPaths(projectId);
+  const absoluteImagePath = path.join(root, imagePath);
 
-  const { boardId, imagePath, elements, gridLayout } = parsed.data;
-
-  // Construct absolute path to image
-  const projectDir = path.join(process.cwd(), "public", "projects", projectId);
-  const absoluteImagePath = path.join(projectDir, imagePath);
-
-  // Validate that image file exists
   try {
     await fs.access(absoluteImagePath);
   } catch {
     boardsLogger.error({ projectId, boardId, imagePath, absolutePath: absoluteImagePath }, "Board image not found");
-    return NextResponse.json(
-      {
-        error: "Image file not found",
-        imagePath,
-        absolutePath: absoluteImagePath,
-      },
-      { status: 404 }
-    );
+    throw new NotFoundError("Board image", absoluteImagePath);
   }
 
+  const boardPrompt = {
+    boardId,
+    gridLayout,
+    styleGuide: "", // Not needed for region detection
+    elements,
+    segmentContexts: [], // Not needed for region detection
+    fullPromptText: "", // Not needed for region detection
+  };
+
+  let result;
   try {
-    // Initialize AI service
-    const aiService = getBoardsAIService();
-    await aiService.initialize();
-
-    // Create board prompt object needed by the service
-    const boardPrompt = {
-      boardId,
-      gridLayout,
-      styleGuide: "", // Not needed for region detection
-      elements,
-      segmentContexts: [], // Not needed for region detection
-      fullPromptText: "", // Not needed for region detection
-    };
-
-    // Detect regions using the service
-    const result = await detectBoardRegions(
+    result = await detectBoardRegions(
       boardPrompt,
       absoluteImagePath,
       async (multimodalPrompt: string) => {
-        return await aiService.structuredComplete(
-          multimodalPrompt,
-          RegionDetectionResponseSchema,
-          "boards-regions"
-        );
+        const { data } = await aiGenerate<z.infer<typeof RegionDetectionResponseSchema>>({
+          projectId,
+          operation: "boards-regions",
+          prompt: multimodalPrompt,
+          schema: RegionDetectionResponseSchema,
+          outputFormat: "json",
+          metadata: { boardId },
+        });
+        return data;
       }
     );
-
-    // Log warnings if any
-    if (result.warnings.length > 0) {
-      boardsLogger.warn({ projectId, boardId, warnings: result.warnings }, "Region detection completed with warnings");
-    }
-
-    // Construct response
-    const response: BoardRegionsOutput & { warnings: string[] } = {
-      version: "1.0",
-      boardId,
-      imagePath,
-      imageMetadata: result.imageMetadata,
-      regions: result.regions,
-      generatedAt: new Date().toISOString(),
-      warnings: result.warnings,
-    };
-
-    return NextResponse.json(response);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    boardsLogger.error({ projectId, boardId, error: message }, "Region detection failed");
-
-    // Check for specific error types
-    if (message.includes("references unknown element")) {
-      return NextResponse.json(
-        { error: "Region validation failed", details: message },
-        { status: 422 } // Unprocessable Entity
-      );
+    if (message.includes("references unknown element") || message.includes("Could not read image dimensions")) {
+      throw new ValidationError("Region detection failed", message);
     }
-
-    if (message.includes("Could not read image dimensions")) {
-      return NextResponse.json(
-        { error: "Invalid image file", details: message },
-        { status: 422 }
-      );
-    }
-
-    // Generic server error
-    return NextResponse.json(
-      { error: "Region detection failed", details: message },
-      { status: 500 }
-    );
+    throw error;
   }
-});
+
+  if (result.warnings.length > 0) {
+    boardsLogger.warn({ projectId, boardId, warnings: result.warnings }, "Region detection completed with warnings");
+  }
+
+  const response: BoardRegionsOutput & { warnings: string[] } = {
+    version: "1.0",
+    boardId,
+    imagePath,
+    imageMetadata: result.imageMetadata,
+    regions: result.regions,
+    generatedAt: new Date().toISOString(),
+    warnings: result.warnings,
+  };
+
+  return NextResponse.json(response);
+}, "api/projects/[id]/boards/regions");

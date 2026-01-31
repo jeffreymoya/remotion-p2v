@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Asset, Board, Script } from "@/src/lib/storyflow/types";
+import { Asset, Script } from "@/src/lib/storyflow/types";
 import { BoardPlannerWizard } from "./BoardPlannerWizard";
 import { SimpleBoardsEditor } from "../editors/boards/simple-boards-editor";
 import { Button } from "@/components/ui/button";
+import type { Board } from "@/src/lib/api/boards";
 
 interface BoardsWorkflowProps {
   projectId: string;

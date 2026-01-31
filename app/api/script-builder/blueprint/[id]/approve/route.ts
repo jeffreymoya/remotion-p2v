@@ -1,26 +1,18 @@
 import { NextResponse } from "next/server";
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+
+import { withErrorHandler } from "@/app/api/lib";
 import { recordBlueprintHistory } from "@/src/lib/storyflow/history";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 /**
  * PUT /api/script-builder/blueprint/[id]/approve
  * Approve a blueprint and mark it ready for execution
  */
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
+export const PUT = withErrorHandler(
+  async (_req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
 
-  try {
-    // Find blueprint
-    const blueprint = await storyflowPrisma.blueprint.findUnique({
-      where: { id },
-    });
-
-    if (!blueprint) {
-      return NextResponse.json({ error: "Blueprint not found" }, { status: 404 });
-    }
+    await storyflowPrisma.blueprint.findByIdOrThrow(id);
 
     // Update status to APPROVED
     const updated = await storyflowPrisma.blueprint.update({
@@ -37,14 +29,6 @@ export async function PUT(
       blueprint: updated,
       message: "Blueprint approved successfully",
     });
-  } catch (error) {
-    console.error("[api/script-builder/blueprint/approve] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to approve blueprint",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/blueprint/[id]/approve"
+);

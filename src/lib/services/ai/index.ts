@@ -10,6 +10,7 @@ import type {
 import { aiLogger as dbAILogger } from "./ai-logger";
 import { aiLogger } from "@/src/lib/logger";
 import { geminiCall, GEMINI_MODELS, parseGeminiTokenUsage } from "./gemini-wrapper";
+import { aiGenerate, type AiOutputFormat, type AiRequest } from "./ai-gateway";
 import { getSettings } from "@/src/lib/storyflow/settings";
 import { env } from "@/src/env";
 
@@ -273,3 +274,4 @@ export class AIProviderFactory {
 
 export type { AIProvider } from "@/src/lib/ai-types";
 export { dbAILogger as aiLogger, geminiCall, GEMINI_MODELS, parseGeminiTokenUsage };
+export { aiGenerate, AiOutputFormat, AiRequest };

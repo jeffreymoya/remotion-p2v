@@ -1,4 +1,5 @@
 import { MusicTrack } from "@/src/lib/storyflow/music/types";
+export type { MusicTrack };
 
 export async function searchMusicTracks(query: string): Promise<MusicTrack[]> {
   const res = await fetch(`/api/music/library?q=${encodeURIComponent(query || "background")}`);
@@ -26,4 +27,21 @@ export async function selectMusicTrack(
   }
 
   return res.json();
+}
+
+export async function updateMusicVolume(
+  projectId: string,
+  assetId: string,
+  volume: number
+): Promise<void> {
+  const res = await fetch(`/api/projects/${projectId}/music`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ assetId, volume }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Failed to update volume");
+  }
 }

@@ -9,7 +9,7 @@ import {
 } from '../boards-types';
 import { contentAnalysisPrompt, elementDescriptionPrompt } from '../../../config/prompts/boards-image.prompt';
 import { AIProviderFactory } from "@/src/lib/services/ai";
-import { parseJsonFromLLM } from "@/src/lib/boards/ai-service";
+import { unescapeJsonString } from "@/src/lib/storyflow/gemini-parser";
 
 export interface ScriptSegment {
   id: string;
@@ -23,6 +23,31 @@ export interface Script {
   title?: string;
   segments: ScriptSegment[];
   totalEstimatedDurationMs?: number;
+}
+
+/**
+ * Parse JSON from LLM output, handling code fences and double-escaped payloads.
+ */
+function parseJsonFromLLM(raw: string): unknown {
+  const trimmed = raw.trim();
+  const clean = trimmed.startsWith("```")
+    ? trimmed.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim()
+    : trimmed;
+
+  try {
+    return JSON.parse(clean);
+  } catch (firstError) {
+    try {
+      const unescaped = unescapeJsonString(clean);
+      return JSON.parse(unescaped);
+    } catch {
+      throw new Error(
+        `[AI] Failed to parse LLM JSON: ${
+          firstError instanceof Error ? firstError.message : String(firstError)
+        }`
+      );
+    }
+  }
 }
 
 interface BoardContent {

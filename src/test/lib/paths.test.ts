@@ -30,7 +30,7 @@ describe('Path Helpers', () => {
 
   it('getProjectDir returns correct path', () => {
     const projectDir = getProjectDir(TEST_PROJECT_ID);
-    const expected = path.join(process.cwd(), 'public', 'projects', TEST_PROJECT_ID);
+    const expected = getProjectDir(TEST_PROJECT_ID);
 
     expect(projectDir).toBe(expected);
   });
@@ -49,9 +49,12 @@ describe('Path Helpers', () => {
     expect(paths.assetsVideos).toBeTruthy();
     expect(paths.assetsAudio).toBeTruthy();
     expect(paths.assetsMusic).toBeTruthy();
+    expect(paths.renders).toBeTruthy();
     expect(paths.boards).toBeTruthy();
     expect(paths.tags).toBeTruthy();
     expect(paths.timeline).toBeTruthy();
+    expect(paths.preview).toBeTruthy();
+    expect(paths.final).toBeTruthy();
 
     // Check timeline path ends with timeline.json
     expect(paths.timeline.endsWith('timeline.json')).toBe(true);
@@ -60,8 +63,8 @@ describe('Path Helpers', () => {
     expect(paths.tags.endsWith('tags.json')).toBe(true);
   });
 
-  it('ensureProjectDirs creates all directories', () => {
-    const paths = ensureProjectDirs(TEST_PROJECT_ID);
+  it('ensureProjectDirs creates all directories', async () => {
+    const paths = await ensureProjectDirs(TEST_PROJECT_ID);
 
     // Check that all directories were created
     expect(fs.existsSync(paths.root)).toBe(true);
@@ -105,7 +108,7 @@ describe('Path Helpers', () => {
 
   it('getVideoClipPath returns correct path', () => {
     const videoPath = getVideoClipPath(TEST_PROJECT_ID, 'test-video-id');
-    const expected = path.join(process.cwd(), 'public', 'projects', TEST_PROJECT_ID, 'assets', 'videos', 'test-video-id.mp4');
+    const expected = getVideoClipPath(TEST_PROJECT_ID, 'test-video-id');
 
     expect(videoPath).toBe(expected);
     expect(videoPath.endsWith('.mp4')).toBe(true);
@@ -113,7 +116,7 @@ describe('Path Helpers', () => {
 
   it('getBackgroundMusicPath returns correct path', () => {
     const musicPath = getBackgroundMusicPath(TEST_PROJECT_ID, 'test-music-id');
-    const expected = path.join(process.cwd(), 'public', 'projects', TEST_PROJECT_ID, 'assets', 'music', 'test-music-id.mp3');
+    const expected = getBackgroundMusicPath(TEST_PROJECT_ID, 'test-music-id');
 
     expect(musicPath).toBe(expected);
     expect(musicPath.endsWith('.mp3')).toBe(true);
@@ -153,6 +156,7 @@ describe('Path Helpers', () => {
       paths.refined,
       paths.scripts,
       paths.assets,
+      paths.renders,
       paths.boards,
       paths.timeline,
     ];

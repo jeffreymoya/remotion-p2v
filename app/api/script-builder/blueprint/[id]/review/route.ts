@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { recordBlueprintHistory } from "@/src/lib/storyflow/history";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { type Beat } from "@/src/lib/storyflow/script-builder";
 
 const beatReviewSchema = z.object({
@@ -18,47 +20,28 @@ const requestSchema = z.object({
  * PUT /api/script-builder/blueprint/[id]/review
  * Submit per-beat reviews for a blueprint
  */
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
+export const PUT = withErrorHandler(
+  async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+    const { reviews } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const { reviews } = parsed.data;
-
-  try {
     // Find blueprint
-    const blueprint = await storyflowPrisma.blueprint.findUnique({
-      where: { id },
-    });
-
-    if (!blueprint) {
-      return NextResponse.json({ error: "Blueprint not found" }, { status: 404 });
-    }
+    const blueprint = await storyflowPrisma.blueprint.findByIdOrThrow(id);
 
     // Get beats from blueprint
     const beats = blueprint.beats as Beat[];
 
     // Create a map of reviews by beatIndex
-    const reviewMap = new Map(reviews.map(r => [r.beatIndex, r]));
+    const reviewMap = new Map(reviews.map((r) => [r.beatIndex, r]));
 
     // Check if any beats are rejected
-    const hasRejections = reviews.some(r => r.status === "rejected");
+    const hasRejections = reviews.some((r) => r.status === "rejected");
 
     // Collect rejection notes for regeneration
     const rejectionNotes: string[] = [];
 
     // Update beat review status in the beats array
-    const updatedBeats = beats.map(beat => {
+    const updatedBeats = beats.map((beat) => {
       const review = reviewMap.get(beat.index);
       if (review) {
         const updatedBeat = {
@@ -78,8 +61,9 @@ export async function PUT(
     });
 
     // Determine new blueprint status
-    const allApproved = reviews.every(r => r.status === "approved") &&
-                        reviews.length === beats.length;
+    const allApproved =
+      reviews.every((r) => r.status === "approved") &&
+      reviews.length === beats.length;
     const newStatus = hasRejections
       ? "REJECTED"
       : allApproved
@@ -92,9 +76,8 @@ export async function PUT(
       data: {
         beats: updatedBeats,
         status: newStatus,
-        rejectionNotes: rejectionNotes.length > 0
-          ? rejectionNotes.join("\n\n")
-          : null,
+        rejectionNotes:
+          rejectionNotes.length > 0 ? rejectionNotes.join("\n\n") : null,
         updatedAt: new Date(),
       },
     });
@@ -110,14 +93,6 @@ export async function PUT(
           ? "Blueprint fully approved"
           : "Review saved",
     });
-  } catch (error) {
-    console.error("[api/script-builder/blueprint/review] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to submit review",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/blueprint/[id]/review"
+);

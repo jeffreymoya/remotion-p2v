@@ -98,7 +98,9 @@ export function GluePhase({ projectId, scriptDraft, onDraftUpdated, onSegment, o
   const [text, setText] = useState<string>(
     scriptDraft.polishedText ?? (scriptDraft.beatDrafts as any[]).map((b: any) => b.text).join("\n\n")
   );
-  const [issues, setIssues] = useState<GlueIssue[]>(() => (scriptDraft.glueIssues as GlueIssue[]) ?? []);
+  const initialIssues =
+    Array.isArray(scriptDraft.glueIssues) ? (scriptDraft.glueIssues as unknown as GlueIssue[]) : [];
+  const [issues, setIssues] = useState<GlueIssue[]>(initialIssues);
   const [scrollTop, setScrollTop] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
@@ -134,7 +136,10 @@ export function GluePhase({ projectId, scriptDraft, onDraftUpdated, onSegment, o
     analyzeMutation.mutate(scriptDraft.id, {
       onSuccess: (data) => {
         setText(data.polishedText ?? text);
-        setIssues((data.issues as GlueIssue[]) ?? []);
+        const parsedIssues = Array.isArray(data.issues)
+          ? (data.issues as unknown as GlueIssue[])
+          : [];
+        setIssues(parsedIssues);
         toast({ title: "Glue analysis complete", variant: "success" });
       },
       onError: (error) => {

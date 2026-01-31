@@ -25,6 +25,7 @@ export {
   // Error handling
   handleApiError,
   withErrorHandler,
+  withStreamErrorHandler,
   // Validation helpers
   parseBody,
   parseQuery,

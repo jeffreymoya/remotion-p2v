@@ -1,4 +1,4 @@
-import { ViewportKeyframe } from "../viewport-types";
+import { ViewportKeyframe } from "@/src/lib/storyflow/types";
 
 export type AspectRatio = "16:9" | "9:16";
 

@@ -2,9 +2,12 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+
+import { NotFoundError, ValidationError, parseBody, withErrorHandler } from "@/app/api/lib";
+import { ensureProjectDirs, getProjectPaths, getPublicDir } from "@/src/lib/paths";
 import { extractMetadata } from "@/src/lib/storyflow/assets";
 import type { Asset } from "@/src/generated/storyflow";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 const trackSchema = z.object({
   id: z.string().min(1),
@@ -54,47 +57,32 @@ function makeFilename(track: z.infer<typeof trackSchema>, ext: string) {
   return `${suffix}-${safeId}.${extension}`;
 }
 
-export async function POST(req: Request, { params }: Params) {
+export const POST = withErrorHandler(async (req: Request, { params }: Params) => {
   const { id } = await params;
-  const body = await req.json().catch(() => null);
-  const parsed = selectionSchema.safeParse(body);
+  const parsed = await parseBody(req, selectionSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id },
+  const project = await storyflowPrisma.project.findByIdOrThrow(id, {
     include: { settings: true },
   });
 
-  if (!project) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
-  }
-
-  const volume = parsed.data.volume ?? project.settings?.musicVolume ?? 0.3;
+  const volume = parsed.volume ?? project.settings?.musicVolume ?? 0.3;
   let selectedAssetId: string;
   let createdAsset: Asset | null = null;
 
-  if ("assetId" in parsed.data) {
-    const asset = await storyflowPrisma.asset.findUnique({
-      where: { id: parsed.data.assetId },
-    });
+  if ("assetId" in parsed) {
+    const asset = await storyflowPrisma.asset.findByIdOrThrow(parsed.assetId);
 
-    if (!asset || asset.projectId !== id) {
-      return NextResponse.json({ error: "Asset not found for this project" }, { status: 404 });
+    if (asset.projectId !== id) {
+      throw new NotFoundError("Asset", parsed.assetId);
     }
 
     if (asset.type !== "MUSIC") {
-      return NextResponse.json(
-        { error: "Only music assets can be selected as soundtrack" },
-        { status: 400 }
-      );
+      throw new ValidationError("Only music assets can be selected as soundtrack");
     }
 
     selectedAssetId = asset.id;
   } else {
-    const track = parsed.data.track;
+    const track = parsed.track;
     const downloadUrl = assertAllowedHost(track.downloadUrl);
 
     const response = await fetch(downloadUrl.toString());
@@ -108,9 +96,11 @@ export async function POST(req: Request, { params }: Params) {
     const buffer = Buffer.from(await response.arrayBuffer());
     const ext = path.extname(downloadUrl.pathname).replace(".", "") || "mp3";
     const filename = makeFilename(track, ext);
-    const relativePath = path.join("projects", id, "assets", "music", filename);
-    const absolutePath = path.join(process.cwd(), "public", relativePath);
+    const paths = getProjectPaths(id);
+    const absolutePath = path.join(paths.assetsMusic, filename);
+    const relativePath = path.relative(getPublicDir(), absolutePath);
 
+    await ensureProjectDirs(id);
     await mkdir(path.dirname(absolutePath), { recursive: true });
     await writeFile(absolutePath, buffer);
 
@@ -153,4 +143,4 @@ export async function POST(req: Request, { params }: Params) {
     selectedAssetId,
     asset: createdAsset,
   });
-}
+}, "projects/[id]/music");

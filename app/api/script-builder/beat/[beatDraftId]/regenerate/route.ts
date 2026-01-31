@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { NotFoundError, ValidationError, parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
 import {
@@ -18,31 +20,15 @@ const requestSchema = z.object({
  * POST /api/script-builder/beat/[beatDraftId]/regenerate
  * Regenerate a single beat without cascading to others.
  */
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ beatDraftId: string }> }
-) {
-  const { beatDraftId } = await params;
-  const json = await req.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
+export const POST = withErrorHandler(
+  async (req: Request, { params }: { params: Promise<{ beatDraftId: string }> }) => {
+    const { beatDraftId } = await params;
+    const { guidance } = await parseBody(req, requestSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    );
-  }
-
-  const guidance = parsed.data.guidance;
-
-  try {
     // Infer scriptDraftId from beatDraftId prefix
     const scriptDraftId = extractScriptDraftId(beatDraftId);
     if (!scriptDraftId) {
-      return NextResponse.json(
-        { error: "Could not determine script draft from beatDraftId" },
-        { status: 400 }
-      );
+      throw new ValidationError("Could not determine script draft from beatDraftId");
     }
 
     // Load draft with blueprint for context
@@ -52,7 +38,7 @@ export async function POST(
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", scriptDraftId);
     }
 
     const projectId = scriptDraft.blueprint.projectId;
@@ -61,12 +47,12 @@ export async function POST(
 
     const targetDraft = beatDrafts.find((bd) => bd.id === beatDraftId);
     if (!targetDraft) {
-      return NextResponse.json({ error: "Beat draft not found" }, { status: 404 });
+      throw new NotFoundError("Beat draft", beatDraftId);
     }
 
     const targetBeat = beats.find((b) => b.index === targetDraft.beatIndex);
     if (!targetBeat) {
-      return NextResponse.json({ error: "Beat not found in blueprint" }, { status: 404 });
+      throw new NotFoundError("Beat", `${targetDraft.beatIndex}`);
     }
 
     const isFirst = targetBeat.index === 1;
@@ -112,14 +98,6 @@ export async function POST(
       draft: updatedDraft,
       message: `Beat ${targetBeat.index} regenerated`,
     });
-  } catch (error) {
-    console.error("[api/script-builder/beat/regenerate] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to regenerate beat",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/beat/[beatDraftId]/regenerate"
+);

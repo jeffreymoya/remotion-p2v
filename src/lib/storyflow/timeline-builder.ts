@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NotFoundError } from "@/app/api/lib";
 import { storyflowPrisma } from "./prisma";
 import { Asset, ScriptSegment, ViewportKeyframe } from "./types";
 import {
@@ -236,13 +237,12 @@ function buildMusicElement(assets: { type: string; path: string }[], settingsVol
 }
 
 export async function buildTimeline(projectId: string): Promise<Timeline> {
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: projectId },
+  const project = await storyflowPrisma.project.findByIdOrThrow(projectId, {
     include: { script: true, assets: true, viewport: true, settings: true },
   });
 
-  if (!project || !project.script) {
-    throw new Error("Project or script not found");
+  if (!project.script) {
+    throw new NotFoundError("Script", projectId);
   }
 
   // Validate segments from DB JSON

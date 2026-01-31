@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import { z } from 'zod';
 import { AIProviderConfig } from './types';
+import { getConfigPath } from '@/src/lib/paths';
 
 /**
  * Zod schema for AI configuration
@@ -31,6 +31,7 @@ const TTSConfigSchema = z.object({
   defaultProvider: z.string(),
   providers: z.record(z.any()),
   fallbackOrder: z.array(z.string()).optional(),
+  timeoutMs: z.number().optional(),
   retryConfig: z.object({
     maxRetries: z.number().default(3),
     retryDelayMs: z.number().default(1000),
@@ -232,7 +233,7 @@ export class ConfigManager {
     }
 
     // Determine config file path
-    const configPath = path.join(process.cwd(), 'config', `${configName}.json`);
+    const configPath = getConfigPath(configName);
 
     try {
       // Read config file
@@ -269,7 +270,8 @@ export class ConfigManager {
         throw new Error(`Configuration validation failed for ${configName}:\n${errors}`);
       }
 
-      throw new Error(`Failed to load configuration ${configName}: ${error.message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to load configuration ${configName}: ${message}`);
     }
   }
 
@@ -284,7 +286,7 @@ export class ConfigManager {
    * Save configuration to file
    */
   static async save(configName: string, data: unknown): Promise<void> {
-    const configPath = path.join(process.cwd(), 'config', `${configName}.json`);
+    const configPath = getConfigPath(configName);
 
     try {
       // Write atomically with temp file

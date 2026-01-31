@@ -7,6 +7,7 @@ import * as path from 'path';
 import { AudioElement, TextElement } from './types';
 import { INTRO_DURATION_MS } from './constants';
 import { removeStageDirections, splitIntoSentences } from './utils';
+import type { Milliseconds } from './types/units';
 
 // Intro offset constant (matches INTRO_DURATION in constants.ts)
 const INTRO_OFFSET_MS = INTRO_DURATION_MS;
@@ -17,7 +18,7 @@ const INTRO_OFFSET_MS = INTRO_DURATION_MS;
 export function generateAudioElements(
   audioManifest: Array<{
     path: string;
-    durationMs: number;
+    durationMs: Milliseconds;
   }>,
   projectId: string,
   toFrame: (ms: number) => number,
@@ -58,8 +59,8 @@ export async function generateTextElements(
   audioElements: AudioElement[],
   audioManifest: Array<{
     path: string;
-    durationMs: number;
-    wordTimestamps?: Array<{ word: string; startMs: number; endMs: number }>;
+    durationMs: Milliseconds;
+    wordTimestamps?: Array<{ word: string; startMs: Milliseconds; endMs: Milliseconds }>;
     emphasis?: Array<{ wordIndex: number; level: 'med' | 'high'; tone?: 'warm' | 'intense' }>;
   }>,
   videoConfig: { text?: { position?: string; maxCharactersPerLine?: number; maxLines?: number; subtitleLeadMs?: number } },
@@ -70,6 +71,10 @@ export async function generateTextElements(
   const textConfig = videoConfig.text || {};
   const maxCharsPerLine = textConfig.maxCharactersPerLine || 40;
   const maxLines = textConfig.maxLines || 2;
+  const position: "top" | "bottom" | "center" =
+    textConfig.position === "top" || textConfig.position === "center"
+      ? textConfig.position
+      : "bottom";
 
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
@@ -140,7 +145,7 @@ export async function generateTextElements(
 
         elements.push({
           text: sentence,
-          position: textConfig.position || 'bottom',
+          position,
           startMs: sentenceWordData[0].startMs,
           endMs: sentenceWordData[sentenceWordData.length - 1].endMs,
           startFrame: toFrame(sentenceWordData[0].startMs),
@@ -157,7 +162,7 @@ export async function generateTextElements(
       // No word-level timestamps - create simple text element
       elements.push({
         text: segment.text,
-        position: textConfig.position || 'bottom',
+        position,
         startMs: audio.startMs,
         endMs: audio.endMs,
         startFrame: audio.startFrame,

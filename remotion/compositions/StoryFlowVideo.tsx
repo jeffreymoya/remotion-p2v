@@ -69,11 +69,13 @@ function BackgroundLayer({ element, fps }: BackgroundProps) {
     width: element.mediaMetadata?.width,
     height: element.mediaMetadata?.height,
   });
+  const objectFit: React.CSSProperties["objectFit"] =
+    (element.mediaMetadata?.mode as React.CSSProperties["objectFit"]) ?? "cover";
 
   const commonStyle: React.CSSProperties = {
     width: "100%",
     height: "100%",
-    objectFit: element.mediaMetadata?.mode || "cover",
+    objectFit,
     filter: blur > 0 ? `blur(${blur}px)` : undefined,
     transform: transform ? `translate(${transform.translateX}px, ${transform.translateY}px) scale(${transform.scale})` : undefined,
     transformOrigin: "center center",

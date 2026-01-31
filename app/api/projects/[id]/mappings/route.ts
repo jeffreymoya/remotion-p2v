@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 const bodySchema = z.object({
@@ -17,25 +18,20 @@ const bodySchema = z.object({
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-export async function GET(_req: Request, { params }: RouteParams) {
+export const GET = withErrorHandler(async (_req: Request, { params }: RouteParams) => {
   const { id } = await params;
-  const project = await storyflowPrisma.project.findUnique({ where: { id } });
-  if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  const project = await storyflowPrisma.project.findByIdOrThrow(id);
+
   return NextResponse.json({ assetMappings: project.assetMappings ?? {} });
-}
+}, "projects/[id]/mappings");
 
-export async function POST(req: Request, { params }: RouteParams) {
+export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {
   const { id } = await params;
-  const json = await req.json().catch(() => null);
-  const parsed = bodySchema.safeParse(json);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.format() }, { status: 400 });
-  }
+  const data = await parseBody(req, bodySchema);
 
-  const project = await storyflowPrisma.project.findUnique({ where: { id } });
-  if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  await storyflowPrisma.project.findByIdOrThrow(id);
 
-  const assetMappings = parsed.data.mappings;
+  const assetMappings = data.mappings;
 
   await storyflowPrisma.project.update({
     where: { id },
@@ -43,4 +39,4 @@ export async function POST(req: Request, { params }: RouteParams) {
   });
 
   return NextResponse.json({ assetMappings });
-}
+}, "projects/[id]/mappings");

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast-provider";
 import { RefinementResponse } from "@/app/api/ai/refine/route";
+import { useRefineTopic } from "@/src/hooks/queries/use-ai";
 
 type Props = {
   projectId: string;
@@ -18,9 +19,9 @@ export function TopicRefinement({
   const [title, setTitle] = useState(initialTopic ?? "");
   const [description, setDescription] = useState("");
   const [targetAudience, setTargetAudience] = useState("ages 20-40");
-  const [loading, setLoading] = useState(false);
   const [refinement, setRefinement] = useState<RefinementResponse | null>(null);
   const toast = useToast();
+  const refineMutation = useRefineTopic();
 
   const handleRefine = async () => {
     if (!title.trim()) {
@@ -28,32 +29,15 @@ export function TopicRefinement({
       return;
     }
 
-    setLoading(true);
     try {
-      const res = await fetch("/api/ai/refine", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId,
-          title: title.trim(),
-          description: description.trim() || undefined,
-          targetAudience,
-          minDuration: 60,
-          maxDuration: 600,
-        }),
+      const data = await refineMutation.mutateAsync({
+        projectId,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        targetAudience,
+        minDuration: 60,
+        maxDuration: 600,
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const detail =
-          typeof body.error === "string"
-            ? body.error
-            : body.error?.title?.[0] || "Failed to refine topic";
-        toast({ title: detail, variant: "error" });
-        return;
-      }
-
-      const data: RefinementResponse = await res.json();
       setRefinement(data);
       toast({
         title: "Topic refined successfully",
@@ -61,10 +45,8 @@ export function TopicRefinement({
       });
       onRefinementComplete?.(data);
     } catch (err) {
-      console.error(err);
-      toast({ title: "Network error refining topic", variant: "error" });
-    } finally {
-      setLoading(false);
+      const message = err instanceof Error ? err.message : "Network error refining topic";
+      toast({ title: message, variant: "error" });
     }
   };
 
@@ -90,7 +72,7 @@ export function TopicRefinement({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your video topic"
               className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-              disabled={loading}
+            disabled={refineMutation.isPending}
             />
           </div>
 
@@ -104,7 +86,7 @@ export function TopicRefinement({
               placeholder="Brief description of what you want to cover"
               rows={3}
               className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-              disabled={loading}
+              disabled={refineMutation.isPending}
             />
           </div>
 
@@ -118,16 +100,16 @@ export function TopicRefinement({
               onChange={(e) => setTargetAudience(e.target.value)}
               placeholder="e.g., ages 20-40, tech enthusiasts"
               className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-              disabled={loading}
+              disabled={refineMutation.isPending}
             />
           </div>
 
           <button
             onClick={handleRefine}
-            disabled={loading || !title.trim()}
+            disabled={refineMutation.isPending || !title.trim()}
             className="inline-flex items-center justify-center rounded-md bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:-translate-y-0.5 hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {loading ? (
+            {refineMutation.isPending ? (
               <>
                 <svg
                   className="mr-2 h-4 w-4 animate-spin"

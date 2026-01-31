@@ -43,7 +43,7 @@ const ViewportAnimationSchema = z.object({
       centerY: z.number().min(0).max(1),
       zoom: z.number().min(1).max(4),
     }),
-    easing: z.string(),
+    easing: z.enum(["linear", "easeIn", "easeOut", "easeInOut", "slowDramatic", "fastAction"]),
     transitionDurationMs: z.number(),
   })),
 }).optional();
@@ -80,6 +80,8 @@ const TextElementSchema = TimelineElementSchema.extend({
       tone: z.enum(['warm', 'intense']).optional()
     }).optional()
   })).optional(),
+  maxCharsPerLine: z.number().optional(),
+  maxLines: z.number().optional(),
   holdFrames: z.number().min(0).max(30).optional(), // Hold buffer in frames (0-30)
 });
 

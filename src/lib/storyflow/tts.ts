@@ -1,12 +1,14 @@
 import { writeFile, mkdir, stat } from "fs/promises";
 import path from "path";
-import { v1beta1 } from "@google-cloud/text-to-speech";
-import type { protos } from "@google-cloud/text-to-speech";
-import { ScriptSegment, TTSSettings, WordTimestamp } from "./types";
+import { v1beta1, protos } from "@google-cloud/text-to-speech";
+import { ScriptSegment, WordTimestamp } from "./types";
 import { getSettings } from "./settings";
 import { WORDS_PER_MINUTE } from "../constants";
 import { aiLogger } from "@/src/lib/services/ai";
 import { env } from "@/src/env";
+import { getProjectPaths } from "@/src/lib/paths";
+import { ms, type Milliseconds } from "@/src/lib/types/units";
+import type { AppSettings } from "./settings";
 
 // Pre-generated 1s silent MP3 (base64) for offline/dev fallback
 const SILENT_MP3_BASE64 =
@@ -91,7 +93,7 @@ function estimatedTimestamps(words: string[], speakingRate: number): WordTimesta
 
 async function synthesizeWithGoogle(
   text: string,
-  settings: TTSSettings
+  settings: AppSettings["tts"]
 ): Promise<{ buffer: Buffer; timestamps: WordTimestamp[] }> {
   const client = getGoogleClient();
   if (!client) {
@@ -109,8 +111,14 @@ async function synthesizeWithGoogle(
       speakingRate: settings.speakingRate,
       pitch: settings.pitch,
     },
-    enableTimePointing: ["SSML_MARK"] as const,
-  });
+    enableTimePointing: [
+      protos.google.cloud.texttospeech.v1beta1.SynthesizeSpeechRequest.TimepointType.SSML_MARK,
+    ],
+  } as protos.google.cloud.texttospeech.v1beta1.ISynthesizeSpeechRequest) as [
+    protos.google.cloud.texttospeech.v1beta1.ISynthesizeSpeechResponse,
+    protos.google.cloud.texttospeech.v1beta1.ISynthesizeSpeechRequest?,
+    Record<string, unknown>?
+  ];
 
   const audioContent = response.audioContent;
   if (!audioContent) {
@@ -137,7 +145,7 @@ async function synthesizeWithGoogle(
 
 function synthesizeMock(
   text: string,
-  settings: TTSSettings
+  settings: AppSettings["tts"]
 ): { buffer: Buffer; timestamps: WordTimestamp[] } {
   const words = wordsFromText(text);
   const timestamps = estimatedTimestamps(words, settings.speakingRate);
@@ -146,14 +154,15 @@ function synthesizeMock(
 }
 
 async function ensureAudioDirectory(projectId: string) {
-  const audioDir = path.join(process.cwd(), "public", "projects", projectId, "assets", "audio");
+  const paths = getProjectPaths(projectId);
+  const audioDir = paths.assetsAudio;
   await mkdir(audioDir, { recursive: true });
   return audioDir;
 }
 
 export type SegmentAudioResult = {
   audioUrl: string;
-  durationMs: number;
+  durationMs: Milliseconds;
   timestamps: WordTimestamp[];
 };
 
@@ -202,8 +211,9 @@ export async function generateAudioForSegment(
 
   await writeFile(filePath, buffer);
 
-  const durationMs =
-    timestamps.length > 0 ? timestamps[timestamps.length - 1].endMs : 1000;
+  const durationMs = ms(
+    timestamps.length > 0 ? timestamps[timestamps.length - 1].endMs : 1000
+  );
 
   return {
     audioUrl: `/projects/${projectId}/assets/audio/${filename}`,
@@ -213,15 +223,8 @@ export async function generateAudioForSegment(
 }
 
 export async function audioFileExists(projectId: string, segmentIndex: number): Promise<boolean> {
-  const filePath = path.join(
-    process.cwd(),
-    "public",
-    "projects",
-    projectId,
-    "assets",
-    "audio",
-    `segment-${segmentIndex}.mp3`
-  );
+  const paths = getProjectPaths(projectId);
+  const filePath = path.join(paths.assetsAudio, `segment-${segmentIndex}.mp3`);
   try {
     const stats = await stat(filePath);
     return stats.isFile();

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { cn } from "@/src/lib/storyflow/utils";
+import { useUpdateMusicVolume } from "@/src/hooks/queries/use-music-library";
+import { useToast } from "@/components/ui/toast-provider";
 
 type Props = {
   projectId: string;
@@ -18,33 +20,20 @@ export function MusicSettings({
   onVolumeChange,
 }: Props) {
   const [volume, setVolume] = useState(initialVolume);
-  const [isSaving, setIsSaving] = useState(false);
+  const updateVolume = useUpdateMusicVolume(projectId);
+  const toast = useToast();
 
   const handleVolumeChange = async (newVolume: number) => {
     setVolume(newVolume);
 
     if (!selectedAssetId) return;
 
-    setIsSaving(true);
     try {
-      const res = await fetch(`/api/projects/${projectId}/music`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          assetId: selectedAssetId,
-          volume: newVolume,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to update volume");
-      }
-
+      await updateVolume.mutateAsync({ assetId: selectedAssetId, volume: newVolume });
       onVolumeChange?.(newVolume);
     } catch (error) {
-      console.error("Volume update error:", error);
-    } finally {
-      setIsSaving(false);
+      const message = error instanceof Error ? error.message : "Failed to update volume";
+      toast({ title: message, variant: "error" });
     }
   };
 
@@ -74,7 +63,7 @@ export function MusicSettings({
           </div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-sm text-brand-300">{volumePercent}%</span>
-            {isSaving && (
+            {updateVolume.isPending && (
               <span className="text-xs text-slate-500 animate-pulse">Saving...</span>
             )}
           </div>

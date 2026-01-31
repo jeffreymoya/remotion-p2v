@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { deleteProjectDirectory } from "@/src/lib/storyflow/projects";
-
-type Params = { params: Promise<{ id: string }> };
 
 const updateProjectSchema = z
   .object({
@@ -38,50 +38,32 @@ const updateProjectSchema = z
     path: ["name"],
   });
 
-export async function GET(_: Request, { params }: Params) {
-  const { id } = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id },
-  });
-  if (!project) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+export const GET = withErrorHandler(async (_req, ctx) => {
+  const { id } = await ctx!.params!;
+  const project = await storyflowPrisma.project.findByIdOrThrow(id);
   return NextResponse.json({ project });
-}
+}, "projects/[id]");
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = await params;
-  const body = await req.json().catch(() => ({}));
-  const parsed = updateProjectSchema.safeParse(body);
+export const PATCH = withErrorHandler(async (req, ctx) => {
+  const { id } = await ctx!.params!;
+  const data = await parseBody(req, updateProjectSchema);
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
-  }
-
-  const project = await storyflowPrisma.project.findUnique({ where: { id } });
-  if (!project) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  await storyflowPrisma.project.findByIdOrThrow(id);
 
   const updated = await storyflowPrisma.project.update({
     where: { id },
-    data: parsed.data,
+    data,
   });
 
   return NextResponse.json({ project: updated });
-}
+}, "projects/[id]");
 
-export async function DELETE(_: Request, { params }: Params) {
-  const { id } = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id },
-  });
-  if (!project) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+export const DELETE = withErrorHandler(async (_req, ctx) => {
+  const { id } = await ctx!.params!;
+  await storyflowPrisma.project.findByIdOrThrow(id);
 
   await storyflowPrisma.project.delete({ where: { id } });
   await deleteProjectDirectory(id);
 
   return NextResponse.json({ success: true });
-}
+}, "projects/[id]");

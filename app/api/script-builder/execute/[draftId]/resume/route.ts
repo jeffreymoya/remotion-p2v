@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
+
+import { NotFoundError, ValidationError, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { recordScriptDraftHistory } from "@/src/lib/storyflow/history";
+import { fromJsonArray, toJsonArray } from "@/src/lib/storyflow/prisma-json";
 import { executeBeat, type Beat, type BeatDraft } from "@/src/lib/storyflow/script-builder";
 
 /**
  * POST /api/script-builder/execute/[draftId]/resume
  * Resume execution from last checkpoint after a failure
  */
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ draftId: string }> }
-) {
-  const { draftId } = await params;
+export const POST = withErrorHandler(
+  async (_req: Request, { params }: { params: Promise<{ draftId: string }> }) => {
+    const { draftId } = await params;
 
-  try {
     // Find script draft with blueprint
     const scriptDraft = await storyflowPrisma.scriptDraft.findUnique({
       where: { id: draftId },
@@ -23,33 +23,25 @@ export async function POST(
     });
 
     if (!scriptDraft) {
-      return NextResponse.json({ error: "Script draft not found" }, { status: 404 });
+      throw new NotFoundError("Script draft", draftId);
     }
 
     if (scriptDraft.status !== "FAILED" && scriptDraft.status !== "DRAFTING") {
-      return NextResponse.json(
-        { error: "Draft is not in a resumable state" },
-        { status: 400 }
-      );
+      throw new ValidationError("Draft is not in a resumable state");
     }
 
     const beats = scriptDraft.blueprint.beats as Beat[];
-    const existingBeatDrafts = scriptDraft.beatDrafts as BeatDraft[];
+    const existingBeatDrafts = fromJsonArray<BeatDraft>(scriptDraft.beatDrafts);
 
     // Resume from the current beat index
     const startIndex = scriptDraft.currentBeatIndex;
 
     if (startIndex >= beats.length) {
-      return NextResponse.json(
-        { error: "All beats already completed" },
-        { status: 400 }
-      );
+      throw new ValidationError("All beats already completed");
     }
 
     // Build previous content from completed beats
-    let previousContent = existingBeatDrafts
-      .map((bd) => bd.text)
-      .join("\n\n");
+    let previousContent = existingBeatDrafts.map((bd) => bd.text).join("\n\n");
 
     // Reset status to DRAFTING
     const resumedDraft = await storyflowPrisma.scriptDraft.update({
@@ -93,7 +85,7 @@ export async function POST(
           where: { id: draftId },
           data: {
             currentBeatIndex: i + 1,
-            beatDrafts,
+            beatDrafts: toJsonArray(beatDrafts),
             version: { increment: 1 },
             updatedAt: new Date(),
           },
@@ -136,14 +128,6 @@ export async function POST(
 
       throw error;
     }
-  } catch (error) {
-    console.error("[api/script-builder/execute/resume] Error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to resume script execution",
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 }
-    );
-  }
-}
+  },
+  "script-builder/execute/[draftId]/resume"
+);

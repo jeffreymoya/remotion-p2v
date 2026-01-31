@@ -5,31 +5,36 @@ import { ScriptBuilderWorkflow } from "@/components/script-builder/script-builde
 import { ScriptFirstRunGuide } from "./first-run-guide-client";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { determineWorkflowState } from "@/src/lib/storyflow/workflow-state";
+import { NotFoundError } from "@/app/api/lib";
+import { ScriptStageButton } from "@/components/pipeline/script-stage-button";
 
 type Params = { params: { id: string } };
 
 export default async function ScriptPage({ params }: Params) {
   const resolvedParams = await params;
-  const project = await storyflowPrisma.project.findUnique({
-    where: { id: resolvedParams.id },
-    include: {
-      script: true,
-      blueprints: {
-        where: { status: { in: ["GENERATING", "PENDING_REVIEW", "APPROVED"] } },
-        orderBy: { createdAt: "desc" },
-        take: 1,
-        include: {
-          scriptDrafts: {
-            where: { status: { notIn: ["COMPLETED", "FAILED"] } },
-            orderBy: { createdAt: "desc" },
-            take: 1,
+  let project;
+  try {
+    project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
+      include: {
+        script: true,
+        blueprints: {
+          where: { status: { in: ["GENERATING", "PENDING_REVIEW", "APPROVED"] } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: {
+            scriptDrafts: {
+              where: { status: { notIn: ["COMPLETED", "FAILED"] } },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+            },
           },
         },
       },
-    },
-  });
-
-  if (!project) return notFound();
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) return notFound();
+    throw error;
+  }
 
   const topicLabel = project.topic ?? project.name;
   const initialState = determineWorkflowState(project);
@@ -46,6 +51,9 @@ export default async function ScriptPage({ params }: Params) {
       </div>
 
       <DesktopOnlyGate>
+        <div className="mb-3 flex justify-end">
+          <ScriptStageButton projectId={project.id} />
+        </div>
         <ScriptBuilderWorkflow
           projectId={project.id}
           initialTopic={project.topic}
