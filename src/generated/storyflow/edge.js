@@ -388,7 +388,6 @@ const config = {
     "storyflowDb"
   ],
   "activeProvider": "sqlite",
-  "postinstall": false,
   "inlineDatasources": {
     "storyflowDb": {
       "url": {

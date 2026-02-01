@@ -45,7 +45,7 @@ function parseScript(raw: ProjectWithWorkflowRelations["script"]): Script | null
 }
 
 function parseBlueprint(raw: ProjectWithWorkflowRelations["blueprints"][number]): Blueprint {
-  if (!Array.isArray(raw.beats)) {
+  if (!Array.isArray(raw.beats) || raw.beats.length === 0) {
     throw new Error("Blueprint beats are missing or invalid");
   }
 
@@ -121,7 +121,8 @@ export function determineWorkflowState(project: ProjectWithWorkflowRelations): W
   }
 
   if (errors.length > 0 || !blueprint) {
-    return { phase: "input", blueprint: null, scriptDraft: null, script: null, error: errors.join("; ") };
+    const fallbackPhase = rawBlueprint ? "blueprint" : "input";
+    return { phase: fallbackPhase, blueprint: null, scriptDraft: null, script: null, error: errors.join("; ") };
   }
 
   if (!scriptDraft) {

@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "triggers": [
+    {
+      "triggerId": "trigger-1",
+      "wordId": "seg-0-w-0",
+      "globalWordIndex": 0,
+      "segmentIndex": 0,
+      "localWordIndex": 0,
+      "word": "Hello",
+      "wordStartMs": 1000,
+      "targetRegionId": "region-1",
+      "targetBoardId": "board-1",
+      "transitionMs": 0,
+      "triggerType": "segment_start"
+    }
+  ],
+  "totalWords": 1,
+  "totalTriggers": 1,
+  "generatedAt": "2026-02-01T06:04:21.420Z"
+}

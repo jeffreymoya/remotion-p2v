@@ -6,11 +6,12 @@ type ScriptFindArgs = Omit<Prisma.ScriptFindUniqueArgs, "where">;
 type BlueprintFindArgs = Omit<Prisma.BlueprintFindUniqueArgs, "where">;
 type AssetFindArgs = Omit<Prisma.AssetFindUniqueArgs, "where">;
 
-export const projectExtension = Prisma.defineExtension((client) => ({
+export const projectExtension = Prisma.defineExtension({
   model: {
     project: {
       async findByIdOrThrow<T extends ProjectFindByIdArgs>(id: string, args?: T) {
-        const project = await client.project.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const project = await (ctx as any).findUnique({
           where: { id },
           ...(args ?? {}),
         });
@@ -22,7 +23,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
         return project;
       },
       async findWithScript(id: string) {
-        const project = await client.project.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const project = await (ctx as any).findUnique({
           where: { id },
           include: { scriptDrafts: true },
         });
@@ -34,7 +36,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
         return project;
       },
       async findWithAssets(id: string) {
-        const project = await client.project.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const project = await (ctx as any).findUnique({
           where: { id },
           include: { assets: true },
         });
@@ -46,7 +49,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
         return project;
       },
       async updateStatus(id: string, status: ProjectStatus) {
-        return client.project.update({
+        const ctx = Prisma.getExtensionContext(this);
+        return (ctx as any).update({
           where: { id },
           data: { status, updatedAt: new Date() },
         });
@@ -54,7 +58,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
     },
     script: {
       async findByProjectIdOrThrow<T extends ScriptFindArgs>(projectId: string, args?: T) {
-        const script = await client.script.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const script = await (ctx as any).findUnique({
           where: { projectId },
           ...(args ?? {}),
         });
@@ -68,7 +73,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
     },
     blueprint: {
       async findByIdOrThrow<T extends BlueprintFindArgs>(id: string, args?: T) {
-        const blueprint = await client.blueprint.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const blueprint = await (ctx as any).findUnique({
           where: { id },
           ...(args ?? {}),
         });
@@ -82,7 +88,8 @@ export const projectExtension = Prisma.defineExtension((client) => ({
     },
     asset: {
       async findByIdOrThrow<T extends AssetFindArgs>(id: string, args?: T) {
-        const asset = await client.asset.findUnique({
+        const ctx = Prisma.getExtensionContext(this);
+        const asset = await (ctx as any).findUnique({
           where: { id },
           ...(args ?? {}),
         });
@@ -95,4 +102,4 @@ export const projectExtension = Prisma.defineExtension((client) => ({
       },
     },
   },
-}));
+});

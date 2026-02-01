@@ -1,0 +1,33 @@
+{
+  "boards": [
+    {
+      "version": "1.0",
+      "boardId": "board-1",
+      "imagePath": "assets/images/board-1.png",
+      "imageMetadata": {
+        "width": 100,
+        "height": 50,
+        "aspectRatio": 2
+      },
+      "regions": [
+        {
+          "id": "region-1",
+          "elementId": "elem-1",
+          "gridPosition": {
+            "row": 0,
+            "col": 0
+          },
+          "bounds": {
+            "x": 0.1,
+            "y": 0.2,
+            "width": 0.3,
+            "height": 0.4
+          },
+          "label": "test",
+          "salience": 0.9
+        }
+      ],
+      "generatedAt": "2026-02-01T05:33:15.244Z"
+    }
+  ]
+}

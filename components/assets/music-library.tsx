@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, RefreshCcw } from "lucide-react";
 import { MusicTrack } from "@/src/lib/storyflow/music/types";
 import { Asset } from "@/src/lib/storyflow/types";
@@ -19,12 +19,16 @@ export function MusicLibrary({ projectId, selectedAssetId, onSelected }: Props) 
   const [query, setQuery] = useState("cinematic");
   const [searchQuery, setSearchQuery] = useState("cinematic");
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(selectedAssetId ?? null);
   const toast = useToast();
 
   // React Query hooks
   const { data: tracks = [], isLoading: loading, error, refetch } = useMusicSearch(searchQuery);
   const selectMutation = useSelectMusicTrack(projectId);
+
+  useEffect(() => {
+    setSelectedTrackId(selectedAssetId ?? null);
+  }, [selectedAssetId]);
 
   const hasTracks = useMemo(() => tracks.length > 0, [tracks.length]);
 

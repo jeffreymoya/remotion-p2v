@@ -184,3 +184,21 @@ while (attempts < 3) { try { ... } catch { attempts++; await sleep(1000); } }
 ### Database Access
 
 Use `storyflowPrisma` from `@/src/lib/storyflow/prisma`. For repeated query patterns (find project by ID, update status), check if a Prisma client extension method exists before writing raw queries.
+
+### Test Mocks — `vi.mock()` Paths
+
+Always use absolute `@/` paths in `vi.mock()` calls. Never use relative paths (`../`, `./`). Relative paths resolve from the **test file's** directory, not the component's directory, which silently loads the real module instead of the mock — causing OOM crashes or flaky tests.
+
+```typescript
+// CORRECT — absolute path always resolves to the real module
+vi.mock("@/components/editors/boards/simple-boards-editor", () => ({
+  SimpleBoardsEditor: () => <div>mock</div>,
+}));
+
+// WRONG — resolves from __tests__/ directory, not the component's directory
+vi.mock("../editors/boards/simple-boards-editor", () => ({
+  SimpleBoardsEditor: () => <div>mock</div>,
+}));
+```
+
+This convention is enforced by an eslint `no-restricted-syntax` rule on test files.

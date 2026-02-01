@@ -3,7 +3,7 @@ import { render, RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Create a fresh QueryClient for each test to avoid shared state
-function createTestQueryClient() {
+export function createTestQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
@@ -25,6 +25,13 @@ function AllProviders({ children }: WrapperProps) {
       {children}
     </QueryClientProvider>
   );
+}
+
+// Helper for hook tests that want to supply their own client
+export function createQueryWrapper(client: QueryClient = createTestQueryClient()) {
+  return function Wrapper({ children }: WrapperProps) {
+    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  };
 }
 
 // Custom render that includes providers

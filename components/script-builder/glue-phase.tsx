@@ -127,7 +127,8 @@ export function GluePhase({ projectId, scriptDraft, onDraftUpdated, onSegment, o
         updatedText =
           updatedText.slice(0, issue.location.charStart) + updatedText.slice(issue.location.charEnd);
       });
-    setText(updatedText.trim());
+    const normalizedText = updatedText.replace(/\s{2,}/g, " ").trim();
+    setText(normalizedText);
     setIssues((prev) => prev.map((i) => (i.type === "robot_word" ? { ...i, resolved: true } : i)));
     toast({ title: "Robot words removed", variant: "success" });
   };
