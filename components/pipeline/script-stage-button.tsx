@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRunScriptStage } from "@/src/hooks/queries/use-pipeline";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/toast-provider";
 
 type Props = {
   projectId: string;

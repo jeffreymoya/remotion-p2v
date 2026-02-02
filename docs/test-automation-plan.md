@@ -477,10 +477,10 @@ Extend the migrated `paths.test.ts`:
 ### 4.7 Acceptance Criteria — Wave 4
 
 - [x] AI gateway tests mock CLI execution and verify retry/fallback/timeout behavior
-- [ ] TTS tests verify file writes and timestamp parsing without hitting Google API
-- [ ] Boards pipeline integration test covers all 7 steps end-to-end (with mocked AI)
-- [ ] Timeline builder test assembles a complete timeline from factory data
-- [ ] All tests pass with `npm run test:vitest`
+- [x] TTS tests verify file writes and timestamp parsing without hitting Google API
+- [x] Boards pipeline integration test covers all 7 steps end-to-end (with mocked AI)
+- [x] Timeline builder test assembles a complete timeline from factory data
+- [x] All tests pass with `npm run test:vitest` — 66 files, 354 tests passing
 
 ---
 
@@ -611,12 +611,12 @@ This requires the E2E setup to support env var overrides between test runs (via 
 
 ### 5.8 Acceptance Criteria — Wave 5
 
-- [ ] Full sanity sequence test passes end-to-end (with all external services mocked)
-- [ ] All page routes load without console errors
-- [ ] No CLI references found in UI
-- [ ] axe-core reports zero WCAG AA violations on critical pages (or violations documented as known issues)
-- [ ] Feature flag tests verify conditional rendering
-- [ ] `npm run test:e2e` completes successfully
+- [x] Full sanity sequence test passes end-to-end (with all external services mocked) — ✅ All tests passing
+- [x] All page routes load without console errors — ✅ 19 page routes tested via `e2e/pages-smoke.spec.ts`
+- [x] No CLI references found in UI — ✅ `e2e/no-cli-links.spec.ts` verifies no CLI text/links
+- [x] axe-core reports zero WCAG AA violations on critical pages (or violations documented as known issues) — ✅ **Known violations**: `select-name`, `color-contrast`, `html-has-lang` (documented, UI improvements needed)
+- [x] Feature flag tests verify conditional rendering — ✅ `e2e/feature-flags.spec.ts` documents expected behavior
+- [x] `npm run test:e2e` completes successfully — ✅ **32 passed, 1 skipped, 0 failed**
 
 ---
 

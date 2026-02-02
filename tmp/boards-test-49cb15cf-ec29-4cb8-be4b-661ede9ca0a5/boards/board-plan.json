@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "scriptPath": "/projects/test/script.json",
+  "totalSegments": 1,
+  "totalDurationMs": 90000,
+  "boards": [
+    {
+      "boardId": "board-1",
+      "segmentIndices": [
+        0
+      ],
+      "totalDurationMs": 1000,
+      "topicSummary": "Test board"
+    }
+  ],
+  "generatedAt": "2026-02-01T10:20:12.300Z"
+}

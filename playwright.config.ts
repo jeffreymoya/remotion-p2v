@@ -9,6 +9,8 @@ export default defineConfig({
     timeout: 5_000,
   },
   retries: process.env.CI ? 1 : 0,
+  workers: 1, // Run tests serially to avoid database conflicts
+  fullyParallel: false,
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
@@ -36,5 +38,6 @@ export default defineConfig({
     timeout: 120_000,
   },
   globalSetup: "./e2e/global-setup.mjs",
+  globalTeardown: "./e2e/global-teardown.mjs",
   reporter: [["list"]],
 });

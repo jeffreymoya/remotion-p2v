@@ -23,9 +23,15 @@ function ensureArtifactFiles() {
   fs.mkdirSync(renderDir, { recursive: true });
 
   const tinyBuffer = Buffer.from("seed");
-  fs.writeFileSync(path.join(audioDir, "sample.mp3"), tinyBuffer);
-  fs.writeFileSync(path.join(imageDir, "cover.jpg"), tinyBuffer);
-  fs.writeFileSync(path.join(renderDir, "output.mp4"), tinyBuffer);
+  if (!fs.existsSync(path.join(audioDir, "sample.mp3"))) {
+    fs.writeFileSync(path.join(audioDir, "sample.mp3"), tinyBuffer);
+  }
+  if (!fs.existsSync(path.join(imageDir, "cover.jpg"))) {
+    fs.writeFileSync(path.join(imageDir, "cover.jpg"), tinyBuffer);
+  }
+  if (!fs.existsSync(path.join(renderDir, "output.mp4"))) {
+    fs.writeFileSync(path.join(renderDir, "output.mp4"), tinyBuffer);
+  }
 }
 
 function pushSchema() {

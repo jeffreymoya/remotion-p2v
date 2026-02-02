@@ -4,7 +4,7 @@ import { Hammer, Loader2, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/toast-provider";
 import { useBuildProject } from "@/src/hooks/queries/use-pipeline";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
 
