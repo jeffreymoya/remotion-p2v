@@ -65,8 +65,8 @@ export function ScriptPreview({ script }: { script: Script }) {
       </div>
 
       <div className={cn("space-y-3")}>
-        {script.segments.map((segment) => (
-          <SegmentCard key={segment.index} segment={segment} />
+        {script.segments.map((segment, idx) => (
+          <SegmentCard key={`${segment.index}-${idx}`} segment={segment} />
         ))}
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { BoardPlan } from "@/src/lib/boards-types";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 
 interface BoardPlanViewProps {
   plan: BoardPlan;

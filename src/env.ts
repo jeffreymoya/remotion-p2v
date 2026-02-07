@@ -33,10 +33,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   },
 
-  client: {
-    // Client-side env vars (NEXT_PUBLIC_*)
-    NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-  },
+  client: {},
 
   runtimeEnv: {
     STORYFLOW_DATABASE_URL: process.env.STORYFLOW_DATABASE_URL,
@@ -51,7 +48,6 @@ export const env = createEnv({
     ENABLE_SCRIPT_BUILDER: process.env.ENABLE_SCRIPT_BUILDER,
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
 
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",

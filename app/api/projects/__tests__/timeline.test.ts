@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { NotFoundError } from "@/app/api/lib";
+import { NotFoundError, ValidationError } from "@/app/api/lib";
 import { GET } from "../[id]/timeline/route";
 
 vi.mock("@/src/lib/storyflow/pipeline/stages/build", () => ({
@@ -38,5 +38,16 @@ describe("Projects API - /api/projects/[id]/timeline", () => {
     expect(res.status).toBe(404);
     expect(json.code).toBe("NOT_FOUND");
     expect(json.error).toBe("Viewport not found: proj-2");
+  });
+
+  it("returns 400 when timeline build fails validation", async () => {
+    vi.mocked(buildProjectArtifacts).mockRejectedValue(new ValidationError("Invalid timeline input"));
+
+    const req = new NextRequest("http://localhost:3000/api/projects/proj-3/timeline");
+    const res = await GET(req, { params: Promise.resolve({ id: "proj-3" }) });
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.code).toBe("VALIDATION_ERROR");
   });
 });

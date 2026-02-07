@@ -28,7 +28,4 @@ export const createLogger = (context: Record<string, unknown>) =>
 
 // Pre-configured child loggers for common domains
 export const aiLogger = createLogger({ domain: "ai" });
-export const ttsLogger = createLogger({ domain: "tts" });
-export const assetsLogger = createLogger({ domain: "assets" });
-export const renderLogger = createLogger({ domain: "render" });
 export const boardsLogger = createLogger({ domain: "boards" });

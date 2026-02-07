@@ -20,7 +20,7 @@ import {
   useGenerateBoardTriggers,
   usePlanBoards,
 } from "@/src/hooks/queries/use-boards";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 
 interface BoardPlannerWizardProps {
   projectId: string;

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ViewportAnimation } from "@/src/lib/types";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 import { FPS } from "@/src/lib/constants";
 
 interface ViewportPreviewProps {

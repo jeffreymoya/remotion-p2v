@@ -1,11 +1,9 @@
-import { mkdir, rm } from "fs/promises";
+import { rm } from "fs/promises";
 
-import { ensureProjectDirs, getProjectDir, getProjectPaths } from "@/src/lib/paths";
+import { ensureProjectDirs, getProjectDir } from "@/src/lib/paths";
 
 export async function createProjectDirectory(projectId: string) {
   await ensureProjectDirs(projectId);
-  const paths = getProjectPaths(projectId);
-  await mkdir(paths.assetsVideos, { recursive: true });
 }
 
 export async function deleteProjectDirectory(projectId: string) {

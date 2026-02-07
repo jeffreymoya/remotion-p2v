@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { BoardPrompt } from "@/src/lib/boards-types";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 
 interface PromptDisplayProps {
   prompts: BoardPrompt[];

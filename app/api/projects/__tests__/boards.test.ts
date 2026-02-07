@@ -8,6 +8,7 @@ import { POST as postPrompts } from "../[id]/boards/prompts/route";
 import { POST as postTriggers } from "../[id]/boards/triggers/route";
 import { POST as postViewport } from "../[id]/boards/viewport/route";
 import { POST as postUpload } from "../[id]/boards/upload-image/route";
+import { NotFoundError } from "@/app/api/lib";
 
 // In-memory fs mock
 const memFiles = new Map<string, string>();
@@ -158,7 +159,26 @@ describe("Boards API", () => {
       body: JSON.stringify({ layout: { columns: 0, rows: 0 } }),
     });
     const res = await postBoards(req, { params: Promise.resolve({ id: "p1" }) });
+    const json = await res.json();
+
     expect(res.status).toBe(400);
+    expect(json.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("returns 404 when project is missing", async () => {
+    vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(
+      new NotFoundError("Project", "missing")
+    );
+
+    const req = new NextRequest("http://localhost:3000/api/projects/missing/boards", {
+      method: "POST",
+      body: JSON.stringify({ layout: { columns: 2, rows: 2 } }),
+    });
+    const res = await postBoards(req, { params: Promise.resolve({ id: "missing" }) });
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.code).toBe("NOT_FOUND");
   });
 
   it("gets board detail and handles missing board", async () => {

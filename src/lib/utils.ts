@@ -1,16 +1,6 @@
 import { staticFile } from "remotion";
 import { BackgroundElement, Timeline } from "./types";
 import { FPS, DEFAULT_ASPECT_RATIO, INTRO_DURATION_MS } from "./constants";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-/**
- * Utility function for merging Tailwind CSS classes.
- * Combines clsx for conditional classes and tailwind-merge for deduplication.
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 /**
  * Normalizes a legacy timeline by adding default values for new optional fields.
@@ -248,35 +238,3 @@ export const splitIntoSentences = (text: string): string[] => {
   return restored.filter(s => s.length > 0);
 };
 
-/**
- * Calculates appropriate hold buffer based on word timing patterns
- */
-export const calculateSpeakingVelocity = (words: Array<{ startMs: number; endMs: number }>): {
-  avgWordDuration: number;
-  avgGapDuration: number;
-  wordsPerMinute: number;
-} => {
-  if (words.length < 2) {
-    return { avgWordDuration: 500, avgGapDuration: 0, wordsPerMinute: 120 };
-  }
-
-  // Calculate average word duration
-  const wordDurations = words.map(w => w.endMs - w.startMs);
-  const avgWordDuration = wordDurations.reduce((a, b) => a + b, 0) / wordDurations.length;
-
-  // Calculate gaps between words
-  const gaps: number[] = [];
-  for (let i = 0; i < words.length - 1; i++) {
-    const gap = words[i + 1].startMs - words[i].endMs;
-    if (gap > 0) gaps.push(gap);
-  }
-  const avgGapDuration = gaps.length > 0
-    ? gaps.reduce((a, b) => a + b, 0) / gaps.length
-    : 0;
-
-  // Calculate words per minute
-  const totalDuration = words[words.length - 1].endMs - words[0].startMs;
-  const wordsPerMinute = (words.length / totalDuration) * 60000;
-
-  return { avgWordDuration, avgGapDuration, wordsPerMinute };
-};

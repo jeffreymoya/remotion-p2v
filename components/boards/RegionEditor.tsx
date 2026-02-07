@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { BoardRegion, RegionBounds } from "@/src/lib/boards-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 
 interface RegionEditorProps {
   projectId: string;

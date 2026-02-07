@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast-provider";
 import { useUploadBoardImage } from "@/src/hooks/queries/use-boards";
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/storyflow/utils";
 
 interface ImageUploaderProps {
   projectId: string;

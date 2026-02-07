@@ -1,4 +1,3 @@
-import { CharacterAlignmentResponseModel } from "@elevenlabs/elevenlabs-js/api";
 import { z } from "zod";
 
 const BackgroundTransitionTypeSchema = z.union([
@@ -168,18 +167,6 @@ export const VoiceDescriptorSchema = z.object({
 });
 
 export type VoiceDescriptor = z.infer<typeof VoiceDescriptorSchema>;
-
-export interface StoryMetadataWithDetails {
-  shortTitle: string;
-  content: ContentItemWithDetails[];
-}
-
-export interface ContentItemWithDetails {
-  text: string;
-  imageDescription: string;
-  uid: string;
-  audioTimestamps: CharacterAlignmentResponseModel;
-}
 
 /**
  * AI Provider Configuration

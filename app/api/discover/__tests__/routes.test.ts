@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { GET as getDiscover, POST as postDiscover } from "../route";
 import { POST as postGeneralize } from "../generalize/route";
-import { ValidationError } from "@/app/api/lib";
+import { NotFoundError, ValidationError } from "@/app/api/lib";
 
 vi.mock("@/src/lib/storyflow/discovery", () => ({
   fetchTrendingTopics: vi.fn(),
@@ -60,6 +60,17 @@ describe("/api/discover", () => {
 
     expect(res.status).toBe(400);
     expect(json.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("returns 404 when trending topics lookup fails", async () => {
+    vi.mocked(fetchTrendingTopics).mockRejectedValue(new NotFoundError("Topics", "trending"));
+
+    const req = new NextRequest("http://localhost:3000/api/discover");
+    const res = await getDiscover(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.code).toBe("NOT_FOUND");
   });
 });
 

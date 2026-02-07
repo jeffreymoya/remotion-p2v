@@ -1,13 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GET, PATCH, DELETE } from "../[id]/route";
+import { GET as getProjectById, PATCH, DELETE } from "../[id]/route";
+import { GET as getProjects, POST as createProject } from "../route";
 import { NextRequest } from "next/server";
 import { Prisma, ProjectStatus } from "@/src/generated/storyflow";
 import { NotFoundError } from "@/app/api/lib";
+import { buildProject } from "@/src/test/factories";
 
 // Mock Prisma
 vi.mock("@/src/lib/storyflow/prisma", () => ({
   storyflowPrisma: {
     project: {
+      findMany: vi.fn(),
+      create: vi.fn(),
       findByIdOrThrow: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
@@ -17,11 +21,12 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
 
 // Mock project directory deletion
 vi.mock("@/src/lib/storyflow/projects", () => ({
+  createProjectDirectory: vi.fn(),
   deleteProjectDirectory: vi.fn(),
 }));
 
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
-import { deleteProjectDirectory } from "@/src/lib/storyflow/projects";
+import { createProjectDirectory, deleteProjectDirectory } from "@/src/lib/storyflow/projects";
 
 type MockProject = {
   id: string;
@@ -34,9 +39,119 @@ type MockProject = {
   updatedAt: Date;
 };
 
-describe("Projects API - /api/projects/[id]", () => {
+describe("Projects API - /api/projects", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe("GET /api/projects", () => {
+    it("returns projects ordered by update time", async () => {
+      const projects = [
+        buildProject({ id: "project-1", name: "First Project" }),
+        buildProject({ id: "project-2", name: "Second Project" }),
+      ];
+
+      vi.mocked(storyflowPrisma.project.findMany).mockResolvedValue(projects as MockProject[]);
+
+      const request = new NextRequest("http://localhost:3000/api/projects");
+      const response = await getProjects(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.projects).toEqual(
+        projects.map((project) => ({
+          ...project,
+          createdAt: project.createdAt.toISOString(),
+          updatedAt: project.updatedAt.toISOString(),
+        }))
+      );
+      expect(storyflowPrisma.project.findMany).toHaveBeenCalledWith({
+        orderBy: { updatedAt: "desc" },
+      });
+    });
+
+    it("returns 404 when project listing fails with NotFoundError", async () => {
+      vi.mocked(storyflowPrisma.project.findMany).mockRejectedValue(new NotFoundError("Project"));
+
+      const request = new NextRequest("http://localhost:3000/api/projects");
+      const response = await getProjects(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data.code).toBe("NOT_FOUND");
+      expect(data.error).toBe("Project not found");
+    });
+  });
+
+  describe("POST /api/projects", () => {
+    it("creates a project and initializes directories", async () => {
+      const createdProject = buildProject({
+        id: "project-123",
+        name: "New Project",
+        topic: "Test topic",
+        aspectRatio: "9:16",
+      });
+
+      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(createdProject as MockProject);
+      vi.mocked(createProjectDirectory).mockResolvedValue(undefined);
+
+      const request = new NextRequest("http://localhost:3000/api/projects", {
+        method: "POST",
+        body: JSON.stringify({
+          name: "New Project",
+          topic: "Test topic",
+          aspectRatio: "9:16",
+        }),
+      });
+
+      const response = await createProject(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(data.project.id).toBe("project-123");
+      expect(data.project.aspectRatio).toBe("9:16");
+      expect(storyflowPrisma.project.create).toHaveBeenCalledWith({
+        data: {
+          name: "New Project",
+          aspectRatio: "9:16",
+          topic: "Test topic",
+        },
+      });
+      expect(createProjectDirectory).toHaveBeenCalledWith("project-123");
+    });
+
+    it("returns 400 when payload is invalid", async () => {
+      const request = new NextRequest("http://localhost:3000/api/projects", {
+        method: "POST",
+        body: JSON.stringify({ name: "" }),
+      });
+
+      const response = await createProject(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.code).toBe("VALIDATION_ERROR");
+      expect(data.details?.name?._errors?.[0]).toBe("Name is required");
+    });
+
+    it("returns 404 when project directory creation fails", async () => {
+      const createdProject = buildProject({ id: "project-404", name: "Missing Project" });
+
+      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(createdProject as MockProject);
+      vi.mocked(createProjectDirectory).mockRejectedValue(new NotFoundError("Project", "project-404"));
+
+      const request = new NextRequest("http://localhost:3000/api/projects", {
+        method: "POST",
+        body: JSON.stringify({ name: "Missing Project" }),
+      });
+
+      const response = await createProject(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data.code).toBe("NOT_FOUND");
+      expect(data.error).toBe("Project not found: project-404");
+    });
   });
 
   describe("GET /api/projects/[id]", () => {
@@ -54,7 +169,7 @@ describe("Projects API - /api/projects/[id]", () => {
       vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
 
       const request = new NextRequest("http://localhost:3000/api/projects/123");
-      const response = await GET(request, { params: Promise.resolve({ id: "123" }) });
+      const response = await getProjectById(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -68,7 +183,7 @@ describe("Projects API - /api/projects/[id]", () => {
       vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
 
       const request = new NextRequest("http://localhost:3000/api/projects/999");
-      const response = await GET(request, { params: Promise.resolve({ id: "999" }) });
+      const response = await getProjectById(request, { params: Promise.resolve({ id: "999" }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
