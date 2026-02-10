@@ -7,7 +7,6 @@ import { POST as postPlan, GET as getPlan } from "../[id]/boards/plan/route";
 import { POST as postPrompts } from "../[id]/boards/prompts/route";
 import { POST as postTriggers } from "../[id]/boards/triggers/route";
 import { POST as postViewport } from "../[id]/boards/viewport/route";
-import { POST as postUpload } from "../[id]/boards/upload-image/route";
 import { NotFoundError } from "@/app/api/lib";
 
 // In-memory fs mock
@@ -66,6 +65,8 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
       create: vi.fn(),
       findFirst: vi.fn(),
       update: vi.fn(),
+      upsert: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }));
@@ -113,7 +114,6 @@ const { planBoards } = await import("@/src/lib/boards/plan-service");
 const { generateBoardPrompts } = await import("@/src/lib/boards/prompts-service");
 const { generateBoardTriggers } = await import("@/src/lib/boards/trigger-service");
 const { buildViewportJson } = await import("@/src/lib/boards/viewport-service");
-const { ensureProjectDirs } = await import("@/src/lib/paths");
 const { access, writeFile } = await import("fs/promises");
 
 describe("Boards API", () => {
@@ -134,7 +134,7 @@ describe("Boards API", () => {
     expect(json.boards).toHaveLength(1);
   });
 
-  it("creates a board and updates project status", async () => {
+  it("creates a board and advances project status to BOARDS_READY", async () => {
     vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue({ id: "p1", status: "ASSETS_READY" });
     vi.mocked(storyflowPrisma.board.count).mockResolvedValue(0);
     vi.mocked(storyflowPrisma.board.create).mockResolvedValue({ id: "b1", index: 0 });
@@ -148,7 +148,7 @@ describe("Boards API", () => {
     expect(storyflowPrisma.board.create).toHaveBeenCalled();
     expect(storyflowPrisma.project.update).toHaveBeenCalledWith({
       where: { id: "p1" },
-      data: { status: "RENDER_READY" },
+      data: { status: "BOARDS_READY" },
     });
     expect(res.status).toBe(200);
   });
@@ -201,6 +201,8 @@ describe("Boards API", () => {
       id: "p1",
       script: { segments: [{ index: 0, text: "Hello", estimatedDuration: 1000 }] },
     });
+    vi.mocked(storyflowPrisma.board.upsert).mockResolvedValue({ id: "b1", index: 0 });
+    vi.mocked(storyflowPrisma.board.deleteMany).mockResolvedValue({ count: 0 });
     vi.mocked(planBoards).mockResolvedValue({
       version: "1.0",
       scriptPath: "projects/p1/script.json",
@@ -219,6 +221,15 @@ describe("Boards API", () => {
     const json = await res.json();
 
     expect(planBoards).toHaveBeenCalled();
+    expect(storyflowPrisma.board.upsert).toHaveBeenCalledTimes(1);
+    expect(storyflowPrisma.board.deleteMany).toHaveBeenCalledWith({
+      where: { projectId: "p1", index: { gte: 1 } },
+    });
+    expect(writeFile).toHaveBeenCalledWith(
+      "/projects/p1/boards/board-plan.json",
+      expect.any(String),
+      "utf-8"
+    );
     expect(res.status).toBe(200);
     expect(json.boards).toHaveLength(1);
   });
@@ -245,11 +256,20 @@ describe("Boards API", () => {
         segments: [
           { id: "s1", order: 1, text: "hello", estimatedDurationMs: 1000, speakingNotes: "" },
         ],
+        gridLayout: { rows: 3, cols: 2 },
+        styleGuide: "Noir collage wall",
       }),
     });
 
     const res = await postPrompts(req, { params: Promise.resolve({ id: "p1" }) });
     expect(res.status).toBe(200);
+    expect(generateBoardPrompts).toHaveBeenCalledWith(
+      "p1",
+      expect.any(Array),
+      expect.any(Array),
+      { rows: 3, cols: 2 },
+      "Noir collage wall"
+    );
     expect(writeFile).toHaveBeenCalled();
   });
 
@@ -276,7 +296,7 @@ describe("Boards API", () => {
         {
           version: "1.0",
           boardId: "b1",
-          imagePath: "img.png",
+          assetId: "asset-1",
           imageMetadata: { width: 1, height: 1, aspectRatio: 1 },
           regions: [],
           generatedAt: new Date().toISOString(),
@@ -325,7 +345,7 @@ describe("Boards API", () => {
         {
           version: "1.0",
           boardId: "b1",
-          imagePath: "img.png",
+          assetId: "asset-1",
           imageMetadata: { width: 1, height: 1, aspectRatio: 1 },
           regions: [],
           generatedAt: new Date().toISOString(),
@@ -361,26 +381,4 @@ describe("Boards API", () => {
     expect(res.status).toBe(200);
   });
 
-  it("uploads board image", async () => {
-    vi.mocked(ensureProjectDirs).mockResolvedValue({
-      boards: "/projects/p1/boards",
-      assetsImages: "/projects/p1/assets/images",
-    });
-
-    const formData = new FormData();
-    const file = new File([new Uint8Array([1, 2, 3])], "test.png", { type: "image/png" });
-    formData.append("file", file);
-    formData.append("boardId", "b1");
-
-    const req = new Request("http://localhost:3000/api/projects/p1/boards/upload-image", {
-      method: "POST",
-      body: formData,
-      // @ts-expect-error duplex required by undici for streaming bodies
-      duplex: "half",
-    });
-
-    const res = await postUpload(req, { params: Promise.resolve({ id: "p1" }) });
-    expect(res.status).toBe(200);
-    expect(access).not.toHaveBeenCalled(); // ensure fs mock not failing
-  });
 });

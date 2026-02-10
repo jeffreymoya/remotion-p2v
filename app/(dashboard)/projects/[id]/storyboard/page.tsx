@@ -5,7 +5,7 @@ import { DesktopOnlyGate } from "@/components/pipeline/desktop-only-gate";
 import { BoardsWorkflow } from "@/components/boards/BoardsWorkflow";
 import { StageGate } from "@/components/pipeline/stage-gate";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
-import { Asset, Board as BoardType, Script, ProjectStatus } from "@/src/lib/storyflow/types";
+import { Asset, Board as BoardType, ProjectStatus } from "@/src/lib/storyflow/types";
 import { getStageGateState } from "@/src/lib/storyflow/stage-validation";
 import { NotFoundError } from "@/app/api/lib";
 import { StoryboardStageButton } from "@/components/pipeline/storyboard-stage-button";
@@ -17,7 +17,7 @@ export default async function StoryboardPage({ params }: Params) {
   let project;
   try {
     project = await storyflowPrisma.project.findByIdOrThrow(resolvedParams.id, {
-      include: { assets: true, boards: { orderBy: { index: "asc" } }, script: true },
+      include: { assets: true, boards: { orderBy: { index: "asc" } } },
     });
   } catch (error) {
     if (error instanceof NotFoundError) return notFound();
@@ -26,7 +26,6 @@ export default async function StoryboardPage({ params }: Params) {
 
   const images = (project.assets || []).filter((a) => a.type === "IMAGE") as Asset[];
   const boards = project.boards as unknown as BoardType[];
-  const script = project.script as Script | null;
   const gate = getStageGateState("storyboard", project.status as ProjectStatus);
 
   return (
@@ -46,7 +45,6 @@ export default async function StoryboardPage({ params }: Params) {
           </div>
           <BoardsWorkflow
             projectId={project.id}
-            script={script}
             images={images}
             initialBoards={boards}
           />

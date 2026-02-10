@@ -31,6 +31,7 @@ const requestSchema = z.object({
     rows: z.number().int().min(1).max(4).default(2),
     cols: z.number().int().min(1).max(6).default(3),
   }).optional(),
+  styleGuide: z.string().optional(),
 });
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -42,14 +43,16 @@ type RouteParams = { params: Promise<{ id: string }> };
 export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
-  const { boards, segments, gridLayout } = await parseBody(req, requestSchema);
+  const { boards, segments, gridLayout, styleGuide } = await parseBody(req, requestSchema);
 
   boardsLogger.info({ projectId, boardCount: boards.length, segmentCount: segments.length }, "Generating board prompts");
 
   const result: BoardPromptsOutput = await generateBoardPrompts(
+    projectId,
     boards,
     segments,
-    gridLayout || { rows: 2, cols: 3 }
+    gridLayout || { rows: 2, cols: 3 },
+    styleGuide
   );
 
   const paths = await ensureProjectDirs(projectId);
@@ -83,7 +86,12 @@ export const GET = withErrorHandler(async (_req: Request, { params }: RouteParam
   }
 
   const content = await fs.readFile(promptsPath, "utf-8");
-  const data: BoardPromptsOutput = JSON.parse(content);
+  let data: BoardPromptsOutput;
+  try {
+    data = JSON.parse(content);
+  } catch (err) {
+    throw new Error(`Failed to parse ${promptsPath}: ${err instanceof Error ? err.message : String(err)}`);
+  }
 
   return NextResponse.json({
     success: true,

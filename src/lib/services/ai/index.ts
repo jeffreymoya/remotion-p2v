@@ -11,6 +11,7 @@ import { aiLogger as dbAILogger } from "./ai-logger";
 import { aiLogger } from "@/src/lib/logger";
 import { geminiCall, GEMINI_MODELS, parseGeminiTokenUsage } from "./gemini-wrapper";
 import { aiGenerate, type AiOutputFormat, type AiRequest } from "./ai-gateway";
+import { parseGeminiOutput } from "@/src/lib/storyflow/gemini-parser";
 import { getSettings } from "@/src/lib/storyflow/settings";
 import { env } from "@/src/env";
 
@@ -78,12 +79,16 @@ class GeminiCLIProvider implements AIProvider {
       }
     }
 
-    // Gemini CLI returns JSON; try to unwrap common shapes.
+    // Gemini CLI returns JSON; try to unwrap common shapes using the
+    // robust parser that handles markdown fences, double-escaping, etc.
     try {
-      const parsed = JSON.parse(stdout);
+      const parsed = parseGeminiOutput<unknown>(stdout);
       if (typeof parsed === "string") return parsed;
-      if (parsed?.output_text) return parsed.output_text;
-      if (parsed?.text) return parsed.text;
+      if (parsed && typeof parsed === "object") {
+        const obj = parsed as Record<string, unknown>;
+        if (typeof obj.output_text === "string") return obj.output_text;
+        if (typeof obj.text === "string") return obj.text;
+      }
     } catch {
       // Non-JSON output; fall through to raw stdout.
     }
@@ -99,7 +104,7 @@ class GeminiCLIProvider implements AIProvider {
     // Allow providers to return either JSON or plain text that needs parsing.
     try {
       const parsed =
-        typeof raw === "string" ? JSON.parse(raw) : (raw as unknown);
+        typeof raw === "string" ? parseGeminiOutput<unknown>(raw) : (raw as unknown);
       return schema.parse(parsed);
     } catch (error) {
       throw new Error(

@@ -24,6 +24,7 @@ import { getProjectPaths } from "@/src/lib/paths";
 import { aiGenerate } from "@/src/lib/services/ai";
 import type { Milliseconds } from "@/src/lib/types/units";
 import { ms } from "@/src/lib/types/units";
+import { transitionProjectStatus } from "./status-machine";
 
 type SegmentTiming = {
   text: string;
@@ -187,12 +188,12 @@ function buildKeyframesFromRegions(
 
 async function callGeminiViewport(
   projectId: string,
-  imagePath: string,
+  assetPath: string,
   segmentTimings: SegmentTiming[]
 ): Promise<z.infer<typeof viewportResponseSchema>> {
   const settings = await getSettings();
   const prompt = viewportAnalysisPrompt(segmentTimings);
-  const multimodalPrompt = `@${imagePath}\n\n${prompt}`;
+  const multimodalPrompt = `@${assetPath}\n\n${prompt}`;
 
   const { data } = await aiGenerate<z.infer<typeof viewportResponseSchema>>({
     projectId,
@@ -201,7 +202,7 @@ async function callGeminiViewport(
     model: settings.ai.proModel,
     outputFormat: "json",
     schema: viewportResponseSchema,
-    metadata: { imagePath },
+    metadata: { assetPath },
   });
 
   return data;
@@ -263,12 +264,7 @@ export async function generateViewportForProject(
     },
   });
 
-  if (project.status === "ASSETS_READY") {
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "VIEWPORT_READY" },
-    });
-  }
+  await transitionProjectStatus(projectId, "VIEWPORT_READY");
 
   return { viewport: viewport as unknown as Viewport, source };
 }

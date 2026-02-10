@@ -19,7 +19,7 @@ const bodySchema = z.object({
 export const POST = withErrorHandler(async (req) => {
   const { projectId, url, filename, type, source } = await parseBody(req, bodySchema);
 
-  const project = await storyflowPrisma.project.findByIdOrThrow(projectId);
+  await storyflowPrisma.project.findByIdOrThrow(projectId);
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -49,13 +49,6 @@ export const POST = withErrorHandler(async (req) => {
       metadata: { ...(metadata ?? {}), source: source ?? "stock" },
     },
   });
-
-  if (project.status === "DRAFT" || project.status === "SCRIPT_READY") {
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "ASSETS_READY" },
-    });
-  }
 
   return NextResponse.json({ asset }, { status: 201 });
 }, "assets/import");

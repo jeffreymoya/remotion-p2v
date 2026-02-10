@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import fs from "fs/promises";
+import path from "path";
 
 import {
   NotFoundError,
@@ -17,6 +19,7 @@ import {
   BoardPlanSchema,
 } from "@/src/lib/boards-types";
 import { boardsLogger } from "@/src/lib/logger";
+import { ensureProjectDirs, getProjectPaths, getPublicDir } from "@/src/lib/paths";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 /**
@@ -114,11 +117,50 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
   // Validate the plan
   const validatedPlan = BoardPlanSchema.parse(boardPlan);
 
+  const layout = {
+    columns: config.gridLayout.cols,
+    rows: config.gridLayout.rows,
+  };
+
+  for (const [index, board] of validatedPlan.boards.entries()) {
+    await storyflowPrisma.board.upsert({
+      where: {
+        projectId_index: {
+          projectId,
+          index,
+        },
+      },
+      update: {
+        layout,
+        plan: board,
+      },
+      create: {
+        projectId,
+        index,
+        layout,
+        regions: [],
+        plan: board,
+      },
+    });
+  }
+
+  await storyflowPrisma.board.deleteMany({
+    where: {
+      projectId,
+      index: { gte: validatedPlan.boards.length },
+    },
+  });
+
+  const paths = await ensureProjectDirs(projectId);
+  const outputPath = `${paths.boards}/board-plan.json`;
+  await fs.writeFile(outputPath, JSON.stringify(validatedPlan, null, 2), "utf-8");
+
   boardsLogger.info({ projectId, boards: validatedPlan.boards.length }, "Board plan generated");
 
   return NextResponse.json({
     boards: validatedPlan.boards,
     plan: validatedPlan,
+    saved: `/${path.relative(getPublicDir(), outputPath).replace(/\\/g, "/")}`,
   });
 }, "api/projects/[id]/boards/plan");
 
@@ -147,14 +189,19 @@ export const GET = withErrorHandler(async (_req: Request, { params }: RouteParam
     throw new NotFoundError("Boards for project", projectId);
   }
 
-  const firstPlanData = boards.find((b) => b.plan)?.plan;
+  const { boards: boardsDir } = getProjectPaths(projectId);
+  const planPath = `${boardsDir}/board-plan.json`;
 
-  if (!firstPlanData) {
+  let plan;
+  try {
+    const raw = await fs.readFile(planPath, "utf-8");
+    plan = BoardPlanSchema.parse(JSON.parse(raw));
+  } catch {
     throw new NotFoundError("Board plan", projectId);
   }
 
   return NextResponse.json({
-    plan: firstPlanData,
+    plan,
     boards: boards.map((b) => ({
       id: b.id,
       index: b.index,

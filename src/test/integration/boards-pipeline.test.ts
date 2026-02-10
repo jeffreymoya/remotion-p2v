@@ -17,17 +17,19 @@ vi.mock("sharp", () => {
 });
 
 const aiGenerateMock = vi.hoisted(() => vi.fn());
-const aiProviderCompleteMock = vi.hoisted(() => vi.fn());
-const aiProviderFactoryMock = vi.hoisted(() => ({
-  getProviderWithFallback: vi.fn().mockResolvedValue({
-    complete: aiProviderCompleteMock,
-    setPipelineStage: vi.fn(),
-  }),
-}));
 
 vi.mock("@/src/lib/services/ai", () => ({
   aiGenerate: aiGenerateMock,
-  AIProviderFactory: aiProviderFactoryMock,
+  AIProviderFactory: {
+    getProviderWithFallback: vi.fn().mockResolvedValue({
+      complete: vi.fn(),
+      setPipelineStage: vi.fn(),
+    }),
+  },
+}));
+
+vi.mock("@/src/lib/services/ai/ai-gateway", () => ({
+  aiGenerate: aiGenerateMock,
 }));
 
 import { planBoards } from "@/src/lib/boards/plan-service";
@@ -41,33 +43,28 @@ describe("Boards pipeline integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     aiGenerateMock.mockReset();
-    aiProviderCompleteMock.mockReset();
 
-    // aiGenerate calls: 1) topic breaks, 2+) summaries per board
-    aiGenerateMock
-      .mockResolvedValueOnce({
-        data: { topicBreaks: [{ afterSegmentIndex: 1, reason: "split", confidence: 0.9 }] },
-      })
-      .mockResolvedValue({ data: "Summary text" });
-
-    // AI provider complete handler used by generateBoardPrompts
-    aiProviderCompleteMock.mockImplementation((prompt: string) => {
-      if (prompt.toLowerCase().includes("topics")) {
-        // contentAnalysisPrompt path
-        return JSON.stringify({
-          topics: ["history"],
-          entities: ["artifact"],
-          tone: "dramatic",
-        });
+    // aiGenerate is called for:
+    //   plan-service: 1) topic breaks, 2+) summaries per board
+    //   prompts-service: content analysis + element descriptions per board
+    aiGenerateMock.mockImplementation(async (req: { operation: string }) => {
+      if (req.operation === "boards-topic-detection") {
+        return { data: { topicBreaks: [{ afterSegmentIndex: 1, reason: "split", confidence: 0.9 }] } };
       }
-      // elementDescriptionPrompt path
-      return JSON.stringify(
-        Array.from({ length: 6 }).map((_, i) => ({
-          id: `elem-${i + 1}`,
-          description: `Element ${i + 1}`,
-          label: `Label ${i + 1}`,
-        }))
-      );
+      if (req.operation === "boards-prompts-analysis") {
+        return { data: { topics: ["history"], entities: ["artifact"], tone: "dramatic" } };
+      }
+      if (req.operation === "boards-prompts-elements") {
+        return {
+          data: Array.from({ length: 6 }).map((_, i) => ({
+            id: `elem-${i + 1}`,
+            description: `Element ${i + 1}`,
+            label: `Label ${i + 1}`,
+          })),
+        };
+      }
+      // Default: summaries and other calls
+      return { data: "Summary text" };
     });
   });
 
@@ -97,7 +94,7 @@ describe("Boards pipeline integration", () => {
       text: s.text,
       estimatedDurationMs: s.estimatedDuration * 1000,
     }));
-    const prompts: BoardPromptsOutput = await generateBoardPrompts(plan.boards, scriptForPrompts);
+    const prompts: BoardPromptsOutput = await generateBoardPrompts(projectId, plan.boards, scriptForPrompts);
     expect(prompts.prompts).toHaveLength(plan.boards.length);
     expect(prompts.prompts[0].segmentContexts[0].segmentIndex).toBe(0);
 
@@ -129,6 +126,8 @@ describe("Boards pipeline integration", () => {
       );
       regionsResults.push({
         boardId: prompt.boardId,
+        assetId: `${prompt.boardId}-asset`,
+        assetPath: `assets/images/${prompt.boardId}.png`,
         imageMetadata: detection.imageMetadata,
         regions: detection.regions,
         warnings: detection.warnings,

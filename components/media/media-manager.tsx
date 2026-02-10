@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Asset, AssetType, Script, ScriptSegment } from "@/src/lib/storyflow/types";
+import { Asset, AssetType, Board, Script, ScriptSegment } from "@/src/lib/storyflow/types";
 import { UploadZone } from "@/components/assets/upload-zone";
 import { AssetGallery } from "@/components/assets/asset-gallery";
 import { useToast } from "@/components/ui/toast-provider";
@@ -10,6 +10,7 @@ import { MusicLibrary } from "@/components/assets/music-library";
 import { MusicSettings } from "@/components/assets/music-settings";
 import { SimpleAssetMapper } from "@/components/editors/asset-mapper/simple-asset-mapper";
 import { StockSearch } from "./stock-search";
+import { BoardPlannerWizard } from "@/components/boards/BoardPlannerWizard";
 import {
   useAssets,
   useDeleteAsset,
@@ -20,13 +21,15 @@ import {
 type Props = {
   projectId: string;
   assets: Asset[];
+  images: Asset[];
   script: Script | null;
   initialMappings: Record<number, string>;
   selectedMusicAssetId?: string;
   initialMusicVolume?: number;
+  initialBoards?: Board[];
 };
 
-type MediaTab = "upload" | "stock" | "library" | "mapping";
+type MediaTab = "create" | "stock" | "library" | "mapping";
 
 const TYPE_FILTERS: { key: AssetType | "ALL"; label: string }[] = [
   { key: "ALL", label: "All" },
@@ -39,13 +42,15 @@ const TYPE_FILTERS: { key: AssetType | "ALL"; label: string }[] = [
 export function MediaManager({
   projectId,
   assets: initialAssets,
+  images: initialImages,
   script,
   initialMappings,
   selectedMusicAssetId,
   initialMusicVolume = 0.3,
+  initialBoards = [],
 }: Props) {
   const toast = useToast();
-  const [tab, setTab] = useState<MediaTab>("upload");
+  const [tab, setTab] = useState<MediaTab>("create");
   const [activeType, setActiveType] = useState<AssetType | "ALL">("ALL");
   const [selectedMusicId, setSelectedMusicId] = useState<string | null>(selectedMusicAssetId ?? null);
   const [musicVolume, setMusicVolume] = useState(initialMusicVolume);
@@ -61,7 +66,10 @@ export function MediaManager({
     return assets.filter((asset) => asset.type === activeType);
   }, [assets, activeType]);
 
-  const images = useMemo(() => assets.filter((a) => a.type === "IMAGE"), [assets]);
+  const images = useMemo(() => {
+    if (initialImages.length > 0) return initialImages;
+    return assets.filter((asset) => asset.type === "IMAGE");
+  }, [assets, initialImages]);
 
   const handleDelete = (id: string) => {
     deleteMutation.mutate(id, {
@@ -167,7 +175,7 @@ export function MediaManager({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        {["upload", "stock", "library", "mapping"].map((key) => (
+        {["create", "stock", "library", "mapping"].map((key) => (
           <button
             key={key}
             onClick={() => setTab(key as MediaTab)}
@@ -178,7 +186,7 @@ export function MediaManager({
                 : "bg-slate-900 text-slate-200 hover:bg-slate-800 border border-slate-800"
             )}
           >
-            {key === "upload" && "Upload"}
+            {key === "create" && "Create & Upload"}
             {key === "stock" && "Stock Search"}
             {key === "library" && "Library"}
             {key === "mapping" && "Mapping"}
@@ -186,28 +194,44 @@ export function MediaManager({
         ))}
       </div>
 
-      {(tab === "upload" || tab === "library") && (
-        <div className="space-y-4">
-          {renderFilters}
-
-          {tab === "upload" && (
-            <>
-              <UploadZone
+      {tab === "create" && (
+        <div className="space-y-8">
+          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+            {script ? (
+              <BoardPlannerWizard
                 projectId={projectId}
-                assetType={activeType === "ALL" ? "IMAGE" : activeType}
-                onUploaded={handleUploaded}
+                script={script}
+                images={images}
+                initialBoards={initialBoards}
+                mode="media"
               />
-              <p className="text-xs text-slate-400">
-                Upload images, video, music, or audio. Uploaded items appear in Library and can be mapped to segments.
-              </p>
-            </>
-          )}
+            ) : (
+              <p className="text-sm text-slate-400">Add a script to generate prompts and board plan.</p>
+            )}
+          </div>
 
-          {tab === "library" && (
+          <div className="space-y-3">
+            <div className="text-sm font-semibold text-slate-200">Upload media (any type)</div>
+            {renderFilters}
+            <UploadZone
+              projectId={projectId}
+              assetType={activeType === "ALL" ? "IMAGE" : activeType}
+              onUploaded={handleUploaded}
+            />
             <p className="text-xs text-slate-400">
-              Previously uploaded assets for this project. Select Music to set soundtrack.
+              Upload images, video, music, or audio. Uploaded items appear in Library and can be mapped to segments.
             </p>
-          )}
+          </div>
+        </div>
+      )}
+
+      {tab === "library" && (
+        <div className="space-y-4">
+          <p className="text-xs text-slate-400">
+            Previously uploaded assets for this project. Select Music to set soundtrack.
+          </p>
+
+          {renderFilters}
 
           {activeType === "MUSIC" ? (
             <div className="grid gap-6 lg:grid-cols-[1.6fr,1fr]">

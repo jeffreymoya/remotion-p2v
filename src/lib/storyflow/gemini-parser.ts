@@ -232,6 +232,47 @@ export function parseGeminiOutput<T = unknown>(stdout: string): T {
 }
 
 /**
+ * Recursively search an object tree for an array whose items contain the expected keys.
+ * Useful when an LLM wraps an expected array in an object (e.g. `{ "elements": [...] }`).
+ *
+ * @param data - The parsed data to search
+ * @param expectedKeys - Optional keys that array items should contain (duck-type check)
+ * @returns The matching array, or null if none found
+ */
+export function deepExtractArray(
+  data: unknown,
+  expectedKeys?: string[]
+): unknown[] | null {
+  if (Array.isArray(data)) {
+    if (!expectedKeys || matchesExpectedKeys(data, expectedKeys)) {
+      return data;
+    }
+  }
+
+  if (data !== null && typeof data === "object" && !Array.isArray(data)) {
+    for (const value of Object.values(data as Record<string, unknown>)) {
+      const found = deepExtractArray(value, expectedKeys);
+      if (found) return found;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Check if at least one item in the array has all expected keys.
+ */
+function matchesExpectedKeys(arr: unknown[], keys: string[]): boolean {
+  if (arr.length === 0) return true;
+  return arr.some(
+    (item) =>
+      item !== null &&
+      typeof item === "object" &&
+      keys.every((k) => k in (item as Record<string, unknown>))
+  );
+}
+
+/**
  * Parse Gemini output and validate against a Zod schema
  */
 export function parseGeminiOutputWithSchema<T>(

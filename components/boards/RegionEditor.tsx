@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { BoardRegion, RegionBounds } from "@/src/lib/boards-types";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,8 @@ import { cn } from "@/src/lib/storyflow/utils";
 
 interface RegionEditorProps {
   projectId: string;
-  imagePath: string;
+  assetPath: string;
+  assetId: string;
   regions: BoardRegion[];
   imageMetadata: {
     width: number;
@@ -21,7 +23,8 @@ interface RegionEditorProps {
 
 export function RegionEditor({
   projectId,
-  imagePath,
+  assetPath,
+  assetId,
   regions,
   imageMetadata,
   onRegionsChange,
@@ -32,18 +35,26 @@ export function RegionEditor({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Load and display the image
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
+    if (!assetPath || !assetId) {
+      setLoadError("Board image is missing. Upload the board image in Media → Create & Upload, then re-run region detection.");
+      return;
+    }
+
+    setLoadError(null);
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const img = new Image();
-    img.src = `/projects/${projectId}/${imagePath}`;
+    img.src = assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
 
     img.onload = () => {
       // Calculate canvas size to fit container while maintaining aspect ratio
@@ -64,7 +75,11 @@ export function RegionEditor({
       // Draw regions
       drawRegions(ctx, editedRegions, displayWidth, displayHeight);
     };
-  }, [projectId, imagePath, editedRegions]);
+
+    img.onerror = () => {
+      setLoadError("Board image could not be loaded. Re-upload the image in Media and try again.");
+    };
+  }, [projectId, assetPath, assetId, editedRegions, reloadKey]);
 
   const drawRegions = (
     ctx: CanvasRenderingContext2D,
@@ -150,6 +165,26 @@ export function RegionEditor({
 
   const selectedRegion = editedRegions.find((r) => r.id === selectedRegionId);
 
+  if (loadError) {
+    return (
+      <div className={cn("rounded-lg border border-amber-500/40 bg-amber-950/20 p-4 text-sm text-amber-100", className)}>
+        <h3 className="mb-2 text-base font-semibold text-amber-200">Board image unavailable</h3>
+        <p className="text-amber-100/90">{loadError}</p>
+        <p className="mt-2 text-xs text-amber-100/80">
+          After uploading, re-run region detection to continue.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button asChild size="sm" variant="secondary">
+            <Link href={`/projects/${projectId}/media#create`}>Go to Media → Create & Upload</Link>
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setReloadKey((key) => key + 1)}>
+            Retry load
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("space-y-6", className)}>
       <div>
@@ -157,6 +192,14 @@ export function RegionEditor({
         <p className="text-sm text-slate-400">
           Click regions to select and adjust their bounds. Changes are saved when you click "Save Changes".
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setReloadKey((key) => key + 1)}>
+            Refresh image
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/projects/${projectId}/media#create`}>Re-upload in Media</Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

@@ -71,10 +71,19 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
     );
   }
 
+  const parseJsonFile = async (filePath: string) => {
+    const raw = await fs.readFile(filePath, "utf-8");
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      throw new Error(`Failed to parse ${filePath}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
   const [planData, regionsWrapper, triggersData] = await Promise.all([
-    fs.readFile(planPath, "utf-8").then(JSON.parse),
-    fs.readFile(regionsPath, "utf-8").then(JSON.parse),
-    fs.readFile(triggersPath, "utf-8").then(JSON.parse),
+    parseJsonFile(planPath),
+    parseJsonFile(regionsPath),
+    parseJsonFile(triggersPath),
   ]);
 
   const plan = BoardPlanSchema.parse(planData) as BoardPlan;
@@ -93,10 +102,15 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
 
   const imagesDir = paths.assetsImages;
   const missingImages: string[] = [];
+  const regionsByBoardId = new Map(regionsData.map((r) => [r.boardId, r]));
 
   for (const board of plan.boards) {
-    const originalPath = path.join(imagesDir, `${board.boardId}.png`);
-    const upscaledPath = path.join(imagesDir, `${board.boardId}_8k.png`);
+    const regionEntry = regionsByBoardId.get(board.boardId);
+    const baseFilename = regionEntry?.assetPath ? path.basename(regionEntry.assetPath) : `${board.boardId}.png`;
+    const ext = path.extname(baseFilename) || ".png";
+    const stem = path.basename(baseFilename, ext);
+    const originalPath = path.join(imagesDir, `${stem}${ext}`);
+    const upscaledPath = path.join(imagesDir, `${stem}_8k${ext}`);
 
     try {
       await fs.access(upscaledPath);

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 const createSchema = z.object({
   layout: z.object({ columns: z.number().int().min(1), rows: z.number().int().min(1) }),
@@ -24,7 +25,7 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
   const { id } = await params;
   const { layout } = await parseBody(req, createSchema);
 
-  const project = await storyflowPrisma.project.findByIdOrThrow(id);
+  await storyflowPrisma.project.findByIdOrThrow(id);
 
   const nextIndex =
     (await storyflowPrisma.board.count({ where: { projectId: id } })) ?? 0;
@@ -38,13 +39,7 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
     },
   });
 
-  // Update project status when board created - transition to RENDER_READY
-  if (project.status === "ASSETS_READY" || project.status === "BOARDS_READY") {
-    await storyflowPrisma.project.update({
-      where: { id },
-      data: { status: "RENDER_READY" },
-    });
-  }
+  await transitionProjectStatus(id, "BOARDS_READY");
 
   return NextResponse.json({ board });
 }, "projects/[id]/boards");

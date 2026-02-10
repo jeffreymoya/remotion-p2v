@@ -131,13 +131,6 @@ export const POST = withErrorHandler(async (req: Request, { params }: Params) =>
     update: { musicTrackId: selectedAssetId, musicVolume: volume },
   });
 
-  if (project.status === "DRAFT" || project.status === "SCRIPT_READY") {
-    await storyflowPrisma.project.update({
-      where: { id },
-      data: { status: "ASSETS_READY" },
-    });
-  }
-
   return NextResponse.json({
     success: true,
     selectedAssetId,

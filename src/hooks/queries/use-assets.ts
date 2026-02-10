@@ -26,7 +26,12 @@ export function useUploadAsset(projectId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (file: File) => uploadAsset(projectId, file),
+    mutationFn: (input: File | { file: File; options?: Parameters<typeof uploadAsset>[2] }) =>
+      uploadAsset(
+        projectId,
+        input instanceof File ? input : input.file,
+        input instanceof File ? undefined : input.options
+      ),
     onSuccess: (newAsset) => {
       // Add to cache (prepend to list)
       queryClient.setQueryData<Asset[]>(

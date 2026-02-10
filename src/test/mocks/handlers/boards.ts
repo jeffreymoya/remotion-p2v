@@ -104,7 +104,8 @@ export const boardsHandlers = [
       data: {
         version: "1.0",
         boardId: "board-0",
-        imagePath: "/boards/board-0.png",
+        assetId: "asset-0",
+        assetPath: "/projects/test/assets/images/board-0.png",
         imageMetadata: { width: 800, height: 600, aspectRatio: 1.33 },
         regions: [buildBoardRegion()],
         generatedAt: new Date().toISOString(),
@@ -131,17 +132,6 @@ export const boardsHandlers = [
     return HttpResponse.json({
       success: true,
       viewportPath: "/projects/test/viewport.json",
-    });
-  }),
-
-  // Upload board image
-  http.post(`${API_BASE}/api/projects/:id/boards/upload-image`, async ({ request }) => {
-    const formData = await request.formData().catch(() => new FormData());
-    const file = formData.get("file") as File | null;
-    return HttpResponse.json({
-      success: true,
-      filename: file?.name ?? "board-image.jpg",
-      url: "/uploads/board-image.jpg",
     });
   }),
 ];

@@ -123,6 +123,7 @@ exports.Prisma.ProjectScalarFieldEnum = {
   topic: 'topic',
   status: 'status',
   aspectRatio: 'aspectRatio',
+  wizardProgress: 'wizardProgress',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   assetMappings: 'assetMappings'
@@ -228,7 +229,7 @@ exports.Prisma.BoardScalarFieldEnum = {
   triggers: 'triggers',
   plan: 'plan',
   prompts: 'prompts',
-  imagePath: 'imagePath',
+  assetId: 'assetId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

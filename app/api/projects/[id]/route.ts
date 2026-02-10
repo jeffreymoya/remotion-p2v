@@ -19,19 +19,7 @@ const updateProjectSchema = z
       .max(500, "Topic must be 500 characters or less")
       .optional(),
     aspectRatio: z.enum(["16:9", "9:16"]).optional(),
-    status: z
-      .enum([
-        "DRAFT",
-        "SCRIPT_READY",
-        "ASSETS_READY",
-        "VIEWPORT_READY",
-        "BOARDS_READY",
-        "RENDER_READY",
-        "RENDERING",
-        "COMPLETED",
-        "ERROR",
-      ])
-      .optional(),
+    wizardProgress: z.record(z.string(), z.unknown()).nullable().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided",

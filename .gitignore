@@ -57,3 +57,26 @@ tests/fixtures/*.png
 !tests/fixtures/README.md
 
 docs/archive
+
+# Temp directories and test artifacts
+tmp/
+*.tmp
+
+# Claude Code session data
+.claude/
+
+# Cursor AI editor
+.cursor/
+
+# Specs (may contain sensitive info)
+specs/
+
+# Project runtime data (generated assets/boards)
+public/projects/*/boards/
+public/projects/*/assets/
+public/projects/*/scripts/
+public/projects/*/timeline.json
+public/projects/*/viewport.json
+
+# Generated Prisma clients
+src/generated/

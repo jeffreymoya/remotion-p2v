@@ -17,6 +17,6 @@ describe("PipelineStepper", () => {
       <PipelineStepper projectId="proj-1" status="ASSETS_READY" needsReview={{ storyboard: true }} />
     );
 
-    expect(screen.getByText(/needs review/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/needs review/i)).toBeInTheDocument();
   });
 });

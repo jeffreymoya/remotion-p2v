@@ -41,7 +41,9 @@ interface BackgroundActivityContextValue {
     fail: (error: string) => void;
   };
   cancelTask: (id: string) => void;
+  dismissTask: (id: string) => void;
   isTaskRunning: (category: string, projectId?: string) => boolean;
+  hasFailedTasks: boolean;
 }
 
 const BackgroundActivityContext = createContext<BackgroundActivityContextValue | null>(null);
@@ -82,6 +84,7 @@ export function BackgroundActivityProvider({ children }: { children: React.React
       };
 
       setTasks((prev) => [...prev, newTask]);
+      setExpanded(true);
 
       return {
         id,
@@ -129,6 +132,16 @@ export function BackgroundActivityProvider({ children }: { children: React.React
     setCancelConfirmId(null);
   }, []);
 
+  const dismissTask = useCallback((id: string) => {
+    // Clear any pending auto-dismiss timer for this task
+    const timer = dismissTimersRef.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      dismissTimersRef.current.delete(id);
+    }
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   const isTaskRunning = useCallback(
     (category: string, projectId?: string) => {
       return tasks.some((t) => {
@@ -140,11 +153,17 @@ export function BackgroundActivityProvider({ children }: { children: React.React
     [tasks]
   );
 
-  // Auto-dismiss completed/failed/cancelled tasks
+  const hasFailedTasks = tasks.some((t) => t.status === "failed");
+
+  // Auto-dismiss completed/cancelled tasks (failed tasks require explicit dismissal)
   useEffect(() => {
     tasks.forEach((task) => {
-      if (task.status !== "running" && !dismissTimersRef.current.has(task.id)) {
-        const timeout = task.status === "failed" ? 8000 : 5000;
+      if (
+        task.status !== "running" &&
+        task.status !== "failed" &&
+        !dismissTimersRef.current.has(task.id)
+      ) {
+        const timeout = 5000;
         const timer = setTimeout(() => {
           setTasks((prev) => prev.filter((t) => t.id !== task.id));
           dismissTimersRef.current.delete(task.id);
@@ -156,12 +175,11 @@ export function BackgroundActivityProvider({ children }: { children: React.React
 
 
   const value = useMemo(
-    () => ({ tasks, addTask, cancelTask, isTaskRunning }),
-    [tasks, addTask, cancelTask, isTaskRunning]
+    () => ({ tasks, addTask, cancelTask, dismissTask, isTaskRunning, hasFailedTasks }),
+    [tasks, addTask, cancelTask, dismissTask, isTaskRunning, hasFailedTasks]
   );
 
   const runningTasksCount = tasks.filter((t) => t.status === "running").length;
-  const hasActiveTasks = runningTasksCount > 0;
 
   return (
     <BackgroundActivityContext.Provider value={value}>
@@ -177,12 +195,7 @@ export function BackgroundActivityProvider({ children }: { children: React.React
                 aria-label={`Background activity — ${runningTasksCount} tasks running`}
                 role="button"
               >
-                <Activity
-                  className={cn(
-                    "h-5 w-5 text-brand-500",
-                    hasActiveTasks && "animate-spin"
-                  )}
-                />
+                <Activity className="h-5 w-5 text-brand-500" />
                 {runningTasksCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-500 text-xs font-semibold text-white">
                     {runningTasksCount}
@@ -194,11 +207,28 @@ export function BackgroundActivityProvider({ children }: { children: React.React
             {expanded && (
               <div className="w-80 max-h-96 overflow-y-auto rounded-xl bg-slate-900/95 backdrop-blur border border-slate-800 shadow-lg shadow-black/40">
                 <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
-                  <h3 className="text-sm font-semibold text-white">Background Activity</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-white">Background Activity</h3>
+                    {hasFailedTasks && (
+                      <span className="flex items-center gap-1 text-xs text-rose-400">
+                        <AlertCircle className="h-3 w-3" />
+                        {tasks.filter((t) => t.status === "failed").length} failed
+                      </span>
+                    )}
+                  </div>
                   <button
-                    onClick={() => setExpanded(false)}
-                    className="rounded-md p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
-                    aria-label="Minimize"
+                    onClick={() => {
+                      if (hasFailedTasks) return; // Prevent collapsing while failed tasks exist
+                      setExpanded(false);
+                    }}
+                    className={cn(
+                      "rounded-md p-1 text-slate-400",
+                      hasFailedTasks
+                        ? "opacity-40 cursor-not-allowed"
+                        : "hover:bg-slate-800 hover:text-white"
+                    )}
+                    aria-label={hasFailedTasks ? "Dismiss failed tasks before minimizing" : "Minimize"}
+                    title={hasFailedTasks ? "Dismiss failed tasks before minimizing" : "Minimize"}
                   >
                     <ChevronDown className="h-4 w-4" />
                   </button>
@@ -212,6 +242,7 @@ export function BackgroundActivityProvider({ children }: { children: React.React
                       onCancel={() => setCancelConfirmId(task.id)}
                       onConfirmCancel={() => cancelTask(task.id)}
                       onCancelCancel={() => setCancelConfirmId(null)}
+                      onDismiss={() => dismissTask(task.id)}
                       showCancelConfirm={cancelConfirmId === task.id}
                     />
                   ))}
@@ -230,12 +261,14 @@ function TaskCard({
   onCancel,
   onConfirmCancel,
   onCancelCancel,
+  onDismiss,
   showCancelConfirm,
 }: {
   task: BackgroundTask;
   onCancel: () => void;
   onConfirmCancel: () => void;
   onCancelCancel: () => void;
+  onDismiss: () => void;
   showCancelConfirm: boolean;
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -279,8 +312,15 @@ function TaskCard({
     cancelled: X,
   }[task.status];
 
+  // Failed tasks don't fade out — they persist until explicitly dismissed
+  const shouldFadeOut = task.status !== "running" && task.status !== "failed";
+
   return (
-    <div className={cn("p-4", task.status !== "running" && "animate-fadeOut")}>
+    <div className={cn(
+      "p-4",
+      shouldFadeOut && "animate-fadeOut",
+      task.status === "failed" && "bg-rose-950/20"
+    )}>
       <div className="flex items-start gap-3">
         <IconComponent className="h-5 w-5 text-slate-400 flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
@@ -291,6 +331,16 @@ function TaskCard({
                 onClick={onCancel}
                 className="rounded-md p-1 text-slate-400 hover:bg-slate-800 hover:text-white flex-shrink-0"
                 aria-label="Cancel task"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            {task.status === "failed" && (
+              <button
+                onClick={onDismiss}
+                className="rounded-md p-1 text-slate-400 hover:bg-rose-900/50 hover:text-rose-300 flex-shrink-0"
+                aria-label="Dismiss failed task"
+                title="Dismiss"
               >
                 <X className="h-4 w-4" />
               </button>

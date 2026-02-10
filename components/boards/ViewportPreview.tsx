@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { ViewportAnimation } from "@/src/lib/types";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,8 @@ import { FPS } from "@/src/lib/constants";
 
 interface ViewportPreviewProps {
   projectId: string;
-  imagePath: string;
+  assetPath: string;
+  assetId: string;
   viewportAnimation: ViewportAnimation;
   totalDurationMs: number;
   className?: string;
@@ -16,7 +18,8 @@ interface ViewportPreviewProps {
 
 export function ViewportPreview({
   projectId,
-  imagePath,
+  assetPath,
+  assetId,
   viewportAnimation,
   totalDurationMs,
   className,
@@ -27,16 +30,26 @@ export function ViewportPreview({
   const animationFrameRef = useRef<number | undefined>(undefined);
   const imageRef = useRef<HTMLImageElement | undefined>(undefined);
   const startTimeRef = useRef<number>(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Load the board image
   useEffect(() => {
+    if (!assetPath || !assetId) {
+      setLoadError("Board image is missing. Upload the board image in Media → Create & Upload, then rebuild the viewport.");
+      return;
+    }
+    setLoadError(null);
     const img = new Image();
-    img.src = `/projects/${projectId}/${imagePath}`;
+    img.src = assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
     img.onload = () => {
       imageRef.current = img;
       renderFrame(0);
     };
-  }, [projectId, imagePath]);
+    img.onerror = () => {
+      setLoadError("Board image could not be loaded. Re-upload the image in Media and try again.");
+    };
+  }, [projectId, assetPath, assetId, reloadKey]);
 
   // Helper to convert frame to time in ms
   const frameToMs = (frame: number) => (frame / FPS) * 1000;
@@ -203,6 +216,26 @@ export function ViewportPreview({
   // Get easing from first keyframe
   const easingStyle = viewportAnimation?.keyframes?.[0]?.easing || "ease-in-out";
 
+  if (loadError) {
+    return (
+      <div className={cn("rounded-lg border border-amber-500/40 bg-amber-950/20 p-4 text-sm text-amber-100", className)}>
+        <h3 className="mb-2 text-base font-semibold text-amber-200">Board image unavailable</h3>
+        <p className="text-amber-100/90">{loadError}</p>
+        <p className="mt-2 text-xs text-amber-100/80">
+          After uploading, re-run region detection and viewport build to preview.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button asChild size="sm" variant="secondary">
+            <Link href={`/projects/${projectId}/media#create`}>Go to Media → Create & Upload</Link>
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setReloadKey((key) => key + 1)}>
+            Retry load
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("space-y-4", className)}>
       <div>
@@ -210,6 +243,14 @@ export function ViewportPreview({
         <p className="text-sm text-slate-400">
           Preview the camera path animation with {viewportAnimation?.keyframes?.length ?? 0} keyframes
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setReloadKey((key) => key + 1)}>
+            Refresh image
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/projects/${projectId}/media#create`}>Re-upload in Media</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Canvas */}

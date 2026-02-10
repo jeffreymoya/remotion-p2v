@@ -9,7 +9,6 @@ import { DELETE as deleteAssetRoute } from "../[id]/route";
 const prismaMocks = vi.hoisted(() => ({
   findProject: vi.fn(),
   createAsset: vi.fn(),
-  updateProject: vi.fn(),
 }));
 
 const assetMocks = vi.hoisted(() => ({
@@ -27,7 +26,6 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
   storyflowPrisma: {
     project: {
       findByIdOrThrow: prismaMocks.findProject,
-      update: prismaMocks.updateProject,
     },
     asset: {
       create: prismaMocks.createAsset,
@@ -64,7 +62,7 @@ describe("Assets API routes", () => {
   });
 
   describe("POST /api/assets/upload", () => {
-    it("uploads file, saves asset, and bumps status", async () => {
+    it("uploads file and saves asset", async () => {
       prismaMocks.findProject.mockResolvedValue({ id: "proj-1", status: "DRAFT" });
       assetMocks.validateUpload.mockResolvedValue({ valid: true, ext: "jpg" });
       assetMocks.saveAssetFile.mockResolvedValue({
@@ -74,7 +72,6 @@ describe("Assets API routes", () => {
       });
       assetMocks.extractMetadata.mockResolvedValue({ width: 100 });
       prismaMocks.createAsset.mockResolvedValue({ id: "asset-1" });
-      prismaMocks.updateProject.mockResolvedValue({});
 
       class FakeFile extends Blob {
         name: string;
@@ -110,7 +107,61 @@ describe("Assets API routes", () => {
       expect(json.asset.id).toBe("asset-1");
       expect(assetMocks.validateUpload).toHaveBeenCalled();
       expect(assetMocks.saveAssetFile).toHaveBeenCalled();
-      expect(prismaMocks.updateProject).toHaveBeenCalledWith({ where: { id: "proj-1" }, data: { status: "ASSETS_READY" } });
+      expect(prismaMocks.createAsset).toHaveBeenCalled();
+    });
+
+    it("defaults to IMAGE and board naming when boardId provided", async () => {
+      prismaMocks.findProject.mockResolvedValue({ id: "proj-1", status: "DRAFT" });
+      assetMocks.validateUpload.mockResolvedValue({ valid: true, ext: "png" });
+      assetMocks.saveAssetFile.mockResolvedValue({
+        absolutePath: "/tmp/abs.png",
+        relativePath: "projects/proj-1/assets/images/board-1.png",
+        filename: "board-1.png",
+      });
+      assetMocks.extractMetadata.mockResolvedValue({ width: 100 });
+      prismaMocks.createAsset.mockResolvedValue({ id: "asset-2" });
+
+      class FakeFile extends Blob {
+        name: string;
+        lastModified: number;
+        constructor(parts: BlobPart[], name: string, options?: BlobPropertyBag) {
+          super(parts, options);
+          this.name = name;
+          this.lastModified = 0;
+        }
+      }
+      vi.stubGlobal("File", FakeFile as unknown as typeof File);
+
+      const file = new File([new Uint8Array([1, 2, 3])], "img.png", { type: "image/png" });
+      (file as any).arrayBuffer = vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
+      const req = {
+        url: "http://localhost:3000/api/assets/upload",
+        method: "POST",
+        formData: () =>
+          Promise.resolve({
+            get: (key: string) => {
+              if (key === "file") return file;
+              if (key === "projectId") return "proj-1";
+              if (key === "boardId") return "board-1";
+              return null;
+            },
+          } as unknown as FormData),
+      } as unknown as Request;
+
+      const res = await uploadPost(req);
+      const json = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(json.asset.id).toBe("asset-2");
+      expect(assetMocks.validateUpload).toHaveBeenCalledWith(file, "IMAGE");
+      expect(assetMocks.saveAssetFile).toHaveBeenCalledWith(
+        "proj-1",
+        "IMAGE",
+        file,
+        expect.any(Buffer),
+        "png",
+        { overrideFilename: "board-1.png" }
+      );
     });
 
     it("rejects invalid asset type", async () => {
@@ -150,7 +201,6 @@ describe("Assets API routes", () => {
       });
       assetMocks.extractMetadata.mockResolvedValue({ width: 100 });
       prismaMocks.createAsset.mockResolvedValue({ id: "asset-import" });
-      prismaMocks.updateProject.mockResolvedValue({});
 
       vi.stubGlobal(
         "fetch",
@@ -179,7 +229,7 @@ describe("Assets API routes", () => {
       expect(json.asset.id).toBe("asset-import");
       expect(pathMocks.ensureProjectDirs).toHaveBeenCalledWith("proj-1");
       expect(assetMocks.saveAssetBuffer).toHaveBeenCalled();
-      expect(prismaMocks.updateProject).toHaveBeenCalledWith({ where: { id: "proj-1" }, data: { status: "ASSETS_READY" } });
+      expect(prismaMocks.createAsset).toHaveBeenCalled();
     });
 
     it("returns 400 when download fails", async () => {

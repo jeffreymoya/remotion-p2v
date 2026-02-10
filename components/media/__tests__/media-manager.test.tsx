@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderWithProviders, screen, waitFor } from "@/src/test/utils";
 import userEvent from "@testing-library/user-event";
+import { BackgroundActivityProvider } from "@/components/ui/background-activity-provider";
 
 import { MediaManager } from "../media-manager";
-import { Asset, Script } from "@/src/lib/storyflow/types";
+import { Asset, Script, Board } from "@/src/lib/storyflow/types";
 
 const toastMock = vi.fn();
 const mockUseAssets = vi.fn();
@@ -77,23 +78,26 @@ vi.mock("@/components/assets/asset-gallery", () => ({
     onSelectMusic: (id: string) => void;
     selectedMusicId?: string | null;
     upscalingIds: Set<string>;
-  }) => (
-    <div
-      data-testid="asset-gallery"
-      data-selected={selectedMusicId ?? "none"}
-      data-upscale-count={upscalingIds.size}
-    >
-      <button data-testid="delete-asset" onClick={() => assets[0] && onDelete(assets[0].id)}>
-        Delete first
-      </button>
-      <button data-testid="upscale-asset" onClick={() => assets[0] && onUpscale(assets[0].id)}>
-        Upscale first
-      </button>
-      <button data-testid="select-music" onClick={() => assets[0] && onSelectMusic(assets[0].id)}>
-        Select first music
-      </button>
-    </div>
-  ),
+  }) => {
+    if (!assets.length) return <div data-testid="asset-gallery">empty</div>;
+    return (
+      <div
+        data-testid="asset-gallery"
+        data-selected={selectedMusicId ?? "none"}
+        data-upscale-count={upscalingIds.size}
+      >
+        <button data-testid="delete-asset" onClick={() => assets[0] && onDelete(assets[0].id)}>
+          Delete first
+        </button>
+        <button data-testid="upscale-asset" onClick={() => assets[0] && onUpscale(assets[0].id)}>
+          Upscale first
+        </button>
+        <button data-testid="select-music" onClick={() => assets[0] && onSelectMusic(assets[0].id)}>
+          Select first music
+        </button>
+      </div>
+    );
+  },
 }));
 
 vi.mock("@/components/assets/music-library", () => ({
@@ -173,13 +177,16 @@ describe("MediaManager", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <MediaManager
-        projectId="proj-1"
-        assets={baseAssets}
-        script={script}
-        initialMappings={{}}
-        selectedMusicAssetId={null}
-      />
+      <BackgroundActivityProvider>
+        <MediaManager
+          projectId="proj-1"
+          assets={baseAssets}
+          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
+          script={script}
+          initialMappings={{}}
+          selectedMusicAssetId={null}
+        />
+      </BackgroundActivityProvider>
     );
 
     expect(screen.getByTestId("upload-zone")).toHaveAttribute("data-asset-type", "IMAGE");
@@ -189,6 +196,7 @@ describe("MediaManager", () => {
 
     await user.click(screen.getByTestId("simulate-upload"));
     await waitFor(() => expect(screen.getByTestId("upload-zone")).toHaveAttribute("data-asset-type", "IMAGE"));
+    await user.click(screen.getByRole("button", { name: /library/i }));
     expect(screen.getByTestId("asset-gallery")).toHaveAttribute("data-selected", uploadedAsset.id);
   });
 
@@ -199,15 +207,19 @@ describe("MediaManager", () => {
     upscaleVariables = "img-1";
 
     renderWithProviders(
-      <MediaManager
-        projectId="proj-1"
-        assets={baseAssets}
-        script={script}
-        initialMappings={{}}
-        selectedMusicAssetId={null}
-      />
+      <BackgroundActivityProvider>
+        <MediaManager
+          projectId="proj-1"
+          assets={baseAssets}
+          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
+          script={script}
+          initialMappings={{}}
+          selectedMusicAssetId={null}
+        />
+      </BackgroundActivityProvider>
     );
 
+    await userEvent.click(screen.getByRole("button", { name: /library/i }));
     await userEvent.click(screen.getByTestId("delete-asset"));
     await userEvent.click(screen.getByTestId("upscale-asset"));
 
@@ -222,13 +234,16 @@ describe("MediaManager", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <MediaManager
-        projectId="proj-1"
-        assets={baseAssets}
-        script={script}
-        initialMappings={{}}
-        selectedMusicAssetId={null}
-      />
+      <BackgroundActivityProvider>
+        <MediaManager
+          projectId="proj-1"
+          assets={baseAssets}
+          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
+          script={script}
+          initialMappings={{}}
+          selectedMusicAssetId={null}
+        />
+      </BackgroundActivityProvider>
     );
 
     await user.click(screen.getByRole("button", { name: /stock search/i }));
@@ -242,16 +257,38 @@ describe("MediaManager", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <MediaManager
-        projectId="proj-1"
-        assets={baseAssets}
-        script={script}
-        initialMappings={{}}
-        selectedMusicAssetId={null}
-      />
+      <BackgroundActivityProvider>
+        <MediaManager
+          projectId="proj-1"
+          assets={baseAssets}
+          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
+          script={script}
+          initialMappings={{}}
+          selectedMusicAssetId={null}
+        />
+      </BackgroundActivityProvider>
     );
 
     await user.click(screen.getByRole("button", { name: /mapping/i }));
     expect(screen.getByTestId("asset-mapper")).toBeInTheDocument();
+  });
+
+  it("shows create tab with wizard in media mode", async () => {
+    renderWithProviders(
+      <BackgroundActivityProvider>
+        <MediaManager
+          projectId="proj-1"
+          assets={baseAssets}
+          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
+          script={script}
+          initialMappings={{}}
+          selectedMusicAssetId={null}
+          initialBoards={[] as Board[]}
+        />
+      </BackgroundActivityProvider>
+    );
+
+    expect(screen.getByRole("button", { name: /create & upload/i })).toBeInTheDocument();
+    expect(screen.getByTestId("upload-zone")).toBeInTheDocument();
   });
 });

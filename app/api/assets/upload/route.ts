@@ -22,6 +22,7 @@ export const POST = withErrorHandler(async (req) => {
   const file = formData.get("file");
   const projectId = formData.get("projectId");
   const type = formData.get("type");
+  const boardIdValue = typeof formData.get("boardId") === "string" ? (formData.get("boardId") as string).trim() : null;
 
   if (!(file instanceof File)) {
     throw new ValidationError("File missing");
@@ -33,12 +34,15 @@ export const POST = withErrorHandler(async (req) => {
 
   const parsedType = typeSchema.safeParse(type);
   if (!parsedType.success) {
-    throw new ValidationError("Invalid asset type", parsedType.error.format());
+    // Fallback for board uploads that omit type — default to IMAGE
+    if (!boardIdValue) {
+      throw new ValidationError("Invalid asset type", parsedType.error.format());
+    }
   }
 
-  const assetType = parsedType.data as AssetType;
+  const assetType = parsedType.success ? (parsedType.data as AssetType) : ("IMAGE" as AssetType);
 
-  const project = await storyflowPrisma.project.findByIdOrThrow(projectId);
+  await storyflowPrisma.project.findByIdOrThrow(projectId);
 
   const validation = await validateUpload(file, assetType);
   if (!validation.valid) {
@@ -47,13 +51,11 @@ export const POST = withErrorHandler(async (req) => {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const stored = await saveAssetFile(
-    projectId,
-    assetType,
-    file,
-    buffer,
-    validation.ext
-  );
+  const overrideFilename = boardIdValue ? `${boardIdValue}.${validation.ext}` : undefined;
+
+  const stored = await saveAssetFile(projectId, assetType, file, buffer, validation.ext, {
+    overrideFilename,
+  });
 
   const metadata = await extractMetadata(stored.absolutePath, assetType).catch(() => null);
 
@@ -66,13 +68,6 @@ export const POST = withErrorHandler(async (req) => {
       metadata: toJsonObject(metadata),
     },
   });
-
-  if (project.status === "DRAFT" || project.status === "SCRIPT_READY") {
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "ASSETS_READY" },
-    });
-  }
 
   return NextResponse.json({ asset });
 }, "assets/upload");

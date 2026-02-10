@@ -3,22 +3,22 @@
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast-provider";
-import { useUploadBoardImage } from "@/src/hooks/queries/use-boards";
+import { useUploadAsset } from "@/src/hooks/queries/use-assets";
 import { cn } from "@/src/lib/storyflow/utils";
 
 interface ImageUploaderProps {
   projectId: string;
   boardId: string;
-  onUploadComplete: (imagePath: string) => void;
+  onUploadComplete: (payload: { assetId: string; path: string }) => void;
   className?: string;
 }
 
 export function ImageUploader({ projectId, boardId, onUploadComplete, className }: ImageUploaderProps) {
   const toast = useToast();
-  const uploadMutation = useUploadBoardImage(projectId);
+  const uploadMutation = useUploadAsset(projectId);
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(null);
 
   const validateImage = async (file: File): Promise<void> => {
     // Validate file size (max 50MB)
@@ -51,12 +51,16 @@ export function ImageUploader({ projectId, boardId, onUploadComplete, className 
       return;
     }
     setUploading(true);
+
+    const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    const renamedFile = new File([file], `${boardId}.${extension}`, { type: file.type });
+
     uploadMutation.mutate(
-      { file, boardId },
+      { file: renamedFile, options: { type: "IMAGE", boardId } },
       {
-        onSuccess: (data) => {
-          setUploadedImage(data.imagePath);
-          onUploadComplete(data.imagePath);
+        onSuccess: (asset) => {
+          setUploadedImagePath(asset.path);
+          onUploadComplete({ assetId: asset.id, path: asset.path });
           toast({ title: "Image uploaded successfully", variant: "success" });
         },
         onError: (error) => {
@@ -119,12 +123,12 @@ export function ImageUploader({ projectId, boardId, onUploadComplete, className 
         onDragLeave={handleDrag}
         onDrop={handleDrop}
       >
-        {uploadedImage ? (
+        {uploadedImagePath ? (
           <div className="space-y-4">
             {/* Preview */}
             <div className="relative mx-auto max-w-md overflow-hidden rounded-lg border border-slate-700">
               <img
-                src={`/projects/${projectId}/${uploadedImage}`}
+                src={uploadedImagePath.startsWith("/") ? uploadedImagePath : `/${uploadedImagePath}`}
                 alt="Uploaded board"
                 className="h-auto w-full"
               />
@@ -139,7 +143,7 @@ export function ImageUploader({ projectId, boardId, onUploadComplete, className 
               </svg>
               Image uploaded successfully
             </div>
-            <Button size="sm" variant="outline" onClick={() => setUploadedImage(null)}>
+            <Button size="sm" variant="outline" onClick={() => setUploadedImagePath(null)}>
               Upload Different Image
             </Button>
           </div>

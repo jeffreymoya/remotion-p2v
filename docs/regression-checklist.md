@@ -46,15 +46,16 @@ Use this checklist before releases to verify the full web UI pipeline (CLI depre
 - Upload tab: image/audio/video upload accepts allowed types; upload progress + error states; files saved to correct subfolders (images/video/audio).
 - Deleting/replacing assets updates timeline references (no broken links in preview).
 - Large file handling: oversize or disallowed uploads blocked client/server-side with clear error; progress stable on 100MB+ files.
+- Media completion guard: Media stage only advances when board prompts exist and at least one asset is present (guarded in status machine).
 
 ## Boards Pipeline
-1. Config step saves duration + style guide; values persist.
-2. Plan step groups script segments into boards; counts align with script segments.
-3. Prompts step generates prompts per board; manual edits saved.
-4. Upload step: board images attach per board; handles re-upload; missing image warning shown.
-5. Regions step: AI detects regions; canvas editor allows add/move/delete; saves to `board-regions.json`.
-6. Triggers step: word-level camera triggers generated; aligns words → regions; regenerating updates triggers without loss.
-7. Viewport build: generates `viewport.json`; preview scrub works; errors reported if upstream artifacts missing.
+1. Media → Create & Upload tab: Config step saves duration + style guide; values persist.
+2. Media → Create & Upload tab: Plan step groups script segments into boards; counts align with script segments.
+3. Media → Create & Upload tab: Prompts step generates prompts per board; manual edits saved.
+4. Media → Create & Upload tab: Upload step saves board images as `Asset` records (deterministic `{boardId}.*` filenames), attaches per board via `assetId`, handles re-upload, and shows missing image warnings with CTA back to Media.
+5. Storyboard page: Regions step loads images via `assetId`; AI detects regions; canvas editor allows add/move/delete; saves to `board-regions.json`; missing-image state renders guidance + link to Media and allows retry.
+6. Storyboard page: Triggers step generates word-level camera triggers aligned to regions; regenerating updates triggers without loss.
+7. Storyboard page: Viewport build generates `viewport.json`; preview scrub works; missing-image state renders guidance + link to Media and allows retry; errors reported if upstream artifacts missing.
 
 ## Concurrency & Cache
 - Same project opened in two tabs: edits reconcile without silent overwrite; mutation invalidates TanStack caches.

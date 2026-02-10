@@ -1,4 +1,4 @@
-import { ConflictError, NotFoundError } from "@/app/api/lib";
+import { NotFoundError } from "@/app/api/lib";
 import { runStage } from "@/src/lib/storyflow/pipeline/runner";
 import type {
   PipelineStage,
@@ -6,6 +6,7 @@ import type {
 } from "@/src/lib/storyflow/pipeline/types";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import type { ProjectStatus } from "@/src/lib/storyflow/types";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 type MediaStageInput = { projectId: string; projectStatus: ProjectStatus; assetCount: number };
 type MediaStageOptions = PipelineStageOptions;
@@ -28,26 +29,14 @@ export const mediaStage = {
       where: { projectId },
     });
 
-    if (assetCount === 0) {
-      throw new ConflictError("Upload or import assets before marking Media complete.");
-    }
-
     return { projectId, projectStatus: project.status, assetCount };
   },
   async execute(input: MediaStageInput, options?: MediaStageOptions): Promise<MediaStageInput> {
     options?.onProgress?.(1);
     return input;
   },
-  async commit(projectId: string, _output: MediaStageInput, input?: MediaStageInput) {
-    const priorStatus = input?.projectStatus;
-    if (priorStatus && ["BOARDS_READY", "VIEWPORT_READY", "RENDER_READY", "RENDERING", "COMPLETED"].includes(priorStatus)) {
-      return;
-    }
-
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "ASSETS_READY" },
-    });
+  async commit(projectId: string) {
+    await transitionProjectStatus(projectId, "ASSETS_READY");
   },
 } satisfies PipelineStage<MediaStageInput, MediaStageInput, MediaStageOptions>;
 

@@ -19,14 +19,15 @@ import {
 } from "@/src/lib/boards/regions-service";
 import { aiGenerate } from "@/src/lib/services/ai";
 import { boardsLogger } from "@/src/lib/logger";
-import { getProjectPaths } from "@/src/lib/paths";
+import { getPublicDir } from "@/src/lib/paths";
+import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 /**
  * Request body schema for region detection
  */
 const detectRegionsRequestSchema = z.object({
   boardId: z.string().min(1),
-  imagePath: z.string().min(1),
+  assetId: z.string().min(1),
   elements: z.array(BoardElementSchema).min(1),
   gridLayout: z.object({
     rows: z.number().int().min(1),
@@ -44,7 +45,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Request body:
  * {
  *   boardId: string,        // Board identifier (e.g., "board-1")
- *   imagePath: string,      // Relative path from project root (e.g., "assets/images/board-1.png")
+ *   assetId: string,      // Asset ID referencing uploaded board image
  *   elements: BoardElement[], // Expected elements in the board
  *   gridLayout: { rows: number, cols: number } // Grid layout used for the board
  * }
@@ -52,7 +53,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  * Response:
  * {
  *   boardId: string,
- *   imagePath: string,
+ *   assetId: string,
  *   imageMetadata: { width, height, aspectRatio },
  *   regions: BoardRegion[],
  *   warnings: string[]
@@ -61,19 +62,28 @@ type RouteParams = { params: Promise<{ id: string }> };
 export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {
   const { id: projectId } = await params;
 
-  const { boardId, imagePath, elements, gridLayout } = await parseBody(
+  const { boardId, assetId, elements, gridLayout } = await parseBody(
     req,
     detectRegionsRequestSchema
   );
 
-  const { root } = getProjectPaths(projectId);
-  const absoluteImagePath = path.join(root, imagePath);
+  const asset = await storyflowPrisma.asset.findUnique({ where: { id: assetId } });
+  if (!asset || asset.projectId !== projectId) {
+    throw new NotFoundError("Asset", assetId);
+  }
+
+  const publicDir = getPublicDir();
+  const normalizedAssetPath = asset.path.replace(/^\//, "");
+  const absoluteImagePath = path.join(publicDir, normalizedAssetPath);
 
   try {
     await fs.access(absoluteImagePath);
   } catch {
-    boardsLogger.error({ projectId, boardId, imagePath, absolutePath: absoluteImagePath }, "Board image not found");
-    throw new NotFoundError("Board image", absoluteImagePath);
+    boardsLogger.error(
+      { projectId, boardId, assetId, assetPath: asset.path, absolutePath: absoluteImagePath },
+      "Board image not found"
+    );
+    throw new NotFoundError("Board asset", absoluteImagePath);
   }
 
   const boardPrompt = {
@@ -117,7 +127,8 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
   const response: BoardRegionsOutput & { warnings: string[] } = {
     version: "1.0",
     boardId,
-    imagePath,
+    assetId,
+    assetPath: asset.path,
     imageMetadata: result.imageMetadata,
     regions: result.regions,
     generatedAt: new Date().toISOString(),

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { storyflowPrisma } from "./prisma";
 import { Script } from "./types";
+import { transitionProjectStatus } from "./status-machine";
 
 export const scriptSegmentSchema = z.object({
   index: z.number(),
@@ -50,10 +51,7 @@ export async function saveScript(projectId: string, payload: ScriptPayload) {
     },
   });
 
-  await storyflowPrisma.project.update({
-    where: { id: projectId },
-    data: { status: "SCRIPT_READY" },
-  });
+  await transitionProjectStatus(projectId, "SCRIPT_READY");
 
   return script as unknown as Script;
 }

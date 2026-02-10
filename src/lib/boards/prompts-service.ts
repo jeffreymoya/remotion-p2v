@@ -8,8 +8,9 @@ import {
   SegmentContext,
 } from '../boards-types';
 import { contentAnalysisPrompt, elementDescriptionPrompt } from '../../../config/prompts/boards-image.prompt';
-import { AIProviderFactory } from "@/src/lib/services/ai";
-import { unescapeJsonString } from "@/src/lib/storyflow/gemini-parser";
+import { aiGenerate } from "@/src/lib/services/ai/ai-gateway";
+import { deepExtractArray } from "@/src/lib/storyflow/gemini-parser";
+import { getSettings } from "@/src/lib/storyflow/settings";
 
 export interface ScriptSegment {
   id: string;
@@ -23,31 +24,6 @@ export interface Script {
   title?: string;
   segments: ScriptSegment[];
   totalEstimatedDurationMs?: number;
-}
-
-/**
- * Parse JSON from LLM output, handling code fences and double-escaped payloads.
- */
-function parseJsonFromLLM(raw: string): unknown {
-  const trimmed = raw.trim();
-  const clean = trimmed.startsWith("```")
-    ? trimmed.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim()
-    : trimmed;
-
-  try {
-    return JSON.parse(clean);
-  } catch (firstError) {
-    try {
-      const unescaped = unescapeJsonString(clean);
-      return JSON.parse(unescaped);
-    } catch {
-      throw new Error(
-        `[AI] Failed to parse LLM JSON: ${
-          firstError instanceof Error ? firstError.message : String(firstError)
-        }`
-      );
-    }
-  }
 }
 
 interface BoardContent {
@@ -96,20 +72,23 @@ export const DETECTIVE_BOARD_STYLE_GUIDE = `- Warm brown cork board texture\n- E
  * Generate board prompts for image generation
  */
 export async function generateBoardPrompts(
+  projectId: string,
   boards: BoardSegmentMapping[],
   segments: ScriptSegment[],
-  gridLayout = { rows: 2, cols: 3 }
+  gridLayout = { rows: 2, cols: 3 },
+  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE
 ): Promise<BoardPromptsOutput> {
   console.log(`[PROMPTS] Generating prompts for ${boards.length} boards...`);
 
+  const resolvedStyleGuide = styleGuide.trim() || DETECTIVE_BOARD_STYLE_GUIDE;
   const prompts: BoardPrompt[] = [];
 
   for (const board of boards) {
     console.log(`[PROMPTS] Processing ${board.boardId}...`);
 
-    const content = await analyzeContent(board, segments);
+    const content = await analyzeContent(projectId, board, segments);
     let elements = generateElements(content, gridLayout);
-    elements = await fillElementDescriptions(elements, content);
+    elements = await fillElementDescriptions(projectId, elements, content);
 
     const segmentContexts = mapSegmentsToElements(
       segments,
@@ -117,12 +96,12 @@ export async function generateBoardPrompts(
       board.segmentIndices
     );
 
-    const fullPromptText = buildFullPrompt(elements, gridLayout);
+    const fullPromptText = buildFullPrompt(elements, gridLayout, resolvedStyleGuide);
 
     prompts.push({
       boardId: board.boardId,
       gridLayout,
-      styleGuide: DETECTIVE_BOARD_STYLE_GUIDE,
+      styleGuide: resolvedStyleGuide,
       elements,
       segmentContexts,
       fullPromptText,
@@ -140,6 +119,7 @@ export async function generateBoardPrompts(
  * Analyze board content using AI to extract topics, entities, and tone
  */
 export async function analyzeContent(
+  projectId: string,
   boardPlan: BoardSegmentMapping,
   segments: ScriptSegment[]
 ): Promise<BoardContent> {
@@ -160,21 +140,17 @@ export async function analyzeContent(
   }
 
   const combinedText = boardSegments.map((s) => s.text).join(" ");
+  const settings = await getSettings();
 
-  const aiProvider = await AIProviderFactory.getProviderWithFallback();
-  aiProvider.setPipelineStage?.('boards-prompts-analysis');
+  const result = await aiGenerate({
+    prompt: contentAnalysisPrompt(combinedText),
+    projectId,
+    operation: 'boards-prompts-analysis',
+    schema: ContentAnalysisSchema,
+    model: settings.ai.proModel,
+  });
 
-  const prompt = contentAnalysisPrompt(combinedText);
-
-  const analysis = await callAIWithRetry(async () => {
-    const raw = await aiProvider.complete(prompt);
-    const parsed = parseJsonFromLLM(String(raw));
-    const validated = ContentAnalysisSchema.safeParse(parsed);
-    if (!validated.success) {
-      throw new Error(`[PROMPTS] Content analysis failed validation: ${validated.error.message}`);
-    }
-    return validated.data;
-  }, 3, 'content-analysis');
+  const analysis = result.data as z.output<typeof ContentAnalysisSchema>;
 
   return {
     boardId: boardPlan.boardId,
@@ -237,11 +213,16 @@ export function selectElementTypes(topics: string[], totalCells: number): BoardE
  * Fill element descriptions using AI
  */
 export async function fillElementDescriptions(
+  projectId: string,
   elements: BoardElement[],
   content: BoardContent
 ): Promise<BoardElement[]> {
-  const aiProvider = await AIProviderFactory.getProviderWithFallback();
-  aiProvider.setPipelineStage?.('boards-prompts-elements');
+  type ElementDescriptions = z.infer<typeof ElementDescriptionResponseSchema>;
+
+  const CoercedElementDescriptionsSchema = z.preprocess(
+    (val) => deepExtractArray(val, ['id', 'description']) ?? val,
+    ElementDescriptionResponseSchema
+  ) as z.ZodType<ElementDescriptions>;
 
   const prompt = elementDescriptionPrompt(elements, {
     topics: content.topics,
@@ -249,17 +230,17 @@ export async function fillElementDescriptions(
     emotionalTone: content.emotionalTone,
   });
 
-  const descriptions = await callAIWithRetry(async () => {
-    const raw = await aiProvider.complete(prompt);
-    const parsed = parseJsonFromLLM(String(raw));
-    // Gemini sometimes wraps arrays in an object - unwrap if needed
-    const unwrapped = unwrapArrayFromObject(parsed);
-    const validated = ElementDescriptionResponseSchema.safeParse(unwrapped);
-    if (!validated.success) {
-      throw new Error(`[PROMPTS] Element description response failed validation: ${validated.error.message}`);
-    }
-    return validated.data;
-  }, 3, 'element-descriptions');
+  const settings = await getSettings();
+
+  const result = await aiGenerate<ElementDescriptions>({
+    prompt,
+    projectId,
+    operation: 'boards-prompts-elements',
+    schema: CoercedElementDescriptionsSchema,
+    model: settings.ai.proModel,
+  });
+
+  const descriptions = result.data;
 
   const descriptionMap = new Map(descriptions.map(d => [d.id, d]));
 
@@ -303,7 +284,8 @@ export function mapSegmentsToElements(
  */
 export function buildFullPrompt(
   elements: BoardElement[],
-  gridLayout: { rows: number; cols: number }
+  gridLayout: { rows: number; cols: number },
+  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE
 ): string {
   const elementDescriptions = elements
     .map(elem => {
@@ -318,7 +300,7 @@ export function buildFullPrompt(
     .map(e => `- Connect ${e.id} to ${e.connectionTo!.join(', ')} with red string`)
     .join('\n');
 
-  return `Create a detective investigation board image with a cork board background.\n\nSTYLE:\n${DETECTIVE_BOARD_STYLE_GUIDE}\n\nGRID LAYOUT: ${gridLayout.rows} rows x ${gridLayout.cols} columns\n\nELEMENTS (place each in its specified position):\n${elementDescriptions}\n\nCONNECTIONS:\n${connections || '- Red strings connecting thematically related elements'}\n\nIMPORTANT:\n- Each element must be clearly visible and distinct\n- Leave small gaps between elements\n- Elements should fit within their grid cell\n- Style should feel like an authentic investigation board`;
+  return `Create a detailed investigation board image with a cork board background.\n\nSTYLE:\n${styleGuide}\n\nGRID LAYOUT: ${gridLayout.rows} rows x ${gridLayout.cols} columns\n\nELEMENTS (place each in its specified position):\n${elementDescriptions}\n\nCONNECTIONS:\n${connections || '- Red strings connecting thematically related elements'}\n\nIMPORTANT:\n- Each element must be clearly visible and distinct\n- Leave small gaps between elements\n- Elements should fit within their grid cell\n- Style should feel visually cohesive and intentional`;
 }
 
 /**
@@ -332,50 +314,3 @@ function getGridPositionName(row: number, col: number): string {
   return names[row]?.[col] ?? `row-${row}-col-${col}`;
 }
 
-/**
- * Retry wrapper for AI calls
- */
-async function callAIWithRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries: number,
-  label: string
-): Promise<T> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (attempt === maxRetries) throw error;
-      const delay = Math.pow(2, attempt) * 1000;
-      console.warn(`[AI] Attempt ${attempt}/${maxRetries} for ${label} failed. Retrying in ${delay}ms...`);
-      await new Promise(res => setTimeout(res, delay));
-    }
-  }
-  throw new Error(`[AI] Failed to complete ${label}`);
-}
-
-
-/**
- * Unwrap array from object if LLM wrapped it (e.g., { "elements": [...] } -> [...])
- */
-function unwrapArrayFromObject(parsed: unknown): unknown {
-  if (Array.isArray(parsed)) {
-    return parsed;
-  }
-  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-    const values = Object.values(parsed as Record<string, unknown>);
-    // If object has exactly one property and it's an array, unwrap it
-    if (values.length === 1 && Array.isArray(values[0])) {
-      console.log('[PROMPTS] Unwrapped array from object wrapper');
-      return values[0];
-    }
-    // Check common wrapper keys
-    const obj = parsed as Record<string, unknown>;
-    for (const key of ['elements', 'results', 'data', 'items', 'descriptions']) {
-      if (Array.isArray(obj[key])) {
-        console.log(`[PROMPTS] Unwrapped array from "${key}" property`);
-        return obj[key];
-      }
-    }
-  }
-  return parsed;
-}

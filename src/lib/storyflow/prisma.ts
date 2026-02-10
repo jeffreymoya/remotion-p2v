@@ -1,4 +1,4 @@
-import { PrismaClient, ProjectStatus } from "../../generated/storyflow/client";
+import { PrismaClient } from "../../generated/storyflow/client";
 import { env } from "@/src/env";
 
 // Extended client typing with helper methods while preserving all model delegates
@@ -10,7 +10,6 @@ export type StoryflowPrismaClient = PrismaClient & {
     ): ReturnType<PrismaClient["project"]["findUnique"]>;
     findWithScript(id: string): ReturnType<PrismaClient["project"]["findUnique"]>;
     findWithAssets(id: string): ReturnType<PrismaClient["project"]["findUnique"]>;
-    updateStatus(id: string, status: ProjectStatus): ReturnType<PrismaClient["project"]["update"]>;
   };
   script: PrismaClient["script"] & {
     findByProjectIdOrThrow<T extends Omit<Parameters<PrismaClient["script"]["findUnique"]>[0], "where">>(
@@ -69,12 +68,6 @@ function attachExtensions(client: PrismaClient): StoryflowPrismaClient {
     }
     return project;
   };
-
-  projectDelegate.updateStatus = async (id: string, status: ProjectStatus) =>
-    client.project.update({
-      where: { id },
-      data: { status, updatedAt: new Date() },
-    });
 
   const scriptDelegate = client.script as StoryflowPrismaClient["script"];
   scriptDelegate.findByProjectIdOrThrow = async (projectId, args) => {

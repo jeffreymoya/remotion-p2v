@@ -28,16 +28,25 @@ export async function listAssets(projectId: string) {
   });
 }
 
+export function sanitizeDeterministicFilename(name: string, ext: string) {
+  const base = path.parse(name).name.replace(/[^a-zA-Z0-9-_]/g, "-") || "file";
+  const safeExt = ext.replace(/^\./, "");
+  return `${base}.${safeExt}`;
+}
+
 export async function saveAssetFile(
   projectId: string,
   type: AssetType,
   file: File,
   buffer: Buffer,
-  ext: string
+  ext: string,
+  options?: { overrideFilename?: string }
 ) {
   const paths = await ensureProjectDirs(projectId);
   const subdir = getAssetSubdir(type);
-  const filename = sanitizeFilename(file.name, ext);
+  const filename = options?.overrideFilename
+    ? sanitizeDeterministicFilename(options.overrideFilename, ext)
+    : sanitizeFilename(file.name, ext);
   const assetDir = path.join(paths.assets, subdir);
   const absolutePath = path.join(assetDir, filename);
   const relativePath = path.relative(getPublicDir(), absolutePath);

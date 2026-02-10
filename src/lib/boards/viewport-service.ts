@@ -67,7 +67,7 @@ export async function buildViewportJson(
   const imagesDir = path.join(projectPath, 'assets', 'images');
 
   console.log('[BUILD] Checking for upscaled images...');
-  const imageMap = await checkUpscaledImages(plan.boards, imagesDir);
+  const imageMap = await checkUpscaledImages(plan.boards, imagesDir, regionsData);
 
   console.log('[BUILD] Calculating keyframes...');
   const keyframes = calculateKeyframes(triggers.triggers, regionsData, fps);
@@ -80,14 +80,19 @@ export async function buildViewportJson(
 
 async function checkUpscaledImages(
   boards: BoardPlan['boards'],
-  imagesDir: string
+  imagesDir: string,
+  regionsData: BoardRegionsOutput[]
 ): Promise<Map<string, ImageInfo>> {
   const imageMap = new Map<string, ImageInfo>();
   const missingUpscales: string[] = [];
 
   for (const board of boards) {
-    const upscaledPath = path.join(imagesDir, `${board.boardId}_8k.png`);
-    const originalPath = path.join(imagesDir, `${board.boardId}.png`);
+    const regionEntry = regionsData.find(r => r.boardId === board.boardId);
+    const baseFilename = regionEntry?.assetPath ? path.basename(regionEntry.assetPath) : `${board.boardId}.png`;
+    const ext = path.extname(baseFilename) || '.png';
+    const stem = path.basename(baseFilename, ext);
+    const upscaledPath = path.join(imagesDir, `${stem}_8k${ext}`);
+    const originalPath = path.join(imagesDir, `${stem}${ext}`);
 
     let imagePath: string;
     if (await fileExists(upscaledPath)) {

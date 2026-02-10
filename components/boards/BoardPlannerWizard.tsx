@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Script } from "@/src/lib/storyflow/types";
-import { BoardPlan, BoardPromptsOutput, BoardTriggersOutput } from "@/src/lib/boards-types";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { Asset, Board, Script } from "@/src/lib/storyflow/types";
+import { BoardPlan, BoardPromptsOutput, BoardRegion, BoardTriggersOutput } from "@/src/lib/boards-types";
 import { ViewportAnimation } from "@/src/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,48 +14,247 @@ import { ViewportPreview } from "./ViewportPreview";
 import { useToast } from "@/components/ui/toast-provider";
 import { useBackgroundTask } from "@/src/hooks/use-background-task";
 import {
+  useBoardPlan,
+  useBoardPrompts,
   useBuildViewport,
   useDetectBoardRegions,
   useGenerateBoardPrompts,
   useGenerateBoardTriggers,
   usePlanBoards,
 } from "@/src/hooks/queries/use-boards";
+import { useProject, useUpdateProject } from "@/src/hooks/queries/use-projects";
 import { cn } from "@/src/lib/storyflow/utils";
 
 interface BoardPlannerWizardProps {
   projectId: string;
   script: Script;
+  images?: Asset[];
+  initialBoards?: (Board & { assetId?: string | null })[];
+  mode?: "media" | "storyboard";
   className?: string;
 }
 
 type WizardStep = "config" | "plan" | "prompts" | "upload" | "regions" | "triggers" | "viewport";
 
-export function BoardPlannerWizard({ projectId, script, className }: BoardPlannerWizardProps) {
+type WizardProgressState = {
+  currentStep: WizardStep;
+  maxBoardDuration: number;
+  styleGuide: string;
+  gridRows: number;
+  gridCols: number;
+  boardPlan: BoardPlan | null;
+  prompts: BoardPromptsOutput | null;
+  uploadedImages: Record<string, { assetId: string; path?: string }>;
+  updatedAt: string;
+};
+
+function isWizardStep(value: unknown): value is WizardStep {
+  return (
+    value === "config" ||
+    value === "plan" ||
+    value === "prompts" ||
+    value === "upload" ||
+    value === "regions" ||
+    value === "triggers" ||
+    value === "viewport"
+  );
+}
+
+function readWizardProgress(value: unknown): Partial<WizardProgressState> | null {
+  if (!value || typeof value !== "object") return null;
+  const root = value as Record<string, unknown>;
+  const boardPlanner = root.boardPlanner;
+  if (!boardPlanner || typeof boardPlanner !== "object") return null;
+  return boardPlanner as Partial<WizardProgressState>;
+}
+
+export function BoardPlannerWizard({
+  projectId,
+  script,
+  images = [],
+  initialBoards = [],
+  mode = "storyboard",
+  className,
+}: BoardPlannerWizardProps) {
   const toast = useToast();
   const { runTask, isTaskRunning } = useBackgroundTask();
+  const { data: project } = useProject(projectId);
+  const { data: existingPlan, isFetching: isPlanFetching } = useBoardPlan(projectId);
+  const { data: existingPrompts, isFetching: isPromptsFetching } = useBoardPrompts(projectId);
+  const updateProjectMutation = useUpdateProject();
   const planBoardsMutation = usePlanBoards(projectId);
   const promptsMutation = useGenerateBoardPrompts(projectId);
   const regionsMutation = useDetectBoardRegions(projectId);
   const triggersMutation = useGenerateBoardTriggers(projectId);
   const viewportMutation = useBuildViewport(projectId);
+  const isMediaMode = mode === "media";
   const [currentStep, setCurrentStep] = useState<WizardStep>("config");
   const [loading, setLoading] = useState(false);
 
   // Config state
   const [maxBoardDuration, setMaxBoardDuration] = useState(60000); // 60 seconds
   const [styleGuide, setStyleGuide] = useState("Detective investigation board");
+  const [gridRows, setGridRows] = useState(2);
+  const [gridCols, setGridCols] = useState(3);
 
   // Results state
   const [boardPlan, setBoardPlan] = useState<BoardPlan | null>(null);
   const [prompts, setPrompts] = useState<BoardPromptsOutput | null>(null);
-  const [uploadedImages, setUploadedImages] = useState<Record<string, string>>({});
+  const [uploadedImages, setUploadedImages] = useState<Record<string, { assetId: string; path?: string }>>({});
   const [regionsData, setRegionsData] = useState<{
-    imagePath: string;
+    assetId: string;
+    assetPath?: string;
     regions: BoardRegion[];
     imageMetadata: { width: number; height: number; aspectRatio: number };
   } | null>(null);
   const [triggers, setTriggers] = useState<BoardTriggersOutput | null>(null);
   const [viewport, setViewport] = useState<ViewportAnimation | null>(null);
+  const [hydratedFromServer, setHydratedFromServer] = useState(false);
+
+  const imagesById = useMemo(() => {
+    return images.reduce<Record<string, Asset>>((acc, asset) => {
+      acc[asset.id] = asset;
+      return acc;
+    }, {});
+  }, [images]);
+
+  const persistWizardProgress = useMemo(() => {
+    return (next: Partial<WizardProgressState>) => {
+      const persisted = readWizardProgress(project?.wizardProgress);
+      const payload: WizardProgressState = {
+        currentStep: next.currentStep ?? currentStep,
+        maxBoardDuration: next.maxBoardDuration ?? maxBoardDuration,
+        styleGuide: next.styleGuide ?? styleGuide,
+        gridRows: next.gridRows ?? gridRows,
+        gridCols: next.gridCols ?? gridCols,
+        boardPlan: next.boardPlan ?? boardPlan,
+        prompts: next.prompts ?? prompts,
+        uploadedImages: next.uploadedImages ?? uploadedImages,
+        updatedAt: new Date().toISOString(),
+      };
+
+      updateProjectMutation.mutate({
+        id: projectId,
+        data: {
+          wizardProgress: {
+            ...(typeof project?.wizardProgress === "object" && project?.wizardProgress !== null
+              ? (project.wizardProgress as Record<string, unknown>)
+              : {}),
+            boardPlanner: {
+              ...persisted,
+              ...payload,
+            },
+          },
+        },
+      });
+    };
+  }, [
+    project,
+    currentStep,
+    maxBoardDuration,
+    styleGuide,
+    gridRows,
+    gridCols,
+    boardPlan,
+    prompts,
+    uploadedImages,
+    updateProjectMutation,
+    projectId,
+  ]);
+
+  const goToStep = (step: WizardStep) => {
+    setCurrentStep(step);
+    persistWizardProgress({ currentStep: step });
+  };
+
+  useEffect(() => {
+    if (hydratedFromServer || isPlanFetching || isPromptsFetching) return;
+
+    const persisted = readWizardProgress(project?.wizardProgress);
+    const hydratedPlan = (persisted?.boardPlan as BoardPlan | null | undefined) ?? existingPlan?.plan ?? null;
+    const hydratedPrompts =
+      (persisted?.prompts as BoardPromptsOutput | null | undefined) ?? existingPrompts ?? null;
+    const initialUploadsFromBoards = initialBoards.reduce<Record<string, { assetId: string; path?: string }>>(
+      (acc, board) => {
+        const assetId = (board as { assetId?: string | null }).assetId;
+        if (!assetId) return acc;
+        const boardKey =
+          hydratedPlan?.boards?.[board.index]?.boardId ??
+          hydratedPlan?.boards?.[0]?.boardId ??
+          board.id;
+        acc[boardKey] = { assetId, path: imagesById[assetId]?.path };
+        return acc;
+      },
+      {}
+    );
+    const normalizedPersistedUploads =
+      persisted?.uploadedImages && typeof persisted.uploadedImages === "object"
+        ? (persisted.uploadedImages as Record<string, unknown>)
+        : {};
+    const sanitizedPersistedUploads = Object.entries(normalizedPersistedUploads).reduce<
+      Record<string, { assetId: string; path?: string }>
+    >((acc, [boardId, value]) => {
+      if (value && typeof value === "object" && typeof (value as { assetId?: string }).assetId === "string") {
+        acc[boardId] = {
+          assetId: (value as { assetId: string }).assetId,
+          path: (value as { path?: string }).path,
+        };
+      }
+      return acc;
+    }, {});
+    const hydratedUploads = {
+      ...sanitizedPersistedUploads,
+      ...initialUploadsFromBoards,
+    };
+
+    if (typeof persisted?.maxBoardDuration === "number") {
+      setMaxBoardDuration(persisted.maxBoardDuration);
+    }
+    if (typeof persisted?.styleGuide === "string") {
+      setStyleGuide(persisted.styleGuide);
+    }
+    if (typeof persisted?.gridRows === "number") {
+      setGridRows(Math.min(4, Math.max(1, persisted.gridRows)));
+    }
+    if (typeof persisted?.gridCols === "number") {
+      setGridCols(Math.min(6, Math.max(1, persisted.gridCols)));
+    }
+
+    if (hydratedPlan) setBoardPlan(hydratedPlan);
+    if (hydratedPrompts) setPrompts(hydratedPrompts);
+    if (Object.keys(hydratedUploads).length > 0) setUploadedImages(hydratedUploads);
+
+    const stepOrder: WizardStep[] = ["config", "plan", "prompts", "upload", "regions", "triggers", "viewport"];
+    let dataMinStep: WizardStep = "config";
+    if (hydratedPlan) dataMinStep = "plan";
+    if (hydratedPrompts) dataMinStep = "prompts";
+    if (Object.keys(hydratedUploads).length > 0) dataMinStep = "upload";
+
+    let nextStep = dataMinStep;
+    if (persisted?.currentStep && isWizardStep(persisted.currentStep)) {
+      const persistedIdx = stepOrder.indexOf(persisted.currentStep);
+      const dataMinIdx = stepOrder.indexOf(dataMinStep);
+      if (persistedIdx >= dataMinIdx) {
+        nextStep = persisted.currentStep;
+      }
+    }
+    if (isMediaMode && (nextStep === "regions" || nextStep === "triggers" || nextStep === "viewport")) {
+      nextStep = "upload";
+    }
+
+    setCurrentStep(nextStep);
+    setHydratedFromServer(true);
+  }, [
+    hydratedFromServer,
+    isPlanFetching,
+    isPromptsFetching,
+    project?.wizardProgress,
+    existingPlan,
+    existingPrompts,
+    initialBoards,
+    imagesById,
+    isMediaMode,
+  ]);
 
   const handleGeneratePlan = async () => {
     setLoading(true);
@@ -71,6 +270,14 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
         });
         setBoardPlan(data.plan);
         setCurrentStep("plan");
+        persistWizardProgress({
+          currentStep: "plan",
+          boardPlan: data.plan,
+          maxBoardDuration,
+          styleGuide,
+          gridRows,
+          gridCols,
+        });
         return data;
       }
     );
@@ -97,31 +304,40 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
           payload: {
             boards: boardPlan.boards,
             segments,
-            gridLayout: { rows: 2, cols: 3 },
+            gridLayout: { rows: gridRows, cols: gridCols },
+            styleGuide: styleGuide.trim() || undefined,
           },
           signal,
         });
         setPrompts(data);
         setCurrentStep("prompts");
+        persistWizardProgress({ currentStep: "prompts", prompts: data });
         return data;
       }
     );
     setLoading(false);
   };
 
-  const handleImageUpload = (boardId: string, imagePath: string) => {
-    setUploadedImages((prev) => ({ ...prev, [boardId]: imagePath }));
+  const handleImageUpload = (boardId: string, uploaded: { assetId: string; path?: string }) => {
+    setUploadedImages((prev) => {
+      const next = { ...prev, [boardId]: uploaded };
+      persistWizardProgress({ uploadedImages: next, currentStep: "upload" });
+      return next;
+    });
   };
 
   const handleDetectRegions = async () => {
+    if (isMediaMode) return;
     if (!prompts || !boardPlan) return;
 
     // For now, detect regions for the first board only
     const firstBoard = boardPlan.boards[0];
     const boardId = firstBoard.boardId;
-    const imagePath = uploadedImages[boardId];
+    const uploadInfo = uploadedImages[boardId];
+    const assetId = uploadInfo?.assetId;
+    const assetPath = uploadInfo?.path ?? (assetId ? imagesById[assetId]?.path : undefined);
 
-    if (!imagePath) {
+    if (!assetId) {
       toast({ title: "Error", description: "Please upload an image first", variant: "error" });
       return;
     }
@@ -139,18 +355,19 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
         const data = await regionsMutation.mutateAsync({
           payload: {
             boardId,
-            imagePath,
+            assetId,
             elements: boardPrompt.elements,
             gridLayout: boardPrompt.gridLayout,
           },
           signal,
         });
         setRegionsData({
-          imagePath,
+          assetId: data.assetId,
+          assetPath: data.assetPath ?? assetPath,
           regions: data.regions,
           imageMetadata: data.imageMetadata,
         });
-        setCurrentStep("regions");
+        goToStep("regions");
         return data;
       }
     );
@@ -158,6 +375,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
   };
 
   const handleGenerateTriggers = async () => {
+    if (isMediaMode) return;
     setLoading(true);
     await runTask(
       { projectId, category: "board-triggers-generation", name: "Generating camera triggers", icon: "cog" },
@@ -167,7 +385,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
           signal,
         });
         setTriggers(data);
-        setCurrentStep("triggers");
+        goToStep("triggers");
         return data;
       }
     );
@@ -175,6 +393,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
   };
 
   const handleBuildViewport = async () => {
+    if (isMediaMode) return;
     setLoading(true);
     await runTask(
       { projectId, category: "board-viewport-build", name: "Building viewport animation", icon: "film" },
@@ -184,7 +403,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
           signal,
         });
         setViewport(data.viewportJson);
-        setCurrentStep("viewport");
+        goToStep("viewport");
         return data;
       }
     );
@@ -198,7 +417,13 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
     setRegionsData(null);
     setTriggers(null);
     setViewport(null);
-    setCurrentStep("config");
+    goToStep("config");
+    persistWizardProgress({
+      currentStep: "config",
+      boardPlan: null,
+      prompts: null,
+      uploadedImages: {},
+    });
   };
 
   const isAnyMutationPending = useMemo(
@@ -219,58 +444,53 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
 
   const isBusy = loading || isAnyMutationPending;
 
+  const visibleSteps: WizardStep[] = isMediaMode
+    ? ["config", "plan", "prompts", "upload"]
+    : ["config", "plan", "prompts", "upload", "regions", "triggers", "viewport"];
+
+  const stepCompleted: Record<WizardStep, boolean> = {
+    config: !!boardPlan,
+    plan: !!prompts,
+    prompts: !!prompts,
+    upload: Object.keys(uploadedImages).length > 0 || (!!regionsData && !isMediaMode),
+    regions: !!triggers,
+    triggers: !!viewport,
+    viewport: false,
+  };
+
+  const stepLabels: Record<WizardStep, string> = {
+    config: "Config",
+    plan: "Plan",
+    prompts: "Prompts",
+    upload: "Upload",
+    regions: "Regions",
+    triggers: "Triggers",
+    viewport: "Viewport",
+  };
+
+  const steps = visibleSteps.map((step, idx) => ({
+    step,
+    label: stepLabels[step],
+    number: idx + 1,
+    isActive: currentStep === step,
+    isCompleted: stepCompleted[step],
+  }));
+
   return (
     <div className={cn("space-y-6", className)}>
       {/* Progress Steps */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        <StepIndicator
-          number={1}
-          label="Config"
-          isActive={currentStep === "config"}
-          isCompleted={!!boardPlan}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={2}
-          label="Plan"
-          isActive={currentStep === "plan"}
-          isCompleted={!!prompts}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={3}
-          label="Prompts"
-          isActive={currentStep === "prompts"}
-          isCompleted={prompts !== null && Object.keys(uploadedImages).length > 0}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={4}
-          label="Upload"
-          isActive={currentStep === "upload"}
-          isCompleted={!!regionsData}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={5}
-          label="Regions"
-          isActive={currentStep === "regions"}
-          isCompleted={!!triggers}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={6}
-          label="Triggers"
-          isActive={currentStep === "triggers"}
-          isCompleted={!!viewport}
-        />
-        <StepSeparator />
-        <StepIndicator
-          number={7}
-          label="Viewport"
-          isActive={currentStep === "viewport"}
-          isCompleted={false}
-        />
+        {steps.map((item, index) => (
+          <Fragment key={item.step}>
+            <StepIndicator
+              number={item.number}
+              label={item.label}
+              isActive={item.isActive}
+              isCompleted={item.isCompleted}
+            />
+            {index < steps.length - 1 && <StepSeparator />}
+          </Fragment>
+        ))}
       </div>
 
       {/* Step Content */}
@@ -304,8 +524,11 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-200">Style Guide</label>
+                <label htmlFor="style-guide" className="text-sm font-medium text-slate-200">
+                  Style Guide
+                </label>
                 <Input
+                  id="style-guide"
                   type="text"
                   value={styleGuide}
                   onChange={(e) => setStyleGuide(e.target.value)}
@@ -315,6 +538,47 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
                 <p className="text-xs text-slate-500">
                   Visual style for AI image generation (e.g., "Detective board", "Modern infographic",
                   "Conspiracy wall")
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-slate-200">Grid Layout</p>
+                <div className="flex flex-wrap gap-3">
+                  <div className="space-y-1">
+                    <label htmlFor="grid-rows" className="text-xs text-slate-400">
+                      Rows
+                    </label>
+                    <Input
+                      id="grid-rows"
+                      type="number"
+                      min={1}
+                      max={4}
+                      value={gridRows}
+                      onChange={(e) =>
+                        setGridRows(Math.min(4, Math.max(1, Number.parseInt(e.target.value || "2", 10) || 2)))
+                      }
+                      className="w-24"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="grid-cols" className="text-xs text-slate-400">
+                      Columns
+                    </label>
+                    <Input
+                      id="grid-cols"
+                      type="number"
+                      min={1}
+                      max={6}
+                      value={gridCols}
+                      onChange={(e) =>
+                        setGridCols(Math.min(6, Math.max(1, Number.parseInt(e.target.value || "3", 10) || 3)))
+                      }
+                      className="w-24"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500">
+                  Controls prompt layout (max 4 rows x 6 columns).
                 </p>
               </div>
             </div>
@@ -340,7 +604,11 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
                     <li>AI analyzes your script and groups segments into themed boards</li>
                     <li>Each board gets detailed image prompts for AI tools (DALL-E, Midjourney, etc.)</li>
                     <li>You generate the images externally, then upload them here</li>
-                    <li>AI detects regions in your images and creates camera paths</li>
+                    {isMediaMode ? (
+                      <li>Continue in Storyboard to detect regions and build camera paths</li>
+                    ) : (
+                      <li>AI detects regions in your images and creates camera paths</li>
+                    )}
                   </ol>
                 </div>
               </div>
@@ -368,13 +636,13 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
               </Button>
             </div>
 
-            <BoardPlanView plan={boardPlan} />
+            <BoardPlanView plan={boardPlan} projectId={projectId} />
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
               <Button onClick={handleGeneratePrompts} disabled={isBusy || isTaskRunning("board-prompts-generation", projectId)}>
                 {isBusy ? "Generating..." : "Generate Image Prompts"}
               </Button>
-              <Button variant="outline" onClick={() => setCurrentStep("config")}>
+              <Button variant="outline" onClick={() => goToStep("config")}>
                 Back to Config
               </Button>
             </div>
@@ -418,10 +686,10 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
                     <li>Copy each board's prompt and paste into DALL-E, Midjourney, or Stable Diffusion</li>
                     <li>Generate high-resolution images (minimum 2048x2048, recommend 4K+)</li>
                     <li>
-                      Upload the generated images in the <strong>Assets</strong> page
+                      Upload the generated images in the <strong>Media</strong> page
                     </li>
                     <li>
-                      Return here to map images to boards and generate camera paths (coming in next phase)
+                      Continue in Storyboard to detect regions and build camera paths
                     </li>
                   </ol>
                 </div>
@@ -429,10 +697,10 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button onClick={() => setCurrentStep("upload")} disabled={loading}>
+              <Button onClick={() => goToStep("upload")} disabled={loading}>
                 Continue to Upload
               </Button>
-              <Button variant="outline" onClick={() => setCurrentStep("plan")}>
+              <Button variant="outline" onClick={() => goToStep("plan")}>
                 Back to Plan
               </Button>
             </div>
@@ -458,18 +726,23 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
               <ImageUploader
                 projectId={projectId}
                 boardId={boardPlan.boards[0].boardId}
-                onUploadComplete={(path) => handleImageUpload(boardPlan.boards[0].boardId, path)}
+                onUploadComplete={(payload) => handleImageUpload(boardPlan.boards[0].boardId, payload)}
               />
             )}
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
               <Button
                 onClick={handleDetectRegions}
-                disabled={isBusy || Object.keys(uploadedImages).length === 0 || isTaskRunning("board-region-detection", projectId)}
+                disabled={
+                  isMediaMode ||
+                  isBusy ||
+                  Object.keys(uploadedImages).length === 0 ||
+                  isTaskRunning("board-region-detection", projectId)
+                }
               >
-                {isBusy ? "Detecting..." : "Detect Regions"}
+                {isMediaMode ? "Detect Regions (Storyboard)" : isBusy ? "Detecting..." : "Detect Regions"}
               </Button>
-              <Button variant="outline" onClick={() => setCurrentStep("prompts")}>
+              <Button variant="outline" onClick={() => goToStep("prompts")}>
                 Back to Prompts
               </Button>
             </div>
@@ -494,7 +767,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
 
             <RegionEditor
               projectId={projectId}
-              imagePath={regionsData.imagePath}
+              assetId={regionsData.assetId}
+              assetPath={regionsData.assetPath ?? (regionsData.assetId ? imagesById[regionsData.assetId]?.path ?? "" : "")}
               regions={regionsData.regions}
               imageMetadata={regionsData.imageMetadata}
               onRegionsChange={(updated) =>
@@ -506,7 +780,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
               <Button onClick={handleGenerateTriggers} disabled={isBusy || isTaskRunning("board-triggers-generation", projectId)}>
                 {isBusy ? "Generating..." : "Generate Triggers"}
               </Button>
-              <Button variant="outline" onClick={() => setCurrentStep("upload")}>
+              <Button variant="outline" onClick={() => goToStep("upload")}>
                 Back to Upload
               </Button>
             </div>
@@ -586,7 +860,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
               <Button onClick={handleBuildViewport} disabled={isBusy || isTaskRunning("board-viewport-build", projectId)}>
                 {isBusy ? "Building..." : "Build Viewport"}
               </Button>
-              <Button variant="outline" onClick={() => setCurrentStep("regions")}>
+              <Button variant="outline" onClick={() => goToStep("regions")}>
                 Back to Regions
               </Button>
             </div>
@@ -610,7 +884,8 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             {regionsData && (
               <ViewportPreview
                 projectId={projectId}
-                imagePath={regionsData.imagePath}
+                assetId={regionsData.assetId}
+                assetPath={regionsData.assetPath ?? (regionsData.assetId ? imagesById[regionsData.assetId]?.path ?? "" : "")}
                 viewportAnimation={viewport}
                 totalDurationMs={boardPlan.totalDurationMs}
               />
@@ -640,7 +915,7 @@ export function BoardPlannerWizard({ projectId, script, className }: BoardPlanne
             </div>
 
             <div className="flex gap-3 border-t border-slate-800 pt-6">
-              <Button variant="outline" onClick={() => setCurrentStep("triggers")}>
+              <Button variant="outline" onClick={() => goToStep("triggers")}>
                 Back to Triggers
               </Button>
             </div>

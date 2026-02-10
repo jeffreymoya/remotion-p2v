@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 const bodySchema = z.object({
   imageAssetId: z.string().optional(),
@@ -26,7 +27,7 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
   const { id } = await params;
   const { imageAssetId, keyframes, regions } = await parseBody(req, bodySchema);
 
-  const project = await storyflowPrisma.project.findByIdOrThrow(id, {
+  await storyflowPrisma.project.findByIdOrThrow(id, {
     include: { viewport: true },
   });
 
@@ -41,13 +42,7 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
     },
   });
 
-  // Update project status when viewport saved - transition to RENDER_READY
-  if (project.status === "ASSETS_READY" || project.status === "VIEWPORT_READY") {
-    await storyflowPrisma.project.update({
-      where: { id },
-      data: { status: "RENDER_READY" },
-    });
-  }
+  await transitionProjectStatus(id, "RENDER_READY");
 
   return NextResponse.json({ viewport });
 }, "projects/[id]/viewport");

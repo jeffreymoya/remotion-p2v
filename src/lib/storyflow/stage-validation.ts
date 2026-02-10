@@ -19,7 +19,7 @@ export type PipelineStageMeta = {
 
 export const STAGE_COMPLETION_CRITERIA: Record<PipelineStageId, string> = {
   script: "Script text generated and TTS completed (blocking).",
-  media: "User clicks Continue to Storyboard.",
+  media: "Image prompts generated and at least 1 asset uploaded.",
   storyboard: "AI boards generated; can proceed immediately.",
   build: "viewport.json and timeline.json generated.",
   render: "Final stage (no gating).",

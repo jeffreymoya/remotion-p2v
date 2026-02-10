@@ -45,8 +45,19 @@ describe("board mutations", () => {
     const { result } = renderHook(() => useGenerateBoardPrompts("p1"), {
       wrapper: createQueryWrapper(createTestQueryClient()),
     });
-    await result.current.mutateAsync({ payload: { boards: [], segments: [] } });
-    expect(boardsApi.generateBoardPrompts).toHaveBeenCalledWith("p1", { boards: [], segments: [] }, undefined);
+    await result.current.mutateAsync({
+      payload: {
+        boards: [],
+        segments: [],
+        gridLayout: { rows: 2, cols: 3 },
+        styleGuide: "Noir collage wall",
+      },
+    });
+    expect(boardsApi.generateBoardPrompts).toHaveBeenCalledWith(
+      "p1",
+      { boards: [], segments: [], gridLayout: { rows: 2, cols: 3 }, styleGuide: "Noir collage wall" },
+      undefined
+    );
   });
 
   it("regions mutation calls API", async () => {
@@ -54,8 +65,14 @@ describe("board mutations", () => {
     const { result } = renderHook(() => useDetectBoardRegions("p1"), {
       wrapper: createQueryWrapper(createTestQueryClient()),
     });
-    await result.current.mutateAsync({ payload: { boardId: "b1", imagePath: "p", elements: [], gridLayout: { rows: 1, cols: 1 } } });
-    expect(boardsApi.detectBoardRegions).toHaveBeenCalledWith("p1", { boardId: "b1", imagePath: "p", elements: [], gridLayout: { rows: 1, cols: 1 } }, undefined);
+    await result.current.mutateAsync({
+      payload: { boardId: "b1", assetId: "asset-1", elements: [], gridLayout: { rows: 1, cols: 1 } },
+    });
+    expect(boardsApi.detectBoardRegions).toHaveBeenCalledWith(
+      "p1",
+      { boardId: "b1", assetId: "asset-1", elements: [], gridLayout: { rows: 1, cols: 1 } },
+      undefined
+    );
   });
 
   it("triggers mutation calls API", async () => {

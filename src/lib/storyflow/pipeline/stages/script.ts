@@ -6,6 +6,7 @@ import type {
 } from "@/src/lib/storyflow/pipeline/types";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import type { ProjectStatus } from "@/src/lib/storyflow/types";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 type ScriptStageInput = { projectId: string; projectStatus: ProjectStatus; segmentCount: number };
 type ScriptStageOptions = PipelineStageOptions;
@@ -35,16 +36,8 @@ export const scriptStage = {
     options?.onProgress?.(1);
     return input;
   },
-  async commit(projectId: string, _output: ScriptStageInput, input?: ScriptStageInput) {
-    const priorStatus = input?.projectStatus;
-    if (priorStatus && ["ASSETS_READY", "BOARDS_READY", "VIEWPORT_READY", "RENDER_READY", "RENDERING", "COMPLETED"].includes(priorStatus)) {
-      return;
-    }
-
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "SCRIPT_READY" },
-    });
+  async commit(projectId: string) {
+    await transitionProjectStatus(projectId, "SCRIPT_READY");
   },
 } satisfies PipelineStage<ScriptStageInput, ScriptStageInput, ScriptStageOptions>;
 

@@ -109,9 +109,11 @@ export function PipelineStepper({ projectId, status, needsReview }: PipelineStep
                   <div className="flex items-center gap-2">
                     <span className="truncate text-sm font-semibold">{stage.label}</span>
                     {stage.needsReview && (
-                      <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-200">
-                        Needs review
-                      </span>
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full bg-amber-400"
+                        title="Needs review"
+                        aria-label="Needs review"
+                      />
                     )}
                   </div>
                   <span className="line-clamp-1 text-xs text-slate-400">{stage.description}</span>

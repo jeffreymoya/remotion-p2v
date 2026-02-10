@@ -140,7 +140,8 @@ export const BoardPlanSchema = z.object({
 export const BoardRegionsOutputSchema = z.object({
   version: z.literal('1.0'),
   boardId: z.string(),
-  imagePath: z.string(),
+  assetId: z.string(),
+  assetPath: z.string().optional(),
   imageMetadata: z.object({
     width: z.number().int().min(1),
     height: z.number().int().min(1),

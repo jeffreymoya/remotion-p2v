@@ -30,4 +30,23 @@ export default [
       ],
     },
   },
+  {
+    // Encourage design tokens over hardcoded slate colors in new UI code.
+    // Existing violations warn (not error) so they can be fixed incrementally.
+    // Token mapping: bg-background, bg-card, bg-input, bg-secondary, bg-accent,
+    //   text-foreground, text-muted-foreground, border-border. See globals.css.
+    files: ["app/**/*.tsx", "components/**/*.tsx"],
+    ignores: ["**/*.test.tsx", "**/__tests__/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector:
+            'Literal[value=/(bg|text|border)-slate-/]',
+          message:
+            "Use design tokens instead of hardcoded slate colors. Common mappings: bg-slate-950→bg-background, bg-slate-900→bg-card/bg-input, bg-slate-800→bg-secondary, text-slate-50→text-foreground, text-slate-400→text-muted-foreground, border-slate-800→border-border. See globals.css for all tokens.",
+        },
+      ],
+    },
+  },
 ];

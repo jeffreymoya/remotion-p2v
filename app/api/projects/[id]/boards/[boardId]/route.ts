@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { NotFoundError, parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 const updateSchema = z.object({
   layout: z.object({ columns: z.number().int().min(1), rows: z.number().int().min(1) }).optional(),
@@ -31,14 +32,7 @@ export const PUT = withErrorHandler(async (req: Request, { params }: RouteParams
     data,
   });
 
-  // Update project status when board updated - transition to RENDER_READY
-  const project = await storyflowPrisma.project.findByIdOrThrow(id);
-  if (project.status === "ASSETS_READY" || project.status === "BOARDS_READY") {
-    await storyflowPrisma.project.update({
-      where: { id },
-      data: { status: "RENDER_READY" },
-    });
-  }
+  await transitionProjectStatus(id, "BOARDS_READY");
 
   return NextResponse.json({ board });
 }, "projects/[id]/boards/[boardId]");

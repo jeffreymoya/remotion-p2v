@@ -1,7 +1,13 @@
 # Media Prompt -> External LLM -> Upload Flow Analysis
 
 Date: 2026-02-07  
-Status: Analysis only (no behavior changes in this document)
+Status: Updated after implementation (prompt-first flow shipped)
+
+## Update (Implemented)
+- Prompt generation now lives on the Media page (`Create & Upload` tab) alongside upload.
+- Media gate requires **both** generated prompts and at least one asset (status machine guard).
+- Board images are stored as `Asset` records with deterministic `{boardId}` filenames; board upload route was removed.
+- Storyboard hosts only the post-upload steps (regions, triggers, viewport) with images resolved via `assetId`.
 
 ## Context
 
@@ -14,7 +20,9 @@ Requested workflow:
 
 The concern is valid: the current stage flow can make it feel like upload is required before prompt generation.
 
-## Current Implementation (Evidence)
+## Historical Implementation (Evidence, pre-prompt-first)
+
+_This section describes the state before the prompt-first Media flow shipped. The Update section above reflects the current behavior._
 
 ### 1) Prompt generation exists, but in Storyboard (Step 3), not Media (Step 2)
 
@@ -25,10 +33,9 @@ The concern is valid: the current stage flow can make it feel like upload is req
   - `components/boards/PromptDisplay.tsx:90`
   - `components/boards/PromptDisplay.tsx:99`
 
-### 2) Media page does not expose prompt generation
+### 2) Media page did not expose prompt generation (resolved)
 
-- Media page is upload/stock/library/mapping oriented: `app/(dashboard)/projects/[id]/media/page.tsx:37`
-- Media manager tabs are only `upload | stock | library | mapping`: `components/media/media-manager.tsx:29`, `components/media/media-manager.tsx:170`
+- Media now exposes prompt generation in the `Create & Upload` tab alongside uploads: `components/media/media-manager.tsx` (create tab), `components/boards/BoardPlannerWizard.tsx`.
 
 ### 3) Stage gating order blocks Storyboard until Media is complete
 
@@ -41,21 +48,15 @@ The concern is valid: the current stage flow can make it feel like upload is req
 
 Net effect: if user wants prompts first, they cannot reach prompt generation until Media is considered complete.
 
-### 4) Messaging is internally inconsistent in current boards wizard
+### 4) Messaging was internally inconsistent in the boards wizard (resolved)
 
-- Prompts step says to upload in the Assets page: `components/boards/BoardPlannerWizard.tsx:421`
-- Legacy Assets page now redirects to Media: `app/(dashboard)/projects/[id]/assets/page.tsx:7`
-- Same wizard then asks user to continue to an Upload step in the wizard itself: `components/boards/BoardPlannerWizard.tsx:432`
+- Prompts step copy now points to the Media page (Create & Upload), and the legacy Assets page redirects to Media: `app/(dashboard)/projects/[id]/assets/page.tsx:7`.
+- Wizard upload step aligns with the Media asset-backed flow; board upload route was removed.
 
-### 5) Board image uploads and Media assets are separate pipelines
+### 5) Board image uploads and Media assets are separate pipelines (resolved)
 
-- Board upload route writes to `boards/<boardId>.<ext>`: `app/api/projects/[id]/boards/upload-image/route.ts:79`
-- Media upload route writes to asset storage and creates `Asset` rows: `app/api/assets/upload/route.ts:60`, `app/api/assets/upload/route.ts:65`
-
-This creates a split source of truth:
-
-- Board images used by storyboard pipeline live under `boards/`.
-- Media library images live under `assets/` and are managed as `Asset` records.
+- Original state: board upload route wrote to `boards/<boardId>.<ext>`; media upload created `Asset` rows under `assets/`.
+- Current state: board upload route removed; board images now upload through the asset route, stored as `Asset` records in `assets/images/` with deterministic `{boardId}` filenames.
 
 ### 6) Style guide control appears partially implemented
 
@@ -84,13 +85,13 @@ This behavior aligns with the initial staged architecture documented in `docs/in
 
 Related expected behavior is also reflected in regression checklist where boards flow is `Prompts -> Upload`: `docs/regression-checklist.md:53`, `docs/regression-checklist.md:54`.
 
-## Root Cause Summary
+## Root Cause Summary (historical)
 
-1. Prompt generation is implemented under Storyboard instead of Media.
-2. Storyboard is stage-locked behind Media completion.
-3. Media completion currently depends on existing assets.
-4. Upload responsibilities are split across boards and assets domains.
-5. UI copy still references old "Assets page" wording while route now redirects to Media.
+1. Prompt generation was implemented under Storyboard instead of Media.
+2. Storyboard was stage-locked behind Media completion.
+3. Media completion depended on existing assets.
+4. Upload responsibilities were split across boards and assets domains.
+5. UI copy referenced the old "Assets page" wording while the route redirected to Media (now updated to Media → Create & Upload).
 
 ## Recommendation
 
@@ -115,20 +116,16 @@ Recommended direction: support a true "prompt-first" path in Step 2 (Media), whi
 2. Clarify that external generation happens before upload.
 3. Either wire style guide into prompt generation or remove the unused input until supported.
 
-### Phase 2: Unlock prompt-first without breaking stage model
+### Phase 2: Unlock prompt-first without breaking stage model (implemented)
 
-1. Add prompt-generation UI entrypoint on Media page (reuse existing boards hooks/APIs).
-2. Keep current Storyboard prompt UI temporarily for backward compatibility.
-3. Allow Media completion when either:
-   - at least one media asset exists, or
-   - prompts have been generated and saved.
+1. Add prompt-generation UI entrypoint on Media page (reuse existing boards hooks/APIs). ✅
+2. Keep current Storyboard prompt UI temporarily for backward compatibility (later removed in Phase 2.2). ✅
+3. Media completion requires **both** prompts generated and at least one asset (enforced by status machine guard). ✅
 
-### Phase 3: Unify image ingestion paths
+### Phase 3: Unify image ingestion paths (implemented)
 
-1. Decide canonical storage:
-   - Option A: keep board images under `boards/` and mirror into `Asset` records.
-   - Option B: store generated board images as normal IMAGE assets and reference them from boards metadata.
-2. Remove duplicate/competing upload instructions once canonical path is selected.
+1. Canonical storage chosen: store board images as IMAGE assets and reference them via `assetId`. ✅
+2. Duplicate/competing upload instructions removed with board upload route deletion. ✅
 
 ## Risks and Tradeoffs
 

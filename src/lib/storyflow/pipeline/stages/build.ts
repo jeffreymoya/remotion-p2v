@@ -10,6 +10,7 @@ import type {
 import { buildTimeline } from "@/src/lib/storyflow/timeline-builder";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import type { ProjectStatus, Timeline } from "@/src/lib/storyflow/types";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 type BuildStageOptions = PipelineStageOptions;
 
@@ -59,20 +60,8 @@ export const buildStage = {
 
     return timeline;
   },
-  async commit(
-    projectId: string,
-    _output: Timeline,
-    input?: BuildStageInput
-  ): Promise<void> {
-    const priorStatus = input?.projectStatus;
-    if (priorStatus === "COMPLETED" || priorStatus === "RENDERING") {
-      return;
-    }
-
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "RENDER_READY" },
-    });
+  async commit(projectId: string): Promise<void> {
+    await transitionProjectStatus(projectId, "RENDER_READY");
   },
 } satisfies PipelineStage<BuildStageInput, Timeline, BuildStageOptions>;
 

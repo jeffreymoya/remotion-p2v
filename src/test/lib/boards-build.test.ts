@@ -44,7 +44,8 @@ describe("boards viewport build", () => {
         {
           version: "1.0" as const,
           boardId: "board-1",
-          imagePath: "assets/images/board-1.png",
+          assetId: "asset-1",
+          assetPath: "assets/images/board-1.png",
           imageMetadata: { width: 100, height: 50, aspectRatio: 2 },
           regions: [
             {

@@ -6,6 +6,7 @@ import type {
 } from "@/src/lib/storyflow/pipeline/types";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import type { ProjectStatus } from "@/src/lib/storyflow/types";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 type StoryboardStageInput = {
   projectId: string;
@@ -50,16 +51,8 @@ export const storyboardStage = {
     options?.onProgress?.(1);
     return input;
   },
-  async commit(projectId: string, _output: StoryboardStageInput, input?: StoryboardStageInput) {
-    const priorStatus = input?.projectStatus;
-    if (priorStatus && ["RENDER_READY", "RENDERING", "COMPLETED"].includes(priorStatus)) {
-      return;
-    }
-
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "BOARDS_READY" },
-    });
+  async commit(projectId: string) {
+    await transitionProjectStatus(projectId, "BOARDS_READY");
   },
 } satisfies PipelineStage<StoryboardStageInput, StoryboardStageInput, StoryboardStageOptions>;
 

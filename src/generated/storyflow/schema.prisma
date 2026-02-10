@@ -9,13 +9,14 @@ datasource storyflowDb {
 }
 
 model Project {
-  id          String        @id @default(cuid())
-  name        String
-  topic       String?
-  status      ProjectStatus @default(DRAFT)
-  aspectRatio String        @default("16:9")
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  topic          String?
+  status         ProjectStatus @default(DRAFT)
+  aspectRatio    String        @default("16:9")
+  wizardProgress Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   settings      ProjectSettings?
   script        Script?
@@ -70,6 +71,7 @@ model Asset {
   createdAt    DateTime  @default(now())
 
   viewport Viewport?
+  boards   Board[]
 
   @@index([projectId])
   @@index([type])
@@ -201,7 +203,8 @@ model Board {
   triggers  Json?
   plan      Json? // Board plan data (segment groupings)
   prompts   Json? // Generated prompts for AI image generation
-  imagePath String? // Path to uploaded AI-generated image
+  assetId   String?
+  asset     Asset?   @relation(fields: [assetId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

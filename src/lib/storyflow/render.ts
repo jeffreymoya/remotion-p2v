@@ -10,6 +10,7 @@ import { getProjectPaths, getPublicDir } from "@/src/lib/paths";
 import { runStage } from "@/src/lib/storyflow/pipeline/runner";
 import type { PipelineStage, PipelineStageOptions } from "@/src/lib/storyflow/pipeline/types";
 import type { Render } from "@/src/lib/storyflow/types";
+import { transitionProjectStatus } from "@/src/lib/storyflow/status-machine";
 
 const QUALITY_PRESETS: Record<RenderQuality, { crf: number; preset?: string; codec: string; audioBitrate: string }> = {
   DRAFT: { crf: 28, preset: "veryfast", codec: "h264", audioBitrate: "128k" },
@@ -37,10 +38,7 @@ async function createRenderJob(projectId: string, quality: RenderQuality = "DRAF
     },
   });
 
-  await storyflowPrisma.project.update({
-    where: { id: projectId },
-    data: { status: "RENDERING" },
-  });
+  await transitionProjectStatus(projectId, "RENDERING");
 
   // Kick off async worker (fire and forget)
   runRenderWorker(projectId, render.id, quality).catch(async (err) => {
@@ -48,10 +46,7 @@ async function createRenderJob(projectId: string, quality: RenderQuality = "DRAF
       where: { id: render.id },
       data: { status: "FAILED", error: err?.message ?? "Render failed", completedAt: new Date() },
     });
-    await storyflowPrisma.project.update({
-      where: { id: projectId },
-      data: { status: "ERROR" },
-    });
+    await transitionProjectStatus(projectId, "ERROR");
   });
 
   return render;
@@ -113,10 +108,7 @@ async function runRenderWorker(projectId: string, renderId: string, quality: Ren
     },
   });
 
-  await storyflowPrisma.project.update({
-    where: { id: projectId },
-    data: { status: "COMPLETED" },
-  });
+  await transitionProjectStatus(projectId, "COMPLETED");
 }
 
 async function execRemotion(args: string[], renderId: string) {

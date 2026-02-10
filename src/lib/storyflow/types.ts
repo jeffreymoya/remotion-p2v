@@ -24,6 +24,7 @@ export interface Project {
   topic: string | null;
   status: ProjectStatus;
   aspectRatio: AspectRatio;
+  wizardProgress?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
   script?: Script | null;
@@ -186,7 +187,8 @@ export interface BoardPlan {
 export interface BoardRegionsOutput {
   version: "1.0";
   boardId: string;
-  imagePath: string;
+  assetId: string;
+  assetPath?: string;
   imageMetadata: {
     width: number;
     height: number;
@@ -260,6 +262,7 @@ export interface Board {
   layout: { columns: number; rows: number };
   regions: BoardRegion[];
   triggers?: Record<string, unknown> | null;
+  assetId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

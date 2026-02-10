@@ -4,6 +4,7 @@ import * as fs from "fs/promises";
 
 import {
   ConflictError,
+  NotFoundError,
   ValidationError,
   parseBody,
   withErrorHandler,

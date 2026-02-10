@@ -63,11 +63,36 @@ export async function importAsset(payload: ImportAssetPayload): Promise<Asset> {
 
 export async function uploadAsset(
   projectId: string,
-  file: File
+  file: File,
+  options?: {
+    type?: Asset["type"];
+    boardId?: string;
+    filename?: string;
+  }
 ): Promise<Asset> {
   const formData = new FormData();
-  formData.append("file", file);
+  const fileToSend =
+    options?.filename && options.filename !== file.name
+      ? new File([file], options.filename, { type: file.type })
+      : file;
+  const resolvedType =
+    options?.type ?? (fileToSend.type.startsWith("image/")
+      ? "IMAGE"
+      : fileToSend.type.startsWith("video/")
+        ? "VIDEO"
+        : fileToSend.type.startsWith("audio/")
+          ? "AUDIO"
+          : undefined);
+  if (!resolvedType) {
+    throw new Error("Unable to infer asset type from file; provide options.type");
+  }
+
+  formData.append("file", fileToSend);
   formData.append("projectId", projectId);
+  formData.append("type", resolvedType);
+  if (options?.boardId) {
+    formData.append("boardId", options.boardId);
+  }
 
   const res = await fetch("/api/assets/upload", {
     method: "POST",

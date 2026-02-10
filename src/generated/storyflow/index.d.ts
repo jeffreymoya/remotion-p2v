@@ -2134,6 +2134,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type AssetCountOutputType
+   */
+
+  export type AssetCountOutputType = {
+    boards: number
+  }
+
+  export type AssetCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    boards?: boolean | AssetCountOutputTypeCountBoardsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetCountOutputType
+     */
+    select?: AssetCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssetCountOutputType without action
+   */
+  export type AssetCountOutputTypeCountBoardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoardWhereInput
+  }
+
+
+  /**
    * Count Type AiCallLogCountOutputType
    */
 
@@ -2293,6 +2324,7 @@ export namespace Prisma {
     topic: number
     status: number
     aspectRatio: number
+    wizardProgress: number
     createdAt: number
     updatedAt: number
     assetMappings: number
@@ -2326,6 +2358,7 @@ export namespace Prisma {
     topic?: true
     status?: true
     aspectRatio?: true
+    wizardProgress?: true
     createdAt?: true
     updatedAt?: true
     assetMappings?: true
@@ -2410,6 +2443,7 @@ export namespace Prisma {
     topic: string | null
     status: $Enums.ProjectStatus
     aspectRatio: string
+    wizardProgress: JsonValue | null
     createdAt: Date
     updatedAt: Date
     assetMappings: JsonValue | null
@@ -2438,6 +2472,7 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     assetMappings?: boolean
@@ -2458,6 +2493,7 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     assetMappings?: boolean
@@ -2469,6 +2505,7 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     assetMappings?: boolean
@@ -2480,12 +2517,13 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     assetMappings?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "topic" | "status" | "aspectRatio" | "createdAt" | "updatedAt" | "assetMappings", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "topic" | "status" | "aspectRatio" | "wizardProgress" | "createdAt" | "updatedAt" | "assetMappings", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     settings?: boolean | Project$settingsArgs<ExtArgs>
     script?: boolean | Project$scriptArgs<ExtArgs>
@@ -2518,6 +2556,7 @@ export namespace Prisma {
       topic: string | null
       status: $Enums.ProjectStatus
       aspectRatio: string
+      wizardProgress: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
       assetMappings: Prisma.JsonValue | null
@@ -2957,6 +2996,7 @@ export namespace Prisma {
     readonly topic: FieldRef<"Project", 'String'>
     readonly status: FieldRef<"Project", 'ProjectStatus'>
     readonly aspectRatio: FieldRef<"Project", 'String'>
+    readonly wizardProgress: FieldRef<"Project", 'Json'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
     readonly assetMappings: FieldRef<"Project", 'Json'>
@@ -6042,6 +6082,8 @@ export namespace Prisma {
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     viewport?: boolean | Asset$viewportArgs<ExtArgs>
+    boards?: boolean | Asset$boardsArgs<ExtArgs>
+    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6086,6 +6128,8 @@ export namespace Prisma {
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     viewport?: boolean | Asset$viewportArgs<ExtArgs>
+    boards?: boolean | Asset$boardsArgs<ExtArgs>
+    _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -6099,6 +6143,7 @@ export namespace Prisma {
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
       viewport: Prisma.$ViewportPayload<ExtArgs> | null
+      boards: Prisma.$BoardPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6506,6 +6551,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     viewport<T extends Asset$viewportArgs<ExtArgs> = {}>(args?: Subset<T, Asset$viewportArgs<ExtArgs>>): Prisma__ViewportClient<$Result.GetResult<Prisma.$ViewportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    boards<T extends Asset$boardsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$boardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6954,6 +7000,30 @@ export namespace Prisma {
      */
     include?: ViewportInclude<ExtArgs> | null
     where?: ViewportWhereInput
+  }
+
+  /**
+   * Asset.boards
+   */
+  export type Asset$boardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Board
+     */
+    select?: BoardSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Board
+     */
+    omit?: BoardOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoardInclude<ExtArgs> | null
+    where?: BoardWhereInput
+    orderBy?: BoardOrderByWithRelationInput | BoardOrderByWithRelationInput[]
+    cursor?: BoardWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoardScalarFieldEnum | BoardScalarFieldEnum[]
   }
 
   /**
@@ -11581,7 +11651,7 @@ export namespace Prisma {
     id: string | null
     projectId: string | null
     index: number | null
-    imagePath: string | null
+    assetId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11590,7 +11660,7 @@ export namespace Prisma {
     id: string | null
     projectId: string | null
     index: number | null
-    imagePath: string | null
+    assetId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11604,7 +11674,7 @@ export namespace Prisma {
     triggers: number
     plan: number
     prompts: number
-    imagePath: number
+    assetId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -11623,7 +11693,7 @@ export namespace Prisma {
     id?: true
     projectId?: true
     index?: true
-    imagePath?: true
+    assetId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11632,7 +11702,7 @@ export namespace Prisma {
     id?: true
     projectId?: true
     index?: true
-    imagePath?: true
+    assetId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11646,7 +11716,7 @@ export namespace Prisma {
     triggers?: true
     plan?: true
     prompts?: true
-    imagePath?: true
+    assetId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -11747,7 +11817,7 @@ export namespace Prisma {
     triggers: JsonValue | null
     plan: JsonValue | null
     prompts: JsonValue | null
-    imagePath: string | null
+    assetId: string | null
     createdAt: Date
     updatedAt: Date
     _count: BoardCountAggregateOutputType | null
@@ -11780,10 +11850,11 @@ export namespace Prisma {
     triggers?: boolean
     plan?: boolean
     prompts?: boolean
-    imagePath?: boolean
+    assetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }, ExtArgs["result"]["board"]>
 
   export type BoardSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11795,10 +11866,11 @@ export namespace Prisma {
     triggers?: boolean
     plan?: boolean
     prompts?: boolean
-    imagePath?: boolean
+    assetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }, ExtArgs["result"]["board"]>
 
   export type BoardSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11810,10 +11882,11 @@ export namespace Prisma {
     triggers?: boolean
     plan?: boolean
     prompts?: boolean
-    imagePath?: boolean
+    assetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }, ExtArgs["result"]["board"]>
 
   export type BoardSelectScalar = {
@@ -11825,26 +11898,30 @@ export namespace Prisma {
     triggers?: boolean
     plan?: boolean
     prompts?: boolean
-    imagePath?: boolean
+    assetId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "index" | "layout" | "regions" | "triggers" | "plan" | "prompts" | "imagePath" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
+  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "index" | "layout" | "regions" | "triggers" | "plan" | "prompts" | "assetId" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
   export type BoardInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }
   export type BoardIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }
   export type BoardIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
+    asset?: boolean | Board$assetArgs<ExtArgs>
   }
 
   export type $BoardPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Board"
     objects: {
       project: Prisma.$ProjectPayload<ExtArgs>
+      asset: Prisma.$AssetPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11855,7 +11932,7 @@ export namespace Prisma {
       triggers: Prisma.JsonValue | null
       plan: Prisma.JsonValue | null
       prompts: Prisma.JsonValue | null
-      imagePath: string | null
+      assetId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["board"]>
@@ -12253,6 +12330,7 @@ export namespace Prisma {
   export interface Prisma__BoardClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    asset<T extends Board$assetArgs<ExtArgs> = {}>(args?: Subset<T, Board$assetArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12290,7 +12368,7 @@ export namespace Prisma {
     readonly triggers: FieldRef<"Board", 'Json'>
     readonly plan: FieldRef<"Board", 'Json'>
     readonly prompts: FieldRef<"Board", 'Json'>
-    readonly imagePath: FieldRef<"Board", 'String'>
+    readonly assetId: FieldRef<"Board", 'String'>
     readonly createdAt: FieldRef<"Board", 'DateTime'>
     readonly updatedAt: FieldRef<"Board", 'DateTime'>
   }
@@ -12684,6 +12762,25 @@ export namespace Prisma {
      * Limit how many Boards to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Board.asset
+   */
+  export type Board$assetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    where?: AssetWhereInput
   }
 
   /**
@@ -17378,6 +17475,7 @@ export namespace Prisma {
     topic: 'topic',
     status: 'status',
     aspectRatio: 'aspectRatio',
+    wizardProgress: 'wizardProgress',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     assetMappings: 'assetMappings'
@@ -17507,7 +17605,7 @@ export namespace Prisma {
     triggers: 'triggers',
     plan: 'plan',
     prompts: 'prompts',
-    imagePath: 'imagePath',
+    assetId: 'assetId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -17639,13 +17737,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -17656,6 +17747,13 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
     
 
 
@@ -17734,6 +17832,7 @@ export namespace Prisma {
     topic?: StringNullableFilter<"Project"> | string | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringFilter<"Project"> | string
+    wizardProgress?: JsonNullableFilter<"Project">
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     assetMappings?: JsonNullableFilter<"Project">
@@ -17753,6 +17852,7 @@ export namespace Prisma {
     topic?: SortOrderInput | SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    wizardProgress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     assetMappings?: SortOrderInput | SortOrder
@@ -17775,6 +17875,7 @@ export namespace Prisma {
     topic?: StringNullableFilter<"Project"> | string | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringFilter<"Project"> | string
+    wizardProgress?: JsonNullableFilter<"Project">
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     assetMappings?: JsonNullableFilter<"Project">
@@ -17794,6 +17895,7 @@ export namespace Prisma {
     topic?: SortOrderInput | SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    wizardProgress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     assetMappings?: SortOrderInput | SortOrder
@@ -17811,6 +17913,7 @@ export namespace Prisma {
     topic?: StringNullableWithAggregatesFilter<"Project"> | string | null
     status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringWithAggregatesFilter<"Project"> | string
+    wizardProgress?: JsonNullableWithAggregatesFilter<"Project">
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     assetMappings?: JsonNullableWithAggregatesFilter<"Project">
@@ -17996,6 +18099,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
+    boards?: BoardListRelationFilter
   }
 
   export type AssetOrderByWithRelationInput = {
@@ -18010,6 +18114,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
     viewport?: ViewportOrderByWithRelationInput
+    boards?: BoardOrderByRelationAggregateInput
   }
 
   export type AssetWhereUniqueInput = Prisma.AtLeast<{
@@ -18027,6 +18132,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
+    boards?: BoardListRelationFilter
   }, "id">
 
   export type AssetOrderByWithAggregationInput = {
@@ -18406,10 +18512,11 @@ export namespace Prisma {
     triggers?: JsonNullableFilter<"Board">
     plan?: JsonNullableFilter<"Board">
     prompts?: JsonNullableFilter<"Board">
-    imagePath?: StringNullableFilter<"Board"> | string | null
+    assetId?: StringNullableFilter<"Board"> | string | null
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    asset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
   }
 
   export type BoardOrderByWithRelationInput = {
@@ -18421,10 +18528,11 @@ export namespace Prisma {
     triggers?: SortOrderInput | SortOrder
     plan?: SortOrderInput | SortOrder
     prompts?: SortOrderInput | SortOrder
-    imagePath?: SortOrderInput | SortOrder
+    assetId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
+    asset?: AssetOrderByWithRelationInput
   }
 
   export type BoardWhereUniqueInput = Prisma.AtLeast<{
@@ -18440,10 +18548,11 @@ export namespace Prisma {
     triggers?: JsonNullableFilter<"Board">
     plan?: JsonNullableFilter<"Board">
     prompts?: JsonNullableFilter<"Board">
-    imagePath?: StringNullableFilter<"Board"> | string | null
+    assetId?: StringNullableFilter<"Board"> | string | null
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
+    asset?: XOR<AssetNullableScalarRelationFilter, AssetWhereInput> | null
   }, "id" | "projectId_index">
 
   export type BoardOrderByWithAggregationInput = {
@@ -18455,7 +18564,7 @@ export namespace Prisma {
     triggers?: SortOrderInput | SortOrder
     plan?: SortOrderInput | SortOrder
     prompts?: SortOrderInput | SortOrder
-    imagePath?: SortOrderInput | SortOrder
+    assetId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BoardCountOrderByAggregateInput
@@ -18477,7 +18586,7 @@ export namespace Prisma {
     triggers?: JsonNullableWithAggregatesFilter<"Board">
     plan?: JsonNullableWithAggregatesFilter<"Board">
     prompts?: JsonNullableWithAggregatesFilter<"Board">
-    imagePath?: StringNullableWithAggregatesFilter<"Board"> | string | null
+    assetId?: StringNullableWithAggregatesFilter<"Board"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
   }
@@ -18794,6 +18903,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18813,6 +18923,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18832,6 +18943,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18851,6 +18963,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18870,6 +18983,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18881,6 +18995,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -18892,6 +19007,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -19087,6 +19203,7 @@ export namespace Prisma {
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutAssetsInput
     viewport?: ViewportCreateNestedOneWithoutImageAssetInput
+    boards?: BoardCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateInput = {
@@ -19100,6 +19217,7 @@ export namespace Prisma {
     upscaledPath?: string | null
     createdAt?: Date | string
     viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
+    boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUpdateInput = {
@@ -19113,6 +19231,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
     viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
+    boards?: BoardUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateInput = {
@@ -19126,6 +19245,7 @@ export namespace Prisma {
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
+    boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetCreateManyInput = {
@@ -19541,10 +19661,10 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutBoardsInput
+    asset?: AssetCreateNestedOneWithoutBoardsInput
   }
 
   export type BoardUncheckedCreateInput = {
@@ -19556,7 +19676,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
+    assetId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19569,10 +19689,10 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutBoardsNestedInput
+    asset?: AssetUpdateOneWithoutBoardsNestedInput
   }
 
   export type BoardUncheckedUpdateInput = {
@@ -19584,7 +19704,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19598,7 +19718,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
+    assetId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19611,7 +19731,6 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19625,7 +19744,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19987,17 +20106,6 @@ export namespace Prisma {
     notIn?: $Enums.ProjectStatus[]
     not?: NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
   }
-
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -20015,6 +20123,17 @@ export namespace Prisma {
     array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type ProjectSettingsNullableScalarRelationFilter = {
@@ -20093,6 +20212,7 @@ export namespace Prisma {
     topic?: SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    wizardProgress?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     assetMappings?: SortOrder
@@ -20161,20 +20281,6 @@ export namespace Prisma {
     _min?: NestedEnumProjectStatusFilter<$PrismaModel>
     _max?: NestedEnumProjectStatusFilter<$PrismaModel>
   }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
@@ -20195,6 +20301,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -20752,7 +20872,7 @@ export namespace Prisma {
     triggers?: SortOrder
     plan?: SortOrder
     prompts?: SortOrder
-    imagePath?: SortOrder
+    assetId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20765,7 +20885,7 @@ export namespace Prisma {
     id?: SortOrder
     projectId?: SortOrder
     index?: SortOrder
-    imagePath?: SortOrder
+    assetId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20774,7 +20894,7 @@ export namespace Prisma {
     id?: SortOrder
     projectId?: SortOrder
     index?: SortOrder
-    imagePath?: SortOrder
+    assetId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21411,10 +21531,24 @@ export namespace Prisma {
     connect?: ViewportWhereUniqueInput
   }
 
+  export type BoardCreateNestedManyWithoutAssetInput = {
+    create?: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput> | BoardCreateWithoutAssetInput[] | BoardUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutAssetInput | BoardCreateOrConnectWithoutAssetInput[]
+    createMany?: BoardCreateManyAssetInputEnvelope
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+  }
+
   export type ViewportUncheckedCreateNestedOneWithoutImageAssetInput = {
     create?: XOR<ViewportCreateWithoutImageAssetInput, ViewportUncheckedCreateWithoutImageAssetInput>
     connectOrCreate?: ViewportCreateOrConnectWithoutImageAssetInput
     connect?: ViewportWhereUniqueInput
+  }
+
+  export type BoardUncheckedCreateNestedManyWithoutAssetInput = {
+    create?: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput> | BoardCreateWithoutAssetInput[] | BoardUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutAssetInput | BoardCreateOrConnectWithoutAssetInput[]
+    createMany?: BoardCreateManyAssetInputEnvelope
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
   }
 
   export type EnumAssetTypeFieldUpdateOperationsInput = {
@@ -21443,6 +21577,20 @@ export namespace Prisma {
     update?: XOR<XOR<ViewportUpdateToOneWithWhereWithoutImageAssetInput, ViewportUpdateWithoutImageAssetInput>, ViewportUncheckedUpdateWithoutImageAssetInput>
   }
 
+  export type BoardUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput> | BoardCreateWithoutAssetInput[] | BoardUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutAssetInput | BoardCreateOrConnectWithoutAssetInput[]
+    upsert?: BoardUpsertWithWhereUniqueWithoutAssetInput | BoardUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: BoardCreateManyAssetInputEnvelope
+    set?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    disconnect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    delete?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    update?: BoardUpdateWithWhereUniqueWithoutAssetInput | BoardUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: BoardUpdateManyWithWhereWithoutAssetInput | BoardUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
+  }
+
   export type ViewportUncheckedUpdateOneWithoutImageAssetNestedInput = {
     create?: XOR<ViewportCreateWithoutImageAssetInput, ViewportUncheckedCreateWithoutImageAssetInput>
     connectOrCreate?: ViewportCreateOrConnectWithoutImageAssetInput
@@ -21451,6 +21599,20 @@ export namespace Prisma {
     delete?: ViewportWhereInput | boolean
     connect?: ViewportWhereUniqueInput
     update?: XOR<XOR<ViewportUpdateToOneWithWhereWithoutImageAssetInput, ViewportUpdateWithoutImageAssetInput>, ViewportUncheckedUpdateWithoutImageAssetInput>
+  }
+
+  export type BoardUncheckedUpdateManyWithoutAssetNestedInput = {
+    create?: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput> | BoardCreateWithoutAssetInput[] | BoardUncheckedCreateWithoutAssetInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutAssetInput | BoardCreateOrConnectWithoutAssetInput[]
+    upsert?: BoardUpsertWithWhereUniqueWithoutAssetInput | BoardUpsertWithWhereUniqueWithoutAssetInput[]
+    createMany?: BoardCreateManyAssetInputEnvelope
+    set?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    disconnect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    delete?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    update?: BoardUpdateWithWhereUniqueWithoutAssetInput | BoardUpdateWithWhereUniqueWithoutAssetInput[]
+    updateMany?: BoardUpdateManyWithWhereWithoutAssetInput | BoardUpdateManyWithWhereWithoutAssetInput[]
+    deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
   }
 
   export type ProjectCreateNestedOneWithoutRendersInput = {
@@ -21607,12 +21769,28 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type AssetCreateNestedOneWithoutBoardsInput = {
+    create?: XOR<AssetCreateWithoutBoardsInput, AssetUncheckedCreateWithoutBoardsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutBoardsInput
+    connect?: AssetWhereUniqueInput
+  }
+
   export type ProjectUpdateOneRequiredWithoutBoardsNestedInput = {
     create?: XOR<ProjectCreateWithoutBoardsInput, ProjectUncheckedCreateWithoutBoardsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutBoardsInput
     upsert?: ProjectUpsertWithoutBoardsInput
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutBoardsInput, ProjectUpdateWithoutBoardsInput>, ProjectUncheckedUpdateWithoutBoardsInput>
+  }
+
+  export type AssetUpdateOneWithoutBoardsNestedInput = {
+    create?: XOR<AssetCreateWithoutBoardsInput, AssetUncheckedCreateWithoutBoardsInput>
+    connectOrCreate?: AssetCreateOrConnectWithoutBoardsInput
+    upsert?: AssetUpsertWithoutBoardsInput
+    disconnect?: AssetWhereInput | boolean
+    delete?: AssetWhereInput | boolean
+    connect?: AssetWhereUniqueInput
+    update?: XOR<XOR<AssetUpdateToOneWithWhereWithoutBoardsInput, AssetUpdateWithoutBoardsInput>, AssetUncheckedUpdateWithoutBoardsInput>
   }
 
   export type ProjectCreateNestedOneWithoutBlueprintsInput = {
@@ -22014,20 +22192,6 @@ export namespace Prisma {
     _min?: NestedEnumProjectStatusFilter<$PrismaModel>
     _max?: NestedEnumProjectStatusFilter<$PrismaModel>
   }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -22045,6 +22209,20 @@ export namespace Prisma {
     array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -22382,6 +22560,7 @@ export namespace Prisma {
     upscaledPath?: string | null
     createdAt?: Date | string
     viewport?: ViewportCreateNestedOneWithoutImageAssetInput
+    boards?: BoardCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutProjectInput = {
@@ -22394,6 +22573,7 @@ export namespace Prisma {
     upscaledPath?: string | null
     createdAt?: Date | string
     viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
+    boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
   }
 
   export type AssetCreateOrConnectWithoutProjectInput = {
@@ -22436,9 +22616,9 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    asset?: AssetCreateNestedOneWithoutBoardsInput
   }
 
   export type BoardUncheckedCreateWithoutProjectInput = {
@@ -22449,7 +22629,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
+    assetId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22740,7 +22920,7 @@ export namespace Prisma {
     triggers?: JsonNullableFilter<"Board">
     plan?: JsonNullableFilter<"Board">
     prompts?: JsonNullableFilter<"Board">
-    imagePath?: StringNullableFilter<"Board"> | string | null
+    assetId?: StringNullableFilter<"Board"> | string | null
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
   }
@@ -22825,6 +23005,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -22843,6 +23024,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -22877,6 +23059,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -22895,6 +23078,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -22913,6 +23097,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -22931,6 +23116,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23000,6 +23186,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23018,6 +23205,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23077,6 +23265,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23095,6 +23284,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23135,6 +23325,41 @@ export namespace Prisma {
     create: XOR<ViewportCreateWithoutImageAssetInput, ViewportUncheckedCreateWithoutImageAssetInput>
   }
 
+  export type BoardCreateWithoutAssetInput = {
+    id?: string
+    index: number
+    layout: JsonNullValueInput | InputJsonValue
+    regions: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutBoardsInput
+  }
+
+  export type BoardUncheckedCreateWithoutAssetInput = {
+    id?: string
+    projectId: string
+    index: number
+    layout: JsonNullValueInput | InputJsonValue
+    regions: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoardCreateOrConnectWithoutAssetInput = {
+    where: BoardWhereUniqueInput
+    create: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput>
+  }
+
+  export type BoardCreateManyAssetInputEnvelope = {
+    data: BoardCreateManyAssetInput | BoardCreateManyAssetInput[]
+  }
+
   export type ProjectUpsertWithoutAssetsInput = {
     update: XOR<ProjectUpdateWithoutAssetsInput, ProjectUncheckedUpdateWithoutAssetsInput>
     create: XOR<ProjectCreateWithoutAssetsInput, ProjectUncheckedCreateWithoutAssetsInput>
@@ -23152,6 +23377,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23170,6 +23396,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23211,12 +23438,29 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BoardUpsertWithWhereUniqueWithoutAssetInput = {
+    where: BoardWhereUniqueInput
+    update: XOR<BoardUpdateWithoutAssetInput, BoardUncheckedUpdateWithoutAssetInput>
+    create: XOR<BoardCreateWithoutAssetInput, BoardUncheckedCreateWithoutAssetInput>
+  }
+
+  export type BoardUpdateWithWhereUniqueWithoutAssetInput = {
+    where: BoardWhereUniqueInput
+    data: XOR<BoardUpdateWithoutAssetInput, BoardUncheckedUpdateWithoutAssetInput>
+  }
+
+  export type BoardUpdateManyWithWhereWithoutAssetInput = {
+    where: BoardScalarWhereInput
+    data: XOR<BoardUpdateManyMutationInput, BoardUncheckedUpdateManyWithoutAssetInput>
+  }
+
   export type ProjectCreateWithoutRendersInput = {
     id?: string
     name: string
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23235,6 +23479,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23269,6 +23514,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23287,6 +23533,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23305,6 +23552,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23323,6 +23571,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23463,6 +23712,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23481,6 +23731,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23572,6 +23823,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23590,6 +23842,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23617,6 +23870,7 @@ export namespace Prisma {
     upscaledPath?: string | null
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutAssetsInput
+    boards?: BoardCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutViewportInput = {
@@ -23629,6 +23883,7 @@ export namespace Prisma {
     upscaled?: boolean
     upscaledPath?: string | null
     createdAt?: Date | string
+    boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
   }
 
   export type AssetCreateOrConnectWithoutViewportInput = {
@@ -23653,6 +23908,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23671,6 +23927,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23704,6 +23961,7 @@ export namespace Prisma {
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
+    boards?: BoardUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutViewportInput = {
@@ -23716,6 +23974,7 @@ export namespace Prisma {
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type ProjectCreateWithoutBoardsInput = {
@@ -23724,6 +23983,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23742,6 +24002,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23757,6 +24018,37 @@ export namespace Prisma {
   export type ProjectCreateOrConnectWithoutBoardsInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutBoardsInput, ProjectUncheckedCreateWithoutBoardsInput>
+  }
+
+  export type AssetCreateWithoutBoardsInput = {
+    id?: string
+    type: $Enums.AssetType
+    filename: string
+    path: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    upscaled?: boolean
+    upscaledPath?: string | null
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutAssetsInput
+    viewport?: ViewportCreateNestedOneWithoutImageAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutBoardsInput = {
+    id?: string
+    projectId: string
+    type: $Enums.AssetType
+    filename: string
+    path: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    upscaled?: boolean
+    upscaledPath?: string | null
+    createdAt?: Date | string
+    viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutBoardsInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutBoardsInput, AssetUncheckedCreateWithoutBoardsInput>
   }
 
   export type ProjectUpsertWithoutBoardsInput = {
@@ -23776,6 +24068,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23794,6 +24087,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23806,12 +24100,50 @@ export namespace Prisma {
     aiCallLogs?: AiCallLogUncheckedUpdateManyWithoutProjectNestedInput
   }
 
+  export type AssetUpsertWithoutBoardsInput = {
+    update: XOR<AssetUpdateWithoutBoardsInput, AssetUncheckedUpdateWithoutBoardsInput>
+    create: XOR<AssetCreateWithoutBoardsInput, AssetUncheckedCreateWithoutBoardsInput>
+    where?: AssetWhereInput
+  }
+
+  export type AssetUpdateToOneWithWhereWithoutBoardsInput = {
+    where?: AssetWhereInput
+    data: XOR<AssetUpdateWithoutBoardsInput, AssetUncheckedUpdateWithoutBoardsInput>
+  }
+
+  export type AssetUpdateWithoutBoardsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    filename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    upscaled?: BoolFieldUpdateOperationsInput | boolean
+    upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
+    viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutBoardsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    filename?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    upscaled?: BoolFieldUpdateOperationsInput | boolean
+    upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
+  }
+
   export type ProjectCreateWithoutBlueprintsInput = {
     id?: string
     name: string
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23830,6 +24162,7 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23980,6 +24313,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -23998,6 +24332,7 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assetMappings?: NullableJsonNullValueInput | InputJsonValue
@@ -24498,7 +24833,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: string | null
+    assetId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24588,6 +24923,7 @@ export namespace Prisma {
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
+    boards?: BoardUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutProjectInput = {
@@ -24600,6 +24936,7 @@ export namespace Prisma {
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
+    boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateManyWithoutProjectInput = {
@@ -24621,9 +24958,9 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    asset?: AssetUpdateOneWithoutBoardsNestedInput
   }
 
   export type BoardUncheckedUpdateWithoutProjectInput = {
@@ -24634,7 +24971,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24647,7 +24984,7 @@ export namespace Prisma {
     triggers?: NullableJsonNullValueInput | InputJsonValue
     plan?: NullableJsonNullValueInput | InputJsonValue
     prompts?: NullableJsonNullValueInput | InputJsonValue
-    imagePath?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24752,6 +25089,58 @@ export namespace Prisma {
     errorCode?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoardCreateManyAssetInput = {
+    id?: string
+    projectId: string
+    index: number
+    layout: JsonNullValueInput | InputJsonValue
+    regions: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoardUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    index?: IntFieldUpdateOperationsInput | number
+    layout?: JsonNullValueInput | InputJsonValue
+    regions?: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutBoardsNestedInput
+  }
+
+  export type BoardUncheckedUpdateWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    index?: IntFieldUpdateOperationsInput | number
+    layout?: JsonNullValueInput | InputJsonValue
+    regions?: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoardUncheckedUpdateManyWithoutAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    index?: IntFieldUpdateOperationsInput | number
+    layout?: JsonNullValueInput | InputJsonValue
+    regions?: JsonNullValueInput | InputJsonValue
+    triggers?: NullableJsonNullValueInput | InputJsonValue
+    plan?: NullableJsonNullValueInput | InputJsonValue
+    prompts?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -96,6 +96,18 @@ export async function planBoards(
   return data;
 }
 
+export async function fetchBoardPlan(
+  projectId: string,
+  signal?: AbortSignal
+): Promise<{ plan: BoardPlan; boards: Array<{ id: string; index: number; layout: unknown; plan: unknown }> }> {
+  return parseJsonResponse(
+    await fetch(`/api/projects/${projectId}/boards/plan`, {
+      method: "GET",
+      signal,
+    })
+  );
+}
+
 export interface GeneratePromptsInput {
   boards: BoardPlan["boards"];
   segments: Array<{
@@ -106,6 +118,7 @@ export interface GeneratePromptsInput {
     speakingNotes?: string;
   }>;
   gridLayout?: { rows: number; cols: number };
+  styleGuide?: string;
 }
 
 export async function generateBoardPrompts(
@@ -125,9 +138,23 @@ export async function generateBoardPrompts(
   return (data as { data?: BoardPromptsOutput }).data ?? (data as BoardPromptsOutput);
 }
 
+export async function fetchBoardPrompts(
+  projectId: string,
+  signal?: AbortSignal
+): Promise<BoardPromptsOutput> {
+  const data = await parseJsonResponse<{ data?: BoardPromptsOutput } & BoardPromptsOutput>(
+    await fetch(`/api/projects/${projectId}/boards/prompts`, {
+      method: "GET",
+      signal,
+    })
+  );
+
+  return (data as { data?: BoardPromptsOutput }).data ?? (data as BoardPromptsOutput);
+}
+
 export interface DetectRegionsInput {
   boardId: string;
-  imagePath: string;
+  assetId: string;
   elements: Array<{
     id: string;
     type: string;
@@ -200,24 +227,6 @@ export async function buildViewport(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-      signal,
-    })
-  );
-}
-
-export async function uploadBoardImage(
-  projectId: string,
-  params: { file: File; boardId: string },
-  signal?: AbortSignal
-): Promise<{ imagePath: string; metadata: { width: number; height: number; aspectRatio: number } }> {
-  const formData = new FormData();
-  formData.append("file", params.file);
-  formData.append("boardId", params.boardId);
-
-  return parseJsonResponse(
-    await fetch(`/api/projects/${projectId}/boards/upload-image`, {
-      method: "POST",
-      body: formData,
       signal,
     })
   );

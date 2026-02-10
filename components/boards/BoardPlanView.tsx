@@ -1,14 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { BoardPlan } from "@/src/lib/boards-types";
 import { cn } from "@/src/lib/storyflow/utils";
 
 interface BoardPlanViewProps {
   plan: BoardPlan;
+  projectId?: string;
   className?: string;
 }
 
-export function BoardPlanView({ plan, className }: BoardPlanViewProps) {
+export function BoardPlanView({ plan, projectId, className }: BoardPlanViewProps) {
+  const mediaHref = projectId ? `/projects/${projectId}/media#create` : "/projects";
+
   const formatDuration = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -42,6 +46,15 @@ export function BoardPlanView({ plan, className }: BoardPlanViewProps) {
           <div className="mt-1 text-2xl font-bold text-slate-300">
             {formatDuration(plan.totalDurationMs / plan.boards.length)}
           </div>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 p-3 text-sm text-amber-100">
+        Board images live in Media → Create & Upload. If you see missing images in Storyboard, upload them there and re-run region detection.
+        <div className="mt-2">
+          <Link href={mediaHref} className="font-semibold text-amber-50 underline underline-offset-4">
+            Go to Media for this project
+          </Link>
         </div>
       </div>
 

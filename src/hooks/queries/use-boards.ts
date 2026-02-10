@@ -4,12 +4,14 @@ import {
   buildViewport,
   createBoard,
   detectBoardRegions,
+  fetchBoardPlan,
+  fetchBoardPrompts,
+  updateBoard,
   generateBoardPrompts,
   generateBoardTriggers,
   planBoards,
   fetchBoards,
   type BoardRegion,
-  uploadBoardImage,
 } from "@/src/lib/api/boards";
 import { BoardPromptsOutput, BoardRegionsOutput, BoardTriggersOutput } from "@/src/lib/boards-types";
 import { ViewportAnimation } from "@/src/lib/types";
@@ -55,6 +57,15 @@ export function usePlanBoards(projectId: string) {
   });
 }
 
+export function useBoardPlan(projectId: string, enabled = true) {
+  return useQuery({
+    queryKey: boardKeys.plan(projectId),
+    queryFn: ({ signal }) => fetchBoardPlan(projectId, signal),
+    enabled: enabled && !!projectId,
+    retry: false,
+  });
+}
+
 export function useGenerateBoardPrompts(projectId: string) {
   const queryClient = useQueryClient();
 
@@ -64,6 +75,15 @@ export function useGenerateBoardPrompts(projectId: string) {
     onSuccess: (data: BoardPromptsOutput) => {
       queryClient.setQueryData(boardKeys.prompts(projectId), data);
     },
+  });
+}
+
+export function useBoardPrompts(projectId: string, enabled = true) {
+  return useQuery({
+    queryKey: boardKeys.prompts(projectId),
+    queryFn: ({ signal }) => fetchBoardPrompts(projectId, signal),
+    enabled: enabled && !!projectId,
+    retry: false,
   });
 }
 
@@ -99,18 +119,6 @@ export function useBuildViewport(projectId: string) {
       buildViewport(projectId, variables.payload, variables.signal),
     onSuccess: (data: { viewportJson: ViewportAnimation }) => {
       queryClient.setQueryData(boardKeys.viewport(projectId), data.viewportJson);
-    },
-  });
-}
-
-export function useUploadBoardImage(projectId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (params: { file: File; boardId: string; signal?: AbortSignal }) =>
-      uploadBoardImage(projectId, { file: params.file, boardId: params.boardId }, params.signal),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: boardKeys.regions(projectId) });
     },
   });
 }

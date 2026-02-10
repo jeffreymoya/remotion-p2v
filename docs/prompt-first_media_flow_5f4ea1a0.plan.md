@@ -4,70 +4,70 @@ overview: "Restructure the Media page to support a prompt-first workflow: centra
 todos:
   - id: phase0-status-machine
     content: "Phase 0.1: Create transitionProjectStatus() — single enforcer for all project status changes"
-    status: pending
+    status: completed
   - id: phase0-replace-bypasses
     content: "Phase 0.2: Replace all 10 raw prisma.project.update({status}) calls + 4 pipeline stage commits + 1 Prisma extension with transitionProjectStatus(). Remove status from project PATCH schema."
-    status: pending
+    status: completed
   - id: phase0-bug-fixes
     content: "Phase 0.3: Fix pre-existing bugs (missing NotFoundError import in triggers route, stale stage completion criteria)"
-    status: pending
+    status: completed
   - id: phase1-text-fixes
     content: "Phase 1.1: Fix stale 'Assets page' text in BoardPlannerWizard.tsx"
-    status: pending
+    status: completed
   - id: phase1-style-guide
     content: "Phase 1.2: Wire styleGuide through API schema, client type, prompt service, and wizard UI (4 files)"
-    status: pending
+    status: completed
   - id: phase1-grid-layout
     content: "Phase 1.3: Make grid layout rows/cols configurable in wizard UI"
-    status: pending
+    status: completed
   - id: phase2-wizard-mode
     content: "Phase 2.1a: Add mode prop to BoardPlannerWizard (media | storyboard) to scope visible steps"
-    status: pending
+    status: completed
   - id: phase2-create-tab
     content: "Phase 2.1b: Replace upload tab with 'Create & Upload' tab on Media page, embed scoped wizard (4 steps) + general UploadZone"
-    status: pending
+    status: completed
   - id: phase2-media-props
     content: "Phase 2.1c: Update MediaManager and media page to pass script, images, initialBoards props to wizard"
-    status: pending
+    status: completed
   - id: phase2-wizard-persist
     content: "Phase 2.1d: Add wizardProgress field to Project model and hydrate/persist wizard state across tab switches and page refreshes"
-    status: pending
+    status: completed
   - id: phase2-board-records
     content: "Phase 2.1e: Update boards/plan route to upsert Board DB records during plan generation (before upload step needs boardIds)"
-    status: pending
+    status: completed
   - id: phase2-remove-wizard
     content: "Phase 2.2a: Remove AI mode branch from BoardsWorkflow, add Alert notice linking to Media"
-    status: pending
+    status: completed
   - id: phase2-standalone-ops
     content: "Phase 2.2b: Add standalone region/trigger/viewport buttons in Storyboard using existing mutation hooks"
-    status: pending
+    status: completed
   - id: phase2-media-gate
     content: "Phase 2.3: Update media stage gate guard in transitionProjectStatus to require both prompts file + assets"
-    status: pending
+    status: completed
   - id: phase3-image-uploader
     content: "Phase 3.1: Update ImageUploader to use asset upload route, change onUploadComplete callback to assetId"
-    status: pending
+    status: completed
   - id: phase3-remove-board-upload
     content: "Phase 3.2: Remove board-specific upload route, hook, and API client function (after 3.1)"
-    status: pending
+    status: completed
   - id: phase3-clean-slate
     content: "Phase 3.3: Clean slate -- delete existing project data and reset database (BEFORE schema change)"
-    status: pending
+    status: completed
   - id: phase3-prisma-schema
     content: "Phase 3.4a: Update Prisma Board model: replace imagePath with assetId relation to Asset"
-    status: pending
+    status: completed
   - id: phase3-type-changes
     content: "Phase 3.4b: Update BoardRegionsOutput type, Zod schema, and Board interface: imagePath -> assetId"
-    status: pending
+    status: completed
   - id: phase3-service-updates
     content: "Phase 3.4c: Update board service files (regions, viewport) to resolve paths from Asset records"
-    status: pending
+    status: completed
   - id: phase3-component-updates
     content: "Phase 3.4d: Update BoardPlanView, ViewportPreview, and RegionEditor to resolve image URLs from Asset records"
-    status: pending
+    status: completed
   - id: phase4-cleanup
     content: "Phase 4: Update tests, documentation, and regression checklist"
-    status: pending
+  status: completed
 isProject: false
 ---
 
@@ -95,7 +95,7 @@ isProject: false
 
 ---
 
-## Phase 0: Status Machine & Bug Fixes (Foundation)
+## ✅ Phase 0: Status Machine & Bug Fixes (Foundation)
 
 Establish a single enforcer for all project status transitions. This eliminates the pipeline integrity problem where 10+ locations bypass the stage system with raw `prisma.project.update({ status })` calls.
 
@@ -215,16 +215,16 @@ Two bugs found during codebase audit:
 
 ---
 
-## Phase 1: Consistency Fixes (Low Risk)
+## ✅ Phase 1: Consistency Fixes (Low Risk)
 
 Quick copy/text fixes and style guide wiring with no structural changes.
 
-### 1.1 Fix stale "Assets page" text
+### ✅ 1.1 Fix stale "Assets page" text
 
 - [components/boards/BoardPlannerWizard.tsx](components/boards/BoardPlannerWizard.tsx) line ~421: Change "Assets page" references to "Media page"
 - [components/boards/BoardPlannerWizard.tsx](components/boards/BoardPlannerWizard.tsx) line ~432: Fix instruction text about upload destination
 
-### 1.2 Wire style guide end-to-end
+### ✅ 1.2 Wire style guide end-to-end
 
 Four files need changes:
 
@@ -233,7 +233,7 @@ Four files need changes:
 3. **Prompt service** -- [src/lib/boards/prompts-service.ts](src/lib/boards/prompts-service.ts): Accept `styleGuide` parameter in `generateBoardPrompts()`, use it instead of hardcoded `DETECTIVE_BOARD_STYLE_GUIDE` (fall back to detective if not provided)
 4. **Wizard UI** -- [components/boards/BoardPlannerWizard.tsx](components/boards/BoardPlannerWizard.tsx) lines ~96-103: Include `styleGuide` in the mutation payload
 
-### 1.3 Make grid layout configurable
+### ✅ 1.3 Make grid layout configurable
 
 - [components/boards/BoardPlannerWizard.tsx](components/boards/BoardPlannerWizard.tsx): Add `rows`/`cols` state (default 2x3), render number inputs near the style guide field, pass to mutation payload instead of hardcoded `{ rows: 2, cols: 3 }`
 
@@ -296,21 +296,15 @@ Board DB records must exist before the upload step so that `boardId` values are 
 - This ensures that when the wizard reaches the upload step, each board slot has a corresponding `boardId` in the database that can be passed as form data to the asset upload route
 - In Storyboard, `SimpleBoardsEditor` renders these boards (already created during plan generation) and allows region detection, trigger generation, and viewport build operations
 
-### 2.2 Remove wizard from Storyboard and add standalone board operations
+### 2.2 Remove wizard from Storyboard and add standalone board operations (Completed)
 
 - [components/boards/BoardsWorkflow.tsx](components/boards/BoardsWorkflow.tsx):
-  - Remove the AI/manual mode switcher UI entirely (the `"ai" | "manual"` toggle and its state). Always render `SimpleBoardsEditor` directly since the AI wizard has moved to Media.
-  - Add an info `Alert` component (from `components/ui/alert.tsx`) at the top with the text: "Image prompts are now generated in the Media step." Include a `Link` to the Media page.
-  - **Add standalone entry points for board operations** that were previously wizard-only steps:
-    - Region detection button: triggers `/api/projects/[id]/boards/regions` (requires uploaded board image)
-    - Trigger generation button: triggers `/api/projects/[id]/boards/triggers` (requires regions)
-    - Viewport build button: triggers `/api/projects/[id]/boards/viewport` (requires triggers)
-    - These can be rendered as a simple step-list or action bar below the board editor, using the existing mutation hooks (`useDetectBoardRegions`, `useGenerateBoardTriggers`, `useBuildViewport` from `src/hooks/queries/use-boards.ts`)
-    - **Board selection**: Add a board selector (dropdown or list) above the action bar so the user can choose which board to operate on. The current wizard handled board selection implicitly via sequential flow; standalone buttons require explicit selection.
-    - **Phase 2 limitation**: These buttons are rendered **disabled with tooltips** in Phase 2 (e.g., "Available after image storage migration"). Image path resolution depends on the Asset-based storage introduced in Phase 3. The buttons become functional once Phase 3 is complete.
-- [app/(dashboard)/projects/[id]/storyboard/page.tsx](app/(dashboard)/projects/[id]/storyboard/page.tsx): Remove any wizard-specific props if no longer needed
+  - AI/manual toggle removed; `SimpleBoardsEditor` always renders.
+  - Added `Alert` guiding users to the Media page for prompt generation, with link.
+  - Added board selector plus standalone buttons for regions/triggers/viewport, rendered disabled with tooltips until Phase 3 (image storage migration).
+- [app/(dashboard)/projects/[id]/storyboard/page.tsx](app/(dashboard)/projects/[id]/storyboard/page.tsx): Wizard props removed; page passes boards/images only.
 
-### 2.3 Register media gate guard
+### 2.3 Register media gate guard (Completed)
 
 Auto-promotion removal is already handled by Phase 0.2. This step adds the strengthened media gate as a **guard** on the `SCRIPT_READY → ASSETS_READY` transition in the status machine.
 
@@ -397,11 +391,11 @@ Per decision, existing project data is removed rather than migrated. This step M
 
 ---
 
-## Phase 4: Cleanup and Polish
+## Phase 4: Cleanup and Polish (completed)
 
 ### 4.1 Update wizard copy
 
-- Remove any remaining references to "Assets page" or outdated navigation instructions
+- Remove any remaining references to "Assets page" or outdated navigation instructions (covered in earlier iterations)
 - Ensure the "Create and Upload" tab copy guides users: generate prompts -> copy to external tool -> generate images -> upload back
 
 ### 4.2 Update tests
@@ -419,8 +413,8 @@ Per decision, existing project data is removed rather than migrated. This step M
 
 ### 4.3 Update documentation
 
-- [docs/regression-checklist.md](docs/regression-checklist.md): Update boards flow from "Prompts -> Upload" to reflect new Media-based flow
-- [docs/media-prompt-manual-image-flow-analysis-2026-02-07.md](docs/media-prompt-manual-image-flow-analysis-2026-02-07.md): Update the analysis doc to mark items as resolved. Specifically, update the "Implementation Plan (Proposed)" section (lines 111-131) to reflect the actual decisions made: the media gate requires BOTH prompts AND assets (not "either/or" as the analysis doc's Phase 2 recommendation suggests on lines 122-124). Add a note that the spec was finalized with the stricter dual requirement.
+- [docs/regression-checklist.md](docs/regression-checklist.md): Update boards flow from "Prompts -> Upload" to reflect new Media-based flow (completed).
+- [docs/media-prompt-manual-image-flow-analysis-2026-02-07.md](docs/media-prompt-manual-image-flow-analysis-2026-02-07.md): Update the analysis doc to mark items as resolved and restate the dual requirement (prompts + assets) and asset-id storage (completed).
 
 ---
 
@@ -536,4 +530,3 @@ All locations that previously performed raw `prisma.project.update({ data: { sta
 | Media stage | `pipeline/stages/media.ts` | commit() | `→ ASSETS_READY` | Replace with `transitionProjectStatus()` |
 | Storyboard stage | `pipeline/stages/storyboard.ts` | commit() | `→ BOARDS_READY` | Replace with `transitionProjectStatus()` |
 | Build stage | `pipeline/stages/build.ts` | commit() | `→ RENDER_READY` | Replace with `transitionProjectStatus()` |
-

@@ -34,6 +34,7 @@ type MockProject = {
   topic: string | null;
   status: ProjectStatus;
   aspectRatio: string;
+  wizardProgress?: Prisma.JsonValue | null;
   assetMappings: Prisma.JsonValue;
   createdAt: Date;
   updatedAt: Date;
@@ -264,6 +265,53 @@ describe("Projects API - /api/projects", () => {
       expect(response.status).toBe(400);
       expect(data.code).toBe("VALIDATION_ERROR");
       expect(data.details?.name?._errors?.length).toBeGreaterThan(0);
+    });
+
+    it("rejects status updates through PATCH", async () => {
+      const request = new NextRequest("http://localhost:3000/api/projects/123", {
+        method: "PATCH",
+        body: JSON.stringify({ status: "RENDER_READY" }),
+      });
+      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.code).toBe("VALIDATION_ERROR");
+    });
+
+    it("accepts wizardProgress updates through PATCH", async () => {
+      const mockProject = {
+        id: "123",
+        name: "Old Name",
+        topic: null,
+        status: "DRAFT",
+        aspectRatio: "16:9",
+        wizardProgress: null,
+        assetMappings: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const nextWizardProgress = {
+        boardPlanner: { currentStep: "prompts", updatedAt: new Date().toISOString() },
+      };
+      const updatedProject = { ...mockProject, wizardProgress: nextWizardProgress };
+
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.update).mockResolvedValue(updatedProject as MockProject);
+
+      const request = new NextRequest("http://localhost:3000/api/projects/123", {
+        method: "PATCH",
+        body: JSON.stringify({ wizardProgress: nextWizardProgress }),
+      });
+      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.project.wizardProgress).toEqual(nextWizardProgress);
+      expect(storyflowPrisma.project.update).toHaveBeenCalledWith({
+        where: { id: "123" },
+        data: { wizardProgress: nextWizardProgress },
+      });
     });
   });
 

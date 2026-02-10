@@ -33,7 +33,6 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
   storyflowPrisma: {
     project: {
       findByIdOrThrow: vi.fn(),
-      update: vi.fn(),
     },
     asset: {
       findByIdOrThrow: vi.fn(),
@@ -51,7 +50,7 @@ describe("POST /api/projects/[id]/music", () => {
     vi.unstubAllGlobals();
   });
 
-  it("selects an existing music asset and updates project status", async () => {
+  it("selects an existing music asset", async () => {
     vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue({
       id: "project-1",
       status: "DRAFT",
@@ -63,7 +62,6 @@ describe("POST /api/projects/[id]/music", () => {
       type: "MUSIC",
     } as never);
     vi.mocked(storyflowPrisma.projectSettings.upsert).mockResolvedValue({} as never);
-    vi.mocked(storyflowPrisma.project.update).mockResolvedValue({} as never);
 
     const req = new NextRequest("http://localhost:3000/api/projects/project-1/music", {
       method: "POST",
@@ -80,10 +78,6 @@ describe("POST /api/projects/[id]/music", () => {
       where: { projectId: "project-1" },
       create: { projectId: "project-1", musicTrackId: "asset-1", musicVolume: 0.7 },
       update: { musicTrackId: "asset-1", musicVolume: 0.7 },
-    });
-    expect(storyflowPrisma.project.update).toHaveBeenCalledWith({
-      where: { id: "project-1" },
-      data: { status: "ASSETS_READY" },
     });
   });
 
@@ -135,7 +129,6 @@ describe("POST /api/projects/[id]/music", () => {
     expect(res.status).toBe(404);
     expect(json.code).toBe("NOT_FOUND");
     expect(json.error).toBe("Asset not found: asset-1");
-    expect(storyflowPrisma.project.update).not.toHaveBeenCalled();
   });
 
   it("downloads a pixabay track, saves asset, and reuses default volume", async () => {
@@ -146,7 +139,6 @@ describe("POST /api/projects/[id]/music", () => {
     } as never);
     vi.mocked(storyflowPrisma.asset.create).mockResolvedValue({ id: "created-asset" } as never);
     vi.mocked(storyflowPrisma.projectSettings.upsert).mockResolvedValue({} as never);
-    vi.mocked(storyflowPrisma.project.update).mockResolvedValue({} as never);
     vi.mocked(extractMetadata).mockResolvedValue({ duration: 120 } as never);
 
     vi.stubGlobal(

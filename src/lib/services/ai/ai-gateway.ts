@@ -41,30 +41,43 @@ export async function aiGenerate<T>(request: AiRequest<T>): Promise<AiCallResult
     { projectId, operation, provider: "gemini-cli", model, metadata },
     prompt,
     async () => {
-      const { rawResponse, tokens } = await withRetry(
-        () => runGemini(prompt, { model, outputFormat }),
+      // Retry wraps the full cycle: CLI call + JSON parsing + schema validation.
+      // Gemini CLI can return exit 0 with garbled output, so parse failures
+      // must also trigger a retry rather than failing immediately.
+      const { parsed, rawResponse, tokens } = await withRetry(
+        async () => {
+          const geminiResult = await runGemini(prompt, { model, outputFormat });
+
+          let parsedValue: unknown =
+            outputFormat === "json"
+              ? parseGeminiOutput<T>(geminiResult.rawResponse)
+              : ((geminiResult.rawResponse as unknown) as T);
+
+          if (schema && outputFormat === "json") {
+            try {
+              parsedValue = schema.parse(parsedValue);
+            } catch (err) {
+              console.error(
+                `[ai-gateway] Schema validation failed for ${operation}. Raw parsed:`,
+                JSON.stringify(parsedValue).slice(0, 500)
+              );
+              throw err;
+            }
+          }
+
+          return {
+            parsed: parsedValue,
+            rawResponse: geminiResult.rawResponse,
+            tokens: geminiResult.tokens,
+          };
+        },
         { ...defaultRetryConfig, maxRetries },
         operation
       );
 
-      let parsed: unknown =
-        outputFormat === "json"
-          ? parseGeminiOutput<T>(rawResponse)
-          : ((rawResponse as unknown) as T);
-
-      if (schema && outputFormat === "json") {
-        parsed = schema.parse(parsed);
-      }
-
       const result = parsed as T;
 
-      return {
-        result,
-        rawResponse,
-        tokens,
-        // include used model in metadata for observability
-        // (not stored in AiLogger schema directly)
-      };
+      return { result, rawResponse, tokens };
     }
   );
 }

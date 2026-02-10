@@ -289,7 +289,7 @@ it("streams AI log events as SSE", async () => {
 });
 ```
 
-**Multipart upload test pattern** (for `/api/projects/[id]/boards/upload-image`):
+**Multipart upload test pattern** (board images now use the asset upload route with `boardId` + deterministic filename):
 
 ```typescript
 it("uploads image via FormData", async () => {
@@ -297,11 +297,12 @@ it("uploads image via FormData", async () => {
   formData.append("file", new Blob([new Uint8Array(100)], { type: "image/jpeg" }), "test.jpg");
   formData.append("boardId", "board-1");
 
-  const req = new Request("http://localhost:3000/api/projects/test-id/boards/upload-image", {
+  const req = new Request("http://localhost:3000/api/assets/upload", {
     method: "POST",
+    headers: { "x-project-id": "test-id" },
     body: formData,
   });
-  const response = await POST(req, { params: Promise.resolve({ id: "test-id" }) });
+  const response = await POST(req);
   expect(response.status).toBe(200);
 });
 ```

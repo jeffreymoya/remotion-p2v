@@ -64,10 +64,10 @@ describe("Projects API - /api/projects/[id]/viewport", () => {
       regions: [{ id: "r1" }],
     };
 
-    it("creates or updates viewport and advances project status", async () => {
+    it("creates or updates viewport and advances project status from viewport-ready", async () => {
       vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue({
         id: "proj-3",
-        status: "ASSETS_READY",
+        status: "VIEWPORT_READY",
       } as never);
       vi.mocked(storyflowPrisma.viewport.upsert).mockResolvedValue({
         projectId: "proj-3",
@@ -97,6 +97,28 @@ describe("Projects API - /api/projects/[id]/viewport", () => {
         where: { id: "proj-3" },
         data: { status: "RENDER_READY" },
       });
+    });
+
+    it("returns 409 when attempting invalid status transition", async () => {
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue({
+        id: "proj-3",
+        status: "ASSETS_READY",
+      } as never);
+      vi.mocked(storyflowPrisma.viewport.upsert).mockResolvedValue({
+        projectId: "proj-3",
+        ...body,
+      } as never);
+
+      const req = new NextRequest("http://localhost:3000/api/projects/proj-3/viewport", {
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+
+      const res = await POST(req, { params: Promise.resolve({ id: "proj-3" }) });
+      const json = await res.json();
+
+      expect(res.status).toBe(409);
+      expect(json.code).toBe("CONFLICT");
     });
 
     it("does not update status when already render-ready", async () => {

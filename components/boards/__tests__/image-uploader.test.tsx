@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen, userEvent, waitFor } from "@/src/test/utils";
 import { ImageUploader } from "../ImageUploader";
-import * as boardHooks from "@/src/hooks/queries/use-boards";
+import * as assetHooks from "@/src/hooks/queries/use-assets";
 
 const toastMock = vi.fn();
 vi.mock("@/components/ui/toast-provider", () => ({
@@ -17,8 +17,10 @@ describe("ImageUploader", () => {
   });
 
   it("uploads valid image and shows success", async () => {
-    const mutate = vi.fn((_payload, opts) => opts?.onSuccess?.({ imagePath: "img/path" }));
-    vi.spyOn(boardHooks, "useUploadBoardImage").mockReturnValue({ mutate } as any);
+    const mutate = vi.fn((_payload, opts) =>
+      opts?.onSuccess?.({ id: "asset-1", path: "/projects/proj-1/assets/images/board-1.png" })
+    );
+    vi.spyOn(assetHooks, "useUploadAsset").mockReturnValue({ mutate } as any);
 
     renderWithProviders(
       <ImageUploader projectId="proj-1" boardId="board-1" onUploadComplete={vi.fn()} />
@@ -36,7 +38,7 @@ describe("ImageUploader", () => {
 
   it("rejects unsupported file types", async () => {
     const mutate = vi.fn();
-    vi.spyOn(boardHooks, "useUploadBoardImage").mockReturnValue({ mutate } as any);
+    vi.spyOn(assetHooks, "useUploadAsset").mockReturnValue({ mutate } as any);
 
     renderWithProviders(
       <ImageUploader projectId="proj-1" boardId="board-1" onUploadComplete={vi.fn()} />

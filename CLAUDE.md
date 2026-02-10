@@ -202,3 +202,35 @@ vi.mock("../editors/boards/simple-boards-editor", () => ({
 ```
 
 This convention is enforced by an eslint `no-restricted-syntax` rule on test files.
+
+### Styling — Design Tokens Over Hardcoded Colors
+
+Use design token classes from `globals.css` instead of hardcoded Tailwind slate colors. The app is **dark-mode only** with a slate-based palette baked into `:root`.
+
+```typescript
+// CORRECT — design tokens
+className="bg-background text-foreground border-border"
+className="bg-card text-card-foreground"
+className="bg-input text-foreground"
+className="bg-secondary text-secondary-foreground"
+className="text-muted-foreground"
+
+// WRONG — hardcoded slate colors
+className="bg-slate-950 text-slate-50 border-slate-800"
+className="bg-slate-900 text-slate-50"
+```
+
+**Token → Slate mapping:**
+| Token | Equivalent | Use for |
+|-------|-----------|---------|
+| `bg-background` | slate-950 | Page backgrounds |
+| `bg-card` / `bg-input` | slate-900 | Cards, panels, form inputs |
+| `bg-secondary` / `bg-accent` | slate-800 | Secondary surfaces, hover states |
+| `text-foreground` | slate-50 | Primary text |
+| `text-muted-foreground` | slate-400 | Secondary/dim text |
+| `border-border` | slate-800 | Borders, dividers |
+| `bg-destructive` | rose-500 | Error/delete actions |
+
+**Semantic colors are fine:** `bg-rose-*`, `bg-emerald-*`, `bg-amber-*` for status indicators (errors, success, warnings) don't need tokens.
+
+This convention is enforced by an eslint `no-restricted-syntax` warning rule on tsx files.
