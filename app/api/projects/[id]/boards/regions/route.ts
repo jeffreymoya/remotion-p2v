@@ -11,6 +11,7 @@ import {
 } from "@/app/api/lib";
 import {
   BoardElementSchema,
+  BoardRegionsOutputSchema,
   BoardRegionsOutput,
 } from "@/src/lib/boards-types";
 import {
@@ -19,7 +20,7 @@ import {
 } from "@/src/lib/boards/regions-service";
 import { aiGenerate } from "@/src/lib/services/ai";
 import { boardsLogger } from "@/src/lib/logger";
-import { getPublicDir } from "@/src/lib/paths";
+import { getProjectPaths, getPublicDir } from "@/src/lib/paths";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 
 /**
@@ -36,6 +37,22 @@ const detectRegionsRequestSchema = z.object({
 });
 
 type RouteParams = { params: Promise<{ id: string }> };
+
+async function loadExistingRegions(regionsPath: string): Promise<BoardRegionsOutput[]> {
+  try {
+    const raw = await fs.readFile(regionsPath, "utf-8");
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object" && Array.isArray((parsed as { boards?: unknown }).boards)) {
+      return (parsed as { boards: unknown[] }).boards.map((entry) => BoardRegionsOutputSchema.parse(entry));
+    }
+    if (parsed && typeof parsed === "object" && "boardId" in (parsed as Record<string, unknown>)) {
+      return [BoardRegionsOutputSchema.parse(parsed)];
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
 
 /**
  * POST /api/projects/[id]/boards/regions
@@ -134,6 +151,28 @@ export const POST = withErrorHandler(async (req: Request, { params }: RouteParam
     generatedAt: new Date().toISOString(),
     warnings: result.warnings,
   };
+
+  const { boards: boardsDir } = getProjectPaths(projectId);
+  const regionsPath = `${boardsDir}/board-regions.json`;
+  const existingRegions = await loadExistingRegions(regionsPath);
+  const mergedRegions = [
+    ...existingRegions.filter((entry) => entry.boardId !== boardId),
+    {
+      version: response.version,
+      boardId: response.boardId,
+      assetId: response.assetId,
+      assetPath: response.assetPath,
+      imageMetadata: response.imageMetadata,
+      regions: response.regions,
+      generatedAt: response.generatedAt,
+    },
+  ];
+
+  await fs.writeFile(
+    regionsPath,
+    JSON.stringify({ version: "1.0", boards: mergedRegions, generatedAt: response.generatedAt }, null, 2),
+    "utf-8"
+  );
 
   return NextResponse.json(response);
 }, "api/projects/[id]/boards/regions");

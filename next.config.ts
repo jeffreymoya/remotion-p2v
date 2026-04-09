@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "2mb",
     },
   },
+  serverExternalPackages: [
+    "sharp",
+    "fluent-ffmpeg",
+    "ffprobe-static",
+    "@google-cloud/text-to-speech",
+    "prisma",
+    "@prisma/client",
+  ],
 };
 
 export default nextConfig;

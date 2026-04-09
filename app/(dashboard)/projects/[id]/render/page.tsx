@@ -8,7 +8,9 @@ import { StageGate } from "@/components/pipeline/stage-gate";
 import { getStageGateState } from "@/src/lib/storyflow/stage-validation";
 import { ProjectStatus } from "@/src/lib/storyflow/types";
 import { buildProjectArtifacts } from "@/src/lib/storyflow/pipeline/stages/build";
-import { VideoPreview } from "@/components/video/video-preview";
+import dynamic from "next/dynamic";
+
+const VideoPreview = dynamic(() => import("@/components/video/video-preview").then(m => ({ default: m.VideoPreview })), { ssr: false });
 import { NotFoundError } from "@/app/api/lib";
 import { BuildStageButton } from "@/components/pipeline/build-stage-button";
 

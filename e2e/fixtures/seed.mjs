@@ -156,15 +156,31 @@ async function seedProjects(prisma) {
     },
   });
 
+  const boardImage = await prisma.asset.create({
+    data: {
+      projectId: boardsProject.id,
+      type: AssetType.IMAGE,
+      filename: "board-1.png",
+      path: "e2e/fixtures/artifacts/images/cover.jpg",
+      metadata: { width: 100, height: 100 },
+    },
+  });
+
   await prisma.board.create({
     data: {
       projectId: boardsProject.id,
       index: 0,
+      assetId: boardImage.id,
       layout: { rows: 2, cols: 2 },
-      regions: [{ id: "board-region-1", box: [0, 0, 50, 50] }],
-      triggers: [{ id: "trigger-1", type: "enter" }],
-      plan: [{ segmentIds: ["seg-1"], boardIndex: 0 }],
-      prompts: [{ text: "Generate image" }],
+      regions: [],
+      triggers: [],
+      plan: {
+        boardId: "board-1",
+        segmentIndices: [0],
+        totalDurationMs: 1200,
+        topicSummary: "Seeded board for storyboard operations",
+      },
+      prompts: [{ boardId: "board-1", text: "Generate image" }],
     },
   });
 

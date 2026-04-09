@@ -9,6 +9,8 @@ import { DELETE as deleteAssetRoute } from "../[id]/route";
 const prismaMocks = vi.hoisted(() => ({
   findProject: vi.fn(),
   createAsset: vi.fn(),
+  findBoards: vi.fn(),
+  updateBoard: vi.fn(),
 }));
 
 const assetMocks = vi.hoisted(() => ({
@@ -29,6 +31,10 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
     },
     asset: {
       create: prismaMocks.createAsset,
+    },
+    board: {
+      findMany: prismaMocks.findBoards,
+      update: prismaMocks.updateBoard,
     },
   },
 }));
@@ -108,10 +114,13 @@ describe("Assets API routes", () => {
       expect(assetMocks.validateUpload).toHaveBeenCalled();
       expect(assetMocks.saveAssetFile).toHaveBeenCalled();
       expect(prismaMocks.createAsset).toHaveBeenCalled();
+      expect(prismaMocks.findBoards).not.toHaveBeenCalled();
+      expect(prismaMocks.updateBoard).not.toHaveBeenCalled();
     });
 
     it("defaults to IMAGE and board naming when boardId provided", async () => {
       prismaMocks.findProject.mockResolvedValue({ id: "proj-1", status: "DRAFT" });
+      prismaMocks.findBoards.mockResolvedValue([{ id: "db-board-1", plan: { boardId: "board-1" } }]);
       assetMocks.validateUpload.mockResolvedValue({ valid: true, ext: "png" });
       assetMocks.saveAssetFile.mockResolvedValue({
         absolutePath: "/tmp/abs.png",
@@ -120,6 +129,7 @@ describe("Assets API routes", () => {
       });
       assetMocks.extractMetadata.mockResolvedValue({ width: 100 });
       prismaMocks.createAsset.mockResolvedValue({ id: "asset-2" });
+      prismaMocks.updateBoard.mockResolvedValue({ id: "db-board-1", assetId: "asset-2" });
 
       class FakeFile extends Blob {
         name: string;
@@ -162,6 +172,50 @@ describe("Assets API routes", () => {
         "png",
         { overrideFilename: "board-1.png" }
       );
+      expect(prismaMocks.updateBoard).toHaveBeenCalledWith({
+        where: { id: "db-board-1" },
+        data: { assetId: "asset-2" },
+      });
+    });
+
+    it("returns 404 when boardId does not match a project board", async () => {
+      prismaMocks.findProject.mockResolvedValue({ id: "proj-1", status: "DRAFT" });
+      prismaMocks.findBoards.mockResolvedValue([]);
+
+      class FakeFile extends Blob {
+        name: string;
+        lastModified: number;
+        constructor(parts: BlobPart[], name: string, options?: BlobPropertyBag) {
+          super(parts, options);
+          this.name = name;
+          this.lastModified = 0;
+        }
+      }
+      vi.stubGlobal("File", FakeFile as unknown as typeof File);
+
+      const file = new File([new Uint8Array([1, 2, 3])], "img.png", { type: "image/png" });
+      (file as any).arrayBuffer = vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
+      const req = {
+        url: "http://localhost:3000/api/assets/upload",
+        method: "POST",
+        formData: () =>
+          Promise.resolve({
+            get: (key: string) => {
+              if (key === "file") return file;
+              if (key === "projectId") return "proj-1";
+              if (key === "boardId") return "board-missing";
+              return null;
+            },
+          } as unknown as FormData),
+      } as unknown as Request;
+
+      const res = await uploadPost(req);
+      const json = await res.json();
+
+      expect(res.status).toBe(404);
+      expect(json.code).toBe("NOT_FOUND");
+      expect(prismaMocks.createAsset).not.toHaveBeenCalled();
+      expect(prismaMocks.updateBoard).not.toHaveBeenCalled();
     });
 
     it("rejects invalid asset type", async () => {

@@ -5,6 +5,7 @@ import { GET as getBoards, POST as postBoards } from "../[id]/boards/route";
 import { GET as getBoard, PUT as putBoard } from "../[id]/boards/[boardId]/route";
 import { POST as postPlan, GET as getPlan } from "../[id]/boards/plan/route";
 import { POST as postPrompts } from "../[id]/boards/prompts/route";
+import { POST as postRegions } from "../[id]/boards/regions/route";
 import { POST as postTriggers } from "../[id]/boards/triggers/route";
 import { POST as postViewport } from "../[id]/boards/viewport/route";
 import { NotFoundError } from "@/app/api/lib";
@@ -59,6 +60,9 @@ vi.mock("@/src/lib/storyflow/prisma", () => ({
       findByIdOrThrow: vi.fn(),
       update: vi.fn(),
     },
+    asset: {
+      findUnique: vi.fn(),
+    },
     board: {
       findMany: vi.fn(),
       count: vi.fn(),
@@ -112,6 +116,7 @@ vi.mock("sharp", () => ({
 const { storyflowPrisma } = await import("@/src/lib/storyflow/prisma");
 const { planBoards } = await import("@/src/lib/boards/plan-service");
 const { generateBoardPrompts } = await import("@/src/lib/boards/prompts-service");
+const { detectBoardRegions } = await import("@/src/lib/boards/regions-service");
 const { generateBoardTriggers } = await import("@/src/lib/boards/trigger-service");
 const { buildViewportJson } = await import("@/src/lib/boards/viewport-service");
 const { access, writeFile } = await import("fs/promises");
@@ -271,6 +276,56 @@ describe("Boards API", () => {
       "Noir collage wall"
     );
     expect(writeFile).toHaveBeenCalled();
+  });
+
+  it("detects regions and persists board-regions artifact", async () => {
+    memFiles.set("/public/projects/p1/assets/images/board-1.png", "img");
+    memFiles.set(
+      "/projects/p1/boards/board-regions.json",
+      JSON.stringify({
+        version: "1.0",
+        boards: [
+          {
+            version: "1.0",
+            boardId: "board-0",
+            assetId: "asset-0",
+            imageMetadata: { width: 100, height: 100, aspectRatio: 1 },
+            regions: [],
+            generatedAt: new Date().toISOString(),
+          },
+        ],
+      })
+    );
+    vi.mocked(storyflowPrisma.asset.findUnique).mockResolvedValue({
+      id: "asset-1",
+      projectId: "p1",
+      path: "/projects/p1/assets/images/board-1.png",
+    });
+    vi.mocked(detectBoardRegions).mockResolvedValue({
+      imageMetadata: { width: 3000, height: 3000, aspectRatio: 1 },
+      regions: [],
+      warnings: [],
+    });
+
+    const req = new NextRequest("http://localhost:3000/api/projects/p1/boards/regions", {
+      method: "POST",
+      body: JSON.stringify({
+        boardId: "board-1",
+        assetId: "asset-1",
+        elements: [{ id: "e1", type: "photo", gridPosition: { row: 0, col: 0 }, description: "desc" }],
+        gridLayout: { rows: 2, cols: 3 },
+      }),
+    });
+
+    const res = await postRegions(req, { params: Promise.resolve({ id: "p1" }) });
+    expect(res.status).toBe(200);
+
+    const persistedRaw = memFiles.get("/projects/p1/boards/board-regions.json");
+    expect(persistedRaw).toBeTruthy();
+    const persisted = JSON.parse(persistedRaw!);
+    expect(Array.isArray(persisted.boards)).toBe(true);
+    expect(persisted.boards).toHaveLength(2);
+    expect(persisted.boards.find((entry: any) => entry.boardId === "board-1")?.assetId).toBe("asset-1");
   });
 
   it("fails triggers when required files missing", async () => {
