@@ -31,6 +31,4 @@ export async function generateTTS(request: TTSGenerateRequest): Promise<TTSGener
   return res.json();
 }
 
-// Note: Batch TTS generation is handled by the TTSProgressIndicator component
-// which uses polling and progressive generation. Individual segment regeneration
-// is handled by the generateTTS function above.
+// Batch TTS generation is handled directly in the script-builder workflow.

@@ -13,7 +13,6 @@ import { getSettings } from "./settings";
 import { stripMarkdownBlocks } from "./gemini-parser";
 import {
   blueprintPrompt,
-  blueprintRegeneratePrompt,
   hookPrompt,
   middleBeatPrompt,
   turnPrompt,
@@ -180,7 +179,7 @@ export async function regenerateBlueprint(
 ): Promise<{ beats: Beat[] }> {
   const beatCount = calculateBeatCount(targetDurationMs);
 
-  const prompt = blueprintRegeneratePrompt({
+  const prompt = blueprintPrompt({
     topic,
     targetDurationMs,
     beatCount,

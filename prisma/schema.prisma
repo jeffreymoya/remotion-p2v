@@ -16,7 +16,7 @@ model Image {
   bytes      Int
   width      Int
   height     Int
-  provider   String    // 'local-library' | 'pexels' | 'unsplash' | 'pixabay'
+  provider   String
   sourceUrl  String?
   path       String
   thumbPath  String?

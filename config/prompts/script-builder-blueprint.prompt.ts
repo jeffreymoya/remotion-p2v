@@ -10,15 +10,13 @@ export interface BlueprintPromptVariables extends PromptVariables {
   topic: string;
   targetDurationMs: number;
   beatCount: number;
+  rejectionNotes?: string;
 }
 
-/**
- * Main prompt for generating engagement blueprint
- */
 export const blueprintPrompt = (vars: BlueprintPromptVariables): string => {
   const targetMinutes = vars.targetDurationMs / 1000 / 60;
 
-  return `You are an expert YouTube content strategist and video scriptwriter. Your task is to create an **Engagement Blueprint** - a structural outline that maps the emotional journey of a video before any script content is written.
+  const base = `You are an expert YouTube content strategist and video scriptwriter. Your task is to create an **Engagement Blueprint** - a structural outline that maps the emotional journey of a video before any script content is written.
 
 **Topic:** ${vars.topic}
 **Target Duration:** ${targetMinutes} minutes
@@ -29,7 +27,7 @@ For each beat, define:
 2. **Core Argument**: What key information or idea is conveyed in this section?
 3. **Target Emotion**: What should the viewer feel? Choose from: curiosity, anger, dread, hope, surprise, validation, urgency, reflection
 4. **Micro-Hook**: What question, mystery, or tension opens this section to keep them watching?
-5. **Estimated Duration**: How long this beat should last (in milliseconds)
+5. **Estimated Duration**: How long this beat should last (in milliseconds). Distribute ${targetMinutes} minutes naturally across ${vars.beatCount} beats.
 6. **Media Suggestions**: 2-3 visual/b-roll ideas that would complement this beat
 
 **Structure Guidelines:**
@@ -37,7 +35,6 @@ For each beat, define:
 - Final beat should be a **REFLECTION** with ambiguity or call-to-action
 - Middle beats should build tension and deliver value
 - Emotions should vary - avoid consecutive beats with the same emotion
-- Total duration across all beats should equal ${vars.targetDurationMs}ms
 
 CRITICAL: Return ONLY this JSON structure (no markdown):
 {
@@ -53,17 +50,10 @@ CRITICAL: Return ONLY this JSON structure (no markdown):
     }
   ]
 }`;
-};
 
-/**
- * Prompt for regenerating blueprint with feedback
- */
-export const blueprintRegeneratePrompt = (
-  vars: BlueprintPromptVariables & { rejectionNotes: string }
-): string => {
-  const basePrompt = blueprintPrompt(vars);
+  if (!vars.rejectionNotes) return base;
 
-  return `${basePrompt}
+  return `${base}
 
 **PREVIOUS ATTEMPT FEEDBACK:**
 ${vars.rejectionNotes}

@@ -6,7 +6,8 @@ import { MediaManager } from "@/components/media/media-manager";
 import { StageGate } from "@/components/pipeline/stage-gate";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { getStageGateState } from "@/src/lib/storyflow/stage-validation";
-import { Asset, Board, ProjectStatus, Script } from "@/src/lib/storyflow/types";
+import { Asset, AssetMappings, Board, ProjectStatus, Script } from "@/src/lib/storyflow/types";
+import { normalizeAssetMappings } from "@/src/lib/storyflow/asset-mappings";
 import { NotFoundError } from "@/app/api/lib";
 import { MediaStageButton } from "@/components/pipeline/media-stage-button";
 
@@ -36,7 +37,7 @@ export default async function MediaPage({ params }: Params) {
         <p className="text-xs uppercase tracking-[0.2em] text-brand-300">Step 2 · Media</p>
         <h1 className="text-2xl font-semibold text-white">{project.name}</h1>
         <p className="text-sm text-slate-400">
-          Upload project media or browse stock, then map assets in one place before moving to Storyboard.
+          Upload project media, choose music, and map assets in one place before moving to Storyboard.
         </p>
       </div>
 
@@ -50,7 +51,7 @@ export default async function MediaPage({ params }: Params) {
             assets={assets}
             images={images}
             script={script}
-            initialMappings={(project.assetMappings as Record<number, string>) || {}}
+            initialMappings={normalizeAssetMappings(project.assetMappings) satisfies AssetMappings}
             selectedMusicAssetId={project.settings?.musicTrackId ?? undefined}
             initialMusicVolume={project.settings?.musicVolume ?? 0.3}
             initialBoards={boards}

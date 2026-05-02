@@ -21,12 +21,6 @@ export const env = createEnv({
     BOARDS_AI_PROVIDER: z.string().optional(),
     AI_PROVIDER: z.string().optional(),
 
-    // Feature flags
-    ENABLE_SCRIPT_BUILDER: z
-      .string()
-      .optional()
-      .transform((val) => val === "true"),
-
     // Logging
     LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 
@@ -45,7 +39,6 @@ export const env = createEnv({
     GEMINI_PRO_FALLBACK_MODEL: process.env.GEMINI_PRO_FALLBACK_MODEL,
     BOARDS_AI_PROVIDER: process.env.BOARDS_AI_PROVIDER,
     AI_PROVIDER: process.env.AI_PROVIDER,
-    ENABLE_SCRIPT_BUILDER: process.env.ENABLE_SCRIPT_BUILDER,
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
   },

@@ -35,11 +35,9 @@ useEffect(() => {
 | `useBoards`, `useCreateBoard`, `useUpdateBoard` | `use-boards` | Board operations |
 | `useAssets` + mutations | `use-assets` | Asset management |
 | `useRender` | `use-render` | Render status (polls while PROCESSING) |
-| `useTTS` mutations | `use-tts` | TTS regeneration |
 | `useViewport` mutations | `use-viewport` | Viewport generation |
 | `useExecutionStatus` | `use-execution-status` | Script builder polling |
 | `useAiLogs` | `use-ai-logs` | AI call logs |
-| `useAssetSearch` | `use-asset-search` | Stock media search |
 | `useMusicLibrary` | `use-music-library` | Music library |
 | `useMappings` | `use-mappings` | Asset mappings |
 

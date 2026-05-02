@@ -9,7 +9,7 @@ describe("useSaveAssetMappings", () => {
 
   it("calls saveAssetMappings with project id", async () => {
     const projectId = "proj-map";
-    const mappings = { 0: "asset-1" };
+    const mappings = { 0: { assetId: "asset-1" } };
     vi.spyOn(api, "saveAssetMappings").mockResolvedValue();
 
     const { result } = renderHook(() => useSaveAssetMappings(projectId), {

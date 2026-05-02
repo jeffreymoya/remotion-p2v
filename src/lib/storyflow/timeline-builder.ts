@@ -1,7 +1,13 @@
 import { z } from "zod";
 import { NotFoundError } from "@/app/api/lib";
 import { storyflowPrisma } from "./prisma";
-import { Asset, ScriptSegment, ViewportKeyframe } from "./types";
+import {
+  Asset,
+  AssetMappings,
+  ScriptSegment,
+  SegmentViewport,
+  ViewportKeyframe,
+} from "./types";
 import {
   AudioElement,
   BackgroundElement,
@@ -14,12 +20,18 @@ import {
 } from "./timeline-types";
 import {
   msToFrames,
+  framesToMs,
   WORDS_PER_MINUTE,
   MIN_SEGMENT_DURATION_MS,
   DEFAULT_SEGMENT_DURATION_MS,
   DEFAULT_MUSIC_DUCKING,
   countWords,
 } from "../constants";
+import { normalizeAssetMappings } from "./asset-mappings";
+import { snapToSentenceBoundary } from "./word-timestamp-utils";
+
+const SENTENCE_SNAP_TOLERANCE_MS = 300;
+const CROSSFADE_FRAMES = 7;
 
 // Zod schemas for validating DB JSON fields
 const wordTimestampSchema = z.object({
@@ -175,13 +187,43 @@ function buildViewportAnimation(
   };
 }
 
-function buildBackgrounds(
-  assets: { type: string; metadata?: unknown; path: string; upscaledPath?: string | null }[],
+function buildSegmentViewportAnimation(
+  vp: SegmentViewport,
+  startFrame: number,
+  endFrame: number,
+  asset: Asset
+): ViewportAnimation {
+  const easing = vp.easing ?? "easeInOut";
+  const durationMs = framesToMs(endFrame - startFrame);
+  const metadata = parseAssetMetadata(asset.metadata);
+  const startKf: ViewportKeyframe = {
+    frameStart: startFrame,
+    frameEnd: startFrame,
+    viewport: { ...vp.start },
+    easing,
+    transitionDurationMs: 0,
+  };
+  const endKf: ViewportKeyframe = {
+    frameStart: startFrame,
+    frameEnd: endFrame,
+    viewport: { ...vp.end },
+    easing,
+    transitionDurationMs: durationMs,
+  };
+  return {
+    enabled: true,
+    keyframes: [startKf, endKf],
+    imageWidth: metadata?.width,
+    imageHeight: metadata?.height,
+  };
+}
+
+function buildLegacyBackgrounds(
+  assets: Asset[],
   viewport: { keyframes?: unknown } | null,
-  segments: ScriptSegment[]
+  totalDurationMs: number
 ): BackgroundElement[] {
-  const primary = pickPrimaryVisualAsset(assets as Asset[]);
-  const totalDurationMs = segments.reduce((sum, seg) => sum + estimateDuration(seg), 0);
+  const primary = pickPrimaryVisualAsset(assets);
 
   if (!primary) {
     return [
@@ -226,6 +268,97 @@ function buildBackgrounds(
   ];
 }
 
+function buildBackgrounds(
+  assets: { type: string; metadata?: unknown; path: string; upscaledPath?: string | null; id?: string; filename?: string; projectId?: string; createdAt?: Date }[],
+  viewport: { keyframes?: unknown } | null,
+  segments: ScriptSegment[],
+  assetMappings: AssetMappings
+): BackgroundElement[] {
+  const segmentDurations = segments.map(estimateDuration);
+  const segmentEnds: number[] = [];
+  let acc = 0;
+  for (const d of segmentDurations) {
+    acc += d;
+    segmentEnds.push(acc);
+  }
+  const totalDurationMs = acc;
+
+  const hasMappings = Object.keys(assetMappings).length > 0;
+  if (!hasMappings) {
+    return buildLegacyBackgrounds(assets as Asset[], viewport, totalDurationMs);
+  }
+
+  const assetById = new Map<string, Asset>(
+    (assets as Asset[]).map((a) => [a.id, a])
+  );
+  const elements: BackgroundElement[] = [];
+  let prevAssetId: string | null = null;
+
+  segments.forEach((segment, idx) => {
+    const mapping = assetMappings[segment.index];
+    if (!mapping) {
+      prevAssetId = null;
+      return;
+    }
+    const asset = assetById.get(mapping.assetId);
+    if (!asset) {
+      prevAssetId = null;
+      return;
+    }
+
+    const segStartMs = idx === 0 ? 0 : segmentEnds[idx - 1];
+    const naturalEndMs = segmentEnds[idx];
+    const isLast = idx === segments.length - 1;
+    const localTarget = naturalEndMs - segStartMs;
+    const snappedLocal = isLast
+      ? localTarget
+      : snapToSentenceBoundary(
+          localTarget,
+          segment.timestamps ?? [],
+          segment.text,
+          SENTENCE_SNAP_TOLERANCE_MS
+        );
+    const endMs = segStartMs + snappedLocal;
+
+    const startFrame = msToFrames(segStartMs);
+    const endFrame = msToFrames(endMs);
+    const sameAsPrev = prevAssetId === mapping.assetId;
+    const wantsCrossfade = !sameAsPrev && elements.length > 0;
+    const adjustedStart = wantsCrossfade
+      ? Math.max(0, startFrame - CROSSFADE_FRAMES)
+      : startFrame;
+
+    const metadata = parseAssetMetadata(asset.metadata);
+    const viewportAnimation = mapping.viewport
+      ? buildSegmentViewportAnimation(mapping.viewport, startFrame, endFrame, asset)
+      : undefined;
+
+    elements.push({
+      imageUrl: asset.upscaledPath || asset.path,
+      startFrame: adjustedStart,
+      endFrame,
+      enterTransition: elements.length === 0 ? "blur" : "fade",
+      exitTransition: isLast ? "blur" : "fade",
+      mediaMetadata: metadata ?? undefined,
+      viewportAnimation,
+    });
+    prevAssetId = mapping.assetId;
+  });
+
+  if (!elements.length) {
+    return [
+      {
+        startFrame: 0,
+        endFrame: msToFrames(totalDurationMs || 60000),
+        enterTransition: "fade",
+        exitTransition: "fade",
+      },
+    ];
+  }
+
+  return elements;
+}
+
 function buildMusicElement(assets: { type: string; path: string }[], settingsVolume?: number): MusicElement | undefined {
   const music = assets.find((a) => a.type === "MUSIC");
   if (!music) return undefined;
@@ -256,7 +389,8 @@ export async function buildTimeline(projectId: string): Promise<Timeline> {
 
   const text = buildTextElements(segments);
   const audio = buildAudioElements(segments, projectId);
-  const backgrounds = buildBackgrounds(project.assets, project.viewport, segments);
+  const assetMappings = normalizeAssetMappings(project.assetMappings);
+  const backgrounds = buildBackgrounds(project.assets, project.viewport, segments, assetMappings);
   const music = buildMusicElement(project.assets, project.settings?.musicVolume ?? undefined);
 
   const durationMs = segments.reduce((sum, s) => sum + estimateDuration(s), 0);

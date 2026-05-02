@@ -10,8 +10,7 @@ Create short-form AI videos with Remotion, AI for script generation, and Google 
   - `GOOGLE_TTS_API_KEY`
 - Stock media API keys are no longer required (online providers deprecated)
   - `DATABASE_URL` or `STORYFLOW_DATABASE_URL` for SQLite database
-  - (Optional) `ENABLE_SCRIPT_BUILDER=true` to enable the multi-phase Script Builder workflow
-- Install and authenticate the Gemini CLI (required for AI steps like topic refinement, script generation, and boards prompts/regions). Verify with `gemini --version`.
+- Install and authenticate the Gemini CLI (required for AI steps like script generation and boards prompts/regions). Verify with `gemini --version`.
 - Set up the database: `npm run db:push:storyflow`
 - Start the web UI: `npm run web:dev`
 - (Optional) Start Remotion Studio for previews: `npm run dev`
@@ -20,33 +19,19 @@ Create short-form AI videos with Remotion, AI for script generation, and Google 
 1) Start the app: `npm run web:dev` and open `http://localhost:3000`
 2) Create a project (`/projects/new`)
    - Enter a project name
-   - Choose an aspect ratio (1:1, 4:5, 9:16, 16:9)
-3) Refine the topic (`/projects/[id]`)
-   - Enter a topic title + description
-   - Run refinement to get optimized title, angles, hooks, and suggested duration
-   - Accept or click "Start Over" to refine again (saved in project metadata)
-4) Generate the script (`/projects/[id]/script`)
-   - Use Script Builder (if `ENABLE_SCRIPT_BUILDER=true`) or the single-prompt generator
-   - Review segments; regenerate if needed
-5) Generate TTS audio (`/projects/[id]/tts`)
-   - Run emphasis analysis (high/medium emphasis words)
-   - Batch-generate audio with live progress
-   - Preview per-segment audio with word highlighting; regenerate a segment if needed
-6) Manage assets (`/projects/[id]/assets`)
-   - Music tab: search Pixabay (requires `PIXABAY_API_KEY`), preview tracks, select one, and set volume
-   - Upload tab: upload custom images, video clips, or audio
-7) Build the boards pipeline (`/projects/[id]/boards`)
-   - Step 1 (Config): set board duration + style guide
-   - Step 2 (Plan): AI groups script segments into boards
-   - Step 3 (Prompts): AI generates image prompts for each board
-   - Step 4 (Upload): generate images externally and upload per board
-   - Step 5 (Regions): AI detects regions; refine via the canvas editor
-   - Step 6 (Triggers): generate word-level camera triggers
-   - Step 7 (Viewport): build + preview the camera path (viewport.json)
-8) Preview the timeline (`/projects/[id]/preview`)
-   - Remotion preview with audio, subtitles, and viewport motion
-   - If anything looks off, jump back to Script/TTS/Boards and regenerate
-9) Render the final video (`/projects/[id]/render`)
+   - Choose an aspect ratio (9:16 or 16:9)
+3) Generate the script (`/projects/[id]/script`)
+   - Use the beat-based Script Builder workflow
+   - Review the blueprint, execute beats, polish, segment, and generate TTS audio
+4) Manage assets (`/projects/[id]/media`)
+   - Upload custom images, video clips, music, or audio
+   - Choose music and map images to script segments
+5) Build the storyboard (`/projects/[id]/storyboard`)
+   - Plan board groupings, generate prompts, upload board images, detect regions, generate triggers, and build viewport JSON
+6) Build the timeline (`/projects/[id]/build`)
+   - Assemble viewport paths and triggers before final render
+7) Render the final video (`/projects/[id]/render`)
+   - Preview the current timeline
    - Choose a quality preset and render
    - Outputs save to `public/projects/<project-id>/renders/<render-id>.mp4`
 
@@ -56,19 +41,15 @@ Create short-form AI videos with Remotion, AI for script generation, and Google 
       |
 [Create Project]
       |
-[Project Overview + Topic Refinement]
-      |
 [Script Generation]
       |
-[TTS + Emphasis]
+[Media (Music + Uploads)]
       |
-[Assets (Music + Uploads)]
+[Storyboard]
       |
-[Boards Wizard]
+[Build] -----> [Render Video]
       |
-[Preview Timeline] -----> [Render Video]
-      |
-      +--> iterate back to Script Generation / TTS / Boards Wizard
+      +--> iterate back to Script Generation / Media / Storyboard
 ```
 
 ## Project Artifact Structure
@@ -78,7 +59,7 @@ Most generated files live in `public/projects/<project-id>/` (project metadata l
 public/projects/<project-id>/
 ├── assets/
 │   ├── audio/segment-*.mp3           # TTS audio with word timestamps
-│   ├── images/                       # Stock or board images
+│   ├── images/                       # Uploaded or board images
 │   ├── music/                        # Optional background music
 │   └── videos/                       # Optional video clips
 ├── boards/                           # Board pipeline artifacts
@@ -95,16 +76,15 @@ public/projects/<project-id>/
 
 The video generation pipeline consists of:
 
-1. **Topic Refinement (Optional)** - AI optimizes title, angles, and hooks
-2. **Script Generation** - AI-powered script builder or single-prompt generator
-3. **TTS + Emphasis** - Audio with word-level timestamps and emphasis data
-4. **Assets** - Stock media/music and manual uploads
-5. **Boards Planning** - Create grid-based boards and image prompts
-6. **Region Detection** - Identify areas of interest in board images
-7. **Trigger Generation** - Create word-level camera movements
-8. **Viewport Build** - Generate camera path across boards
-9. **Timeline Assembly** - Combine all elements into Remotion timeline
-10. **Render** - Produce final video via Remotion
+1. **Script Builder** - Beat-based blueprint, review, execution, polish, and segmentation
+2. **TTS** - Segment audio with word-level timestamps
+3. **Assets** - Manual uploads and optional background music
+4. **Boards Planning** - Create grid-based boards and image prompts
+5. **Region Detection** - Identify areas of interest in board images
+6. **Trigger Generation** - Create word-level camera movements
+7. **Viewport Build** - Generate camera path across boards
+8. **Timeline Assembly** - Combine all elements into Remotion timeline
+9. **Render** - Produce final video via Remotion
 
 ## Development Scripts
 
@@ -133,7 +113,7 @@ The video generation pipeline consists of:
 - **Prisma** - Database ORM (SQLite)
 - **Google TTS** - Text-to-speech with word timestamps
 - **AI Providers** - Gemini CLI (default) with optional provider configuration
-- **Stock Media** - Pexels, Unsplash, Pixabay integration
+- **Media Assets** - Manual uploads plus optional Pixabay music
 
 ## Credits
 Template by [@webmonch](https://github.com/webmonch). Contributions mirrored from the Remotion monorepo.

@@ -24,6 +24,10 @@
     "test:e2e:ui": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' playwright test --ui",
     "test:e2e:debug": "PWDEBUG=1 TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' playwright test --headed",
     "check:api-keys": "bash tests/scripts/check-api-keys.sh",
+    "prompt-optimizer": "tsx scripts/prompt-optimizer/index.ts",
+    "po:default": "npm run prompt-optimizer -- --variations 5 --loops 3",
+    "po:default:no-synthesize": "npm run prompt-optimizer -- --variations 5 --loops 3 --no-synthesize",
+    "po:empirical": "npm run prompt-optimizer -- --variations 5 --loops 3 --empirical",
     "web:dev": "next dev",
     "web:build": "next build",
     "web:start": "next start",
@@ -36,7 +40,6 @@
   "dependencies": {
     "@prisma/client": "^6.8.0",
     "@radix-ui/react-dialog": "^1.1.15",
-    "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-progress": "^1.1.8",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",

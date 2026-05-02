@@ -44,15 +44,6 @@ const libraryAsset: Asset = {
   createdAt: new Date(),
 };
 
-const stockAsset: Asset = {
-  id: "stock-image",
-  projectId: "proj-1",
-  type: "IMAGE",
-  filename: "stock.jpg",
-  path: "/images/stock.jpg",
-  createdAt: new Date(),
-};
-
 vi.mock("@/components/assets/upload-zone", () => ({
   UploadZone: ({ onUploaded, assetType }: { onUploaded: (asset: Asset) => void; assetType: string }) => (
     <div data-testid="upload-zone" data-asset-type={assetType}>
@@ -120,18 +111,12 @@ vi.mock("@/components/assets/music-settings", () => ({
   ),
 }));
 
-vi.mock("../stock-search", () => ({
-  StockSearch: ({ onImported }: { onImported: (asset: Asset) => void }) => (
-    <div data-testid="stock-search">
-      <button data-testid="import-stock" onClick={() => onImported(stockAsset)}>
-        Import stock
-      </button>
-    </div>
-  ),
-}));
-
 vi.mock("@/components/editors/asset-mapper/simple-asset-mapper", () => ({
   SimpleAssetMapper: () => <div data-testid="asset-mapper">Mapper</div>,
+}));
+
+vi.mock("@/components/boards/BoardPlannerWizard", () => ({
+  BoardPlannerWizard: () => <div data-testid="board-planner-wizard">Board planner</div>,
 }));
 
 const baseAssets: Asset[] = [
@@ -228,29 +213,6 @@ describe("MediaManager", () => {
     expect(screen.getByTestId("asset-gallery")).toHaveAttribute("data-upscale-count", "1");
     expect(toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: "Asset deleted" }));
     expect(toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: "Image upscaled" }));
-  });
-
-  it("imports stock asset and switches to library tab", async () => {
-    const user = userEvent.setup();
-
-    renderWithProviders(
-      <BackgroundActivityProvider>
-        <MediaManager
-          projectId="proj-1"
-          assets={baseAssets}
-          images={baseAssets.filter((asset) => asset.type === "IMAGE")}
-          script={script}
-          initialMappings={{}}
-          selectedMusicAssetId={null}
-        />
-      </BackgroundActivityProvider>
-    );
-
-    await user.click(screen.getByRole("button", { name: /stock search/i }));
-    await user.click(screen.getByTestId("import-stock"));
-
-    expect(screen.getByText(/previously uploaded assets/i)).toBeInTheDocument();
-    expect(toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: "Added to library" }));
   });
 
   it("shows mapper when mapping tab selected with script and images", async () => {

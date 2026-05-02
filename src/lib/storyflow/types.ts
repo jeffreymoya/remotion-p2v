@@ -32,7 +32,7 @@ export interface Project {
   settings?: ProjectSettings | null;
   viewport?: Viewport | null;
   boards?: Board[];
-  assetMappings?: Record<number, string> | null;
+  assetMappings?: AssetMappings | Record<number, string> | null;
   renders?: Render[];
 }
 
@@ -105,6 +105,31 @@ export interface Render {
   completedAt?: Date | null;
   createdAt: Date;
 }
+
+export interface SegmentKeyframe {
+  centerX: number;
+  centerY: number;
+  zoom: number;
+}
+
+export type SegmentViewportEasing =
+  | "linear"
+  | "easeIn"
+  | "easeOut"
+  | "easeInOut";
+
+export interface SegmentViewport {
+  start: SegmentKeyframe;
+  end: SegmentKeyframe;
+  easing?: SegmentViewportEasing;
+}
+
+export interface AssetMapping {
+  assetId: string;
+  viewport?: SegmentViewport;
+}
+
+export type AssetMappings = Record<number, AssetMapping>;
 
 export interface DetectedRegion {
   id: string;

@@ -136,7 +136,6 @@ if [ $VALIDATION_FAILED -eq 1 ]; then
   echo ""
   echo -e "${BLUE}Example:${NC}"
   echo "  export GOOGLE_TTS_API_KEY=\"your-actual-api-key\""
-  echo "  export PEXELS_API_KEY=\"your-actual-api-key\""
   echo ""
   echo -e "${YELLOW}To skip this check (not recommended):${NC}"
   echo "  export SKIP_API_KEY_CHECK=true"

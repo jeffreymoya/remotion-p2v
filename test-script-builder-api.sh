@@ -42,11 +42,16 @@ echo "Generated blueprint: $BLUEPRINT_ID"
 print_json "$BLUEPRINT_RESPONSE"
 echo ""
 
-echo "Step 3: Approve blueprint"
-APPROVE_RESPONSE=$(curl -s -X PUT "${BASE_URL}/api/script-builder/blueprint/${BLUEPRINT_ID}/approve" \
-  -H "Content-Type: application/json")
+REVIEWS=$(echo "$BLUEPRINT_RESPONSE" | jq '{
+  reviews: [.blueprint.beats[].index | {beatIndex: ., status: "approved"}]
+}')
 
-echo "Blueprint approved"
+echo "Step 3: Review and approve blueprint"
+APPROVE_RESPONSE=$(curl -s -X PUT "${BASE_URL}/api/script-builder/blueprint/${BLUEPRINT_ID}/review" \
+  -H "Content-Type: application/json" \
+  -d "$REVIEWS")
+
+echo "Blueprint approved through review endpoint"
 print_json "$APPROVE_RESPONSE"
 echo ""
 

@@ -6,9 +6,6 @@
  */
 
 // Export all prompt modules
-export * from './refine.prompt';
-export * from './script.prompt';
-export * from './emphasis.prompt';
 export * from './boards-plan.prompt';
 export * from './boards-image.prompt';
 export * from './boards-region.prompt';

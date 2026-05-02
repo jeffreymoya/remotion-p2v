@@ -46,82 +46,6 @@ const TTSConfigSchema = z.object({
 export type TTSConfig = z.infer<typeof TTSConfigSchema>;
 
 /**
- * Zod schema for Stock Assets configuration
- */
-const StockAssetsConfigSchema = z.object({
-  defaultProvider: z.string(),
-  providers: z.record(z.any()),
-  fallbackOrder: z.array(z.string()).optional(),
-  localLibrary: z.object({
-    enabled: z.boolean().default(true),
-    minMatches: z.object({
-      videos: z.number().int().nonnegative().default(1),
-      images: z.number().int().nonnegative().default(3),
-    }).default({ videos: 1, images: 3 }),
-    limit: z.object({
-      videos: z.number().int().positive().default(3),
-      images: z.number().int().positive().default(5),
-    }).default({ videos: 3, images: 5 }),
-    preferRecencyBoost: z.number().min(0).max(1).default(0.1),
-    semantic: z.object({
-      enabled: z.boolean().default(false),
-      minScore: z.number().min(0).max(1).default(0.18),
-      candidateLimit: z.number().int().positive().default(250),
-      dimensions: z.number().int().positive().default(384),
-    }).default({
-      enabled: false,
-      minScore: 0.18,
-      candidateLimit: 250,
-      dimensions: 384,
-    }),
-    optimization: z.object({
-      images: z.object({
-        enabled: z.boolean().default(false),
-        minSavingsPercent: z.number().min(0).max(100).default(5),
-      }).default({ enabled: false, minSavingsPercent: 5 }),
-    }).default({
-      images: { enabled: false, minSavingsPercent: 5 },
-    }),
-  }).default({
-    enabled: true,
-    minMatches: { videos: 1, images: 3 },
-    limit: { videos: 3, images: 5 },
-    preferRecencyBoost: 0.1,
-    semantic: { enabled: false, minScore: 0.18, candidateLimit: 250, dimensions: 384 },
-    optimization: { images: { enabled: false, minSavingsPercent: 5 } },
-  }),
-  qualityScoring: z.object({
-    enabled: z.boolean().default(true),
-    weights: z.record(z.number()).optional(),
-    minQualityScore: z.number().default(0.5),
-    minVideoQualityScore: z.number().default(0.7),
-  }).optional(),
-  deduplication: z.object({
-    enabled: z.boolean().default(true),
-    similarityThreshold: z.number().default(0.85),
-    checkPreviousProjects: z.boolean().default(false),
-  }).optional(),
-  download: z.object({
-    maxConcurrent: z.number().default(5),
-    timeoutMs: z.number().default(30000),
-    retryAttempts: z.number().default(3),
-    retryDelayMs: z.number().default(1000),
-  }).optional(),
-  aspectRatios: z.record(z.object({
-    width: z.number(),
-    height: z.number(),
-    orientation: z.string(),
-  })).optional(),
-  caching: z.object({
-    enabled: z.boolean().default(true),
-    ttlSeconds: z.number().default(86400),
-    cacheSearchResults: z.boolean().default(true),
-  }).optional(),
-});
-
-export type StockAssetsConfig = z.infer<typeof StockAssetsConfigSchema>;
-
-/**
  * Zod schema for Music configuration
  */
 const MusicConfigSchema = z.object({
@@ -380,13 +304,6 @@ export class ConfigManager {
    */
   static async loadTTSConfig(): Promise<TTSConfig> {
     return this.load('tts.config', TTSConfigSchema);
-  }
-
-  /**
-   * Load Stock Assets configuration
-   */
-  static async loadStockAssetsConfig(): Promise<StockAssetsConfig> {
-    return this.load('stock-assets.config', StockAssetsConfigSchema);
   }
 
   /**

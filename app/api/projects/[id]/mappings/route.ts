@@ -3,16 +3,31 @@ import { z } from "zod";
 
 import { parseBody, withErrorHandler } from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { normalizeAssetMappings } from "@/src/lib/storyflow/asset-mappings";
+import type { AssetMappings } from "@/src/lib/storyflow/types";
+
+const segmentKeyframeSchema = z.object({
+  centerX: z.number(),
+  centerY: z.number(),
+  zoom: z.number(),
+});
+
+const segmentViewportSchema = z.object({
+  start: segmentKeyframeSchema,
+  end: segmentKeyframeSchema,
+  easing: z.enum(["linear", "easeIn", "easeOut", "easeInOut"]).optional(),
+});
+
+const assetMappingObjectSchema = z.object({
+  assetId: z.string().min(1),
+  viewport: segmentViewportSchema.optional(),
+});
+
+const mappingValueSchema = z.union([z.string(), assetMappingObjectSchema]);
 
 const bodySchema = z.object({
-  mappings: z.record(z.string()).transform((record) => {
-    // convert keys to numbers
-    const result: Record<number, string> = {};
-    Object.entries(record).forEach(([k, v]) => {
-      const idx = Number(k);
-      if (!Number.isNaN(idx)) result[idx] = v as string;
-    });
-    return result;
+  mappings: z.record(mappingValueSchema).transform((record) => {
+    return normalizeAssetMappings(record);
   }),
 });
 
@@ -22,7 +37,8 @@ export const GET = withErrorHandler(async (_req: Request, { params }: RouteParam
   const { id } = await params;
   const project = await storyflowPrisma.project.findByIdOrThrow(id);
 
-  return NextResponse.json({ assetMappings: project.assetMappings ?? {} });
+  const assetMappings: AssetMappings = normalizeAssetMappings(project.assetMappings);
+  return NextResponse.json({ assetMappings });
 }, "projects/[id]/mappings");
 
 export const POST = withErrorHandler(async (req: Request, { params }: RouteParams) => {

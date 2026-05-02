@@ -62,9 +62,12 @@ export const StoryFlowVideo: React.FC<Props> = ({ timeline }) => {
 
 type BackgroundProps = { element: Timeline["backgrounds"][number]; fps: number };
 
+const CROSSFADE_FRAMES = 7;
+
 function BackgroundLayer({ element, fps }: BackgroundProps) {
   const frame = useCurrentFrame();
   const blur = computeBlur(frame, element, fps);
+  const opacity = computeOpacity(frame, element);
   const transform = useViewportTransform(frame, element.viewportAnimation, fps, {
     width: element.mediaMetadata?.width,
     height: element.mediaMetadata?.height,
@@ -82,7 +85,7 @@ function BackgroundLayer({ element, fps }: BackgroundProps) {
   };
 
   return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
+    <AbsoluteFill style={{ overflow: "hidden", opacity }}>
       {element.imageUrl ? (
         <Img src={element.imageUrl} style={commonStyle} />
       ) : element.videoUrl ? (
@@ -90,6 +93,35 @@ function BackgroundLayer({ element, fps }: BackgroundProps) {
       ) : null}
     </AbsoluteFill>
   );
+}
+
+function computeOpacity(frame: number, element: Timeline["backgrounds"][number]) {
+  const localFrame = frame - element.startFrame;
+  const duration = element.endFrame - element.startFrame;
+  if (duration <= 0) return 1;
+  let o = 1;
+  if (element.enterTransition === "fade" && localFrame < CROSSFADE_FRAMES) {
+    o = Math.min(
+      o,
+      interpolate(localFrame, [0, CROSSFADE_FRAMES], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      })
+    );
+  }
+  if (
+    element.exitTransition === "fade" &&
+    localFrame > duration - CROSSFADE_FRAMES
+  ) {
+    o = Math.min(
+      o,
+      interpolate(localFrame, [duration - CROSSFADE_FRAMES, duration], [1, 0], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      })
+    );
+  }
+  return o;
 }
 
 function computeBlur(frame: number, element: Timeline["backgrounds"][number], fps: number) {

@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { POST as uploadPost } from "../upload/route";
 import { POST as importPost } from "../import/route";
-import { GET as searchGet } from "../search/route";
 import { POST as upscalePost } from "../upscale/route";
 import { DELETE as deleteAssetRoute } from "../[id]/route";
 const prismaMocks = vi.hoisted(() => ({
@@ -348,16 +347,6 @@ describe("Assets API routes", () => {
 
       expect(res.status).toBe(200);
       expect(json.success).toBe(true);
-    });
-  });
-
-  describe("GET /api/assets/search", () => {
-    it("returns 410 gone", async () => {
-      const res = await searchGet(new NextRequest("http://localhost:3000/api/assets/search"));
-      const json = await res.json();
-
-      expect(res.status).toBe(410);
-      expect(json.error).toContain("deprecated");
     });
   });
 });

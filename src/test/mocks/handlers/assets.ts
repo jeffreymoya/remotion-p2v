@@ -5,20 +5,6 @@ import { buildAsset, buildImageAsset } from "@/src/test/factories";
 const API_BASE = "http://localhost:3000";
 
 export const assetsHandlers = [
-  http.get(`${API_BASE}/api/assets/search`, ({ request }) => {
-    const url = new URL(request.url);
-    const query = url.searchParams.get("q") ?? "";
-    return HttpResponse.json({
-      results: [
-        {
-          id: "img-1",
-          url: `https://example.com/${query || "image"}.jpg`,
-          source: "pexels",
-        },
-      ],
-    });
-  }),
-
   http.post(`${API_BASE}/api/assets/upload`, async ({ request }) => {
     const formData = await request.formData().catch(() => new FormData());
     const file = formData.get("file") as File | null;

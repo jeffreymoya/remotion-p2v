@@ -2,10 +2,7 @@ import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { GET as getLogs } from "../[id]/ai-logs/route";
-import { GET as getLogDetail } from "../[id]/ai-logs/[logId]/route";
-import { GET as getLogStream } from "../[id]/ai-logs/stream/route";
 import { AiCallStatus } from "@/src/generated/storyflow";
-import { NotFoundError } from "@/app/api/lib";
 
 vi.mock("@/src/lib/storyflow/prisma", () => ({
   storyflowPrisma: {
@@ -26,7 +23,6 @@ vi.mock("@/src/lib/services/ai", () => ({
 }));
 
 const { storyflowPrisma } = await import("@/src/lib/storyflow/prisma");
-const { aiLogger } = await import("@/src/lib/services/ai");
 
 describe("GET /api/projects/[id]/ai-logs", () => {
   beforeEach(() => {
@@ -70,95 +66,5 @@ describe("GET /api/projects/[id]/ai-logs", () => {
 
     expect(res.status).toBe(400);
     expect(json.code).toBe("VALIDATION_ERROR");
-  });
-});
-
-describe("GET /api/projects/[id]/ai-logs/[logId]", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("returns log detail when project matches", async () => {
-    vi.mocked(storyflowPrisma.aiCallLog.findUnique).mockResolvedValue({
-      id: "log-1",
-      projectId: "proj-1",
-      parent: null,
-      children: [],
-    });
-
-    const req = new NextRequest("http://localhost:3000/api/projects/proj-1/ai-logs/log-1");
-    const res = await getLogDetail(req, { params: { id: "proj-1", logId: "log-1" } });
-    const json = await res.json();
-
-    expect(storyflowPrisma.aiCallLog.findUnique).toHaveBeenCalledWith({
-      where: { id: "log-1" },
-      include: {
-        parent: { select: { id: true, operation: true, status: true } },
-        children: { select: { id: true, operation: true, status: true } },
-      },
-    });
-    expect(res.status).toBe(200);
-    expect(json.log.id).toBe("log-1");
-  });
-
-  it("returns 404 when log is missing", async () => {
-    vi.mocked(storyflowPrisma.aiCallLog.findUnique).mockResolvedValue(null);
-
-    const req = new NextRequest("http://localhost:3000/api/projects/proj-1/ai-logs/log-missing");
-    const res = await getLogDetail(req, { params: { id: "proj-1", logId: "log-missing" } });
-    const json = await res.json();
-
-    expect(res.status).toBe(404);
-    expect(json.code).toBe("NOT_FOUND");
-  });
-
-  it("returns 404 when log belongs to another project", async () => {
-    vi.mocked(storyflowPrisma.aiCallLog.findUnique).mockResolvedValue({
-      id: "log-1",
-      projectId: "other-project",
-      parent: null,
-      children: [],
-    });
-
-    const req = new NextRequest("http://localhost:3000/api/projects/proj-1/ai-logs/log-1");
-    const res = await getLogDetail(req, { params: { id: "proj-1", logId: "log-1" } });
-    const json = await res.json();
-
-    expect(res.status).toBe(404);
-    expect(json.code).toBe("NOT_FOUND");
-  });
-});
-
-describe("GET /api/projects/[id]/ai-logs/stream", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("streams events via SSE", async () => {
-    const callbacks: Array<(logId: string) => void> = [];
-    vi.mocked(aiLogger.onNewLog).mockImplementation((cb) => {
-      callbacks.push(cb);
-      return () => {};
-    });
-    vi.mocked(storyflowPrisma.aiCallLog.findUnique).mockResolvedValue({
-      id: "log-1",
-      projectId: "proj-1",
-    });
-
-    const req = new NextRequest("http://localhost:3000/api/projects/proj-1/ai-logs/stream");
-    const res = await getLogStream(req, { params: { id: "proj-1" } });
-
-    expect(res.headers.get("content-type")).toContain("text/event-stream");
-
-    const reader = res.body!.getReader();
-    const decoder = new TextDecoder();
-
-    // Trigger a log notification to push an update chunk
-    callbacks.forEach((cb) => cb("log-1"));
-    const { value } = await reader.read();
-    const chunk = decoder.decode(value);
-
-    expect(chunk).toContain("data:");
-    reader.cancel(); // cleanup
   });
 });

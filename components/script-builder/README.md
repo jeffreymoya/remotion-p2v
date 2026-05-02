@@ -34,17 +34,11 @@ ScriptBuilderWorkflow (Main Orchestrator)
 
 ## Usage
 
-### Enable Script Builder
-Set environment variable:
-```bash
-ENABLE_SCRIPT_BUILDER=true
-```
-
 ### Import Components
 ```typescript
-import { ScriptBuilderWorkflow } from "@/components/script-builder";
-// or import individual components
-import { BlueprintReview, EmotionBadge } from "@/components/script-builder";
+import { ScriptBuilderWorkflow } from "@/components/script-builder/script-builder-workflow";
+import { BlueprintReview } from "@/components/script-builder/blueprint-review";
+import { EmotionBadge } from "@/components/script-builder/emotion-badge";
 ```
 
 ### Basic Usage

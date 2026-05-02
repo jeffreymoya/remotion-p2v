@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Asset, AssetType, Board, Script, ScriptSegment } from "@/src/lib/storyflow/types";
+import { Asset, AssetMappings, AssetType, Board, Script, ScriptSegment } from "@/src/lib/storyflow/types";
 import { UploadZone } from "@/components/assets/upload-zone";
 import { AssetGallery } from "@/components/assets/asset-gallery";
 import { useToast } from "@/components/ui/toast-provider";
@@ -9,7 +9,6 @@ import { cn } from "@/src/lib/storyflow/utils";
 import { MusicLibrary } from "@/components/assets/music-library";
 import { MusicSettings } from "@/components/assets/music-settings";
 import { SimpleAssetMapper } from "@/components/editors/asset-mapper/simple-asset-mapper";
-import { StockSearch } from "./stock-search";
 import { BoardPlannerWizard } from "@/components/boards/BoardPlannerWizard";
 import {
   useAssets,
@@ -23,13 +22,13 @@ type Props = {
   assets: Asset[];
   images: Asset[];
   script: Script | null;
-  initialMappings: Record<number, string>;
+  initialMappings: AssetMappings | Record<number, string>;
   selectedMusicAssetId?: string;
   initialMusicVolume?: number;
   initialBoards?: Board[];
 };
 
-type MediaTab = "create" | "stock" | "library" | "mapping";
+type MediaTab = "create" | "library" | "mapping";
 
 const TYPE_FILTERS: { key: AssetType | "ALL"; label: string }[] = [
   { key: "ALL", label: "All" },
@@ -144,13 +143,6 @@ export function MediaManager({
     });
   };
 
-  const handleImportedFromStock = (asset: Asset) => {
-    // Asset added to cache by StockSearch's import mutation
-    setActiveType("ALL");
-    toast({ title: "Added to library", description: asset.filename, variant: "success" });
-    setTab("library");
-  };
-
   const renderFilters = (
     <div className="flex flex-wrap items-center gap-2">
       {TYPE_FILTERS.map((tab) => (
@@ -175,7 +167,7 @@ export function MediaManager({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        {["create", "stock", "library", "mapping"].map((key) => (
+        {["create", "library", "mapping"].map((key) => (
           <button
             key={key}
             onClick={() => setTab(key as MediaTab)}
@@ -187,7 +179,6 @@ export function MediaManager({
             )}
           >
             {key === "create" && "Create & Upload"}
-            {key === "stock" && "Stock Search"}
             {key === "library" && "Library"}
             {key === "mapping" && "Mapping"}
           </button>
@@ -277,15 +268,6 @@ export function MediaManager({
               selectedMusicId={selectedMusicId}
             />
           )}
-        </div>
-      )}
-
-      {tab === "stock" && (
-        <div className="space-y-4">
-          <p className="text-sm text-slate-400">
-            Search Pexels for stock images. Add results directly to your project library.
-          </p>
-          <StockSearch projectId={projectId} onImported={handleImportedFromStock} />
         </div>
       )}
 

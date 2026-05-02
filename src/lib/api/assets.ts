@@ -1,22 +1,3 @@
-export interface AssetSearchResult {
-  id: string;
-  previewUrl: string;
-  downloadUrl: string;
-  photographer?: string;
-  type: "IMAGE" | "VIDEO";
-  source: "pexels" | "unsplash" | "pixabay";
-}
-
-export async function searchAssets(query: string): Promise<AssetSearchResult[]> {
-  const res = await fetch(`/api/assets/search?query=${encodeURIComponent(query)}`);
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || "Failed to search assets");
-  }
-  const data = await res.json();
-  return data.results || [];
-}
-
 export interface Asset {
   id: string;
   projectId: string;

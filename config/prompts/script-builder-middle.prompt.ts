@@ -49,7 +49,9 @@ export const getStyleModifiersForEmotion = (emotion: string): string => {
 - **Metaphor and imagery:** Paint a picture`,
   };
 
-  return modifiers[emotion] || modifiers.curiosity;
+  const modifier = modifiers[emotion];
+  if (!modifier) throw new Error(`Unknown emotion: "${emotion}". Must be one of: ${Object.keys(modifiers).join(', ')}`);
+  return modifier;
 };
 
 /**

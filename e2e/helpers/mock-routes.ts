@@ -35,11 +35,7 @@ export async function registerRouteMocks(page: Page) {
     });
   });
 
-  // Pexels/Unsplash fallback
-  await page.route("**/*pexels.com/**", async (route) => fulfillJson(route, { photos: [] }));
-  await page.route("**/*unsplash.com/**", async (route) => fulfillJson(route, { results: [] }));
-
-  // AI routes (script/viewport/topic) — return small fixture payloads to skip Gemini
+  // AI routes (viewport) — return a small fixture payload to skip Gemini
   await page.route("**/api/ai/**", async (route) => {
     await fulfillJson(route, { data: { text: "stubbed-ai-response" } });
   });

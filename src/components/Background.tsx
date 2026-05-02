@@ -34,7 +34,7 @@ const calculateMediaStyle = (
 ): React.CSSProperties => {
   const sourceAspect = sourceWidth / sourceHeight;
   const targetAspect = targetWidth / targetHeight;
-  const maxAspectDelta = 0.3; // From stock-assets.config.json
+  const maxAspectDelta = 0.3;
 
   const aspectDelta = Math.abs(sourceAspect - targetAspect) / targetAspect;
 

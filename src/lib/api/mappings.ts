@@ -1,6 +1,8 @@
+import type { AssetMappings } from "@/src/lib/storyflow/types";
+
 export async function saveAssetMappings(
   projectId: string,
-  mappings: Record<number, string>
+  mappings: AssetMappings
 ): Promise<void> {
   const res = await fetch(`/api/projects/${projectId}/mappings`, {
     method: "POST",
