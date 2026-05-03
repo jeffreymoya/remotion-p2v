@@ -1,19 +1,26 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { NotFoundError, ValidationError, withErrorHandler } from "@/app/api/lib";
+import {
+  NotFoundError,
+  ValidationError,
+  withErrorHandler,
+} from "@/app/api/lib";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
 import { extractMetadata, saveAssetFile } from "@/src/lib/storyflow/assets";
 import { validateUpload } from "@/src/lib/storyflow/file-validation";
 import { AssetType } from "@/src/lib/storyflow/types";
 import { toJsonObject } from "@/src/lib/storyflow/prisma-json";
+import { scheduleAutoUpscale } from "@/src/lib/storyflow/upscale/schedule";
 
 const typeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO", "MUSIC"]);
 
 function extractPlanBoardId(plan: unknown): string | null {
   if (!plan || typeof plan !== "object") return null;
   const candidate = (plan as { boardId?: unknown }).boardId;
-  return typeof candidate === "string" && candidate.length > 0 ? candidate : null;
+  return typeof candidate === "string" && candidate.length > 0
+    ? candidate
+    : null;
 }
 
 export const POST = withErrorHandler(async (req) => {
@@ -29,7 +36,8 @@ export const POST = withErrorHandler(async (req) => {
   const projectId = formData.get("projectId");
   const type = formData.get("type");
   const boardId = formData.get("boardId");
-  const boardIdValue = typeof boardId === "string" ? boardId.trim() || null : null;
+  const boardIdValue =
+    typeof boardId === "string" ? boardId.trim() || null : null;
 
   if (!(file instanceof File)) {
     throw new ValidationError("File missing");
@@ -43,11 +51,16 @@ export const POST = withErrorHandler(async (req) => {
   if (!parsedType.success) {
     // Fallback for board uploads that omit type — default to IMAGE
     if (!boardIdValue) {
-      throw new ValidationError("Invalid asset type", parsedType.error.format());
+      throw new ValidationError(
+        "Invalid asset type",
+        parsedType.error.format(),
+      );
     }
   }
 
-  const assetType = parsedType.success ? (parsedType.data as AssetType) : ("IMAGE" as AssetType);
+  const assetType = parsedType.success
+    ? (parsedType.data as AssetType)
+    : ("IMAGE" as AssetType);
 
   await storyflowPrisma.project.findByIdOrThrow(projectId);
 
@@ -76,13 +89,24 @@ export const POST = withErrorHandler(async (req) => {
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const overrideFilename = boardIdValue ? `${boardIdValue}.${validation.ext}` : undefined;
+  const overrideFilename = boardIdValue
+    ? `${boardIdValue}.${validation.ext}`
+    : undefined;
 
-  const stored = await saveAssetFile(projectId, assetType, file, buffer, validation.ext, {
-    overrideFilename,
-  });
+  const stored = await saveAssetFile(
+    projectId,
+    assetType,
+    file,
+    buffer,
+    validation.ext,
+    {
+      overrideFilename,
+    },
+  );
 
-  const metadata = await extractMetadata(stored.absolutePath, assetType).catch(() => null);
+  const metadata = await extractMetadata(stored.absolutePath, assetType).catch(
+    () => null,
+  );
 
   const asset = await storyflowPrisma.asset.create({
     data: {
@@ -98,6 +122,12 @@ export const POST = withErrorHandler(async (req) => {
     await storyflowPrisma.board.update({
       where: { id: targetBoardId },
       data: { assetId: asset.id },
+    });
+  }
+
+  if (assetType === "IMAGE") {
+    void scheduleAutoUpscale(asset.id).catch((err) => {
+      console.error("[auto-upscale]", err);
     });
   }
 

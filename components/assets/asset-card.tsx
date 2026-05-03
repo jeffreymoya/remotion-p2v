@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Loader2, Sparkles, X } from "lucide-react";
 import { Asset } from "@/src/lib/storyflow/types";
 import { cn } from "@/src/lib/storyflow/utils";
 
@@ -47,23 +47,69 @@ export function AssetCard({
   onSelectAsMusic,
   isSelectedMusic,
 }: Props) {
-  const meta = asset.metadata as any;
+  const meta = asset.metadata;
+  const storedUpscaleStatus = asset.upscaleStatus ?? "none";
+  const effectiveUpscaleStatus =
+    storedUpscaleStatus !== "none"
+      ? storedUpscaleStatus
+      : asset.upscaled
+        ? "done"
+        : "none";
+  const visibleUpscaleStatus = isUpscaling ? "queued" : effectiveUpscaleStatus;
+  const showUpscaleBadge =
+    asset.type === "IMAGE" &&
+    ["done", "queued", "failed"].includes(visibleUpscaleStatus);
+  const showUpscaleButton =
+    asset.type === "IMAGE" &&
+    !!onUpscale &&
+    visibleUpscaleStatus !== "done" &&
+    visibleUpscaleStatus !== "queued";
+  const upscaleButtonLabel =
+    visibleUpscaleStatus === "failed"
+      ? "Retry upscale"
+      : visibleUpscaleStatus === "skipped"
+        ? "Upscale anyway"
+        : "Upscale to 8K";
 
   return (
     <div className="group relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 shadow-md">
       <div className="absolute left-2 top-2 z-10 rounded-full bg-slate-900/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-100">
         {typeLabels[asset.type]}
       </div>
-      {asset.type === "IMAGE" && asset.upscaled && (
-        <div className="absolute right-2 top-2 z-10 rounded-full bg-emerald-500/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-50 shadow">
-          Upscaled
+      {showUpscaleBadge && (
+        <div
+          className={cn(
+            "absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wide shadow",
+            visibleUpscaleStatus === "done" &&
+              "bg-emerald-500/80 text-emerald-50",
+            visibleUpscaleStatus === "queued" &&
+              "bg-amber-500/80 text-amber-950",
+            visibleUpscaleStatus === "failed" && "bg-rose-500/85 text-rose-50",
+          )}
+        >
+          {visibleUpscaleStatus === "queued" ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Upscaling…
+            </>
+          ) : visibleUpscaleStatus === "failed" ? (
+            <>
+              <AlertTriangle className="h-3 w-3" />
+              Upscale failed
+            </>
+          ) : (
+            "Upscaled"
+          )}
         </div>
       )}
 
       {onDelete && (
         <button
           onClick={onDelete}
-          className="absolute right-2 top-2 z-10 rounded-full bg-slate-900/80 p-1 text-slate-200 opacity-0 shadow group-hover:opacity-100"
+          className={cn(
+            "absolute right-2 z-20 rounded-full bg-slate-900/80 p-1 text-slate-200 opacity-0 shadow group-hover:opacity-100",
+            showUpscaleBadge ? "top-9" : "top-2",
+          )}
           title="Delete asset"
         >
           <X className="h-4 w-4" />
@@ -73,7 +119,9 @@ export function AssetCard({
       <div
         className={cn(
           "aspect-video bg-slate-950/60",
-          asset.type === "AUDIO" || asset.type === "MUSIC" ? "flex items-center" : ""
+          asset.type === "AUDIO" || asset.type === "MUSIC"
+            ? "flex items-center"
+            : "",
         )}
       >
         {asset.type === "IMAGE" ? (
@@ -97,9 +145,14 @@ export function AssetCard({
               ♪
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-white truncate">{asset.filename}</p>
+              <p className="text-sm font-semibold text-white truncate">
+                {asset.filename}
+              </p>
               <p className="text-xs text-slate-400">
-                {formatDuration(meta?.duration)} {meta?.bitrate ? `• ${Math.round(meta.bitrate / 1000)} kbps` : ""}
+                {formatDuration(meta?.duration)}{" "}
+                {meta?.bitrate
+                  ? `• ${Math.round(meta.bitrate / 1000)} kbps`
+                  : ""}
               </p>
             </div>
           </div>
@@ -108,12 +161,15 @@ export function AssetCard({
 
       <div className="border-t border-slate-800 px-3 py-2 text-xs text-slate-300">
         <div className="flex items-center justify-between gap-3">
-          <span className="font-mono text-slate-100 truncate">{asset.filename}</span>
+          <span className="font-mono text-slate-100 truncate">
+            {asset.filename}
+          </span>
           <span className="text-slate-400">{formatBytes(meta?.size)}</span>
         </div>
         {asset.type === "IMAGE" && meta?.width && meta?.height ? (
           <p className="mt-1 text-slate-400">
-            {meta.width}×{meta.height} {asset.upscaled ? "• upscaled" : ""}
+            {meta.width}×{meta.height}{" "}
+            {visibleUpscaleStatus === "done" ? "• upscaled" : ""}
           </p>
         ) : null}
         {asset.type === "VIDEO" && meta?.duration ? (
@@ -122,7 +178,7 @@ export function AssetCard({
             {meta.width && meta.height ? `• ${meta.width}×${meta.height}` : ""}
           </p>
         ) : null}
-        {asset.type === "IMAGE" && onUpscale && !asset.upscaled ? (
+        {showUpscaleButton ? (
           <div className="mt-2 flex items-center justify-end">
             <button
               onClick={onUpscale}
@@ -137,7 +193,7 @@ export function AssetCard({
               ) : (
                 <>
                   <Sparkles className="h-3.5 w-3.5" />
-                  Upscale to 8K
+                  {upscaleButtonLabel}
                 </>
               )}
             </button>
@@ -151,7 +207,7 @@ export function AssetCard({
                 "inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold transition",
                 isSelectedMusic
                   ? "bg-brand-600 text-white"
-                  : "border border-slate-700 bg-slate-900 text-slate-100 hover:border-brand-500"
+                  : "border border-slate-700 bg-slate-900 text-slate-100 hover:border-brand-500",
               )}
             >
               {isSelectedMusic ? "Soundtrack selected" : "Use as soundtrack"}

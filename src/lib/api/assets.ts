@@ -7,6 +7,9 @@ export interface Asset {
   url: string;
   createdAt: Date;
   metadata?: Record<string, unknown>;
+  upscaled?: boolean;
+  upscaledPath?: string | null;
+  upscaleStatus?: "none" | "queued" | "done" | "skipped" | "failed";
 }
 
 export async function fetchAssets(projectId: string): Promise<Asset[]> {
@@ -49,7 +52,7 @@ export async function uploadAsset(
     type?: Asset["type"];
     boardId?: string;
     filename?: string;
-  }
+  },
 ): Promise<Asset> {
   const formData = new FormData();
   const fileToSend =
@@ -57,7 +60,8 @@ export async function uploadAsset(
       ? new File([file], options.filename, { type: file.type })
       : file;
   const resolvedType =
-    options?.type ?? (fileToSend.type.startsWith("image/")
+    options?.type ??
+    (fileToSend.type.startsWith("image/")
       ? "IMAGE"
       : fileToSend.type.startsWith("video/")
         ? "VIDEO"
@@ -65,7 +69,9 @@ export async function uploadAsset(
           ? "AUDIO"
           : undefined);
   if (!resolvedType) {
-    throw new Error("Unable to infer asset type from file; provide options.type");
+    throw new Error(
+      "Unable to infer asset type from file; provide options.type",
+    );
   }
 
   formData.append("file", fileToSend);
@@ -111,7 +117,7 @@ export async function upscaleAsset(assetId: string): Promise<Asset> {
 
 export async function selectMusicAsset(
   projectId: string,
-  assetId: string
+  assetId: string,
 ): Promise<void> {
   const res = await fetch(`/api/projects/${projectId}/music`, {
     method: "POST",

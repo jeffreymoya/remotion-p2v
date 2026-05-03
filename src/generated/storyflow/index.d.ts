@@ -5906,6 +5906,7 @@ export namespace Prisma {
     path: string | null
     upscaled: boolean | null
     upscaledPath: string | null
+    upscaleStatus: string | null
     createdAt: Date | null
   }
 
@@ -5917,6 +5918,7 @@ export namespace Prisma {
     path: string | null
     upscaled: boolean | null
     upscaledPath: string | null
+    upscaleStatus: string | null
     createdAt: Date | null
   }
 
@@ -5929,6 +5931,7 @@ export namespace Prisma {
     metadata: number
     upscaled: number
     upscaledPath: number
+    upscaleStatus: number
     createdAt: number
     _all: number
   }
@@ -5942,6 +5945,7 @@ export namespace Prisma {
     path?: true
     upscaled?: true
     upscaledPath?: true
+    upscaleStatus?: true
     createdAt?: true
   }
 
@@ -5953,6 +5957,7 @@ export namespace Prisma {
     path?: true
     upscaled?: true
     upscaledPath?: true
+    upscaleStatus?: true
     createdAt?: true
   }
 
@@ -5965,6 +5970,7 @@ export namespace Prisma {
     metadata?: true
     upscaled?: true
     upscaledPath?: true
+    upscaleStatus?: true
     createdAt?: true
     _all?: true
   }
@@ -6050,6 +6056,7 @@ export namespace Prisma {
     metadata: JsonValue | null
     upscaled: boolean
     upscaledPath: string | null
+    upscaleStatus: string
     createdAt: Date
     _count: AssetCountAggregateOutputType | null
     _min: AssetMinAggregateOutputType | null
@@ -6079,6 +6086,7 @@ export namespace Prisma {
     metadata?: boolean
     upscaled?: boolean
     upscaledPath?: boolean
+    upscaleStatus?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     viewport?: boolean | Asset$viewportArgs<ExtArgs>
@@ -6095,6 +6103,7 @@ export namespace Prisma {
     metadata?: boolean
     upscaled?: boolean
     upscaledPath?: boolean
+    upscaleStatus?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
@@ -6108,6 +6117,7 @@ export namespace Prisma {
     metadata?: boolean
     upscaled?: boolean
     upscaledPath?: boolean
+    upscaleStatus?: boolean
     createdAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
@@ -6121,10 +6131,11 @@ export namespace Prisma {
     metadata?: boolean
     upscaled?: boolean
     upscaledPath?: boolean
+    upscaleStatus?: boolean
     createdAt?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "type" | "filename" | "path" | "metadata" | "upscaled" | "upscaledPath" | "createdAt", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "type" | "filename" | "path" | "metadata" | "upscaled" | "upscaledPath" | "upscaleStatus" | "createdAt", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     viewport?: boolean | Asset$viewportArgs<ExtArgs>
@@ -6154,6 +6165,7 @@ export namespace Prisma {
       metadata: Prisma.JsonValue | null
       upscaled: boolean
       upscaledPath: string | null
+      upscaleStatus: string
       createdAt: Date
     }, ExtArgs["result"]["asset"]>
     composites: {}
@@ -6589,6 +6601,7 @@ export namespace Prisma {
     readonly metadata: FieldRef<"Asset", 'Json'>
     readonly upscaled: FieldRef<"Asset", 'Boolean'>
     readonly upscaledPath: FieldRef<"Asset", 'String'>
+    readonly upscaleStatus: FieldRef<"Asset", 'String'>
     readonly createdAt: FieldRef<"Asset", 'DateTime'>
   }
     
@@ -17525,6 +17538,7 @@ export namespace Prisma {
     metadata: 'metadata',
     upscaled: 'upscaled',
     upscaledPath: 'upscaledPath',
+    upscaleStatus: 'upscaleStatus',
     createdAt: 'createdAt'
   };
 
@@ -18096,6 +18110,7 @@ export namespace Prisma {
     metadata?: JsonNullableFilter<"Asset">
     upscaled?: BoolFilter<"Asset"> | boolean
     upscaledPath?: StringNullableFilter<"Asset"> | string | null
+    upscaleStatus?: StringFilter<"Asset"> | string
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
@@ -18111,6 +18126,7 @@ export namespace Prisma {
     metadata?: SortOrderInput | SortOrder
     upscaled?: SortOrder
     upscaledPath?: SortOrderInput | SortOrder
+    upscaleStatus?: SortOrder
     createdAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
     viewport?: ViewportOrderByWithRelationInput
@@ -18129,6 +18145,7 @@ export namespace Prisma {
     metadata?: JsonNullableFilter<"Asset">
     upscaled?: BoolFilter<"Asset"> | boolean
     upscaledPath?: StringNullableFilter<"Asset"> | string | null
+    upscaleStatus?: StringFilter<"Asset"> | string
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
     viewport?: XOR<ViewportNullableScalarRelationFilter, ViewportWhereInput> | null
@@ -18144,6 +18161,7 @@ export namespace Prisma {
     metadata?: SortOrderInput | SortOrder
     upscaled?: SortOrder
     upscaledPath?: SortOrderInput | SortOrder
+    upscaleStatus?: SortOrder
     createdAt?: SortOrder
     _count?: AssetCountOrderByAggregateInput
     _max?: AssetMaxOrderByAggregateInput
@@ -18162,6 +18180,7 @@ export namespace Prisma {
     metadata?: JsonNullableWithAggregatesFilter<"Asset">
     upscaled?: BoolWithAggregatesFilter<"Asset"> | boolean
     upscaledPath?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    upscaleStatus?: StringWithAggregatesFilter<"Asset"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
   }
 
@@ -19200,6 +19219,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutAssetsInput
     viewport?: ViewportCreateNestedOneWithoutImageAssetInput
@@ -19215,6 +19235,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
     boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
@@ -19228,6 +19249,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
     viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
@@ -19243,6 +19265,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
     boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
@@ -19257,6 +19280,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
   }
 
@@ -19268,6 +19292,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -19280,6 +19305,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -20502,6 +20528,7 @@ export namespace Prisma {
     metadata?: SortOrder
     upscaled?: SortOrder
     upscaledPath?: SortOrder
+    upscaleStatus?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -20513,6 +20540,7 @@ export namespace Prisma {
     path?: SortOrder
     upscaled?: SortOrder
     upscaledPath?: SortOrder
+    upscaleStatus?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -20524,6 +20552,7 @@ export namespace Prisma {
     path?: SortOrder
     upscaled?: SortOrder
     upscaledPath?: SortOrder
+    upscaleStatus?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -22558,6 +22587,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     viewport?: ViewportCreateNestedOneWithoutImageAssetInput
     boards?: BoardCreateNestedManyWithoutAssetInput
@@ -22571,6 +22601,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
     boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
@@ -22860,6 +22891,7 @@ export namespace Prisma {
     metadata?: JsonNullableFilter<"Asset">
     upscaled?: BoolFilter<"Asset"> | boolean
     upscaledPath?: StringNullableFilter<"Asset"> | string | null
+    upscaleStatus?: StringFilter<"Asset"> | string
     createdAt?: DateTimeFilter<"Asset"> | Date | string
   }
 
@@ -23868,6 +23900,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutAssetsInput
     boards?: BoardCreateNestedManyWithoutAssetInput
@@ -23882,6 +23915,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     boards?: BoardUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -23959,6 +23993,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
     boards?: BoardUpdateManyWithoutAssetNestedInput
@@ -23973,6 +24008,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -24028,6 +24064,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     project: ProjectCreateNestedOneWithoutAssetsInput
     viewport?: ViewportCreateNestedOneWithoutImageAssetInput
@@ -24042,6 +24079,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
     viewport?: ViewportUncheckedCreateNestedOneWithoutImageAssetInput
   }
@@ -24119,6 +24157,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutAssetsNestedInput
     viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
@@ -24133,6 +24172,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
   }
@@ -24822,6 +24862,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: boolean
     upscaledPath?: string | null
+    upscaleStatus?: string
     createdAt?: Date | string
   }
 
@@ -24921,6 +24962,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUpdateOneWithoutImageAssetNestedInput
     boards?: BoardUpdateManyWithoutAssetNestedInput
@@ -24934,6 +24976,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     viewport?: ViewportUncheckedUpdateOneWithoutImageAssetNestedInput
     boards?: BoardUncheckedUpdateManyWithoutAssetNestedInput
@@ -24947,6 +24990,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     upscaled?: BoolFieldUpdateOperationsInput | boolean
     upscaledPath?: NullableStringFieldUpdateOperationsInput | string | null
+    upscaleStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

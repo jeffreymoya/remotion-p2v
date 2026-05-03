@@ -3,13 +3,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { GET, PUT } from "../route";
 import { NotFoundError } from "@/app/api/lib";
+import type { AppSettings } from "@/src/lib/storyflow/settings";
 
 vi.mock("@/src/lib/storyflow/settings", () => ({
   getSettings: vi.fn(),
   updateSettings: vi.fn(),
 }));
 
-const { getSettings, updateSettings } = await import("@/src/lib/storyflow/settings");
+const { getSettings, updateSettings } = await import(
+  "@/src/lib/storyflow/settings"
+);
 
 const sampleSettings = {
   ai: {
@@ -22,7 +25,8 @@ const sampleSettings = {
   },
   tts: { voice: "en-US", speakingRate: 1, pitch: 0 },
   render: { defaultQuality: "draft", defaultAspectRatio: "16:9" },
-};
+  upscale: { autoEnabled: true, skipIfWidthPx: 3840 },
+} satisfies AppSettings;
 
 describe("/api/settings", () => {
   beforeEach(() => {
@@ -45,20 +49,42 @@ describe("/api/settings", () => {
     const updated = {
       ...sampleSettings,
       ai: { ...sampleSettings.ai, model: "gemini-2.0-flash-lite" },
+      upscale: { autoEnabled: false, skipIfWidthPx: 4096 },
     };
     vi.mocked(updateSettings).mockResolvedValue(updated);
 
     const req = new NextRequest("http://localhost:3000/api/settings", {
       method: "PUT",
-      body: JSON.stringify({ ai: { model: "gemini-2.0-flash-lite" }, render: { defaultQuality: "high" } }),
+      body: JSON.stringify({
+        ai: { model: "gemini-2.0-flash-lite" },
+        render: { defaultQuality: "high" },
+        upscale: { autoEnabled: false, skipIfWidthPx: 4096 },
+      }),
     });
 
     const res = await PUT(req);
     const json = await res.json();
 
-    expect(updateSettings).toHaveBeenCalledWith({ ai: { model: "gemini-2.0-flash-lite" }, render: { defaultQuality: "high" } });
+    expect(updateSettings).toHaveBeenCalledWith({
+      ai: { model: "gemini-2.0-flash-lite" },
+      render: { defaultQuality: "high" },
+      upscale: { autoEnabled: false, skipIfWidthPx: 4096 },
+    });
     expect(res.status).toBe(200);
     expect(json).toEqual({ settings: updated });
+  });
+
+  it("returns 400 for invalid upscale settings", async () => {
+    const req = new NextRequest("http://localhost:3000/api/settings", {
+      method: "PUT",
+      body: JSON.stringify({ upscale: { skipIfWidthPx: 0 } }),
+    });
+
+    const res = await PUT(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.code).toBe("VALIDATION_ERROR");
   });
 
   it("returns 400 for invalid payload", async () => {
@@ -75,7 +101,9 @@ describe("/api/settings", () => {
   });
 
   it("returns 404 when settings cannot be updated", async () => {
-    vi.mocked(updateSettings).mockRejectedValue(new NotFoundError("Settings", "global"));
+    vi.mocked(updateSettings).mockRejectedValue(
+      new NotFoundError("Settings", "global"),
+    );
 
     const req = new NextRequest("http://localhost:3000/api/settings", {
       method: "PUT",

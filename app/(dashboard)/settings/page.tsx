@@ -15,6 +15,7 @@ type Settings = {
   };
   tts: { voice: string; speakingRate: number; pitch: number };
   render: { defaultQuality: string; defaultAspectRatio: string };
+  upscale: { autoEnabled: boolean; skipIfWidthPx: number };
 };
 
 const QUALITY_OPTIONS = ["draft", "medium", "high", "production"];
@@ -116,7 +117,7 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-semibold">Settings</h1>
           <p className="text-sm text-slate-400">
-            Configure AI, TTS, and rendering defaults.
+            Configure AI, TTS, rendering, and media defaults.
           </p>
         </div>
 
@@ -133,7 +134,7 @@ export default function SettingsPage() {
                     setSettings((s) =>
                       s
                         ? { ...s, ai: { ...s.ai, provider: e.target.value } }
-                        : s
+                        : s,
                     )
                   }
                 >
@@ -157,9 +158,12 @@ export default function SettingsPage() {
                       s
                         ? {
                             ...s,
-                            ai: { ...s.ai, temperature: Number(e.target.value) },
+                            ai: {
+                              ...s.ai,
+                              temperature: Number(e.target.value),
+                            },
                           }
-                        : s
+                        : s,
                     )
                   }
                 />
@@ -173,14 +177,16 @@ export default function SettingsPage() {
                   value={settings.ai.model}
                   onChange={(e) =>
                     setSettings((s) =>
-                      s ? { ...s, ai: { ...s.ai, model: e.target.value } } : s
+                      s ? { ...s, ai: { ...s.ai, model: e.target.value } } : s,
                     )
                   }
                 />
               </label>
 
               <label className="space-y-1 text-sm">
-                <span className="text-slate-300">Fallback for basic prompts</span>
+                <span className="text-slate-300">
+                  Fallback for basic prompts
+                </span>
                 <input
                   className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
                   placeholder="e.g. gemini-2.5-flash"
@@ -188,15 +194,20 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     setSettings((s) =>
                       s
-                        ? { ...s, ai: { ...s.ai, fallbackModel: e.target.value } }
-                        : s
+                        ? {
+                            ...s,
+                            ai: { ...s.ai, fallbackModel: e.target.value },
+                          }
+                        : s,
                     )
                   }
                 />
               </label>
 
               <label className="space-y-1 text-sm">
-                <span className="text-slate-300">Model for complex prompts</span>
+                <span className="text-slate-300">
+                  Model for complex prompts
+                </span>
                 <input
                   className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
                   placeholder="e.g. gemini-2.5-pro"
@@ -205,14 +216,16 @@ export default function SettingsPage() {
                     setSettings((s) =>
                       s
                         ? { ...s, ai: { ...s.ai, proModel: e.target.value } }
-                        : s
+                        : s,
                     )
                   }
                 />
               </label>
 
               <label className="space-y-1 text-sm">
-                <span className="text-slate-300">Fallback for complex prompts</span>
+                <span className="text-slate-300">
+                  Fallback for complex prompts
+                </span>
                 <input
                   className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
                   placeholder="e.g. gemini-2.5-pro"
@@ -224,7 +237,7 @@ export default function SettingsPage() {
                             ...s,
                             ai: { ...s.ai, proFallbackModel: e.target.value },
                           }
-                        : s
+                        : s,
                     )
                   }
                 />
@@ -242,7 +255,9 @@ export default function SettingsPage() {
                   value={settings.tts.voice}
                   onChange={(e) =>
                     setSettings((s) =>
-                      s ? { ...s, tts: { ...s.tts, voice: e.target.value } } : s
+                      s
+                        ? { ...s, tts: { ...s.tts, voice: e.target.value } }
+                        : s,
                     )
                   }
                 />
@@ -261,9 +276,12 @@ export default function SettingsPage() {
                       s
                         ? {
                             ...s,
-                            tts: { ...s.tts, speakingRate: Number(e.target.value) },
+                            tts: {
+                              ...s.tts,
+                              speakingRate: Number(e.target.value),
+                            },
                           }
-                        : s
+                        : s,
                     )
                   }
                 />
@@ -280,8 +298,11 @@ export default function SettingsPage() {
                   onChange={(e) =>
                     setSettings((s) =>
                       s
-                        ? { ...s, tts: { ...s.tts, pitch: Number(e.target.value) } }
-                        : s
+                        ? {
+                            ...s,
+                            tts: { ...s.tts, pitch: Number(e.target.value) },
+                          }
+                        : s,
                     )
                   }
                 />
@@ -302,9 +323,12 @@ export default function SettingsPage() {
                       s
                         ? {
                             ...s,
-                            render: { ...s.render, defaultQuality: e.target.value },
+                            render: {
+                              ...s.render,
+                              defaultQuality: e.target.value,
+                            },
                           }
-                        : s
+                        : s,
                     )
                   }
                 >
@@ -329,7 +353,7 @@ export default function SettingsPage() {
                               defaultAspectRatio: e.target.value,
                             },
                           }
-                        : s
+                        : s,
                     )
                   }
                 >
@@ -338,6 +362,61 @@ export default function SettingsPage() {
                   ))}
                 </select>
               </label>
+            </div>
+          </section>
+
+          <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-inner shadow-black/30">
+            <h2 className="text-lg font-semibold">Image Upscaling</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <label className="flex items-center gap-3 rounded-md border border-slate-800 bg-slate-950/40 px-3 py-2 text-sm text-slate-200">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-700 bg-slate-900 accent-brand-600"
+                  checked={settings.upscale.autoEnabled}
+                  onChange={(e) =>
+                    setSettings((s) =>
+                      s
+                        ? {
+                            ...s,
+                            upscale: {
+                              ...s.upscale,
+                              autoEnabled: e.target.checked,
+                            },
+                          }
+                        : s,
+                    )
+                  }
+                />
+                <span>Auto-upscale images on upload</span>
+              </label>
+
+              {settings.upscale.autoEnabled ? (
+                <label className="space-y-1 text-sm">
+                  <span className="text-slate-300">
+                    Skip if image width ≥ (px)
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    className="w-full rounded-md border border-slate-800 bg-slate-900 px-3 py-2 text-white"
+                    value={settings.upscale.skipIfWidthPx}
+                    onChange={(e) =>
+                      setSettings((s) =>
+                        s
+                          ? {
+                              ...s,
+                              upscale: {
+                                ...s.upscale,
+                                skipIfWidthPx: Number(e.target.value),
+                              },
+                            }
+                          : s,
+                      )
+                    }
+                  />
+                </label>
+              ) : null}
             </div>
           </section>
         </div>

@@ -24,8 +24,16 @@ const settingsSchema = z.object({
     .optional(),
   render: z
     .object({
-      defaultQuality: z.enum(["draft", "medium", "high", "production"]).optional(),
+      defaultQuality: z
+        .enum(["draft", "medium", "high", "production"])
+        .optional(),
       defaultAspectRatio: z.enum(["16:9", "9:16"]).optional(),
+    })
+    .optional(),
+  upscale: z
+    .object({
+      autoEnabled: z.boolean().optional(),
+      skipIfWidthPx: z.number().int().min(1).optional(),
     })
     .optional(),
 });

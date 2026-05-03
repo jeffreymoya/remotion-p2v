@@ -59,16 +59,17 @@ model Script {
 }
 
 model Asset {
-  id           String    @id @default(cuid())
-  projectId    String
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  type         AssetType
-  filename     String
-  path         String
-  metadata     Json?
-  upscaled     Boolean   @default(false)
-  upscaledPath String?
-  createdAt    DateTime  @default(now())
+  id            String    @id @default(cuid())
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type          AssetType
+  filename      String
+  path          String
+  metadata      Json?
+  upscaled      Boolean   @default(false)
+  upscaledPath  String?
+  upscaleStatus String    @default("none")
+  createdAt     DateTime  @default(now())
 
   viewport Viewport?
   boards   Board[]

@@ -19,6 +19,10 @@ export type AppSettings = {
     defaultQuality: "draft" | "medium" | "high" | "production";
     defaultAspectRatio: "16:9" | "9:16";
   };
+  upscale: {
+    autoEnabled: boolean;
+    skipIfWidthPx: number;
+  };
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -41,6 +45,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
     defaultQuality: "draft",
     defaultAspectRatio: "16:9",
   },
+  upscale: {
+    autoEnabled: true,
+    skipIfWidthPx: 3840,
+  },
 };
 
 export async function getSettings(): Promise<AppSettings> {
@@ -56,6 +64,7 @@ export async function getSettings(): Promise<AppSettings> {
     ai: { ...DEFAULT_SETTINGS.ai, ...(values.ai ?? {}) },
     tts: { ...DEFAULT_SETTINGS.tts, ...(values.tts ?? {}) },
     render: { ...DEFAULT_SETTINGS.render, ...(values.render ?? {}) },
+    upscale: { ...DEFAULT_SETTINGS.upscale, ...(values.upscale ?? {}) },
   };
 }
 
@@ -63,6 +72,7 @@ export type SettingsPatch = {
   ai?: Partial<AppSettings["ai"]>;
   tts?: Partial<AppSettings["tts"]>;
   render?: Partial<AppSettings["render"]>;
+  upscale?: Partial<AppSettings["upscale"]>;
 };
 
 export async function updateSettings(payload: SettingsPatch) {
@@ -71,6 +81,7 @@ export async function updateSettings(payload: SettingsPatch) {
     ai: { ...current.ai, ...(payload.ai ?? {}) },
     tts: { ...current.tts, ...(payload.tts ?? {}) },
     render: { ...current.render, ...(payload.render ?? {}) },
+    upscale: { ...current.upscale, ...(payload.upscale ?? {}) },
   };
 
   // Upsert by key to keep flexibility
@@ -89,6 +100,11 @@ export async function updateSettings(payload: SettingsPatch) {
       where: { key: "render" },
       update: { value: next.render },
       create: { key: "render", value: next.render },
+    }),
+    storyflowPrisma.appSettings.upsert({
+      where: { key: "upscale" },
+      update: { value: next.upscale },
+      create: { key: "upscale", value: next.upscale },
     }),
   ]);
 

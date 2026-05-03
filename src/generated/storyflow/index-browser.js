@@ -164,6 +164,7 @@ exports.Prisma.AssetScalarFieldEnum = {
   metadata: 'metadata',
   upscaled: 'upscaled',
   upscaledPath: 'upscaledPath',
+  upscaleStatus: 'upscaleStatus',
   createdAt: 'createdAt'
 };
 

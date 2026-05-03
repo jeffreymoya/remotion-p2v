@@ -68,6 +68,7 @@ model Asset {
   metadata     Json?
   upscaled     Boolean   @default(false)
   upscaledPath String?
+  upscaleStatus String   @default("none")
   createdAt    DateTime  @default(now())
 
   viewport     Viewport?

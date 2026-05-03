@@ -15,6 +15,7 @@ export type ProjectStatus =
   | "ERROR";
 
 export type AssetType = "IMAGE" | "VIDEO" | "AUDIO" | "MUSIC";
+export type UpscaleStatus = "none" | "queued" | "done" | "skipped" | "failed";
 export type RenderQuality = "DRAFT" | "MEDIUM" | "HIGH" | "PRODUCTION";
 export type RenderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
 
@@ -90,6 +91,7 @@ export interface Asset {
   metadata?: AssetMetadata | null;
   upscaled?: boolean;
   upscaledPath?: string | null;
+  upscaleStatus?: UpscaleStatus;
   createdAt: Date;
 }
 

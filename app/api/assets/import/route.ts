@@ -7,6 +7,7 @@ import { ensureProjectDirs } from "@/src/lib/paths";
 import { AssetType } from "@/src/lib/storyflow/types";
 import { extractMetadata, saveAssetBuffer } from "@/src/lib/storyflow/assets";
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
+import { scheduleAutoUpscale } from "@/src/lib/storyflow/upscale/schedule";
 
 const bodySchema = z.object({
   projectId: z.string().min(1),
@@ -17,7 +18,10 @@ const bodySchema = z.object({
 });
 
 export const POST = withErrorHandler(async (req) => {
-  const { projectId, url, filename, type, source } = await parseBody(req, bodySchema);
+  const { projectId, url, filename, type, source } = await parseBody(
+    req,
+    bodySchema,
+  );
 
   await storyflowPrisma.project.findByIdOrThrow(projectId);
 
@@ -37,8 +41,16 @@ export const POST = withErrorHandler(async (req) => {
 
   await ensureProjectDirs(projectId);
 
-  const stored = await saveAssetBuffer(projectId, type as AssetType, filename + extFromType, buffer);
-  const metadata = await extractMetadata(stored.absolutePath, type as AssetType).catch(() => null);
+  const stored = await saveAssetBuffer(
+    projectId,
+    type as AssetType,
+    filename + extFromType,
+    buffer,
+  );
+  const metadata = await extractMetadata(
+    stored.absolutePath,
+    type as AssetType,
+  ).catch(() => null);
 
   const asset = await storyflowPrisma.asset.create({
     data: {
@@ -49,6 +61,12 @@ export const POST = withErrorHandler(async (req) => {
       metadata: { ...(metadata ?? {}), source: source ?? "stock" },
     },
   });
+
+  if (type === "IMAGE") {
+    void scheduleAutoUpscale(asset.id).catch((err) => {
+      console.error("[auto-upscale]", err);
+    });
+  }
 
   return NextResponse.json({ asset }, { status: 201 });
 }, "assets/import");
