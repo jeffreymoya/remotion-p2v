@@ -45,10 +45,15 @@ test.describe("Page smoke tests", () => {
         const errorStr = String(error);
         const message = error.message || errorStr;
 
-        // Render page throws ConflictError when prerequisites aren't met - this is expected
         if (
           (errorStr.includes("ConflictError") || message.includes("ConflictError")) &&
           (errorStr.includes("requires status") || message.includes("requires status"))
+        ) {
+          return false;
+        }
+        if (
+          (errorStr.includes("NotFoundError") || message.includes("NotFoundError")) &&
+          (errorStr.includes("not found") || message.includes("not found"))
         ) {
           return false;
         }

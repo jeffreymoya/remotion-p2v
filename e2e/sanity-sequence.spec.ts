@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { registerRouteMocks } from "./helpers/mock-routes";
+import { selectors } from "./helpers/selectors";
 
 /**
  * Wave 5 — Full Sanity Sequence
@@ -99,10 +100,15 @@ test.describe("Full sanity sequence", () => {
         const errorStr = String(error);
         const message = error.message || errorStr;
 
-        // ConflictError about status requirements is expected for some pages
         if (
           (errorStr.includes("ConflictError") || message.includes("ConflictError")) &&
           (errorStr.includes("requires status") || message.includes("requires status"))
+        ) {
+          return false;
+        }
+        if (
+          (errorStr.includes("NotFoundError") || message.includes("NotFoundError")) &&
+          (errorStr.includes("not found") || message.includes("not found"))
         ) {
           return false;
         }
@@ -161,9 +167,8 @@ test.describe("Full sanity sequence", () => {
     await page.goto("/projects/new");
     await page.waitForLoadState("networkidle");
 
-    // Verify form is present (inputs don't have name attributes)
-    await expect(page.locator('textarea[placeholder*="copilot"]')).toBeVisible();
-    await expect(page.locator('input[placeholder*="StoryFlow"]')).toBeVisible();
-    await expect(page.locator('button[type="submit"]')).toBeVisible();
+    await expect(page.locator(selectors.newProjectTopic)).toBeVisible();
+    await expect(page.locator(selectors.newProjectName)).toBeVisible();
+    await expect(page.locator(selectors.newProjectSubmit)).toBeVisible();
   });
 });

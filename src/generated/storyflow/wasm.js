@@ -123,6 +123,8 @@ exports.Prisma.ProjectScalarFieldEnum = {
   topic: 'topic',
   status: 'status',
   aspectRatio: 'aspectRatio',
+  visualFormat: 'visualFormat',
+  styleTheme: 'styleTheme',
   wizardProgress: 'wizardProgress',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

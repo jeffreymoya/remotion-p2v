@@ -60,6 +60,7 @@ export function UploadZone({ projectId, assetType, onUploaded }: Props) {
 
   return (
     <div
+      data-testid="upload-zone"
       className={cn(
         "rounded-xl border-2 border-dashed border-slate-800 bg-slate-950/40 p-6 text-center transition",
         isDragging && "border-brand-500 bg-brand-500/5"
@@ -84,6 +85,7 @@ export function UploadZone({ projectId, assetType, onUploaded }: Props) {
       <input
         ref={inputRef}
         type="file"
+        data-testid="upload-file-input"
         className="hidden"
         multiple
         accept={

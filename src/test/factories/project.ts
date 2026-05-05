@@ -33,6 +33,8 @@ export function buildProject(overrides: Partial<Project> = {}): Project {
     topic: null,
     status: "DRAFT",
     aspectRatio: "16:9",
+    visualFormat: "corkboard",
+    styleTheme: "noir-detective",
     createdAt,
     updatedAt,
     assetMappings: null,
@@ -42,11 +44,12 @@ export function buildProject(overrides: Partial<Project> = {}): Project {
 }
 
 export function buildProjectWithScript(
-  overrides: Partial<Project & { script: Script }> = {}
+  overrides: Partial<Project & { script: Script }> = {},
 ): Project & { script: Script } {
   const project = buildProject(overrides);
   const script =
-    overrides.script ?? buildScript({ projectId: project.id, id: createId("script") });
+    overrides.script ??
+    buildScript({ projectId: project.id, id: createId("script") });
 
   return {
     ...project,
@@ -56,13 +59,15 @@ export function buildProjectWithScript(
 
 export function buildProjectWithAssets(
   overrides: Partial<Project & { assets: Asset[] }> = {},
-  assetOverrides: Partial<Asset>[] = []
+  assetOverrides: Partial<Asset>[] = [],
 ): Project & { assets: Asset[] } {
   const project = buildProject(overrides);
   const assets =
     overrides.assets ??
     (assetOverrides.length
-      ? assetOverrides.map((asset) => buildAsset({ projectId: project.id, ...asset }))
+      ? assetOverrides.map((asset) =>
+          buildAsset({ projectId: project.id, ...asset }),
+        )
       : [buildAsset({ projectId: project.id })]);
 
   return {
@@ -73,13 +78,15 @@ export function buildProjectWithAssets(
 
 export function buildProjectWithRender(
   overrides: Partial<Project & { renders: Render[] }> = {},
-  renderOverrides: Partial<Render>[] = []
+  renderOverrides: Partial<Render>[] = [],
 ): Project & { renders: Render[] } {
   const project = buildProject(overrides);
   const renders =
     overrides.renders ??
     (renderOverrides.length
-      ? renderOverrides.map((render) => buildRender({ projectId: project.id, ...render }))
+      ? renderOverrides.map((render) =>
+          buildRender({ projectId: project.id, ...render }),
+        )
       : [buildRender({ projectId: project.id })]);
 
   return {

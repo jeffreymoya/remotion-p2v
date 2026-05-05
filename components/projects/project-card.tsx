@@ -38,7 +38,7 @@ export function ProjectCard({ project }: { project: Project }) {
   };
 
   return (
-    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm shadow-black/40">
+    <div data-testid={`project-card-${project.id}`} className="flex flex-col rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm shadow-black/40">
       <div className="flex items-start justify-between gap-3">
         <div>
           <Link
@@ -55,6 +55,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <button
             onClick={() => setConfirmOpen(true)}
             disabled={deleteMutation.isPending}
+            data-testid="project-delete-button"
             className="rounded-md p-2 text-slate-400 hover:bg-slate-800 hover:text-red-300 disabled:opacity-50"
             aria-label="Delete project"
           >
@@ -68,12 +69,13 @@ export function ProjectCard({ project }: { project: Project }) {
               Delete "{project.name}"? This removes its assets directory. This action cannot be undone.
             </p>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
+              <Button type="button" variant="outline" data-testid="project-delete-cancel" onClick={() => setConfirmOpen(false)}>
                 Cancel
               </Button>
               <Button
                 type="button"
                 variant="destructive"
+                data-testid="project-delete-confirm"
                 onClick={() => {
                   setConfirmOpen(false);
                   performDelete();

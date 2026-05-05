@@ -60,6 +60,7 @@ export function PipelineStepper({ projectId, status, needsReview }: PipelineStep
   return (
     <nav
       aria-label="Project pipeline"
+      data-testid="pipeline-stepper"
       data-onboarding="pipeline-stepper"
       className="w-full rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3 shadow-inner backdrop-blur"
     >
@@ -74,6 +75,7 @@ export function PipelineStepper({ projectId, status, needsReview }: PipelineStep
               <Link
                 href={locked ? "#" : stage.href}
                 aria-disabled={locked}
+                data-testid={`pipeline-stage-${stage.id}`}
                 onClick={(event) => {
                   if (locked) event.preventDefault();
                 }}

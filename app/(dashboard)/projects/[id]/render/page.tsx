@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 
 const VideoPreview = dynamic(() => import("@/components/video/video-preview").then(m => ({ default: m.VideoPreview })), { ssr: false });
 import { NotFoundError } from "@/app/api/lib";
+import type { Timeline } from "@/src/lib/storyflow/timeline-types";
 import { BuildStageButton } from "@/components/pipeline/build-stage-button";
 
 type Params = { params: { id: string } };
@@ -31,7 +32,12 @@ export default async function RenderPage({ params }: Params) {
     orderBy: { createdAt: "desc" },
   });
   const gate = getStageGateState("render", project.status as ProjectStatus);
-  const timeline = await buildProjectArtifacts(resolvedParams.id);
+  let timeline: Timeline | null = null;
+  try {
+    timeline = await buildProjectArtifacts(resolvedParams.id);
+  } catch (e) {
+    if (!(e instanceof NotFoundError)) throw e;
+  }
 
   return (
     <PageContainer>
@@ -41,7 +47,13 @@ export default async function RenderPage({ params }: Params) {
             <BuildStageButton projectId={project.id} />
           </div>
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <VideoPreview projectId={project.id} timeline={timeline} />
+            {timeline ? (
+              <VideoPreview projectId={project.id} timeline={timeline} />
+            ) : (
+              <p className="text-sm text-slate-500" data-testid="video-preview-fallback">
+                Timeline not available — run the Build stage first.
+              </p>
+            )}
             <RenderPanel projectId={project.id} initialRender={lastRender} />
           </div>
         </DesktopOnlyGate>

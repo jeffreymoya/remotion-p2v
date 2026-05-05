@@ -57,6 +57,7 @@ export function RenderPanel({ projectId, initialRender }: Props) {
         </div>
         <div className="flex gap-2">
           <Button
+            data-testid="render-draft-button"
             disabled={isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("DRAFT")}
           >
@@ -65,6 +66,7 @@ export function RenderPanel({ projectId, initialRender }: Props) {
           </Button>
           <Button
             variant="secondary"
+            data-testid="render-production-button"
             disabled={isProcessing || isTaskRunning("video-rendering", projectId)}
             onClick={() => handleStartRender("PRODUCTION")}
           >
@@ -80,18 +82,18 @@ export function RenderPanel({ projectId, initialRender }: Props) {
             <div className="flex items-center gap-2">
               {displayRender.status === "PROCESSING" && <Loader2 className="h-4 w-4 animate-spin text-brand-300" />}
               {displayRender.status === "COMPLETED" && <Download className="h-4 w-4 text-emerald-300" />}
-              <span className="font-medium">{displayRender.status}</span>
+              <span data-testid="render-status" className="font-medium">{displayRender.status}</span>
               <span className="text-xs text-slate-500">{displayRender.quality}</span>
             </div>
             <span className="text-xs text-slate-400">{new Date(displayRender.createdAt).toLocaleString()}</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-            <div className="h-full bg-brand-400 transition-all" style={{ width: `${progressPct}%` }} />
+            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+            <div data-testid="render-progress-bar" className="h-full bg-brand-400 transition-all" style={{ width: `${progressPct}%` }} />
           </div>
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>{progressPct}%</span>
+            <span data-testid="render-progress-pct">{progressPct}%</span>
             {displayRender.outputPath && displayRender.status === "COMPLETED" && (
-              <a className="text-brand-300 underline" href={`/${displayRender.outputPath}`} download>
+              <a data-testid="render-download-link" className="text-brand-300 underline" href={`/${displayRender.outputPath}`} download>
                 Download MP4
               </a>
             )}

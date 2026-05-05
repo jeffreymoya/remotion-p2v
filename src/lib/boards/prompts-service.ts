@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 import {
   BoardElement,
   BoardElementType,
@@ -6,8 +6,11 @@ import {
   BoardPromptsOutput,
   BoardSegmentMapping,
   SegmentContext,
-} from '../boards-types';
-import { contentAnalysisPrompt, elementDescriptionPrompt } from '../../../config/prompts/boards-image.prompt';
+} from "../boards-types";
+import {
+  contentAnalysisPrompt,
+  elementDescriptionPrompt,
+} from "../../../config/prompts/boards-image.prompt";
 import { aiGenerate } from "@/src/lib/services/ai/ai-gateway";
 import { deepExtractArray } from "@/src/lib/storyflow/gemini-parser";
 import { getSettings } from "@/src/lib/storyflow/settings";
@@ -37,7 +40,7 @@ interface BoardContent {
 const ContentAnalysisSchema = z.object({
   topics: z.array(z.string()).default([]),
   entities: z.array(z.string()).default([]),
-  tone: z.string().default('dramatic'),
+  tone: z.string().default("dramatic"),
 });
 
 const ElementDescriptionResponseSchema = z.array(
@@ -46,21 +49,21 @@ const ElementDescriptionResponseSchema = z.array(
     description: z.string(),
     label: z.string().nullable().optional(),
     connections: z.array(z.string()).optional(),
-  })
+  }),
 );
 
 /**
  * Topic-based element type mapping for generating appropriate board elements
  */
 export const TOPIC_ELEMENT_MAPPING: Record<string, BoardElementType[]> = {
-  sports: ['photo', 'clipping', 'diagram', 'note'],
-  athlete: ['photo', 'clipping', 'headline', 'note'],
-  career: ['photo', 'document', 'clipping', 'note'],
-  crime: ['photo', 'document', 'map', 'note', 'clipping'],
-  mystery: ['photo', 'note', 'map', 'diagram'],
-  history: ['photo', 'document', 'map', 'clipping'],
-  war: ['photo', 'map', 'document', 'clipping'],
-  default: ['photo', 'note', 'clipping', 'document'],
+  sports: ["photo", "clipping", "diagram", "note"],
+  athlete: ["photo", "clipping", "headline", "note"],
+  career: ["photo", "document", "clipping", "note"],
+  crime: ["photo", "document", "map", "note", "clipping"],
+  mystery: ["photo", "note", "map", "diagram"],
+  history: ["photo", "document", "map", "clipping"],
+  war: ["photo", "map", "document", "clipping"],
+  default: ["photo", "note", "clipping", "document"],
 };
 
 /**
@@ -71,12 +74,15 @@ export const DETECTIVE_BOARD_STYLE_GUIDE = `- Warm brown cork board texture\n- E
 /**
  * Generate board prompts for image generation
  */
+// TODO(visual-format): replace DETECTIVE_BOARD_STYLE_GUIDE with per-format
+// style guide config keyed on project.styleTheme once non-corkboard formats
+// are implemented.
 export async function generateBoardPrompts(
   projectId: string,
   boards: BoardSegmentMapping[],
   segments: ScriptSegment[],
   gridLayout = { rows: 2, cols: 3 },
-  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE
+  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE,
 ): Promise<BoardPromptsOutput> {
   console.log(`[PROMPTS] Generating prompts for ${boards.length} boards...`);
 
@@ -93,10 +99,14 @@ export async function generateBoardPrompts(
     const segmentContexts = mapSegmentsToElements(
       segments,
       elements,
-      board.segmentIndices
+      board.segmentIndices,
     );
 
-    const fullPromptText = buildFullPrompt(elements, gridLayout, resolvedStyleGuide);
+    const fullPromptText = buildFullPrompt(
+      elements,
+      gridLayout,
+      resolvedStyleGuide,
+    );
 
     prompts.push({
       boardId: board.boardId,
@@ -109,7 +119,7 @@ export async function generateBoardPrompts(
   }
 
   return {
-    version: '1.0',
+    version: "1.0",
     prompts,
     generatedAt: new Date().toISOString(),
   };
@@ -121,21 +131,20 @@ export async function generateBoardPrompts(
 export async function analyzeContent(
   projectId: string,
   boardPlan: BoardSegmentMapping,
-  segments: ScriptSegment[]
+  segments: ScriptSegment[],
 ): Promise<BoardContent> {
   const boardSegments = boardPlan.segmentIndices
     .map((i) => {
       // Prefer zero-based index lookup, fallback to order-based match
       return (
-        segments[i] ||
-        segments.find((s) => s.order === i || s.order === i + 1)
+        segments[i] || segments.find((s) => s.order === i || s.order === i + 1)
       );
     })
     .filter((s): s is ScriptSegment => Boolean(s));
 
   if (boardSegments.length === 0) {
     throw new Error(
-      `[PROMPTS] No matching segments found for board ${boardPlan.boardId}`
+      `[PROMPTS] No matching segments found for board ${boardPlan.boardId}`,
     );
   }
 
@@ -145,7 +154,7 @@ export async function analyzeContent(
   const result = await aiGenerate({
     prompt: contentAnalysisPrompt(combinedText),
     projectId,
-    operation: 'boards-prompts-analysis',
+    operation: "boards-prompts-analysis",
     schema: ContentAnalysisSchema,
     model: settings.ai.proModel,
   });
@@ -166,7 +175,7 @@ export async function analyzeContent(
  */
 export function generateElements(
   content: BoardContent,
-  gridLayout: { rows: number; cols: number }
+  gridLayout: { rows: number; cols: number },
 ): BoardElement[] {
   const totalCells = gridLayout.rows * gridLayout.cols;
   const elementTypes = selectElementTypes(content.topics, totalCells);
@@ -177,9 +186,9 @@ export function generateElements(
     const col = i % gridLayout.cols;
     elements.push({
       id: `elem-${i + 1}`,
-      type: elementTypes[i] || 'photo',
+      type: elementTypes[i] || "photo",
       gridPosition: { row, col },
-      description: '',
+      description: "",
       connectionTo: [],
     });
   }
@@ -189,8 +198,11 @@ export function generateElements(
 /**
  * Select element types based on content topics
  */
-export function selectElementTypes(topics: string[], totalCells: number): BoardElementType[] {
-  const topicKeys = topics.map(t => t.toLowerCase());
+export function selectElementTypes(
+  topics: string[],
+  totalCells: number,
+): BoardElementType[] {
+  const topicKeys = topics.map((t) => t.toLowerCase());
   const pool: BoardElementType[] = [];
 
   for (const key of topicKeys) {
@@ -215,13 +227,13 @@ export function selectElementTypes(topics: string[], totalCells: number): BoardE
 export async function fillElementDescriptions(
   projectId: string,
   elements: BoardElement[],
-  content: BoardContent
+  content: BoardContent,
 ): Promise<BoardElement[]> {
   type ElementDescriptions = z.infer<typeof ElementDescriptionResponseSchema>;
 
   const CoercedElementDescriptionsSchema = z.preprocess(
-    (val) => deepExtractArray(val, ['id', 'description']) ?? val,
-    ElementDescriptionResponseSchema
+    (val) => deepExtractArray(val, ["id", "description"]) ?? val,
+    ElementDescriptionResponseSchema,
   ) as z.ZodType<ElementDescriptions>;
 
   const prompt = elementDescriptionPrompt(elements, {
@@ -235,16 +247,16 @@ export async function fillElementDescriptions(
   const result = await aiGenerate<ElementDescriptions>({
     prompt,
     projectId,
-    operation: 'boards-prompts-elements',
+    operation: "boards-prompts-elements",
     schema: CoercedElementDescriptionsSchema,
     model: settings.ai.proModel,
   });
 
   const descriptions = result.data;
 
-  const descriptionMap = new Map(descriptions.map(d => [d.id, d]));
+  const descriptionMap = new Map(descriptions.map((d) => [d.id, d]));
 
-  return elements.map(elem => {
+  return elements.map((elem) => {
     const info = descriptionMap.get(elem.id);
     return {
       ...elem,
@@ -261,13 +273,16 @@ export async function fillElementDescriptions(
 export function mapSegmentsToElements(
   segments: ScriptSegment[],
   elements: BoardElement[],
-  segmentIndices: number[]
+  segmentIndices: number[],
 ): SegmentContext[] {
   const resolveSegment = (idx: number) =>
-    segments[idx] || segments.find((s) => s.order === idx || s.order === idx + 1);
+    segments[idx] ||
+    segments.find((s) => s.order === idx || s.order === idx + 1);
 
   return segmentIndices.map((segIdx, i) => {
-    const elementIndex = Math.floor(i * elements.length / segmentIndices.length);
+    const elementIndex = Math.floor(
+      (i * elements.length) / segmentIndices.length,
+    );
     const targetElement = elements[elementIndex] ?? elements[0];
     const segment = resolveSegment(segIdx);
 
@@ -285,22 +300,28 @@ export function mapSegmentsToElements(
 export function buildFullPrompt(
   elements: BoardElement[],
   gridLayout: { rows: number; cols: number },
-  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE
+  styleGuide: string = DETECTIVE_BOARD_STYLE_GUIDE,
 ): string {
   const elementDescriptions = elements
-    .map(elem => {
-      const posName = getGridPositionName(elem.gridPosition.row, elem.gridPosition.col);
-      const labelPart = elem.label ? ` (labeled "${elem.label}")` : '';
+    .map((elem) => {
+      const posName = getGridPositionName(
+        elem.gridPosition.row,
+        elem.gridPosition.col,
+      );
+      const labelPart = elem.label ? ` (labeled "${elem.label}")` : "";
       return `- ${posName.toUpperCase()}: ${elem.type} - ${elem.description}${labelPart}`;
     })
-    .join('\n');
+    .join("\n");
 
   const connections = elements
-    .filter(e => e.connectionTo && e.connectionTo.length > 0)
-    .map(e => `- Connect ${e.id} to ${e.connectionTo!.join(', ')} with red string`)
-    .join('\n');
+    .filter((e) => e.connectionTo && e.connectionTo.length > 0)
+    .map(
+      (e) =>
+        `- Connect ${e.id} to ${e.connectionTo!.join(", ")} with red string`,
+    )
+    .join("\n");
 
-  return `Create a detailed investigation board image with a cork board background.\n\nSTYLE:\n${styleGuide}\n\nGRID LAYOUT: ${gridLayout.rows} rows x ${gridLayout.cols} columns\n\nELEMENTS (place each in its specified position):\n${elementDescriptions}\n\nCONNECTIONS:\n${connections || '- Red strings connecting thematically related elements'}\n\nIMPORTANT:\n- Each element must be clearly visible and distinct\n- Leave small gaps between elements\n- Elements should fit within their grid cell\n- Style should feel visually cohesive and intentional`;
+  return `Create a detailed investigation board image with a cork board background.\n\nSTYLE:\n${styleGuide}\n\nGRID LAYOUT: ${gridLayout.rows} rows x ${gridLayout.cols} columns\n\nELEMENTS (place each in its specified position):\n${elementDescriptions}\n\nCONNECTIONS:\n${connections || "- Red strings connecting thematically related elements"}\n\nIMPORTANT:\n- Each element must be clearly visible and distinct\n- Leave small gaps between elements\n- Elements should fit within their grid cell\n- Style should feel visually cohesive and intentional`;
 }
 
 /**
@@ -308,9 +329,8 @@ export function buildFullPrompt(
  */
 function getGridPositionName(row: number, col: number): string {
   const names = [
-    ['top-left', 'top-center', 'top-right'],
-    ['bottom-left', 'bottom-center', 'bottom-right'],
+    ["top-left", "top-center", "top-right"],
+    ["bottom-left", "bottom-center", "bottom-right"],
   ];
   return names[row]?.[col] ?? `row-${row}-col-${col}`;
 }
-

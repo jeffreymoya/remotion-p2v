@@ -2304,6 +2304,8 @@ export namespace Prisma {
     topic: string | null
     status: $Enums.ProjectStatus | null
     aspectRatio: string | null
+    visualFormat: string | null
+    styleTheme: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2314,6 +2316,8 @@ export namespace Prisma {
     topic: string | null
     status: $Enums.ProjectStatus | null
     aspectRatio: string | null
+    visualFormat: string | null
+    styleTheme: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2324,6 +2328,8 @@ export namespace Prisma {
     topic: number
     status: number
     aspectRatio: number
+    visualFormat: number
+    styleTheme: number
     wizardProgress: number
     createdAt: number
     updatedAt: number
@@ -2338,6 +2344,8 @@ export namespace Prisma {
     topic?: true
     status?: true
     aspectRatio?: true
+    visualFormat?: true
+    styleTheme?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2348,6 +2356,8 @@ export namespace Prisma {
     topic?: true
     status?: true
     aspectRatio?: true
+    visualFormat?: true
+    styleTheme?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2358,6 +2368,8 @@ export namespace Prisma {
     topic?: true
     status?: true
     aspectRatio?: true
+    visualFormat?: true
+    styleTheme?: true
     wizardProgress?: true
     createdAt?: true
     updatedAt?: true
@@ -2443,6 +2455,8 @@ export namespace Prisma {
     topic: string | null
     status: $Enums.ProjectStatus
     aspectRatio: string
+    visualFormat: string
+    styleTheme: string
     wizardProgress: JsonValue | null
     createdAt: Date
     updatedAt: Date
@@ -2472,6 +2486,8 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    visualFormat?: boolean
+    styleTheme?: boolean
     wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2493,6 +2509,8 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    visualFormat?: boolean
+    styleTheme?: boolean
     wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2505,6 +2523,8 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    visualFormat?: boolean
+    styleTheme?: boolean
     wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2517,13 +2537,15 @@ export namespace Prisma {
     topic?: boolean
     status?: boolean
     aspectRatio?: boolean
+    visualFormat?: boolean
+    styleTheme?: boolean
     wizardProgress?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     assetMappings?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "topic" | "status" | "aspectRatio" | "wizardProgress" | "createdAt" | "updatedAt" | "assetMappings", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "topic" | "status" | "aspectRatio" | "visualFormat" | "styleTheme" | "wizardProgress" | "createdAt" | "updatedAt" | "assetMappings", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     settings?: boolean | Project$settingsArgs<ExtArgs>
     script?: boolean | Project$scriptArgs<ExtArgs>
@@ -2556,6 +2578,8 @@ export namespace Prisma {
       topic: string | null
       status: $Enums.ProjectStatus
       aspectRatio: string
+      visualFormat: string
+      styleTheme: string
       wizardProgress: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
@@ -2996,6 +3020,8 @@ export namespace Prisma {
     readonly topic: FieldRef<"Project", 'String'>
     readonly status: FieldRef<"Project", 'ProjectStatus'>
     readonly aspectRatio: FieldRef<"Project", 'String'>
+    readonly visualFormat: FieldRef<"Project", 'String'>
+    readonly styleTheme: FieldRef<"Project", 'String'>
     readonly wizardProgress: FieldRef<"Project", 'Json'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
@@ -17488,6 +17514,8 @@ export namespace Prisma {
     topic: 'topic',
     status: 'status',
     aspectRatio: 'aspectRatio',
+    visualFormat: 'visualFormat',
+    styleTheme: 'styleTheme',
     wizardProgress: 'wizardProgress',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -17846,6 +17874,8 @@ export namespace Prisma {
     topic?: StringNullableFilter<"Project"> | string | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringFilter<"Project"> | string
+    visualFormat?: StringFilter<"Project"> | string
+    styleTheme?: StringFilter<"Project"> | string
     wizardProgress?: JsonNullableFilter<"Project">
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
@@ -17866,6 +17896,8 @@ export namespace Prisma {
     topic?: SortOrderInput | SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    visualFormat?: SortOrder
+    styleTheme?: SortOrder
     wizardProgress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17889,6 +17921,8 @@ export namespace Prisma {
     topic?: StringNullableFilter<"Project"> | string | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringFilter<"Project"> | string
+    visualFormat?: StringFilter<"Project"> | string
+    styleTheme?: StringFilter<"Project"> | string
     wizardProgress?: JsonNullableFilter<"Project">
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
@@ -17909,6 +17943,8 @@ export namespace Prisma {
     topic?: SortOrderInput | SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    visualFormat?: SortOrder
+    styleTheme?: SortOrder
     wizardProgress?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -17927,6 +17963,8 @@ export namespace Prisma {
     topic?: StringNullableWithAggregatesFilter<"Project"> | string | null
     status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
     aspectRatio?: StringWithAggregatesFilter<"Project"> | string
+    visualFormat?: StringWithAggregatesFilter<"Project"> | string
+    styleTheme?: StringWithAggregatesFilter<"Project"> | string
     wizardProgress?: JsonNullableWithAggregatesFilter<"Project">
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
@@ -18922,6 +18960,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18942,6 +18982,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18962,6 +19004,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18982,6 +19026,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19002,6 +19048,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -19014,6 +19062,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19026,6 +19076,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20238,6 +20290,8 @@ export namespace Prisma {
     topic?: SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    visualFormat?: SortOrder
+    styleTheme?: SortOrder
     wizardProgress?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20250,6 +20304,8 @@ export namespace Prisma {
     topic?: SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    visualFormat?: SortOrder
+    styleTheme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20260,6 +20316,8 @@ export namespace Prisma {
     topic?: SortOrder
     status?: SortOrder
     aspectRatio?: SortOrder
+    visualFormat?: SortOrder
+    styleTheme?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23037,6 +23095,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23056,6 +23116,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23091,6 +23153,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23110,6 +23174,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23129,6 +23195,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23148,6 +23216,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23218,6 +23288,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23237,6 +23309,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23297,6 +23371,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23316,6 +23392,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23409,6 +23487,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23428,6 +23508,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23492,6 +23574,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23511,6 +23595,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23546,6 +23632,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23565,6 +23653,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23584,6 +23674,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23603,6 +23695,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23744,6 +23838,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23763,6 +23859,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23855,6 +23953,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23874,6 +23974,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23942,6 +24044,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23961,6 +24065,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24019,6 +24125,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24038,6 +24146,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24106,6 +24216,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24125,6 +24237,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24183,6 +24297,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24202,6 +24318,8 @@ export namespace Prisma {
     topic?: string | null
     status?: $Enums.ProjectStatus
     aspectRatio?: string
+    visualFormat?: string
+    styleTheme?: string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24353,6 +24471,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24372,6 +24492,8 @@ export namespace Prisma {
     topic?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     aspectRatio?: StringFieldUpdateOperationsInput | string
+    visualFormat?: StringFieldUpdateOperationsInput | string
+    styleTheme?: StringFieldUpdateOperationsInput | string
     wizardProgress?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

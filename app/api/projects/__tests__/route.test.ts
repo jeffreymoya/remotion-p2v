@@ -26,7 +26,10 @@ vi.mock("@/src/lib/storyflow/projects", () => ({
 }));
 
 import { storyflowPrisma } from "@/src/lib/storyflow/prisma";
-import { createProjectDirectory, deleteProjectDirectory } from "@/src/lib/storyflow/projects";
+import {
+  createProjectDirectory,
+  deleteProjectDirectory,
+} from "@/src/lib/storyflow/projects";
 
 type MockProject = {
   id: string;
@@ -34,6 +37,8 @@ type MockProject = {
   topic: string | null;
   status: ProjectStatus;
   aspectRatio: string;
+  visualFormat: string;
+  styleTheme: string;
   wizardProgress?: Prisma.JsonValue | null;
   assetMappings: Prisma.JsonValue;
   createdAt: Date;
@@ -52,7 +57,9 @@ describe("Projects API - /api/projects", () => {
         buildProject({ id: "project-2", name: "Second Project" }),
       ];
 
-      vi.mocked(storyflowPrisma.project.findMany).mockResolvedValue(projects as MockProject[]);
+      vi.mocked(storyflowPrisma.project.findMany).mockResolvedValue(
+        projects as MockProject[],
+      );
 
       const request = new NextRequest("http://localhost:3000/api/projects");
       const response = await getProjects(request);
@@ -64,7 +71,7 @@ describe("Projects API - /api/projects", () => {
           ...project,
           createdAt: project.createdAt.toISOString(),
           updatedAt: project.updatedAt.toISOString(),
-        }))
+        })),
       );
       expect(storyflowPrisma.project.findMany).toHaveBeenCalledWith({
         orderBy: { updatedAt: "desc" },
@@ -72,7 +79,9 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("returns 404 when project listing fails with NotFoundError", async () => {
-      vi.mocked(storyflowPrisma.project.findMany).mockRejectedValue(new NotFoundError("Project"));
+      vi.mocked(storyflowPrisma.project.findMany).mockRejectedValue(
+        new NotFoundError("Project"),
+      );
 
       const request = new NextRequest("http://localhost:3000/api/projects");
       const response = await getProjects(request);
@@ -93,7 +102,9 @@ describe("Projects API - /api/projects", () => {
         aspectRatio: "9:16",
       });
 
-      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(createdProject as MockProject);
+      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(
+        createdProject as MockProject,
+      );
       vi.mocked(createProjectDirectory).mockResolvedValue(undefined);
 
       const request = new NextRequest("http://localhost:3000/api/projects", {
@@ -102,6 +113,8 @@ describe("Projects API - /api/projects", () => {
           name: "New Project",
           topic: "Test topic",
           aspectRatio: "9:16",
+          visualFormat: "corkboard",
+          styleTheme: "noir-detective",
         }),
       });
 
@@ -115,10 +128,66 @@ describe("Projects API - /api/projects", () => {
         data: {
           name: "New Project",
           aspectRatio: "9:16",
+          visualFormat: "corkboard",
+          styleTheme: "noir-detective",
           topic: "Test topic",
         },
       });
       expect(createProjectDirectory).toHaveBeenCalledWith("project-123");
+    });
+
+    it("uses default visual format and style theme when omitted", async () => {
+      const createdProject = buildProject({
+        id: "project-defaults",
+        name: "Defaults",
+      });
+
+      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(
+        createdProject as MockProject,
+      );
+      vi.mocked(createProjectDirectory).mockResolvedValue(undefined);
+
+      const request = new NextRequest("http://localhost:3000/api/projects", {
+        method: "POST",
+        body: JSON.stringify({ name: "Defaults" }),
+      });
+
+      const response = await createProject(request);
+
+      expect(response.status).toBe(201);
+      expect(storyflowPrisma.project.create).toHaveBeenCalledWith({
+        data: {
+          name: "Defaults",
+          aspectRatio: "16:9",
+          visualFormat: "corkboard",
+          styleTheme: "noir-detective",
+          topic: null,
+        },
+      });
+    });
+
+    it("rejects unknown visual format and style theme values", async () => {
+      const request = new NextRequest("http://localhost:3000/api/projects", {
+        method: "POST",
+        body: JSON.stringify({
+          name: "Bad Choices",
+          visualFormat: "cinematic",
+          styleTheme: "space-opera",
+        }),
+      });
+
+      const response = await createProject(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.code).toBe("VALIDATION_ERROR");
+      expect(data.details?.visualFormat?._errors?.[0]).toContain(
+        "Invalid enum value",
+      );
+      expect(data.details?.styleTheme?._errors?.[0]).toContain(
+        "Invalid enum value",
+      );
+      expect(storyflowPrisma.project.create).not.toHaveBeenCalled();
     });
 
     it("returns 400 when payload is invalid", async () => {
@@ -136,10 +205,17 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("returns 404 when project directory creation fails", async () => {
-      const createdProject = buildProject({ id: "project-404", name: "Missing Project" });
+      const createdProject = buildProject({
+        id: "project-404",
+        name: "Missing Project",
+      });
 
-      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(createdProject as MockProject);
-      vi.mocked(createProjectDirectory).mockRejectedValue(new NotFoundError("Project", "project-404"));
+      vi.mocked(storyflowPrisma.project.create).mockResolvedValue(
+        createdProject as MockProject,
+      );
+      vi.mocked(createProjectDirectory).mockRejectedValue(
+        new NotFoundError("Project", "project-404"),
+      );
 
       const request = new NextRequest("http://localhost:3000/api/projects", {
         method: "POST",
@@ -167,24 +243,34 @@ describe("Projects API - /api/projects", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(
+        mockProject as MockProject,
+      );
 
       const request = new NextRequest("http://localhost:3000/api/projects/123");
-      const response = await getProjectById(request, { params: Promise.resolve({ id: "123" }) });
+      const response = await getProjectById(request, {
+        params: Promise.resolve({ id: "123" }),
+      });
       const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(data.project.id).toBe("123");
       expect(data.project.name).toBe("Test Project");
       expect(data.project.status).toBe("DRAFT");
-      expect(storyflowPrisma.project.findByIdOrThrow).toHaveBeenCalledWith("123");
+      expect(storyflowPrisma.project.findByIdOrThrow).toHaveBeenCalledWith(
+        "123",
+      );
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(
+        new NotFoundError("Project", "999"),
+      );
 
       const request = new NextRequest("http://localhost:3000/api/projects/999");
-      const response = await getProjectById(request, { params: Promise.resolve({ id: "999" }) });
+      const response = await getProjectById(request, {
+        params: Promise.resolve({ id: "999" }),
+      });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -208,14 +294,23 @@ describe("Projects API - /api/projects", () => {
       };
       const updatedProject = { ...mockProject, name: "New Name" };
 
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
-      vi.mocked(storyflowPrisma.project.update).mockResolvedValue(updatedProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(
+        mockProject as MockProject,
+      );
+      vi.mocked(storyflowPrisma.project.update).mockResolvedValue(
+        updatedProject as MockProject,
+      );
 
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "PATCH",
-        body: JSON.stringify({ name: "New Name" }),
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ name: "New Name" }),
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -227,13 +322,20 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(
+        new NotFoundError("Project", "999"),
+      );
 
-      const request = new NextRequest("http://localhost:3000/api/projects/999", {
-        method: "PATCH",
-        body: JSON.stringify({ name: "New Name" }),
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/999",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ name: "New Name" }),
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "999" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "999" }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -242,11 +344,16 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("validates input and returns 400 on invalid data", async () => {
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "PATCH",
-        body: JSON.stringify({ name: "" }), // Empty name is invalid
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ name: "" }), // Empty name is invalid
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -255,11 +362,18 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("rejects invalid characters in name", async () => {
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "PATCH",
-        body: JSON.stringify({ name: "Project<script>alert('xss')</script>" }),
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            name: "Project<script>alert('xss')</script>",
+          }),
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -268,11 +382,16 @@ describe("Projects API - /api/projects", () => {
     });
 
     it("rejects status updates through PATCH", async () => {
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "PATCH",
-        body: JSON.stringify({ status: "RENDER_READY" }),
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status: "RENDER_READY" }),
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(400);
@@ -292,18 +411,33 @@ describe("Projects API - /api/projects", () => {
         updatedAt: new Date(),
       };
       const nextWizardProgress = {
-        boardPlanner: { currentStep: "prompts", updatedAt: new Date().toISOString() },
+        boardPlanner: {
+          currentStep: "prompts",
+          updatedAt: new Date().toISOString(),
+        },
       };
-      const updatedProject = { ...mockProject, wizardProgress: nextWizardProgress };
+      const updatedProject = {
+        ...mockProject,
+        wizardProgress: nextWizardProgress,
+      };
 
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
-      vi.mocked(storyflowPrisma.project.update).mockResolvedValue(updatedProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(
+        mockProject as MockProject,
+      );
+      vi.mocked(storyflowPrisma.project.update).mockResolvedValue(
+        updatedProject as MockProject,
+      );
 
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "PATCH",
-        body: JSON.stringify({ wizardProgress: nextWizardProgress }),
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ wizardProgress: nextWizardProgress }),
+        },
+      );
+      const response = await PATCH(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await PATCH(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -327,29 +461,47 @@ describe("Projects API - /api/projects", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(mockProject as MockProject);
-      vi.mocked(storyflowPrisma.project.delete).mockResolvedValue(mockProject as MockProject);
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockResolvedValue(
+        mockProject as MockProject,
+      );
+      vi.mocked(storyflowPrisma.project.delete).mockResolvedValue(
+        mockProject as MockProject,
+      );
       vi.mocked(deleteProjectDirectory).mockResolvedValue(undefined);
 
-      const request = new NextRequest("http://localhost:3000/api/projects/123", {
-        method: "DELETE",
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/123",
+        {
+          method: "DELETE",
+        },
+      );
+      const response = await DELETE(request, {
+        params: Promise.resolve({ id: "123" }),
       });
-      const response = await DELETE(request, { params: Promise.resolve({ id: "123" }) });
       const data = await response.json();
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(storyflowPrisma.project.delete).toHaveBeenCalledWith({ where: { id: "123" } });
+      expect(storyflowPrisma.project.delete).toHaveBeenCalledWith({
+        where: { id: "123" },
+      });
       expect(deleteProjectDirectory).toHaveBeenCalledWith("123");
     });
 
     it("returns 404 when project not found", async () => {
-      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(new NotFoundError("Project", "999"));
+      vi.mocked(storyflowPrisma.project.findByIdOrThrow).mockRejectedValue(
+        new NotFoundError("Project", "999"),
+      );
 
-      const request = new NextRequest("http://localhost:3000/api/projects/999", {
-        method: "DELETE",
+      const request = new NextRequest(
+        "http://localhost:3000/api/projects/999",
+        {
+          method: "DELETE",
+        },
+      );
+      const response = await DELETE(request, {
+        params: Promise.resolve({ id: "999" }),
       });
-      const response = await DELETE(request, { params: Promise.resolve({ id: "999" }) });
       const data = await response.json();
 
       expect(response.status).toBe(404);

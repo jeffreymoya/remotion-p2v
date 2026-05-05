@@ -2,6 +2,18 @@ import type { AppSettings } from "./settings";
 import type { Milliseconds, Seconds } from "@/src/lib/types/units";
 
 export type AspectRatio = "16:9" | "9:16";
+export type VisualFormat =
+  | "corkboard"
+  | "whiteboard"
+  | "editorial"
+  | "dataviz"
+  | "minimalist";
+export type StyleTheme =
+  | "noir-detective"
+  | "academic-research-wall"
+  | "vintage-scrapbook"
+  | "modern-digital-pinboard"
+  | "crime-procedural-tv";
 
 export type ProjectStatus =
   | "DRAFT"
@@ -25,6 +37,8 @@ export interface Project {
   topic: string | null;
   status: ProjectStatus;
   aspectRatio: AspectRatio;
+  visualFormat: VisualFormat;
+  styleTheme: StyleTheme;
   wizardProgress?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
