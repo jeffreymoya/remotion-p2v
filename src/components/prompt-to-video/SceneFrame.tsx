@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import {
   AbsoluteFill,
   interpolate,
@@ -6,7 +7,8 @@ import {
   useVideoConfig,
 } from "remotion";
 
-import type { GeneratedScene } from "./schema";
+import { computeSceneSlotStyles } from "./animation-executor";
+import type { GeneratedScene, SceneAnimationPlan } from "./schema";
 import { getEntranceDuration, getExitStart } from "./timing";
 import {
   EvidenceComparison,
@@ -18,13 +20,18 @@ import {
 
 interface SceneFrameProps {
   scene: GeneratedScene;
+  scenePlan?: SceneAnimationPlan | null;
 }
 
-function SceneVisual({ scene }: SceneFrameProps) {
+function SceneVisual({
+  scene,
+  slotStyles,
+}: SceneFrameProps & { slotStyles: Record<string, CSSProperties> }) {
   const props = {
     headline: scene.visual.headline,
     callouts: scene.visual.callouts,
     palette: scene.palette,
+    slotStyles,
   };
 
   switch (scene.visual.role) {
@@ -43,11 +50,17 @@ function SceneVisual({ scene }: SceneFrameProps) {
   }
 }
 
-export function SceneFrame({ scene }: SceneFrameProps) {
+export function SceneFrame({ scene, scenePlan }: SceneFrameProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const entranceDuration = getEntranceDuration(scene.durationFrames);
-  const exitStart = getExitStart(scene.durationFrames);
+
+  const slotStyles = scenePlan
+    ? computeSceneSlotStyles(scenePlan, frame, fps)
+    : {};
+
+  const { durationFrames } = scene;
+  const entranceDuration = getEntranceDuration(durationFrames);
+  const exitStart = getExitStart(durationFrames);
   const entrance = spring({
     frame,
     fps,
@@ -56,10 +69,14 @@ export function SceneFrame({ scene }: SceneFrameProps) {
   });
   const exitOpacity = interpolate(
     frame,
-    [exitStart, scene.durationFrames],
+    [exitStart, durationFrames],
     [1, scene.transition === "none" ? 1 : 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
+
+  const headerAnim = slotStyles.header ?? {};
+  const footerAnim = slotStyles.footer ?? {};
+  const bodyAnim = slotStyles.body ?? {};
 
   return (
     <AbsoluteFill
@@ -69,7 +86,7 @@ export function SceneFrame({ scene }: SceneFrameProps) {
         color: scene.palette.foreground,
         fontFamily:
           "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        opacity: exitOpacity,
+        opacity: slotStyles.body?.opacity !== undefined ? undefined : exitOpacity,
         overflow: "hidden",
       }}
     >
@@ -85,14 +102,17 @@ export function SceneFrame({ scene }: SceneFrameProps) {
           gridTemplateRows: "auto 1fr auto",
           gap: 34,
           transform: `translateY(${interpolate(entrance, [0, 1], [40, 0])}px) scale(${interpolate(entrance, [0, 1], [0.98, 1])})`,
+          opacity: slotStyles.body?.opacity,
         }}
       >
         <header
+          data-testid="prompt-video-scene-header"
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: 32,
+            ...headerAnim,
           }}
         >
           <div
@@ -106,6 +126,7 @@ export function SceneFrame({ scene }: SceneFrameProps) {
             {scene.title}
           </div>
           <div
+            data-testid="prompt-video-role-badge"
             style={{
               backgroundColor: scene.palette.accent,
               borderRadius: 999,
@@ -124,9 +145,10 @@ export function SceneFrame({ scene }: SceneFrameProps) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            ...bodyAnim,
           }}
         >
-          <SceneVisual scene={scene} />
+          <SceneVisual scene={scene} slotStyles={slotStyles} />
         </main>
 
         <footer
@@ -135,6 +157,7 @@ export function SceneFrame({ scene }: SceneFrameProps) {
             fontSize: 28,
             lineHeight: 1.22,
             maxWidth: 1280,
+            ...footerAnim,
           }}
         >
           {scene.narrationSummary}

@@ -12,6 +12,10 @@ import {
   parseCompositionSpec,
   writeCompositionArtifacts,
 } from "./prompt-to-video/composition";
+import {
+  parseAnimationPlan,
+  writeAnimationPlanArtifacts,
+} from "./prompt-to-video/animation-plan";
 import type {
   PipelineConfig,
   ScriptFormat,
@@ -454,6 +458,59 @@ async function stage5CompositionSpec(
   }
 }
 
+async function stage6AnimationPlan(
+  run: ReturnType<typeof parseCompositionSpec>,
+  template: string,
+  config: PipelineConfig
+) {
+  const sceneSpecs = run.scenes
+    .map((scene) => {
+      const callouts = scene.visual.callouts
+        .map((c, i) => `  callout-${i}: "${c}"`)
+        .join("\n");
+      const roleNote = (() => {
+        switch (scene.visual.role) {
+          case "hook-card":
+            return "elements available: header, headline, body, footer";
+          case "mechanism-diagram":
+            return `elements available: header, headline, footer, callout-0 through callout-${scene.visual.callouts.length - 1}`;
+          case "evidence-comparison":
+            return "elements available: header, headline, footer, callout-0, callout-1";
+          case "tradeoff-split":
+            return "elements available: header, headline, footer, callout-0, callout-1, callout-2, callout-3";
+          case "payoff-callout":
+            return "elements available: header, headline, body, footer";
+          default:
+            return "elements available: header, headline, body, footer";
+        }
+      })();
+
+      return [
+        `sceneId: ${scene.id}`,
+        `visualRole: ${scene.visual.role}`,
+        `durationFrames: ${scene.durationFrames}`,
+        `headline: "${scene.visual.headline}"`,
+        `callouts:`,
+        callouts || "  (none)",
+        roleNote,
+      ].join("\n");
+    })
+    .join("\n\n---\n\n");
+
+  const prompt = fillTemplate(template, { sceneSpecs });
+
+  log(config, "[stage 6] animation plan prompt:", prompt.substring(0, 500));
+  const raw = await deepseekCall(prompt, { effort: "high" }, "You are an expert motion designer planning frame-level animation timing for data-driven video compositions.");
+  log(config, "[stage 6] raw response:", raw.substring(0, 500));
+
+  try {
+    return parseAnimationPlan(raw, run.runId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Stage 6: failed to parse animation plan JSON. ${message}`);
+  }
+}
+
 // --- Main ---
 
 async function main(): Promise<void> {
@@ -461,13 +518,14 @@ async function main(): Promise<void> {
 
   console.error(`prompt-to-video: geo=${config.geo} count=${config.count} out=${config.outDir}`);
 
-  const [generalizeTpl, scriptTpl, segmentTpl, remotionTpl, compositionTpl] =
+  const [generalizeTpl, scriptTpl, segmentTpl, remotionTpl, compositionTpl, animationPlanTpl] =
     await Promise.all([
       loadTemplate("generalize"),
       loadTemplate("script"),
       loadTemplate("segment-group"),
       loadTemplate("remotion-prompt"),
       config.studio ? loadTemplate("composition-spec") : Promise.resolve(""),
+      config.studio ? loadTemplate("animation-plan") : Promise.resolve(""),
     ]);
 
   const allTopics = await fetchTrendingTopics(config.geo);
@@ -522,6 +580,13 @@ async function main(): Promise<void> {
     );
     console.error(`Composition artifact: ${compositionPath}`);
     console.error(`Studio pointer: ${pointerPath}`);
+
+    const animationPlan = await stage6AnimationPlan(run, animationPlanTpl, config);
+    const { planPath } = await writeAnimationPlanArtifacts(animationPlan, run.runId);
+    console.error(
+      `Animation plan: ${animationPlan.scenes.length} scenes, ${animationPlan.scenes.reduce((sum, s) => sum + s.elements.length, 0)} element timelines`
+    );
+    console.error(`Animation plan artifact: ${planPath}`);
   }
 }
 

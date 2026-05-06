@@ -1,4 +1,4 @@
-import type { GeneratedScene } from "./schema";
+import type { GeneratedScene, SceneAnimationPlan } from "./schema";
 
 export interface SceneFrameRange {
   scene: GeneratedScene;
@@ -28,4 +28,10 @@ export function getEntranceDuration(durationFrames: number): number {
 
 export function getExitStart(durationFrames: number): number {
   return Math.max(0, durationFrames - getEntranceDuration(durationFrames));
+}
+
+export function computeSceneDurationFromPlan(
+  scenePlan: SceneAnimationPlan
+): number {
+  return scenePlan.totalFrames;
 }

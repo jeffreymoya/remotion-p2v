@@ -104,3 +104,41 @@ export interface DeepSeekMessage {
   role: "system" | "user";
   content: string;
 }
+
+export type AnimationOpType =
+  | "enter"
+  | "hold"
+  | "highlight"
+  | "reveal"
+  | "retention-beat"
+  | "exit";
+
+export interface AnimationOp {
+  type: AnimationOpType;
+  targetElement: string;
+  durationFrames: number;
+  startFrame: number;
+  description: string;
+}
+
+export interface ElementTimeline {
+  element: string;
+  ops: AnimationOp[];
+}
+
+export interface SceneAnimationPlan {
+  sceneId: string;
+  elements: ElementTimeline[];
+  totalFrames: number;
+}
+
+export interface AnimationPlan {
+  runId: string;
+  generatedAt: string;
+  scenes: SceneAnimationPlan[];
+}
+
+export interface AnimationPlanWriteResult {
+  plan: AnimationPlan;
+  planPath: string;
+}

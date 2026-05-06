@@ -63,8 +63,43 @@ export const generatedVideoRunSchema = z
     }
   });
 
+export const animationOpTypeSchema = z.enum([
+  "enter",
+  "hold",
+  "highlight",
+  "reveal",
+  "retention-beat",
+  "exit",
+]);
+
+export const animationOpSchema = z.object({
+  type: animationOpTypeSchema,
+  targetElement: z.string().min(1),
+  durationFrames: z.number().int().positive(),
+  startFrame: z.number().int().min(0),
+  description: z.string(),
+});
+
+export const elementTimelineSchema = z.object({
+  element: z.string().min(1),
+  ops: z.array(animationOpSchema).min(1),
+});
+
+export const sceneAnimationPlanSchema = z.object({
+  sceneId: z.string().min(1),
+  elements: z.array(elementTimelineSchema).min(1),
+  totalFrames: z.number().int().positive(),
+});
+
+export const animationPlanSchema = z.object({
+  runId: z.string().min(1),
+  generatedAt: z.string().min(1),
+  scenes: z.array(sceneAnimationPlanSchema).min(1),
+});
+
 export const generatedPromptVideoPropsSchema = z.object({
   run: generatedVideoRunSchema.nullable(),
+  animationPlan: animationPlanSchema.nullable().optional(),
 });
 
 export type GeneratedSceneVisualRole = z.infer<
@@ -79,3 +114,8 @@ export type GeneratedVideoRun = z.infer<typeof generatedVideoRunSchema>;
 export type GeneratedPromptVideoProps = z.infer<
   typeof generatedPromptVideoPropsSchema
 >;
+export type AnimationOpType = z.infer<typeof animationOpTypeSchema>;
+export type AnimationOp = z.infer<typeof animationOpSchema>;
+export type ElementTimeline = z.infer<typeof elementTimelineSchema>;
+export type SceneAnimationPlan = z.infer<typeof sceneAnimationPlanSchema>;
+export type AnimationPlan = z.infer<typeof animationPlanSchema>;

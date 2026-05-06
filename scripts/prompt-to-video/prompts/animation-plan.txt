@@ -1,0 +1,53 @@
+Generate a frame-level animation plan for each scene of a Remotion video composition.
+
+Each scene has a visual role that determines which visual elements are available for timed animation entries, holds, highlights, and exits.
+
+Available element targets:
+- "header": scene title bar with role badge
+- "headline": main on-screen headline text inside the visual primitive
+- "body": the visual primitive main content panel/card
+- "footer": narration summary text below content
+- "callout-0" through "callout-3": individual callout/bullet items within multi-item primitives (mechanism-diagram, evidence-comparison, tradeoff-split)
+
+Operation types and their visual effect:
+- "hold": element stays fully visible with no animation change (can be longer)
+- "enter": element slides in from below and fades to full opacity (recommended 10–20 frames)
+- "exit": element fades out and slides slightly away (recommended 10–18 frames)
+- "highlight": element pulses/glows briefly to draw attention (recommended 18–36 frames)
+- "reveal": element scales up and clips into view dramatically (recommended 12–24 frames)
+- "retention-beat": brief emphasis bounce to keep viewer engagement (recommended 14–28 frames)
+
+Return JSON only. No markdown fences, no extra text.
+
+Required JSON shape:
+{
+  "scenes": [
+    {
+      "sceneId": "scene-01",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            { "type": "enter", "targetElement": "header", "durationFrames": 15, "description": "Header slides in" },
+            { "type": "hold", "targetElement": "header", "durationFrames": 55, "description": "Header stays" },
+            { "type": "exit", "targetElement": "header", "durationFrames": 12, "description": "Header fades out" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Rules:
+- Use exactly the element names from the "Available element targets" list above.
+- Each element's ops durationFrames must sum to less than or equal to the scene's total durationFrames.
+- Every element should have at minimum an "enter" as its first op.
+- At minimum 3 elements per scene should have non-hold ops (enter, exit, highlight, reveal, retention-beat).
+- Every element should end with "exit" or "hold" — never leave a gap at the end.
+- Ops within an element are sequential (no overlap within one element); different elements may animate in parallel.
+- The first element to enter should be the header or body; the headline and callouts follow.
+- durationFrames values must be positive integers.
+- Use the scene's visualRole to decide which elements are most important — headline + callouts for hook-card and payoff-callout; callout items for mechanism-diagram, evidence-comparison, and tradeoff-split.
+
+Scene specs:
+{sceneSpecs}

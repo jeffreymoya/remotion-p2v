@@ -2,6 +2,7 @@ import { Composition, getStaticFiles, staticFile } from "remotion";
 import { AIVideo, aiVideoSchema } from "./components/AIVideo";
 import { GeneratedPromptVideo } from "./components/prompt-to-video/GeneratedPromptVideo";
 import {
+  animationPlanSchema,
   generatedPromptVideoPropsSchema,
   generatedVideoRunSchema,
 } from "./components/prompt-to-video/schema";
@@ -15,6 +16,14 @@ async function loadGeneratedRun(staticPath: string) {
     throw new Error(`Failed to load generated composition: ${staticPath}`);
   }
   return generatedVideoRunSchema.parse(await response.json());
+}
+
+async function loadAnimationPlan(staticPath: string) {
+  const response = await fetch(staticFile(staticPath));
+  if (!response.ok) {
+    return null;
+  }
+  return animationPlanSchema.safeParse(await response.json()).data ?? null;
 }
 
 export const RemotionRoot: React.FC = () => {
@@ -90,17 +99,31 @@ export const RemotionRoot: React.FC = () => {
           schema={generatedPromptVideoPropsSchema}
           defaultProps={{
             run: null,
+            animationPlan: null,
           }}
           calculateMetadata={async ({ props }) => {
             const run = await loadGeneratedRun(staticPath);
+            const planDir = staticPath.replace(/\/composition\.json$/, "");
+            const planPath = `${planDir}/animation-plan.json`;
+            const animationPlan = await loadAnimationPlan(planPath);
+
+            let durationFrames = run.totalDurationFrames;
+            if (animationPlan) {
+              durationFrames = animationPlan.scenes.reduce(
+                (sum, s) => sum + s.totalFrames,
+                0
+              );
+            }
+
             return {
-              durationInFrames: run.totalDurationFrames,
+              durationInFrames: durationFrames,
               fps: run.fps,
               width: run.width,
               height: run.height,
               props: {
                 ...props,
                 run,
+                animationPlan,
               },
             };
           }}
