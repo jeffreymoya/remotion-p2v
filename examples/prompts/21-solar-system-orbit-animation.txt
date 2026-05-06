@@ -1,0 +1,40 @@
+Build me a solar system planet orbital animation video using Remotion with the following requirements:
+
+Basic Parameters:
+- Resolution 1920x1080, 30fps, 30 seconds total duration
+- Simulate one full year of planetary motion in 30 seconds (starting from 2025-01-01)
+- Output format: MP4
+
+Scene Content:
+- Dark space background (near-black #08090d) with 500 randomly scattered stars. Star positions must be deterministic across frames (use seeded pseudo-random like Math.sin(i * 127.1 + 42), NOT Math.random())
+- Sun at center with radial gradient (bright white core → golden yellow → orange), surrounded by a large semi-transparent glow halo
+- 8 planets (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune) orbiting the Sun in circular motion
+- Each planet has its own color, size, and orbital period based on real astronomical data (J2000 epoch mean longitude)
+- Orbit paths shown as very faint white circles (rgba 255,255,255, 0.08)
+
+Visual Details:
+- Each planet is a radial gradient circle (highlight offset upper-left, shadow lower-right), not a flat color circle
+- Each planet has a same-color semi-transparent glow halo around it for presence
+- Saturn has rings — rendered as a tilted ellipse stroke
+- Earth has a moon — small white dot orbiting Earth with a 27.32-day period
+- Each planet has a name label displayed above it (e.g. "Mercury", "Earth")
+
+Orbit Scaling Logic:
+- Inner planets (Mercury to Mars) use linear scaling, outer planets use logarithmic compression
+- This ensures inner planets are clearly visible while outer planets stay within frame
+- Formula: when au ≤ 1.6, radius = (40 + au × 70) × zoom; when au > 1.6, use log2 compression: radius = (40 + 1.6 × 70 + log2(au / 1.6) × 58) × zoom
+
+Animation & Overlays:
+- No fade-in — the very first frame should show the complete scene immediately, no gradual opacity transition
+- Title always visible: Display "Solar System Orbital Motion" and a subtitle at the top center of the screen. The title must remain visible for the entire duration of the video, no fade-out, no entrance animation
+- Date display at bottom: Show the current simulated date in real-time (e.g. "March 15, 2025"), displayed in a rounded pill with semi-transparent frosted-glass background, golden yellow text
+
+Technical Implementation Notes:
+- Use Canvas 2D to draw the sun, planets, stars, and orbit lines (not DOM elements). Redraw every frame inside a useEffect keyed on the frame number
+- Title and date overlays use HTML absolutely positioned on top of the Canvas (for crisper text rendering)
+- Use useCurrentFrame() + interpolate() to map frame number to day offset
+- Font: system sans-serif or any clean sans-serif font
+
+Additional Requirements:
+- Register a second Composition called "InnerPlanets" with zoom set to 2.5, showing only 3 months of motion, for a close-up view of the inner planets
+- Keep the project structure clean: planet data, math utilities, drawing functions, and overlay components should each be in separate files

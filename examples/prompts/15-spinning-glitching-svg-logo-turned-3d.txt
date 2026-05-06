@@ -1,0 +1,17 @@
+use remotion best practices. create a new composition with the following SVG in 3D. add a metallic material to it: [SVG with Remotion logo paths]
+
+make it smaller and more silver
+
+it still is pretty dark. change the material and lighting to make it much more silver and bright
+
+ok, now it is completely white. find a middle ground so it still is a bit metallic
+
+right now you can see the backside of the logo. make it rotate only from -90 to 90 degree and then start over at -90
+
+add the following glitch effect to it: https://react-postprocessing.docs.pmnd.rs/effects/glitch
+
+yes please, please make everything deterministic
+
+export this as a transparent video i can use in after effects
+
+did not work, check the docs: https://www.remotion.dev/docs/transparent-videos/

@@ -1,0 +1,2 @@
+use remotion html-in-canvas best practices.
+create a sample composition and apply a glitch effect to it!

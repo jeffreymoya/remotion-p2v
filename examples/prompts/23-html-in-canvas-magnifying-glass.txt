@@ -1,0 +1,1 @@
+use remotion best practices, especially html in canvas. make a new composition and write a simple one line text. then implement a round magnifying glass that animates from left to right. there should be slight glass refraction

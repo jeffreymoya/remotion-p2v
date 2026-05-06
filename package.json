@@ -25,6 +25,7 @@
     "test:e2e:debug": "PWDEBUG=1 TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' playwright test --headed",
     "check:api-keys": "bash tests/scripts/check-api-keys.sh",
     "prompt-optimizer": "tsx scripts/prompt-optimizer/index.ts",
+    "prompt-to-video": "tsx scripts/prompt-to-video.ts",
     "po:default": "npm run prompt-optimizer -- --variations 5 --loops 3",
     "po:default:no-synthesize": "npm run prompt-optimizer -- --variations 5 --loops 3 --no-synthesize",
     "po:empirical": "npm run prompt-optimizer -- --variations 5 --loops 3 --empirical",

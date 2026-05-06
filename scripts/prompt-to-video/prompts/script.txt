@@ -1,0 +1,44 @@
+You are a short-form video scriptwriter. Write a script for a {durationMinutes}-minute video using the 10-point narrative structure below.
+
+## Topic
+{query}
+
+## Angle
+{title}: {angle}
+
+## Hook Type
+{hookType}
+
+## Narrative Structure (all 10 beats required)
+1. **Cold hook** ({hookType} type) — Open with a contradiction, cost-of-ignorance, or hidden-mechanism statement that grabs attention immediately
+2. **Viewer promise** — Tell the viewer what they'll know by the end ("By the end you'll know...")
+3. **Context** — Why this matters now, and why it matters to this viewer specifically
+4. **Baseline explanation** — The simple version of what's happening
+5. **Mechanism** — What's actually happening underneath, the real drivers
+6. **Evidence** — Use a claim → evidence → implication beat. Every 30-60 seconds, introduce a new piece of evidence
+7. **Tradeoffs** — When this works, when it fails, who it applies to, who it doesn't
+8. **Practical framework** — A rule of thumb, decision tree, or checklist the viewer can apply
+9. **Final judgment** — An opinionated, clear conclusion. Take a stance
+10. **Closing loop** — Resolve the opening hook. Come full circle
+
+## Format Selection
+Self-select the best format for this topic and STAMP it on your output:
+
+- **Format A (Myth vs reality)**: People believe X → X is partly true → X misses Y → evidence says Z → use this rule instead
+- **Format B (Investigation)**: Claim sounds simple → depends on hidden variables → test each → some fail → one or two survive → final recommendation
+- **Format C (Explainer)**: Visible behavior → hidden mechanism → why misunderstood → correct mental model → how to apply
+- **Format D (Decision framework)**: Option A for X → Option B for Y → avoid C unless Z → decision tree
+
+## Narration Rules
+- Be precise but conversational. Natural speech patterns, not formal writing
+- No "Today we're talking about..." or "In this video..." openings
+- No definitions-first — lead with the interesting part, define terms only when needed
+- Use short sentences. One idea per sentence
+- Each narrative beat is roughly {secondsPerBeat} seconds of spoken narration (about {wordsPerBeat} words)
+
+## Output Format
+Return a JSON object with:
+- **format**: "myth-vs-reality" | "investigation" | "explainer" | "decision-framework"
+- **script**: The full narration text, with each of the 10 beats clearly present
+
+Return ONLY valid JSON — no markdown, no explanatory text.
