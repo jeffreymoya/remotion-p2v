@@ -5,6 +5,8 @@ export interface PipelineConfig {
   geo: string;
   outDir: string;
   verbose: boolean;
+  studio: boolean;
+  runId: string | null;
 }
 
 export interface Stage1Output {
@@ -43,6 +45,54 @@ export interface Stage4Output {
   remotionPrompt: string;
 }
 
+export type GeneratedSceneVisualRole =
+  | "hook-card"
+  | "mechanism-diagram"
+  | "evidence-comparison"
+  | "tradeoff-split"
+  | "payoff-callout";
+
+export type GeneratedSceneTransition = "fade" | "wipe" | "push" | "none";
+
+export interface GeneratedScenePalette {
+  background: string;
+  foreground: string;
+  accent: string;
+  muted: string;
+}
+
+export interface GeneratedSceneVisual {
+  role: GeneratedSceneVisualRole;
+  headline: string;
+  callouts: string[];
+}
+
+export interface GeneratedScene {
+  id: string;
+  title: string;
+  narrationSummary: string;
+  visual: GeneratedSceneVisual;
+  durationFrames: number;
+  palette: GeneratedScenePalette;
+  transition: GeneratedSceneTransition;
+}
+
+export interface GeneratedVideoRun {
+  runId: string;
+  title: string;
+  fps: number;
+  width: number;
+  height: number;
+  totalDurationFrames: number;
+  generatedAt: string;
+  scenes: GeneratedScene[];
+}
+
+export interface CompositionWriteResult {
+  run: GeneratedVideoRun;
+  compositionPath: string;
+  pointerPath: string;
+}
 
 export type ReasoningEffort = "low" | "medium" | "high";
 

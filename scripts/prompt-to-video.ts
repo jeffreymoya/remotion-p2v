@@ -7,6 +7,11 @@ import type { TrendingTopic, TopicSuggestion } from "@/src/lib/storyflow/discove
 import { fetchTrendingTopics } from "@/src/lib/storyflow/discovery";
 
 import { deepseekCall } from "./prompt-to-video/deepseek";
+import {
+  normalizeRunId,
+  parseCompositionSpec,
+  writeCompositionArtifacts,
+} from "./prompt-to-video/composition";
 import type {
   PipelineConfig,
   ScriptFormat,
@@ -73,6 +78,8 @@ function parseArgv(argv: string[]): PipelineConfig {
     geo: DEFAULT_GEO,
     outDir: DEFAULT_OUT_DIR,
     verbose: false,
+    studio: false,
+    runId: null,
   };
 
   for (let i = 2; i < argv.length; i++) {
@@ -93,6 +100,13 @@ function parseArgv(argv: string[]): PipelineConfig {
         break;
       case "--verbose":
         config.verbose = true;
+        break;
+      case "--studio":
+        config.studio = true;
+        break;
+      case "--run-id":
+        config.runId = next;
+        i++;
         break;
       default:
         throw new Error(`Unknown argument: ${arg}`);
@@ -386,6 +400,60 @@ function concatenatePrompts(allOutputs: Stage4Output[]): string {
   return lines.join("\n");
 }
 
+function summarizeScenesForComposition(allOutputs: Stage4Output[]): string {
+  return allOutputs
+    .map((output, index) => {
+      const durationFrames = Math.round(
+        output.groups.reduce((sum, group) => sum + group.durationSec, 0) * 30
+      );
+      const groups = output.groups
+        .map((group) => {
+          return [
+            `label=${group.label}`,
+            `beat=${group.beat}`,
+            `durationSec=${group.durationSec}`,
+            `text=${group.text}`,
+          ].join("; ");
+        })
+        .join("\n    ");
+
+      return [
+        `Scene ${index + 1}`,
+        `topic: ${output.script.topic.query}`,
+        `title: ${output.script.angle.title}`,
+        `format: ${output.script.format}`,
+        `durationFrames: ${durationFrames}`,
+        `groups:`,
+        `    ${groups}`,
+      ].join("\n");
+    })
+    .join("\n\n");
+}
+
+async function stage5CompositionSpec(
+  allOutputs: Stage4Output[],
+  template: string,
+  config: PipelineConfig
+) {
+  const runId = normalizeRunId(config.runId);
+  const prompt = fillTemplate(template, {
+    sceneCount: String(allOutputs.length),
+    sceneSummaries: summarizeScenesForComposition(allOutputs),
+    remotionPrompt: concatenatePrompts(allOutputs),
+  });
+
+  log(config, "[stage 5] composition spec prompt:", prompt.substring(0, 500));
+  const raw = await deepseekCall(prompt, { effort: "medium" });
+  log(config, "[stage 5] raw response:", raw.substring(0, 500));
+
+  try {
+    return parseCompositionSpec(raw, runId, allOutputs);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Stage 5: failed to parse generated composition JSON. ${message}`);
+  }
+}
+
 // --- Main ---
 
 async function main(): Promise<void> {
@@ -393,12 +461,13 @@ async function main(): Promise<void> {
 
   console.error(`prompt-to-video: geo=${config.geo} count=${config.count} out=${config.outDir}`);
 
-  const [generalizeTpl, scriptTpl, segmentTpl, remotionTpl] =
+  const [generalizeTpl, scriptTpl, segmentTpl, remotionTpl, compositionTpl] =
     await Promise.all([
       loadTemplate("generalize"),
       loadTemplate("script"),
       loadTemplate("segment-group"),
       loadTemplate("remotion-prompt"),
+      config.studio ? loadTemplate("composition-spec") : Promise.resolve(""),
     ]);
 
   const allTopics = await fetchTrendingTopics(config.geo);
@@ -441,6 +510,19 @@ async function main(): Promise<void> {
   await fs.writeFile(outPath, masterPrompt, "utf-8");
 
   console.error(`\nDone. Output: ${outPath} (${masterPrompt.length} chars)`);
+
+  if (config.studio) {
+    const run = await stage5CompositionSpec(allStage4, compositionTpl, config);
+    const { compositionPath, pointerPath } = await writeCompositionArtifacts(
+      run,
+      config.outDir
+    );
+    console.error(
+      `Studio composition: prompt-to-video-${run.runId} (${run.scenes.length} scenes)`
+    );
+    console.error(`Composition artifact: ${compositionPath}`);
+    console.error(`Studio pointer: ${pointerPath}`);
+  }
 }
 
 main().catch((err) => {

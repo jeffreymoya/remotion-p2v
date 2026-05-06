@@ -1,0 +1,41 @@
+Convert the segmented script groups and Remotion implementation prompt into a strict JSON scene specification for a reusable Remotion renderer.
+
+Return JSON only. No markdown fences.
+
+Required top-level shape:
+{
+  "title": "short video title",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "scenes": [
+    {
+      "title": "short scene title",
+      "narrationSummary": "one compact sentence describing what the viewer hears",
+      "visualRole": "hook-card | mechanism-diagram | evidence-comparison | tradeoff-split | payoff-callout",
+      "headline": "3-8 word on-screen headline",
+      "callouts": ["2-6 short phrases, never full paragraphs"],
+      "durationFrames": 180,
+      "palette": {
+        "background": "#111827",
+        "foreground": "#F9FAFB",
+        "accent": "#38BDF8",
+        "muted": "#CBD5E1"
+      },
+      "transition": "fade | wipe | push | none"
+    }
+  ]
+}
+
+Rules:
+- Create exactly {sceneCount} scenes, one per source topic.
+- Keep all on-screen text short enough for video review.
+- Do not include TSX, code, CSS, narration scripts, comments, or extra keys.
+- Use visualRole values exactly as listed.
+- durationFrames must be a positive integer and should reflect the source segment durations.
+
+Source scene summaries:
+{sceneSummaries}
+
+Remotion prompt text:
+{remotionPrompt}

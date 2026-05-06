@@ -1,8 +1,21 @@
-import { Composition, getStaticFiles } from "remotion";
+import { Composition, getStaticFiles, staticFile } from "remotion";
 import { AIVideo, aiVideoSchema } from "./components/AIVideo";
+import { GeneratedPromptVideo } from "./components/prompt-to-video/GeneratedPromptVideo";
+import {
+  generatedPromptVideoPropsSchema,
+  generatedVideoRunSchema,
+} from "./components/prompt-to-video/schema";
 import { FPS, INTRO_DURATION_MS, DIMENSIONS, DEFAULT_ASPECT_RATIO } from "./lib/constants";
 import { loadTimelineFromFile } from "./lib/utils";
 import videoConfig from "../config/video.config.json";
+
+async function loadGeneratedRun(staticPath: string) {
+  const response = await fetch(staticFile(staticPath));
+  if (!response.ok) {
+    throw new Error(`Failed to load generated composition: ${staticPath}`);
+  }
+  return generatedVideoRunSchema.parse(await response.json());
+}
 
 export const RemotionRoot: React.FC = () => {
   const staticFiles = getStaticFiles();
@@ -19,6 +32,16 @@ export const RemotionRoot: React.FC = () => {
       // Extract project ID from "projects/{projectId}/timeline.json"
       const parts = file.name.split("/");
       return parts[1]; // Get the projectId
+    });
+  const generatedRuns = staticFiles
+    .filter((file) => file.name.endsWith("/composition.json"))
+    .filter((file) => file.name.startsWith("generated/prompt-to-video/"))
+    .map((file) => {
+      const parts = file.name.split("/");
+      return {
+        runId: parts[2],
+        staticPath: file.name,
+      };
     });
 
   return (
@@ -51,6 +74,33 @@ export const RemotionRoot: React.FC = () => {
               props: {
                 ...props,
                 timeline,
+              },
+            };
+          }}
+        />
+      ))}
+      {generatedRuns.map(({ runId, staticPath }) => (
+        <Composition
+          key={runId}
+          id={`prompt-to-video-${runId}`}
+          component={GeneratedPromptVideo}
+          fps={compositionFps}
+          width={DIMENSIONS[defaultAspectRatio].width}
+          height={DIMENSIONS[defaultAspectRatio].height}
+          schema={generatedPromptVideoPropsSchema}
+          defaultProps={{
+            run: null,
+          }}
+          calculateMetadata={async ({ props }) => {
+            const run = await loadGeneratedRun(staticPath);
+            return {
+              durationInFrames: run.totalDurationFrames,
+              fps: run.fps,
+              width: run.width,
+              height: run.height,
+              props: {
+                ...props,
+                run,
               },
             };
           }}
