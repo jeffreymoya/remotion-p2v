@@ -1,8 +1,0 @@
-https://www.remotion.dev/docs/remotion/html-in-canvas
-
-make a new composition and implement a subtle CRT convex shape shader on top of a HTML element.
-content: terminal and remotion themed. the command and output of "npx create-video@latest --yes --blank my-video"
-
-should be animated.
-
-then "claude" should be invoked and the prompt "Add a CRT effect using HTML-in-canvas " should be shown
