@@ -76,7 +76,7 @@ export const animationOpSchema = z.object({
   type: animationOpTypeSchema,
   targetElement: z.string().min(1),
   durationFrames: z.number().int().positive(),
-  startFrame: z.number().int().min(0),
+  startFrame: z.number().int().min(0).default(0),
   description: z.string(),
 });
 
@@ -88,7 +88,7 @@ export const elementTimelineSchema = z.object({
 export const sceneAnimationPlanSchema = z.object({
   sceneId: z.string().min(1),
   elements: z.array(elementTimelineSchema).min(1),
-  totalFrames: z.number().int().positive(),
+  totalFrames: z.number().int().default(0),
 });
 
 export const animationPlanSchema = z.object({

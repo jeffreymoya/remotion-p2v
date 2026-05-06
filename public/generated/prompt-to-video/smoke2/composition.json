@@ -1,0 +1,99 @@
+{
+  "runId": "smoke2",
+  "title": "Test Angle",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "totalDurationFrames": 690,
+  "generatedAt": "2026-05-06T08:58:24.623Z",
+  "scenes": [
+    {
+      "id": "scene-01",
+      "title": "The Hook",
+      "narrationSummary": "This is the hook text that introduces the topic and grabs attention.",
+      "visual": {
+        "role": "hook-card",
+        "headline": "Introducing Test Angle",
+        "callouts": [
+          "Grabs attention",
+          "Sets up the context",
+          "Introduces the problem"
+        ]
+      },
+      "durationFrames": 150,
+      "palette": {
+        "background": "#111827",
+        "foreground": "#F9FAFB",
+        "accent": "#38BDF8",
+        "muted": "#CBD5E1"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-02",
+      "title": "The Mechanism",
+      "narrationSummary": "This explains the core mechanism in detail.",
+      "visual": {
+        "role": "mechanism-diagram",
+        "headline": "How It Works",
+        "callouts": [
+          "Step-by-step breakdown",
+          "Key components",
+          "Underlying logic"
+        ]
+      },
+      "durationFrames": 180,
+      "palette": {
+        "background": "#111827",
+        "foreground": "#F9FAFB",
+        "accent": "#38BDF8",
+        "muted": "#CBD5E1"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-03",
+      "title": "The Evidence",
+      "narrationSummary": "Data backs this up with compelling evidence.",
+      "visual": {
+        "role": "evidence-comparison",
+        "headline": "Data Proves It",
+        "callouts": [
+          "Statistical results",
+          "Comparative charts",
+          "Real-world cases"
+        ]
+      },
+      "durationFrames": 210,
+      "palette": {
+        "background": "#111827",
+        "foreground": "#F9FAFB",
+        "accent": "#38BDF8",
+        "muted": "#CBD5E1"
+      },
+      "transition": "fade"
+    },
+    {
+      "id": "scene-04",
+      "title": "The Payoff",
+      "narrationSummary": "Here is the key takeaway for the viewer.",
+      "visual": {
+        "role": "payoff-callout",
+        "headline": "Your Key Takeaway",
+        "callouts": [
+          "Main benefit",
+          "Clear next step",
+          "Don't miss this"
+        ]
+      },
+      "durationFrames": 150,
+      "palette": {
+        "background": "#111827",
+        "foreground": "#F9FAFB",
+        "accent": "#38BDF8",
+        "muted": "#CBD5E1"
+      },
+      "transition": "fade"
+    }
+  ]
+}

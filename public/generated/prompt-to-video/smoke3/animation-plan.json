@@ -1,0 +1,944 @@
+{
+  "runId": "smoke3",
+  "generatedAt": "2026-05-06T09:48:11.441Z",
+  "scenes": [
+    {
+      "sceneId": "scene-01",
+      "elements": [
+        {
+          "element": "body",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "body",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Body card reveals with scale and clip"
+            },
+            {
+              "type": "hold",
+              "targetElement": "body",
+              "durationFrames": 140,
+              "startFrame": 20,
+              "description": "Body stays visible"
+            },
+            {
+              "type": "exit",
+              "targetElement": "body",
+              "durationFrames": 20,
+              "startFrame": 160,
+              "description": "Body fades out"
+            }
+          ]
+        },
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 125,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 20,
+              "startFrame": 140,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 18,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 102,
+              "startFrame": 18,
+              "description": "Headline holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 120,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer text slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 85,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 100,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 180
+    },
+    {
+      "sceneId": "scene-02",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 175,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 20,
+              "startFrame": 190,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 160,
+              "startFrame": 15,
+              "description": "Headline holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 175,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-0",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 0 reveals dramatically"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 20,
+              "description": "Brief hold after reveal"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-0",
+              "durationFrames": 30,
+              "startFrame": 40,
+              "description": "Pulse highlight to draw attention"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 80,
+              "startFrame": 70,
+              "description": "Hold after highlight"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 150,
+              "description": "Callout 0 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-1",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 1 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 110,
+              "startFrame": 20,
+              "description": "Callout 1 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 130,
+              "description": "Callout 1 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-2",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 2 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-2",
+              "durationFrames": 90,
+              "startFrame": 20,
+              "description": "Callout 2 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 110,
+              "description": "Callout 2 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-3",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-3",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 3 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-3",
+              "durationFrames": 80,
+              "startFrame": 20,
+              "description": "Callout 3 holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-3",
+              "durationFrames": 20,
+              "startFrame": 100,
+              "description": "Callout 3 fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 65,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 80,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 210
+    },
+    {
+      "sceneId": "scene-03",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 205,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 20,
+              "startFrame": 220,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 185,
+              "startFrame": 20,
+              "description": "Headline holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 205,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-0",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 0 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 20,
+              "description": "Brief hold"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-0",
+              "durationFrames": 36,
+              "startFrame": 40,
+              "description": "Glow highlight on preparation"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 109,
+              "startFrame": 76,
+              "description": "Extended hold"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 185,
+              "description": "Callout 0 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-1",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 1 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 145,
+              "startFrame": 20,
+              "description": "Callout 1 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 165,
+              "description": "Callout 1 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-2",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 2 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-2",
+              "durationFrames": 125,
+              "startFrame": 20,
+              "description": "Callout 2 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 145,
+              "description": "Callout 2 fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 110,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 125,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 240
+    },
+    {
+      "sceneId": "scene-04",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 175,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 20,
+              "startFrame": 190,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 160,
+              "startFrame": 15,
+              "description": "Headline holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 175,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-0",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 0 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 20,
+              "description": "Brief hold"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-0",
+              "durationFrames": 30,
+              "startFrame": 40,
+              "description": "Pulse highlight on read the offense"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 80,
+              "startFrame": 70,
+              "description": "Hold after highlight"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 150,
+              "description": "Callout 0 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-1",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 1 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 110,
+              "startFrame": 20,
+              "description": "Callout 1 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 130,
+              "description": "Callout 1 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-2",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 2 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-2",
+              "durationFrames": 90,
+              "startFrame": 20,
+              "description": "Callout 2 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-2",
+              "durationFrames": 20,
+              "startFrame": 110,
+              "description": "Callout 2 fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 75,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 90,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 210
+    },
+    {
+      "sceneId": "scene-05",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 150,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 165,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 18,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 132,
+              "startFrame": 18,
+              "description": "Headline holds"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 15,
+              "startFrame": 150,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-0",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 0 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 30,
+              "startFrame": 20,
+              "description": "Initial hold"
+            },
+            {
+              "type": "retention-beat",
+              "targetElement": "callout-0",
+              "durationFrames": 20,
+              "startFrame": 50,
+              "description": "Brief emphasis bounce"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 62,
+              "startFrame": 70,
+              "description": "Hold after beat"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-0",
+              "durationFrames": 15,
+              "startFrame": 132,
+              "description": "Callout 0 fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-1",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "callout-1",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Callout 1 slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 92,
+              "startFrame": 20,
+              "description": "Callout 1 stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-1",
+              "durationFrames": 15,
+              "startFrame": 112,
+              "description": "Callout 1 fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 77,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 92,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 180
+    },
+    {
+      "sceneId": "scene-06",
+      "elements": [
+        {
+          "element": "body",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "body",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Body card reveals dramatically"
+            },
+            {
+              "type": "hold",
+              "targetElement": "body",
+              "durationFrames": 110,
+              "startFrame": 20,
+              "description": "Body stays visible"
+            },
+            {
+              "type": "exit",
+              "targetElement": "body",
+              "durationFrames": 20,
+              "startFrame": 130,
+              "description": "Body fades out"
+            }
+          ]
+        },
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 95,
+              "startFrame": 15,
+              "description": "Header stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 20,
+              "startFrame": 110,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 18,
+              "startFrame": 0,
+              "description": "Headline fades in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 18,
+              "description": "Brief hold"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "headline",
+              "durationFrames": 30,
+              "startFrame": 38,
+              "description": "Glow highlight on headline"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 27,
+              "startFrame": 68,
+              "description": "Hold after highlight"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 95,
+              "description": "Headline fades out"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Footer slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 62,
+              "startFrame": 15,
+              "description": "Footer stays"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 77,
+              "description": "Footer fades out"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 150
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+{
+  "runId": "smoke2",
+  "generatedAt": "2026-05-06T05:57:50.746Z",
+  "scenes": [
+    {
+      "sceneId": "scene-01",
+      "elements": [
+        {
+          "element": "header",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "header",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Header slides in from below"
+            },
+            {
+              "type": "hold",
+              "targetElement": "header",
+              "durationFrames": 6717,
+              "startFrame": 15,
+              "description": "Header stays visible"
+            },
+            {
+              "type": "exit",
+              "targetElement": "header",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Header fades out"
+            }
+          ]
+        },
+        {
+          "element": "headline",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "headline",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Headline slides in"
+            },
+            {
+              "type": "hold",
+              "targetElement": "headline",
+              "durationFrames": 6712,
+              "startFrame": 20,
+              "description": "Headline holds on screen"
+            },
+            {
+              "type": "exit",
+              "targetElement": "headline",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Headline fades away"
+            }
+          ]
+        },
+        {
+          "element": "footer",
+          "ops": [
+            {
+              "type": "enter",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Footer fades in from below"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 2000,
+              "startFrame": 20,
+              "description": "Footer stays visible"
+            },
+            {
+              "type": "retention-beat",
+              "targetElement": "footer",
+              "durationFrames": 20,
+              "startFrame": 2020,
+              "description": "Brief emphasis bounce on footer"
+            },
+            {
+              "type": "hold",
+              "targetElement": "footer",
+              "durationFrames": 4692,
+              "startFrame": 2040,
+              "description": "Footer continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "footer",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Footer fades out"
+            }
+          ]
+        },
+        {
+          "element": "callout-0",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-0",
+              "durationFrames": 18,
+              "startFrame": 0,
+              "description": "Reveals callout-0 \"NO PRESS RELEASE.\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 800,
+              "startFrame": 18,
+              "description": "Callout-0 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-0",
+              "durationFrames": 24,
+              "startFrame": 818,
+              "description": "Pulse glow on callout-0"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-0",
+              "durationFrames": 5890,
+              "startFrame": 842,
+              "description": "Callout-0 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-0",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-0 exits"
+            }
+          ]
+        },
+        {
+          "element": "callout-1",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-1",
+              "durationFrames": 22,
+              "startFrame": 0,
+              "description": "Reveals callout-1 \"ATTENTION IS EXPENSIVE\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 1200,
+              "startFrame": 22,
+              "description": "Callout-1 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-1",
+              "durationFrames": 30,
+              "startFrame": 1222,
+              "description": "Pulse glow on callout-1"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-1",
+              "durationFrames": 5480,
+              "startFrame": 1252,
+              "description": "Callout-1 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-1",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-1 exits"
+            }
+          ]
+        },
+        {
+          "element": "callout-2",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-2",
+              "durationFrames": 16,
+              "startFrame": 0,
+              "description": "Reveals callout-2 \"THE CLEVER MECHANISM\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-2",
+              "durationFrames": 1600,
+              "startFrame": 16,
+              "description": "Callout-2 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-2",
+              "durationFrames": 28,
+              "startFrame": 1616,
+              "description": "Pulse glow on callout-2"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-2",
+              "durationFrames": 5088,
+              "startFrame": 1644,
+              "description": "Callout-2 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-2",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-2 exits"
+            }
+          ]
+        },
+        {
+          "element": "callout-3",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-3",
+              "durationFrames": 20,
+              "startFrame": 0,
+              "description": "Reveals callout-3 \"FANS BECOME CREATORS\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-3",
+              "durationFrames": 2000,
+              "startFrame": 20,
+              "description": "Callout-3 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-3",
+              "durationFrames": 26,
+              "startFrame": 2020,
+              "description": "Pulse glow on callout-3"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-3",
+              "durationFrames": 4686,
+              "startFrame": 2046,
+              "description": "Callout-3 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-3",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-3 exits"
+            }
+          ]
+        },
+        {
+          "element": "callout-4",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-4",
+              "durationFrames": 24,
+              "startFrame": 0,
+              "description": "Reveals callout-4 \"3,400% MORE STREAMS\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-4",
+              "durationFrames": 2400,
+              "startFrame": 24,
+              "description": "Callout-4 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-4",
+              "durationFrames": 32,
+              "startFrame": 2424,
+              "description": "Pulse glow on callout-4"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-4",
+              "durationFrames": 4276,
+              "startFrame": 2456,
+              "description": "Callout-4 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-4",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-4 exits"
+            }
+          ]
+        },
+        {
+          "element": "callout-5",
+          "ops": [
+            {
+              "type": "reveal",
+              "targetElement": "callout-5",
+              "durationFrames": 15,
+              "startFrame": 0,
+              "description": "Reveals callout-5 \"EMBRACE THE CHAOS\""
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-5",
+              "durationFrames": 2800,
+              "startFrame": 15,
+              "description": "Callout-5 holds"
+            },
+            {
+              "type": "highlight",
+              "targetElement": "callout-5",
+              "durationFrames": 22,
+              "startFrame": 2815,
+              "description": "Pulse glow on callout-5"
+            },
+            {
+              "type": "hold",
+              "targetElement": "callout-5",
+              "durationFrames": 3895,
+              "startFrame": 2837,
+              "description": "Callout-5 continues holding"
+            },
+            {
+              "type": "exit",
+              "targetElement": "callout-5",
+              "durationFrames": 12,
+              "startFrame": 6732,
+              "description": "Callout-5 exits"
+            }
+          ]
+        }
+      ],
+      "totalFrames": 6744
+    }
+  ]
+}
