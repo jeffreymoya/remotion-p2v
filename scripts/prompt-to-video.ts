@@ -526,7 +526,7 @@ async function stage6AnimationPlan(
 
 async function main(): Promise<void> {
   const config = parseArgv(process.argv);
-  const runId = config.studio ? normalizeRunId(config.runId) : null;
+  const runId = normalizeRunId(config.runId);
 
   console.error(`prompt-to-video: geo=${config.geo} count=${config.count} out=${config.outDir}`);
 
@@ -612,11 +612,11 @@ async function main(): Promise<void> {
 
   console.error(`\nDone. Output: ${outPath} (${masterPrompt.length} chars)`);
 
-  if (config.studio && runId) {
-    const stage4CachePath = path.join(config.outDir, `${runId}-stage4.json`);
-    await fs.writeFile(stage4CachePath, JSON.stringify(allStage4), "utf-8");
-    console.error(`Stage 4 cache: ${stage4CachePath}`);
+  const stage4CachePath = path.join(config.outDir, `${runId}-stage4.json`);
+  await fs.writeFile(stage4CachePath, JSON.stringify(allStage4), "utf-8");
+  console.error(`Stage 4 cache: ${stage4CachePath}`);
 
+  if (config.studio) {
     const run = await stage5CompositionSpec(allStage4, compositionTpl, config, runId);
     const { compositionPath, pointerPath } = await writeCompositionArtifacts(
       run,
