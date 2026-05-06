@@ -28,11 +28,11 @@ Required top-level shape:
 }
 
 Rules:
-- Create exactly {sceneCount} scenes, one per source topic.
+- Create exactly {sceneCount} scenes — one per segment group (narrative beat) listed below.
 - Keep all on-screen text short enough for video review.
 - Do not include TSX, code, CSS, narration scripts, comments, or extra keys.
 - Use visualRole values exactly as listed.
-- durationFrames must be a positive integer and should reflect the source segment durations.
+- durationFrames must be a positive integer and should reflect the group's durationSec × 30.
 
 Source scene summaries:
 {sceneSummaries}

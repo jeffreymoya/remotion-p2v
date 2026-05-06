@@ -84,6 +84,7 @@ function parseArgv(argv: string[]): PipelineConfig {
     verbose: false,
     studio: false,
     runId: null,
+    fromStage4: null,
   };
 
   for (let i = 2; i < argv.length; i++) {
@@ -112,6 +113,10 @@ function parseArgv(argv: string[]): PipelineConfig {
         config.runId = next;
         i++;
         break;
+      case "--from-stage4":
+        config.fromStage4 = next;
+        i++;
+        break;
       default:
         throw new Error(`Unknown argument: ${arg}`);
     }
@@ -119,6 +124,12 @@ function parseArgv(argv: string[]): PipelineConfig {
 
   if (Number.isNaN(config.count) || config.count < 1) {
     throw new Error("--count must be a positive integer");
+  }
+
+  if (config.fromStage4 && !config.studio) {
+    throw new Error(
+      "--from-stage4 requires --studio (Stage 5+6 are gated on --studio mode)"
+    );
   }
 
   return config;
@@ -154,7 +165,7 @@ async function stage1Generalize(
   log(config, `[stage 1] Generalizing: "${topic.query}" ...`);
   log(config, "[stage 1] prompt:", prompt.substring(0, 300));
 
-  const raw = await deepseekCall(prompt, { effort: "low" });
+  const raw = await deepseekCall(prompt, { effort: "low", verbose: config.verbose, logPrefix: "stage1-generalize" });
   log(config, "[stage 1] raw response:", raw.substring(0, 500));
 
   let suggestions: Stage1Result[];
@@ -212,7 +223,7 @@ async function stage2Script(
   log(config, `[stage 2] Script: "${best.title}" ...`);
   log(config, "[stage 2] prompt:", prompt.substring(0, 300));
 
-  const raw = await deepseekCall(prompt, { effort: "medium" });
+  const raw = await deepseekCall(prompt, { effort: "medium", verbose: config.verbose, logPrefix: "stage2-script" });
   log(config, "[stage 2] raw response:", raw.substring(0, 500));
 
   interface Stage2Result {
@@ -267,7 +278,7 @@ async function stage3Segments(
   log(config, `[stage 3] Segmenting: "${output.angle.title}" ...`);
   log(config, "[stage 3] prompt:", prompt.substring(0, 300));
 
-  const raw = await deepseekCall(prompt, { effort: "low" });
+  const raw = await deepseekCall(prompt, { effort: "low", verbose: config.verbose, logPrefix: "stage3-segment" });
   log(config, "[stage 3] raw response:", raw.substring(0, 500));
 
   interface Stage3Result {
@@ -355,7 +366,7 @@ async function stage4RemotionPrompt(
   log(config, `[stage 4] Remotion prompt: "${output.script.angle.title}" ...`);
   log(config, "[stage 4] prompt:", prompt.substring(0, 300));
 
-  const raw = await deepseekCall(prompt, { effort: "high" });
+  const raw = await deepseekCall(prompt, { effort: "high", verbose: config.verbose, logPrefix: "stage4-remotion-prompt" });
   log(config, "[stage 4] raw response:", raw.substring(0, 500));
 
   return {
@@ -405,49 +416,49 @@ function concatenatePrompts(allOutputs: Stage4Output[]): string {
 }
 
 function summarizeScenesForComposition(allOutputs: Stage4Output[]): string {
-  return allOutputs
-    .map((output, index) => {
-      const durationFrames = Math.round(
-        output.groups.reduce((sum, group) => sum + group.durationSec, 0) * 30
-      );
-      const groups = output.groups
-        .map((group) => {
-          return [
-            `label=${group.label}`,
-            `beat=${group.beat}`,
-            `durationSec=${group.durationSec}`,
-            `text=${group.text}`,
-          ].join("; ");
-        })
-        .join("\n    ");
+  const blocks: string[] = [];
+  let sceneIdx = 0;
 
-      return [
-        `Scene ${index + 1}`,
-        `topic: ${output.script.topic.query}`,
-        `title: ${output.script.angle.title}`,
-        `format: ${output.script.format}`,
-        `durationFrames: ${durationFrames}`,
-        `groups:`,
-        `    ${groups}`,
-      ].join("\n");
-    })
-    .join("\n\n");
+  for (const output of allOutputs) {
+    for (const group of output.groups) {
+      sceneIdx++;
+      const durationFrames = Math.round(group.durationSec * 30);
+      blocks.push(
+        [
+          `Scene ${sceneIdx}`,
+          `topic: ${output.script.topic.query}`,
+          `title: ${output.script.angle.title}`,
+          `beat: ${group.beat}`,
+          `label: ${group.label}`,
+          `durationSec: ${group.durationSec}`,
+          `durationFrames: ${durationFrames}`,
+          `text: ${group.text}`,
+        ].join("\n")
+      );
+    }
+  }
+
+  return blocks.join("\n\n");
 }
 
 async function stage5CompositionSpec(
   allOutputs: Stage4Output[],
   template: string,
-  config: PipelineConfig
+  config: PipelineConfig,
+  runId: string
 ) {
-  const runId = normalizeRunId(config.runId);
+  const totalGroups = allOutputs.reduce(
+    (sum, output) => sum + output.groups.length,
+    0
+  );
   const prompt = fillTemplate(template, {
-    sceneCount: String(allOutputs.length),
+    sceneCount: String(totalGroups),
     sceneSummaries: summarizeScenesForComposition(allOutputs),
     remotionPrompt: concatenatePrompts(allOutputs),
   });
 
   log(config, "[stage 5] composition spec prompt:", prompt.substring(0, 500));
-  const raw = await deepseekCall(prompt, { effort: "medium" });
+  const raw = await deepseekCall(prompt, { effort: "medium", verbose: config.verbose, logPrefix: "stage5-composition-spec" });
   log(config, "[stage 5] raw response:", raw.substring(0, 500));
 
   try {
@@ -500,7 +511,7 @@ async function stage6AnimationPlan(
   const prompt = fillTemplate(template, { sceneSpecs });
 
   log(config, "[stage 6] animation plan prompt:", prompt.substring(0, 500));
-  const raw = await deepseekCall(prompt, { effort: "high" }, "You are an expert motion designer planning frame-level animation timing for data-driven video compositions.");
+  const raw = await deepseekCall(prompt, { effort: "high", verbose: config.verbose, logPrefix: "stage6-animation-plan" }, "You are an expert motion designer planning frame-level animation timing for data-driven video compositions.");
   log(config, "[stage 6] raw response:", raw.substring(0, 500));
 
   try {
@@ -515,8 +526,40 @@ async function stage6AnimationPlan(
 
 async function main(): Promise<void> {
   const config = parseArgv(process.argv);
+  const runId = config.studio ? normalizeRunId(config.runId) : null;
 
   console.error(`prompt-to-video: geo=${config.geo} count=${config.count} out=${config.outDir}`);
+
+  if (config.fromStage4) {
+    console.error(`Loading Stage 4 cache: ${config.fromStage4}`);
+    const cached = await fs.readFile(config.fromStage4, "utf-8");
+    const allStage4: Stage4Output[] = JSON.parse(cached);
+    if (!Array.isArray(allStage4) || allStage4.length === 0) {
+      throw new Error("--from-stage4 file must contain a non-empty array of Stage4Output");
+    }
+
+    const compositionTpl = await loadTemplate("composition-spec");
+    const animationPlanTpl = await loadTemplate("animation-plan");
+
+    const run = await stage5CompositionSpec(allStage4, compositionTpl, config, runId!);
+    const { compositionPath, pointerPath } = await writeCompositionArtifacts(
+      run,
+      config.outDir
+    );
+    console.error(
+      `Studio composition: prompt-to-video-${run.runId} (${run.scenes.length} scenes)`
+    );
+    console.error(`Composition artifact: ${compositionPath}`);
+    console.error(`Studio pointer: ${pointerPath}`);
+
+    const animationPlan = await stage6AnimationPlan(run, animationPlanTpl, config);
+    const { planPath } = await writeAnimationPlanArtifacts(animationPlan, run.runId);
+    console.error(
+      `Animation plan: ${animationPlan.scenes.length} scenes, ${animationPlan.scenes.reduce((sum, s) => sum + s.elements.length, 0)} element timelines`
+    );
+    console.error(`Animation plan artifact: ${planPath}`);
+    return;
+  }
 
   const [generalizeTpl, scriptTpl, segmentTpl, remotionTpl, compositionTpl, animationPlanTpl] =
     await Promise.all([
@@ -569,8 +612,12 @@ async function main(): Promise<void> {
 
   console.error(`\nDone. Output: ${outPath} (${masterPrompt.length} chars)`);
 
-  if (config.studio) {
-    const run = await stage5CompositionSpec(allStage4, compositionTpl, config);
+  if (config.studio && runId) {
+    const stage4CachePath = path.join(config.outDir, `${runId}-stage4.json`);
+    await fs.writeFile(stage4CachePath, JSON.stringify(allStage4), "utf-8");
+    console.error(`Stage 4 cache: ${stage4CachePath}`);
+
+    const run = await stage5CompositionSpec(allStage4, compositionTpl, config, runId);
     const { compositionPath, pointerPath } = await writeCompositionArtifacts(
       run,
       config.outDir

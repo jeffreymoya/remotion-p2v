@@ -13,13 +13,13 @@ import type {
   GeneratedScene,
   GeneratedScenePalette,
   GeneratedSceneTransition,
+  ScriptSegment,
   Stage4Output,
 } from "./types";
 
 const DEFAULT_FPS = 30;
 const DEFAULT_WIDTH = 1920;
 const DEFAULT_HEIGHT = 1080;
-const DEFAULT_SCENE_DURATION_FRAMES = 180;
 const PUBLIC_GENERATED_ROOT = path.join(
   "public",
   "generated",
@@ -72,6 +72,11 @@ interface RawCompositionSpec {
   width?: unknown;
   height?: unknown;
   scenes?: unknown;
+}
+
+interface FlatGroupContext {
+  group: ScriptSegment;
+  source: Stage4Output;
 }
 
 export function normalizeRunId(runId: string | null): string {
@@ -157,23 +162,15 @@ function toPalette(value: unknown, index: number): GeneratedScenePalette {
 
 function fromRawScene(
   scene: RawCompositionScene,
-  source: Stage4Output,
+  groupCtx: FlatGroupContext,
   index: number
 ): GeneratedScene {
-  const fallbackTitle = source.script.angle.title || `Scene ${index + 1}`;
-  const fallbackCallouts = source.groups
-    .slice(0, 4)
-    .map((group) => group.label || group.beat)
-    .filter(Boolean);
+  const { group, source } = groupCtx;
+  const fallbackTitle = group.label || group.beat || `Scene ${index + 1}`;
+  const fallbackCallouts = [group.label].filter(Boolean);
   const durationFrames = toPositiveInteger(
     scene.durationFrames,
-    Math.max(
-      DEFAULT_SCENE_DURATION_FRAMES,
-      Math.round(
-        source.groups.reduce((total, group) => total + group.durationSec, 0) *
-          DEFAULT_FPS
-      )
-    ),
+    Math.round(group.durationSec * DEFAULT_FPS),
     `scenes[${index}].durationFrames`
   );
 
@@ -183,7 +180,7 @@ function fromRawScene(
     narrationSummary:
       typeof scene.narrationSummary === "string"
         ? scene.narrationSummary
-        : source.groups.map((group) => group.text).join(" ").slice(0, 220),
+        : group.text.slice(0, 220),
     visual: {
       role: toRole(scene.visualRole, index),
       headline:
@@ -206,12 +203,22 @@ export function parseCompositionSpec(
   const parsed = JSON.parse(stripJsonFences(raw)) as RawCompositionSpec;
   const spec = assertRecord(parsed, "Stage 5 composition spec");
   const rawScenes = spec.scenes;
-  if (!Array.isArray(rawScenes) || rawScenes.length === 0) {
-    throw new Error("Stage 5 composition spec must include a non-empty scenes array");
+  if (!Array.isArray(rawScenes) || sources.length === 0) {
+    throw new Error(
+      "Stage 5 composition spec must include a non-empty scenes array"
+    );
   }
 
-  const scenes = sources.map((source, index) =>
-    fromRawScene((rawScenes[index] ?? {}) as RawCompositionScene, source, index)
+  const flatGroups: FlatGroupContext[] = sources.flatMap((source) =>
+    source.groups.map((group) => ({ group, source }))
+  );
+
+  const scenes = flatGroups.map((groupCtx, index) =>
+    fromRawScene(
+      (rawScenes[index] ?? {}) as RawCompositionScene,
+      groupCtx,
+      index
+    )
   );
   const totalDurationFrames = scenes.reduce(
     (total, scene) => total + scene.durationFrames,

@@ -7,6 +7,7 @@ export interface PipelineConfig {
   verbose: boolean;
   studio: boolean;
   runId: string | null;
+  fromStage4: string | null;
 }
 
 export interface Stage1Output {
@@ -98,6 +99,8 @@ export type ReasoningEffort = "low" | "medium" | "high";
 
 export interface DeepSeekCallOptions {
   effort: ReasoningEffort;
+  verbose?: boolean;
+  logPrefix?: string;
 }
 
 export interface DeepSeekMessage {
