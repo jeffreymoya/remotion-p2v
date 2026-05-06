@@ -1,322 +1,35 @@
-import {
-  AbsoluteFill,
-  Img,
-  Video,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
-import React, { type CSSProperties } from "react";
-import { FPS, IMAGE_HEIGHT, IMAGE_WIDTH } from "../lib/constants";
-import { BackgroundElement } from "../lib/types";
-import { calculateBlur } from "../lib/utils";
-import { calculateViewportState, viewportToTransform } from "../lib/viewport-utils";
+import React from "react";
+import { AbsoluteFill, Img } from "remotion";
+import type { BackgroundElement } from "../lib/types";
 
-const EXTRA_SCALE = 0.2;
+interface BackgroundProps {
+  project: string;
+  item: BackgroundElement;
+}
 
-// Helper to normalize media paths (handles both legacy and new formats)
-const normalizeMediaPath = (mediaUrl: string, project: string, type: 'images' | 'videos'): string => {
-  // If already a full path starting with projects/, use it directly
-  if (mediaUrl.startsWith('projects/') || mediaUrl.startsWith('/projects/')) {
-    return mediaUrl.startsWith('/') ? mediaUrl.slice(1) : mediaUrl;
+export const Background: React.FC<BackgroundProps> = ({ project, item }) => {
+  const bgColor = "#1a1a2e";
+
+  if (item.imageUrl) {
+    const src = item.imageUrl.startsWith("http")
+      ? item.imageUrl
+      : `projects/${project}/assets/${item.imageUrl}`;
+
+    return (
+      <AbsoluteFill>
+        <Img
+          src={src}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </AbsoluteFill>
+    );
   }
-  // Otherwise, construct the full path
-  return `projects/${project}/assets/${type}/${mediaUrl}`;
-};
-
-// Calculate crop/letterbox styles for video or image
-const calculateMediaStyle = (
-  sourceWidth: number,
-  sourceHeight: number,
-  targetWidth: number,
-  targetHeight: number,
-  scale: number = 1,
-): React.CSSProperties => {
-  const sourceAspect = sourceWidth / sourceHeight;
-  const targetAspect = targetWidth / targetHeight;
-  const maxAspectDelta = 0.3;
-
-  const aspectDelta = Math.abs(sourceAspect - targetAspect) / targetAspect;
-
-  if (aspectDelta <= maxAspectDelta) {
-    // Crop mode: fill the entire canvas
-    let displayWidth: number;
-    let displayHeight: number;
-
-    if (sourceAspect > targetAspect) {
-      // Source is wider - fit to height and crop width
-      displayHeight = targetHeight * scale;
-      displayWidth = displayHeight * sourceAspect;
-    } else {
-      // Source is taller - fit to width and crop height
-      displayWidth = targetWidth * scale;
-      displayHeight = displayWidth / sourceAspect;
-    }
-
-    const left = (targetWidth - displayWidth) / 2;
-    const top = (targetHeight - displayHeight) / 2;
-
-    return {
-      width: displayWidth,
-      height: displayHeight,
-      position: "absolute",
-      top,
-      left,
-      objectFit: "cover",
-    };
-  } else {
-    // Letterbox mode: fit entire media within canvas
-    let displayWidth: number;
-    let displayHeight: number;
-
-    if (sourceAspect > targetAspect) {
-      // Source is wider - fit to width
-      displayWidth = targetWidth;
-      displayHeight = targetWidth / sourceAspect;
-    } else {
-      // Source is taller - fit to height
-      displayHeight = targetHeight;
-      displayWidth = targetHeight * sourceAspect;
-    }
-
-    const left = (targetWidth - displayWidth) / 2;
-    const top = (targetHeight - displayHeight) / 2;
-
-    return {
-      width: displayWidth,
-      height: displayHeight,
-      position: "absolute",
-      top,
-      left,
-      objectFit: "contain",
-    };
-  }
-};
-
-// Helper function for viewport animation rendering
-const renderWithViewportAnimation = (
-  item: BackgroundElement,
-  project: string,
-  frame: number,
-  canvasW: number,
-  canvasH: number,
-  fps: number,
-): React.ReactElement => {
-  // Get current viewport state
-  const viewport = calculateViewportState(
-    frame,
-    item.viewportAnimation!.keyframes,
-    fps
-  );
-
-  // Get image dimensions from metadata
-  const imageW = item.mediaMetadata!.width!;
-  const imageH = item.mediaMetadata!.height!;
-
-  // Calculate CSS transform
-  // NOTE: This bypasses EXTRA_SCALE and item.animations entirely
-  const transform = viewportToTransform(viewport, imageW, imageH, canvasW, canvasH);
-
-  // NO blur calculation - enterTransition/exitTransition are 'none' for pan-scan
-  // This prevents conflicts with existing transition logic
 
   return (
-    <AbsoluteFill style={{ overflow: 'hidden', backgroundColor: 'black' }}>
-      <Img
-        src={staticFile(normalizeMediaPath(item.imageUrl!, project, 'images'))}
-        style={{
-          width: imageW,
-          height: imageH,
-          position: 'absolute',
-          transform: `translate(${transform.translateX}px, ${transform.translateY}px) scale(${transform.scale})`,
-          transformOrigin: '0 0',
-          // No blur filter - transitions handled by viewport animation
-        }}
-      />
-    </AbsoluteFill>
+    <AbsoluteFill
+      style={{
+        backgroundColor: bgColor,
+      }}
+    />
   );
-};
-
-export const Background: React.FC<{
-  item: BackgroundElement;
-  project: string;
-}> = ({ item, project }) => {
-  const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-
-  // Check for viewport animation FIRST - bypasses existing scale logic
-  if (item.viewportAnimation?.enabled) {
-    return renderWithViewportAnimation(item, project, frame, width, height, fps);
-  }
-
-  const localMs = (frame / FPS) * 1000;
-
-  const imageRatio = IMAGE_HEIGHT / IMAGE_WIDTH;
-
-  const imgWidth = height;
-  const imgHeight = imgWidth * imageRatio;
-  let animScale = 1 + EXTRA_SCALE;
-
-  const currentScaleAnim = item.animations?.find(
-    (anim) =>
-      anim.type === "scale" && anim.startMs <= localMs && anim.endMs >= localMs,
-  );
-
-  if (currentScaleAnim) {
-    const progress =
-      (localMs - currentScaleAnim.startMs) /
-      (currentScaleAnim.endMs - currentScaleAnim.startMs);
-    animScale =
-      EXTRA_SCALE +
-      progress * (currentScaleAnim.to - currentScaleAnim.from) +
-      currentScaleAnim.from;
-  }
-
-  const imgScale = animScale;
-  const top = -(imgHeight * imgScale - height) / 2;
-  const left = -(imgWidth * imgScale - width) / 2;
-
-  const blur = calculateBlur({ item, localMs });
-  const maxBlur = 25;
-
-  const currentBlur = maxBlur * blur;
-
-  const containerStyle: CSSProperties = {
-    overflow: "hidden",
-    backgroundColor: "black",
-  };
-
-  // Check if this element has a video
-  const isVideo = item.videoUrl !== undefined;
-
-  if (isVideo && item.videoUrl) {
-    // Build video path - add .mp4 if not present (defensive)
-    let videoPath = item.videoUrl;
-    if (!videoPath.endsWith('.mp4')) {
-      videoPath = `${videoPath}.mp4`;
-    }
-
-    const metadata = item.mediaMetadata;
-
-    const buildStyleFromMetadata = (data: typeof metadata) => {
-      if (!data?.width || !data?.height) {
-        return null;
-      }
-
-      const baseScale = (data.scale ?? 1) as number;
-      const totalScale = baseScale * imgScale;
-
-      const mediaWidth = data.width * totalScale;
-      const mediaHeight = data.height * totalScale;
-
-      const cropX = data.cropX ?? 0;
-      const cropY = data.cropY ?? 0;
-
-      const isCropMode = data.mode === 'crop';
-
-      const left = isCropMode
-        ? -cropX * totalScale
-        : (width - mediaWidth) / 2;
-      const top = isCropMode
-        ? -cropY * totalScale
-        : (height - mediaHeight) / 2;
-
-      return {
-        width: mediaWidth,
-        height: mediaHeight,
-        position: "absolute" as const,
-        top,
-        left,
-        objectFit: "cover" as const,
-      } satisfies CSSProperties;
-    };
-
-    const videoStyle =
-      buildStyleFromMetadata(metadata) ||
-      calculateMediaStyle(
-        metadata?.width || 1920,
-        metadata?.height || 1080,
-        width,
-        height,
-        imgScale,
-      );
-
-    return (
-      <AbsoluteFill style={containerStyle}>
-        <Video
-          src={staticFile(normalizeMediaPath(videoPath, project, 'videos'))}
-          muted
-          loop
-          style={{
-            ...videoStyle,
-            filter: `blur(${currentBlur}px)`,
-            WebkitFilter: `blur(${currentBlur}px)`,
-          }}
-        />
-      </AbsoluteFill>
-    );
-  }
-
-  // Render image
-  if (item.imageUrl) {
-    const metadata = item.mediaMetadata;
-
-    const buildStyleFromMetadata = (data: typeof metadata) => {
-      if (!data?.width || !data?.height) {
-        return null;
-      }
-
-      const baseScale = (data.scale ?? 1) as number;
-      const totalScale = baseScale * imgScale;
-
-      const mediaWidth = data.width * totalScale;
-      const mediaHeight = data.height * totalScale;
-
-      const cropX = data.cropX ?? 0;
-      const cropY = data.cropY ?? 0;
-
-      const isCropMode = data.mode === 'crop';
-
-      const left = isCropMode
-        ? -cropX * totalScale
-        : (width - mediaWidth) / 2;
-      const top = isCropMode
-        ? -cropY * totalScale
-        : (height - mediaHeight) / 2;
-
-      return {
-        width: mediaWidth,
-        height: mediaHeight,
-        position: "absolute" as const,
-        top,
-        left,
-        objectFit: "cover" as const,
-      } satisfies CSSProperties;
-    };
-
-    const imageStyle =
-      buildStyleFromMetadata(metadata) || {
-        width: imgWidth * imgScale,
-        height: imgHeight * imgScale,
-        position: "absolute",
-        top,
-        left,
-      };
-
-    return (
-      <AbsoluteFill style={containerStyle}>
-        <Img
-          src={staticFile(normalizeMediaPath(item.imageUrl, project, 'images'))}
-          style={{
-            ...imageStyle,
-            filter: `blur(${currentBlur}px)`,
-            WebkitFilter: `blur(${currentBlur}px)`,
-          }}
-        />
-      </AbsoluteFill>
-    );
-  }
-
-  // Fallback: empty fill
-  return <AbsoluteFill style={containerStyle} />;
 };

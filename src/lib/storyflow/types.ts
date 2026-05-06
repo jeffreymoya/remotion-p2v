@@ -1,5 +1,11 @@
-import type { AppSettings } from "./settings";
-import type { Milliseconds, Seconds } from "@/src/lib/types/units";
+type Milliseconds = number;
+type Seconds = number;
+
+interface AppSettingsVI {
+  ai?: { model?: string; proModel?: string; fallbackModel?: string; proFallbackModel?: string };
+  tts?: { provider?: string; voiceId?: string; speed?: number };
+  render?: { quality?: string; fps?: number };
+}
 
 export type AspectRatio = "16:9" | "9:16";
 export type VisualFormat =
@@ -56,9 +62,10 @@ export type ProjectSettings = {
   projectId: string;
   musicTrackId?: string | null;
   musicVolume?: number;
-} & Partial<AppSettings["ai"]> &
-  Partial<AppSettings["tts"]> &
-  Partial<AppSettings["render"]>;
+  ai?: AppSettingsVI["ai"];
+  tts?: AppSettingsVI["tts"];
+  render?: AppSettingsVI["render"];
+};
 
 export interface ScriptSegment {
   index: number;
@@ -307,6 +314,3 @@ export interface Board {
   createdAt: Date;
   updatedAt: Date;
 }
-
-// Re-export script builder types
-export * from "./script-builder-types";

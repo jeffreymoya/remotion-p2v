@@ -1,6 +1,12 @@
+import clsx, { type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { staticFile } from "remotion";
 import { BackgroundElement, Timeline } from "./types";
 import { FPS, DEFAULT_ASPECT_RATIO, INTRO_DURATION_MS } from "./constants";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * Normalizes a legacy timeline by adding default values for new optional fields.

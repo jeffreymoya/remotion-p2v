@@ -26,8 +26,7 @@ export async function synthesizeScript(inputPath: string, outputPath: string): P
       30_000,
       RETRY,
       "Google TTS synthesis"
-    );
-    await writeFile(outputPath, result.audioBuffer);
+    ) as { audioBuffer: Buffer };    await writeFile(outputPath, result.audioBuffer);
     return { inputPath, outputPath, success: true };
   } catch (error) {
     return {

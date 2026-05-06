@@ -256,7 +256,14 @@ function extractResultEvent(
     return parsed as { result?: unknown };
   }
   type Event = { type?: string; result?: unknown };
-  const resultEvent = (parsed as Event[]).findLast((e) => e?.type === "result");
+  const events = parsed as Event[];
+  let resultEvent: Event | null = null;
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i]?.type === "result") {
+      resultEvent = events[i];
+      break;
+    }
+  }
   if (!resultEvent) {
     throw new CliRunnerError("No result event found in Claude JSON output", { rawResponse, stderr });
   }
