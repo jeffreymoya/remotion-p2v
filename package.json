@@ -1,0 +1,25 @@
+{
+  "name": "remotion-p2v",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "npx tsx src/cli.ts",
+    "images": "npm run dev -- 0 --only=images",
+    "studio": "remotion studio",
+    "build": "remotion render",
+    "typecheck": "tsc --noEmit",
+    "smoke:images": "tsx scripts/download-images-smoke.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.457",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "remotion": "^4.0.457",
+    "roughjs": "^4.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
