@@ -23,11 +23,13 @@
     "smoke:fake-transparency": "tsx scripts/fake-transparency-smoke.ts"
   },
   "dependencies": {
-    "@remotion/cli": "^4.0.457",
+    "@remotion/cli": "4.0.457",
+    "@remotion/google-fonts": "4.0.457",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "remotion": "^4.0.457",
-    "roughjs": "^4.6.6"
+    "remotion": "4.0.457",
+    "roughjs": "^4.6.6",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

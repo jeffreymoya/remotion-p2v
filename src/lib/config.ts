@@ -34,3 +34,6 @@ export const NARRATIVE_CHECK_REASONING = {
   effort: "high" as const,
   thinking: { type: "enabled" as const },
 };
+
+export const SCENE_JSON_DIR = "prompts" as const;
+export const SCENE_MODULE_PATH = "src/generated/scene-scripts.ts" as const;

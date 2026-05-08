@@ -5,6 +5,8 @@ import { deepseekChat, DeepSeekError } from "./lib/deepseek";
 import { buildPrompt } from "./lib/build-prompt";
 import { buildCompositionPrompt } from "./lib/build-composition-prompt";
 import { writeComposition, regenerateBarrel } from "./lib/write-composition";
+import { buildSceneJsonPrompt } from "./lib/build-scene-json-prompt";
+import { writeSceneJson, SceneJsonValidationError } from "./lib/write-scene-json";
 import {
   PROMPT_GEN_TEMPERATURE,
   CODE_GEN_TEMPERATURE,
@@ -19,6 +21,7 @@ import {
   OUTPUT_DIR,
   BARREL_PATH,
   EXEMPLAR_COUNT,
+  SCENE_JSON_DIR,
 } from "./lib/config";
 import type { ImageFetchItem } from "./lib/build-image-fetch-prompt";
 import {
@@ -465,14 +468,15 @@ async function main(): Promise<void> {
   // ── Phase: code ──
   if (shouldRunPhase("code", from, only)) {
     const codeImageItems = loadCodeImageItems(imagePlanPath);
+    const durationInFrames = (segment.endSeconds - segment.startSeconds) * 30;
 
-    console.log("Step 2: Generating composition .tsx from Remotion prompt...");
+    console.log("Step 2: Generating scene script JSON from Remotion prompt...");
     const { system: step2System, user: step2User } =
-      buildCompositionPrompt(remotionPrompt, codeImageItems);
+      buildSceneJsonPrompt(remotionPrompt, codeImageItems, slug, durationInFrames);
 
-    let compositionCode: string;
+    let sceneResponse: string;
     try {
-      compositionCode = await deepseekChat(
+      sceneResponse = await deepseekChat(
         [
           { role: "system", content: step2System },
           { role: "user", content: step2User },
@@ -498,20 +502,20 @@ async function main(): Promise<void> {
     }
 
     if (verbose) process.stdout.write("\n");
-    console.log(`  Got code (${compositionCode.length} chars)\n`);
+    console.log(`  Got response (${sceneResponse.length} chars)\n`);
 
-    console.log("Validating and writing composition...");
-    const { filePath, componentName } = writeComposition(
-      compositionCode,
-      segment.title,
-      OUTPUT_DIR,
-    );
-    console.log(`  Written: ${filePath}`);
-    console.log(`  Component: ${componentName}\n`);
-
-    console.log("Regenerating barrel export...");
-    regenerateBarrel(OUTPUT_DIR, BARREL_PATH);
-    console.log(`  Updated: ${BARREL_PATH}\n`);
+    console.log("Validating and writing scene JSON...");
+    try {
+      const { path: outPath, script } = writeSceneJson(sceneResponse, slug, SCENE_JSON_DIR);
+      console.log(`  Written: ${outPath}`);
+      console.log(`  Scenes: ${script.scenes.length}, Duration: ${script.durationInFrames} frames\n`);
+    } catch (err) {
+      if (err instanceof SceneJsonValidationError) {
+        console.error(`Scene JSON validation error: ${err.message}`);
+        process.exit(1);
+      }
+      throw err;
+    }
   }
 
   console.log("Done. Run `npx remotion studio` to view the composition.");
