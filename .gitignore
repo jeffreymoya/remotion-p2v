@@ -5,3 +5,5 @@ node_modules
 credentials.json
 prompts/
 public/
+out/
+src/compositions/
