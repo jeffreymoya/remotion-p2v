@@ -4,179 +4,268 @@ import type { SceneScript } from "../lib/scene-script-schema";
 const rawSceneScripts = [
   {
     "schemaVersion": 1,
-    "title": "QuietVacationingIntro",
-    "slug": "the-secret-rise-of-quiet-vacationing-0-00-0-30",
-    "durationInFrames": 900,
+    "title": "Intro: Quiet Vacationing",
+    "slug": "the-secret-rise-of-quiet-vacationing-0-00-0-30-scene-001",
+    "durationInFrames": 240,
     "fps": 30,
     "width": 1920,
     "height": 1080,
     "crossFadeFrames": 15,
     "assets": [
       {
-        "label": "beach_bg.jpg",
-        "path": "images/beach_bg.jpg",
-        "role": "background"
+        "label": "weary_office_worker.jpg",
+        "role": "animated_object",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/intro-quiet-vacationing/weary_office_worker.jpg"
       },
       {
-        "label": "person_sunglasses.png",
-        "path": "images/person_sunglasses.png",
-        "role": "animated_object"
+        "label": "beach_vacationer.jpg",
+        "role": "animated_object",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/intro-quiet-vacationing/beach_vacationer.jpg"
       },
       {
-        "label": "beach_chair.png",
-        "path": "images/beach_chair.png",
-        "role": "animated_object"
-      },
-      {
-        "label": "beach_umbrella.png",
-        "path": "images/beach_umbrella.png",
-        "role": "animated_object"
-      },
-      {
-        "label": "laptop_open.png",
-        "path": "images/laptop_open.png",
-        "role": "animated_object"
+        "label": "dark_charcoal_bg.png",
+        "role": "background",
+        "path": "images/dark_charcoal_bg.png"
       }
     ],
     "scenes": [
       {
-        "type": "ContradictionHook",
+        "type": "BRoll",
         "frameRange": [
           0,
-          90
+          45
         ],
-        "setup": "Quiet Quitting",
-        "reveal": "Quiet Vacationing",
-        "style": "stark"
-      },
-      {
-        "type": "DiagramScene",
-        "frameRange": [
-          90,
-          210
-        ],
-        "title": "The Scheduling Trick",
-        "nodes": [
-          {
-            "label": "Green Active Dot",
-            "x": 20,
-            "y": 30
-          },
-          {
-            "label": "Schedule Send",
-            "x": 50,
-            "y": 30
-          },
-          {
-            "label": "Timed Emails\n10:00, 14:00, 16:00",
-            "x": 80,
-            "y": 30
-          }
-        ],
-        "edges": [
-          {
-            "from": "Green Active Dot",
-            "to": "Schedule Send"
-          },
-          {
-            "from": "Schedule Send",
-            "to": "Timed Emails"
-          }
-        ],
-        "annotation": "Pre-schedule messages to maintain online presence from anywhere."
+        "backgroundAsset": "weary_office_worker.jpg",
+        "caption": "Quiet Quitting"
       },
       {
         "type": "BRoll",
         "frameRange": [
-          210,
-          420
+          30,
+          240
         ],
-        "backgroundAsset": "beach_bg.jpg",
+        "backgroundAsset": "dark_charcoal_bg.png",
         "overlayAssets": [
           {
-            "label": "person_sunglasses.png",
-            "x": 25,
+            "label": "weary_office_worker.jpg",
+            "x": 0,
             "y": 60,
-            "scale": 0.8,
+            "scale": 0.5,
             "entrance": "fadeIn",
             "entranceFrame": 0
           },
           {
-            "label": "beach_chair.png",
-            "x": 40,
-            "y": 75,
-            "scale": 0.9,
-            "entrance": "slideUp",
+            "label": "beach_vacationer.jpg",
+            "x": 960,
+            "y": 60,
+            "scale": 0.5,
+            "entrance": "fadeIn",
             "entranceFrame": 15
-          },
+          }
+        ],
+        "caption": "Quiet Vacationing"
+      }
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "title": "Imagine the Scenario",
+    "slug": "the-secret-rise-of-quiet-vacationing-0-00-0-30-scene-002",
+    "durationInFrames": 300,
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "crossFadeFrames": 60,
+    "assets": [
+      {
+        "label": "laptop-screen-ui.jpg",
+        "role": "screen_mockup",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/imagine-the-scenario/laptop-screen-ui.jpg"
+      },
+      {
+        "label": "beach.jpg",
+        "role": "background",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/imagine-the-scenario/beach.jpg"
+      },
+      {
+        "label": "green-dot.png",
+        "role": "animated_object",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/imagine-the-scenario/green-dot.png"
+      },
+      {
+        "label": "thought-bubble.png",
+        "role": "static_overlay",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/imagine-the-scenario/thought-bubble.png"
+      }
+    ],
+    "scenes": [
+      {
+        "type": "BRoll",
+        "frameRange": [
+          0,
+          180
+        ],
+        "backgroundAsset": "laptop-screen-ui.jpg",
+        "overlayAssets": [
           {
-            "label": "beach_umbrella.png",
-            "x": 70,
-            "y": 30,
-            "scale": 1,
-            "entrance": "springPop",
-            "entranceFrame": 30
-          },
-          {
-            "label": "laptop_open.png",
-            "x": 75,
-            "y": 80,
+            "label": "green-dot.png",
+            "x": 85,
+            "y": 90,
             "scale": 1,
             "entrance": "fadeIn",
-            "entranceFrame": 45
+            "entranceFrame": 60
           }
         ]
       },
       {
+        "type": "BRoll",
+        "frameRange": [
+          120,
+          300
+        ],
+        "backgroundAsset": "beach.jpg",
+        "overlayAssets": []
+      },
+      {
+        "type": "MicroQuestion",
+        "frameRange": [
+          135,
+          180
+        ],
+        "question": "Wait\u2026 Is this even allowed?",
+        "style": "fade"
+      },
+      {
         "type": "Callout",
         "frameRange": [
-          420,
-          540
+          210,
+          300
         ],
-        "phrase": "The Quiet Vacation Checklist",
-        "style": "card",
-        "backgroundAsset": "beach_bg.jpg",
+        "phrase": "No PTO. No OOO.",
+        "style": "overlay"
+      },
+      {
+        "type": "Callout",
+        "frameRange": [
+          240,
+          300
+        ],
+        "phrase": "Just you and a",
+        "style": "overlay",
         "lines": [
           {
-            "text": "No approved PTO",
-            "icon": "✗",
-            "color": "#C41E3A"
-          },
-          {
-            "text": "No out‑of‑office message",
-            "icon": "✗",
-            "color": "#C41E3A"
-          },
-          {
-            "text": "Just you, your sunglasses, and a green active dot on Slack",
-            "icon": "✓",
+            "text": "green active dot",
+            "icon": "green-dot.png",
             "color": "#2FA44F"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "title": "Scene 3 \u2014 The Big Questions",
+    "slug": "the-secret-rise-of-quiet-vacationing-0-00-0-30-scene-003",
+    "durationInFrames": 360,
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "crossFadeFrames": 15,
+    "assets": [
+      {
+        "label": "navy-bg.png",
+        "role": "background",
+        "path": "images/navy-bg.png"
+      },
+      {
+        "label": "speaker-silhouette.png",
+        "role": "animated_object",
+        "path": "images/the-secret-rise-of-quiet-vacationing-0-00-0-30/questions-and-teaser/speaker-silhouette.png"
+      }
+    ],
+    "scenes": [
+      {
+        "type": "BRoll",
+        "frameRange": [
+          0,
+          360
+        ],
+        "backgroundAsset": "navy-bg.png",
+        "overlayAssets": [
+          {
+            "label": "speaker-silhouette.png",
+            "x": 15,
+            "y": 60,
+            "scale": 1,
+            "entrance": "fadeIn",
+            "entranceFrame": 0
+          }
+        ]
+      },
+      {
+        "type": "DiagramScene",
+        "frameRange": [
+          30,
+          360
+        ],
+        "nodes": [
+          {
+            "label": "?",
+            "x": 17,
+            "y": 45
           }
         ]
       },
       {
         "type": "MicroQuestion",
         "frameRange": [
-          540,
-          600
+          30,
+          195
         ],
-        "question": "Why do they do this?",
-        "questions": [
-          "Why do they do this?",
-          "Is it a bad thing?"
-        ],
+        "question": "But why are so many skilled remote workers doing this?",
         "style": "typewriter"
       },
       {
-        "type": "PromiseCard",
+        "type": "Callout",
         "frameRange": [
-          600,
-          900
+          90,
+          195
         ],
-        "promise": "By the end, you'll understand:",
-        "bullets": [
-          "🔍 Psychological drivers behind quiet vacationing",
-          "⚠️ Hidden costs that outweigh a free beach day"
+        "phrase": "",
+        "style": "overlay",
+        "lines": [
+          {
+            "text": "And more importantly, is it actually a bad thing?",
+            "color": "#FF4D4D"
+          }
+        ]
+      },
+      {
+        "type": "Callout",
+        "frameRange": [
+          210,
+          360
+        ],
+        "phrase": "",
+        "style": "card",
+        "lines": [
+          {
+            "text": "By the end of this segment,"
+          },
+          {
+            "text": "you'll understand the"
+          },
+          {
+            "text": "surprising psychology",
+            "color": "#FFD700"
+          },
+          {
+            "text": "behind quiet vacationing \u2014 and whether it could be a"
+          },
+          {
+            "text": "secret productivity hack.",
+            "color": "#FFD700"
+          }
         ]
       }
     ]

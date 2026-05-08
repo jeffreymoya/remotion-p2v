@@ -37,3 +37,17 @@ export const NARRATIVE_CHECK_REASONING = {
 
 export const SCENE_JSON_DIR = "prompts" as const;
 export const SCENE_MODULE_PATH = "src/generated/scene-scripts.ts" as const;
+
+function validateConcurrency(envName: string, defaultValue: number): number {
+  const raw = process.env[envName];
+  if (raw === undefined) return defaultValue;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    console.error(`${envName} must be a positive integer, got: ${raw}`);
+    process.exit(1);
+  }
+  return Math.floor(parsed);
+}
+
+export const DEEPSEEK_CONCURRENCY = validateConcurrency("DEEPSEEK_CONCURRENCY", 3);
+export const IMAGE_DOWNLOAD_CONCURRENCY = validateConcurrency("IMAGE_DOWNLOAD_CONCURRENCY", 5);

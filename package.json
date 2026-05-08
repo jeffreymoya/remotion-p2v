@@ -20,7 +20,9 @@
     "smoke:images": "tsx scripts/download-images-smoke.ts",
     "smoke:image-parser": "tsx scripts/image-fetch-parser-smoke.ts",
     "smoke:cutout": "tsx scripts/cutout-images-smoke.ts",
-    "smoke:fake-transparency": "tsx scripts/fake-transparency-smoke.ts"
+    "smoke:fake-transparency": "tsx scripts/fake-transparency-smoke.ts",
+    "smoke:limiter": "tsx scripts/limiter-smoke.ts",
+    "smoke:scene-manifest": "tsx scripts/scene-manifest-smoke.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.457",

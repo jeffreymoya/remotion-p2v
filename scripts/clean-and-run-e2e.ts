@@ -9,7 +9,9 @@ const IMAGES_DIR = "public/images";
 const TMP_DIR = ".tmp";
 const OUT_DIR = "out";
 const COMPOSITIONS_DIR = "src/compositions";
+const GENERATED_DIR = "src/generated";
 const BARREL_PATH = path.join(COMPOSITIONS_DIR, "index.ts");
+const SCENE_SCRIPTS_PATH = path.join(GENERATED_DIR, "scene-scripts.ts");
 
 function toSlug(title: string): string {
   return title
@@ -113,14 +115,50 @@ function cleanArtifacts(segmentIndex: number): void {
   const slug = getSegmentSlug(segmentIndex);
 
   ensureDir(PROMPTS_DIR);
+  // Legacy single-composition files
   removeFileIfExists(path.join(PROMPTS_DIR, `${slug}.txt`));
   removeFileIfExists(path.join(PROMPTS_DIR, `${slug}-images.json`));
   removeFileIfExists(path.join(PROMPTS_DIR, `${slug}-narrative.txt`));
+  removeFileIfExists(path.join(PROMPTS_DIR, `${slug}-scene.json`));
 
-  removeFilesInDir(IMAGES_DIR);
+  // Scene manifest
+  removeFileIfExists(path.join(PROMPTS_DIR, `${slug}-scenes.json`));
+
+  // Scene output subdirectory (scene-###-*.txt, scene-###-*-images.json, scene-###-*-scene.json)
+  const sceneOutDir = path.join(PROMPTS_DIR, slug);
+  if (fs.existsSync(sceneOutDir)) {
+    fs.rmSync(sceneOutDir, { recursive: true, force: true });
+    console.log(`Removed ${sceneOutDir}`);
+  }
+
+  // Images (flat and nested scene dirs)
+  if (fs.existsSync(IMAGES_DIR)) {
+    for (const entry of fs.readdirSync(IMAGES_DIR)) {
+      const fullPath = path.join(IMAGES_DIR, entry);
+      fs.rmSync(fullPath, { recursive: true, force: true });
+      console.log(`Removed ${fullPath}`);
+    }
+  }
+
   removeDirContents(TMP_DIR);
   removeFilesInDir(OUT_DIR);
   resetCompositions();
+
+  // Reset generated scene-scripts module
+  ensureDir(GENERATED_DIR);
+  const emptySceneScripts = [
+    'import { SceneScriptSchema } from "../lib/scene-script-schema";',
+    'import type { SceneScript } from "../lib/scene-script-schema";',
+    "",
+    "const rawSceneScripts = [] as const;",
+    "",
+    "export const sceneScripts: SceneScript[] = rawSceneScripts.map((script) =>",
+    "  SceneScriptSchema.parse(script),",
+    ");",
+    "",
+  ].join("\n");
+  fs.writeFileSync(SCENE_SCRIPTS_PATH, emptySceneScripts);
+  console.log(`Reset ${SCENE_SCRIPTS_PATH}`);
 }
 
 function runCli(segmentIndex: number, cliArgs: string[]): void {

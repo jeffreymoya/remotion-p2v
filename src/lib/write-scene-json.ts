@@ -3,6 +3,7 @@ import path from "node:path";
 import { SceneScriptSchema } from "./scene-script-schema";
 import type { SceneScript } from "./scene-script-schema";
 import { SCENE_MODULE_PATH } from "./config";
+import { writeFileAtomically } from "./scene-manifest";
 
 export class SceneJsonValidationError extends Error {
   constructor(message: string) {
@@ -31,14 +32,23 @@ function toTsLiteral(value: unknown): string {
 function readSceneScripts(sceneDir: string): SceneScript[] {
   if (!fs.existsSync(sceneDir)) return [];
 
-  return fs
-    .readdirSync(sceneDir)
-    .filter((file) => file.endsWith("-scene.json"))
-    .sort()
-    .map((file) => {
-      const raw = fs.readFileSync(path.join(sceneDir, file), "utf-8");
-      return SceneScriptSchema.parse(JSON.parse(raw));
-    });
+  const scripts: SceneScript[] = [];
+  const entries = fs.readdirSync(sceneDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      scripts.push(...readSceneScripts(path.join(sceneDir, entry.name)));
+    } else if (entry.isFile() && entry.name.endsWith("-scene.json")) {
+      const raw = fs.readFileSync(path.join(sceneDir, entry.name), "utf-8");
+      try {
+        scripts.push(SceneScriptSchema.parse(JSON.parse(raw)));
+      } catch {
+        // Skip corrupted or unparseable scene files
+      }
+    }
+  }
+
+  return scripts.sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
 export function writeSceneScriptsModule(
@@ -55,15 +65,19 @@ export const sceneScripts: SceneScript[] = rawSceneScripts.map((script) =>
   SceneScriptSchema.parse(script),
 );
 `;
-
   fs.mkdirSync(path.dirname(modulePath), { recursive: true });
-  fs.writeFileSync(modulePath, contents, "utf-8");
+  writeFileAtomically(modulePath, contents);
 }
 
 export function writeSceneJson(
   rawResponse: string,
   slug: string,
   sceneDir: string,
+  options?: {
+    expectedDurationFrames?: number;
+    expectedCompositionId?: string;
+    skipRegeneration?: boolean;
+  },
 ): { path: string; script: SceneScript } {
   const cleaned = stripJsonFences(rawResponse);
 
@@ -83,14 +97,26 @@ export function writeSceneJson(
     throw new SceneJsonValidationError(`Schema validation failed:\n${issues}`);
   }
 
-  const script = result.data;
-  const outPath = path.join(sceneDir, `${slug}-scene.json`);
+  let script = result.data;
 
+  if (options?.expectedCompositionId && script.slug !== options.expectedCompositionId) {
+    script = { ...script, slug: options.expectedCompositionId };
+  }
+
+  if (options?.expectedDurationFrames !== undefined && script.durationInFrames !== options.expectedDurationFrames) {
+    script = { ...script, durationInFrames: options.expectedDurationFrames };
+  }
+
+  const outPath = path.join(sceneDir, `${slug}-scene.json`);
   if (!fs.existsSync(sceneDir)) {
     fs.mkdirSync(sceneDir, { recursive: true });
   }
 
-  fs.writeFileSync(outPath, JSON.stringify(script, null, 2), "utf-8");
-  writeSceneScriptsModule(sceneDir);
+  writeFileAtomically(outPath, JSON.stringify(script, null, 2));
+
+  if (!options?.skipRegeneration) {
+    writeSceneScriptsModule(sceneDir);
+  }
+
   return { path: outPath, script };
 }

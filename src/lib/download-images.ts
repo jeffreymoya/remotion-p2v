@@ -433,14 +433,17 @@ export async function downloadOne(
 export async function downloadImages(
   items: ImageFetchItem[],
   outputDir: string,
+  limiter?: <T>(task: () => Promise<T>) => Promise<T>,
 ): Promise<{ downloaded: number; failed: number; results: DownloadResult[] }> {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const results = await Promise.all(
-    items.map((item) => downloadOne(item, outputDir)),
-  );
+  const tasks = items.map((item) => () => downloadOne(item, outputDir));
+
+  const results = limiter
+    ? await Promise.all(tasks.map((task) => limiter(task)))
+    : await Promise.all(tasks.map((task) => task()));
 
   const downloaded = results.filter((r) => r.ok).length;
   const failed = results.length - downloaded;
