@@ -26,3 +26,11 @@ export const IMAGE_FETCH_REASONING = {
 export const IMAGE_FETCH_TEMPERATURE = 0.3;
 
 export const IMAGES_DIR = "public/images" as const;
+export const DEEPSEEK_RESPONSES_DIR = ".tmp/deepseek-responses" as const;
+
+export const NARRATIVE_CHECK_TEMPERATURE = 0.7;
+
+export const NARRATIVE_CHECK_REASONING = {
+  effort: "high" as const,
+  thinking: { type: "enabled" as const },
+};

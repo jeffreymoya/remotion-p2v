@@ -12,7 +12,10 @@ import {
   CODE_GEN_REASONING,
   IMAGE_FETCH_TEMPERATURE,
   IMAGE_FETCH_REASONING,
+  NARRATIVE_CHECK_TEMPERATURE,
+  NARRATIVE_CHECK_REASONING,
   IMAGES_DIR,
+  DEEPSEEK_RESPONSES_DIR,
   OUTPUT_DIR,
   BARREL_PATH,
   EXEMPLAR_COUNT,
@@ -23,17 +26,21 @@ import {
   parseImageFetchResponse,
 } from "./lib/build-image-fetch-prompt";
 import { downloadImages, type DownloadResult } from "./lib/download-images";
+import {
+  buildNarrativeCheckPrompt,
+  parseNarrativeCheckResponse,
+} from "./lib/build-narrative-check-prompt";
 
 process.loadEnvFile();
 
 const SCRIPT_PATH = "script.txt";
 const EXEMPLARS_DIR = "examples/prompts";
 
-type Phase = "prompt" | "images" | "code";
-const PHASES: Phase[] = ["prompt", "images", "code"];
+type Phase = "narrative" | "prompt" | "images" | "code";
+const PHASES: Phase[] = ["narrative", "prompt", "images", "code"];
 
 function parsePhase(value: string | undefined): Phase | undefined {
-  if (value === "prompt" || value === "images" || value === "code") {
+  if (value === "narrative" || value === "prompt" || value === "images" || value === "code") {
     return value;
   }
   return undefined;
@@ -42,7 +49,7 @@ function parsePhase(value: string | undefined): Phase | undefined {
 function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase; verbose: boolean } {
   const args = process.argv.slice(2);
   let segmentIndex = 0;
-  let from: Phase = parsePhase(process.env.npm_config_from) ?? "prompt";
+  let from: Phase = parsePhase(process.env.npm_config_from) ?? "narrative";
   let only = parsePhase(process.env.npm_config_only);
   let verbose = false;
 
@@ -53,7 +60,7 @@ function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase; verbose
       if (parsedPhase) {
         from = parsedPhase;
       } else {
-        console.error(`Unknown phase: ${phase}. Use --from=prompt|images|code`);
+        console.error(`Unknown phase: ${phase}. Use --from=narrative|prompt|images|code`);
         process.exit(1);
       }
     } else if (arg.startsWith("--only=")) {
@@ -62,7 +69,7 @@ function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase; verbose
       if (parsedPhase) {
         only = parsedPhase;
       } else {
-        console.error(`Unknown phase: ${phase}. Use --only=prompt|images|code`);
+        console.error(`Unknown phase: ${phase}. Use --only=narrative|prompt|images|code`);
         process.exit(1);
       }
     } else if (arg === "--verbose" || arg === "-v") {
@@ -174,14 +181,51 @@ function loadCodeImageItems(imagePlanPath: string): ImageFetchItem[] {
   }
 }
 
-function makeStreamWriter(label: string): (text: string) => void {
+function makeRunId(): string {
+  return new Date().toISOString().replace(/[:.]/g, "-");
+}
+
+function makeDeepSeekResponseRecorder(
+  label: string,
+  filePath: string,
+  verbose: boolean,
+): (text: string) => void {
   let started = false;
+  fs.writeFileSync(filePath, "", "utf-8");
+
   return (text: string) => {
-    if (!started) {
+    fs.appendFileSync(filePath, text, "utf-8");
+
+    if (verbose && !started) {
       process.stdout.write(`  Stream (${label}): `);
       started = true;
     }
-    process.stdout.write(text);
+    if (verbose) {
+      process.stdout.write(text);
+    }
+  };
+}
+
+function makeDeepSeekThinkingRecorder(filePath: string): (text: string) => void {
+  fs.writeFileSync(filePath, "", "utf-8");
+
+  return (text: string) => {
+    fs.appendFileSync(filePath, text, "utf-8");
+  };
+}
+
+function makeDeepSeekRecorders(
+  label: string,
+  responsePath: string,
+  thinkingPath: string,
+  verbose: boolean,
+): {
+  onChunk: (text: string) => void;
+  onReasoningChunk: (text: string) => void;
+} {
+  return {
+    onChunk: makeDeepSeekResponseRecorder(label, responsePath, verbose),
+    onReasoningChunk: makeDeepSeekThinkingRecorder(thinkingPath),
   };
 }
 
@@ -226,6 +270,75 @@ async function main(): Promise<void> {
   }
   const promptPath = path.join(promptsDir, `${slug}.txt`);
   const imagePlanPath = path.join(promptsDir, `${slug}-images.json`);
+  const narrativePath = path.join(promptsDir, `${slug}-narrative.txt`);
+  const deepseekResponseDir = path.join(
+    DEEPSEEK_RESPONSES_DIR,
+    `${makeRunId()}-${slug}`,
+  );
+  fs.mkdirSync(deepseekResponseDir, { recursive: true });
+  console.log(`  Saving DeepSeek responses: ${deepseekResponseDir}\n`);
+
+  // ── Phase: narrative ──
+  if (shouldRunPhase("narrative", from, only)) {
+    console.log("Phase 0: Scoring and enhancing segment narrative...");
+    const { system: narSystem, user: narUser } = buildNarrativeCheckPrompt(segment);
+
+    let narResponse: string;
+    try {
+      narResponse = await deepseekChat(
+        [
+          { role: "system", content: narSystem },
+          { role: "user", content: narUser },
+        ],
+        NARRATIVE_CHECK_TEMPERATURE,
+        NARRATIVE_CHECK_REASONING,
+        {
+          verbose,
+          ...makeDeepSeekRecorders(
+            "narrative",
+            path.join(deepseekResponseDir, "00-narrative.response.txt"),
+            path.join(deepseekResponseDir, "00-narrative.thinking.txt"),
+            verbose,
+          ),
+        },
+      );
+    } catch (err) {
+      if (err instanceof DeepSeekError) {
+        console.error(`DeepSeek API error (narrative check): ${err.message}`);
+        process.exit(1);
+      }
+      throw err;
+    }
+
+    if (verbose) process.stdout.write("\n");
+
+    const { totalScore, enhancedNarrative } = parseNarrativeCheckResponse(narResponse);
+    console.log(`  Narrative rubric score: ${totalScore}/20`);
+
+    if (totalScore < 14) {
+      console.warn(`  ⚠ Score below 14/20 — narrative may produce a weak composition.`);
+    }
+
+    fs.writeFileSync(narrativePath, narResponse, "utf-8");
+    console.log(`  Saved narrative check: ${narrativePath}`);
+
+    if (enhancedNarrative) {
+      console.log(`  Enhanced narrative length: ${enhancedNarrative.length} chars\n`);
+    } else {
+      console.warn("  Could not extract enhanced narrative from response.\n");
+    }
+  }
+
+  // Load enhanced narrative for prompt phase if available
+  let effectiveSegment = segment;
+  if (shouldRunPhase("prompt", from, only) && fs.existsSync(narrativePath)) {
+    const narRaw = fs.readFileSync(narrativePath, "utf-8");
+    const { enhancedNarrative } = parseNarrativeCheckResponse(narRaw);
+    if (enhancedNarrative) {
+      effectiveSegment = { ...segment, narrative: enhancedNarrative };
+      console.log(`Using enhanced narrative from: ${narrativePath}\n`);
+    }
+  }
 
   let remotionPrompt = "";
   const needsRemotionPrompt =
@@ -240,7 +353,7 @@ async function main(): Promise<void> {
     console.log(`  Got ${exemplars.length} exemplar(s)\n`);
 
     console.log("Step 1: Generating Remotion prompt from segment + exemplars...");
-    const { system: step1System, user: step1User } = buildPrompt(slug, segment, exemplars);
+    const { system: step1System, user: step1User } = buildPrompt(slug, effectiveSegment, exemplars);
 
     try {
       remotionPrompt = await deepseekChat(
@@ -250,7 +363,15 @@ async function main(): Promise<void> {
         ],
         PROMPT_GEN_TEMPERATURE,
         PROMPT_GEN_REASONING,
-        { verbose, onChunk: verbose ? makeStreamWriter("prompt") : undefined },
+        {
+          verbose,
+          ...makeDeepSeekRecorders(
+            "prompt",
+            path.join(deepseekResponseDir, "01-prompt.response.txt"),
+            path.join(deepseekResponseDir, "01-prompt.thinking.txt"),
+            verbose,
+          ),
+        },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {
@@ -290,7 +411,15 @@ async function main(): Promise<void> {
         ],
         IMAGE_FETCH_TEMPERATURE,
         IMAGE_FETCH_REASONING,
-        { verbose, onChunk: verbose ? makeStreamWriter("image-plan") : undefined },
+        {
+          verbose,
+          ...makeDeepSeekRecorders(
+            "image-plan",
+            path.join(deepseekResponseDir, "02-image-plan.response.txt"),
+            path.join(deepseekResponseDir, "02-image-plan.thinking.txt"),
+            verbose,
+          ),
+        },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {
@@ -350,7 +479,15 @@ async function main(): Promise<void> {
         ],
         CODE_GEN_TEMPERATURE,
         CODE_GEN_REASONING,
-        { verbose, onChunk: verbose ? makeStreamWriter("code") : undefined },
+        {
+          verbose,
+          ...makeDeepSeekRecorders(
+            "code",
+            path.join(deepseekResponseDir, "03-code.response.txt"),
+            path.join(deepseekResponseDir, "03-code.thinking.txt"),
+            verbose,
+          ),
+        },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {

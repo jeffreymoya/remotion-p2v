@@ -38,9 +38,19 @@ Rules:
 - Set needs_cutout true for animated_object/static_overlay items that should become transparent PNG cutouts after download. Prefer preferred_format "png" for those items.
 - Add clear exclusions in "visual_requirements" when adjacent-looking assets would be wrong.
 
+FUNCTIONAL ASSET GATE:
+Each asset must state its visual_purpose. Permitted values: "diagram", "comparison", "concrete", "callout".
+Do not plan assets that are purely decorative (e.g. random animals, generic crowd shots, abstract splatter).
+If an asset exists only to fill space or "look dynamic", remove it.
+
+SIMULTANEOUS COUNT CHECK:
+At no moment in the composition should more than 4 assets be visible at once.
+Flag any time window where the combined asset count exceeds this.
+
 Output ONLY a JSON array. Each item must include:
 - "label": exact filename used in the composition (e.g. "beach.jpg")
 - "asset_role": "background", "animated_object", "static_overlay", or "screen_mockup"
+- "visual_purpose": "diagram", "comparison", "concrete", or "callout"
 - "needs_cutout": boolean
 - "preferred_format": "jpg" or "png"
 - "image_url": optional direct downloadable image URL hint, or empty string
@@ -71,7 +81,7 @@ Rules:
 - Output ONLY a JSON array.
 - Return one replacement item for each failed label and no extra labels.
 - Keep the exact same "label" values from the failed items.
-- Preserve each failed item's asset_role, needs_cutout, and preferred_format values exactly when present. If a legacy failed item is missing one of those fields, infer the safest value from its label and visual_requirements.
+- Preserve each failed item's asset_role, visual_purpose, needs_cutout, and preferred_format values exactly when present. If a legacy failed item is missing one of those fields, infer the safest value from its label and visual_requirements.
 - Preserve the original visual_requirements and intended Remotion composition style.
 - Replace image_url with a different direct, publicly fetchable HTTP(S) image URL.
 - Do not reuse any failed URL.
@@ -84,6 +94,7 @@ Rules:
 Each replacement item must include:
 - "label"
 - "asset_role"
+- "visual_purpose"
 - "needs_cutout"
 - "preferred_format"
 - "image_url"
@@ -114,6 +125,7 @@ Output ONLY the JSON array of replacement items.`;
 export interface ImageFetchItem {
   label: string;
   asset_role?: "background" | "animated_object" | "static_overlay" | "screen_mockup";
+  visual_purpose?: "diagram" | "comparison" | "concrete" | "callout";
   needs_cutout?: boolean;
   preferred_format?: "jpg" | "png";
   image_url?: string;

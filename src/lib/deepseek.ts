@@ -17,6 +17,7 @@ interface DeepSeekResponse {
 export interface DeepSeekOptions {
   verbose?: boolean;
   onChunk?: (text: string) => void;
+  onReasoningChunk?: (text: string) => void;
 }
 
 export class DeepSeekError extends Error {
@@ -37,6 +38,7 @@ export async function deepseekChat(
 ): Promise<string> {
   const verbose = options?.verbose ?? false;
   const onChunk = options?.onChunk;
+  const onReasoningChunk = options?.onReasoningChunk;
   const startTime = Date.now();
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -57,14 +59,14 @@ export async function deepseekChat(
     body.thinking = { type: "enabled" };
   }
 
-  if (onChunk) {
+  if (onChunk || onReasoningChunk) {
     body.stream = true;
   }
 
   if (verbose) {
     const totalChars = messages.reduce((sum, m) => sum + m.content.length, 0);
     process.stderr.write(
-      `[deepseek] model=${DEEPSEEK_MODEL} temp=${temperature} reasoning_effort=${reasoning.effort} thinking=${reasoning.thinking.type} msgs=${messages.length} chars=${totalChars} stream=${onChunk ? "yes" : "no"}\n`
+      `[deepseek] model=${DEEPSEEK_MODEL} temp=${temperature} reasoning_effort=${reasoning.effort} thinking=${reasoning.thinking.type} msgs=${messages.length} chars=${totalChars} stream=${onChunk || onReasoningChunk ? "yes" : "no"}\n`
     );
   }
 
@@ -85,10 +87,11 @@ export async function deepseekChat(
     );
   }
 
-  if (onChunk && response.body) {
+  if ((onChunk || onReasoningChunk) && response.body) {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let result = "";
+    let reasoningResult = "";
     let buffer = "";
 
     while (true) {
@@ -108,12 +111,24 @@ export async function deepseekChat(
 
         try {
           const parsed: {
-            choices?: Array<{ delta?: { content?: string } }>;
+            choices?: Array<{
+              delta?: {
+                content?: string;
+                reasoning_content?: string;
+              };
+            }>;
           } = JSON.parse(data);
-          const content = parsed.choices?.[0]?.delta?.content;
+          const delta = parsed.choices?.[0]?.delta;
+          const reasoningContent = delta?.reasoning_content;
+          if (reasoningContent) {
+            reasoningResult += reasoningContent;
+            onReasoningChunk?.(reasoningContent);
+          }
+
+          const content = delta?.content;
           if (content) {
             result += content;
-            onChunk(content);
+            onChunk?.(content);
           }
         } catch {
           // skip unparseable SSE lines
@@ -128,7 +143,7 @@ export async function deepseekChat(
     if (verbose) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       process.stderr.write(
-        `[deepseek] done (${result.length} chars, ${elapsed}s)\n`
+        `[deepseek] done (${result.length} content chars, ${reasoningResult.length} reasoning chars, ${elapsed}s)\n`
       );
     }
 

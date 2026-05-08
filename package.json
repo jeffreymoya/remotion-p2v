@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npx tsx src/cli.ts",
+    "cli:e2e": "tsx scripts/clean-and-run-e2e.ts",
     "images": "npm run dev -- 0 --only=images",
     "code": "npm run dev -- 0 --only=code",
     "recode": "tsx scripts/recode.ts",
