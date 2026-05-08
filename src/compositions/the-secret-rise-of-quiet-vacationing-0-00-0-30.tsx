@@ -1,782 +1,1465 @@
 // @ts-nocheck
-import { Composition, useCurrentFrame, useVideoConfig, spring, interpolate, staticFile, AbsoluteFill, Img } from 'remotion';
-import React from 'react';
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Composition,
+  useCurrentFrame,
+  useVideoConfig,
+  interpolate,
+  spring,
+  staticFile,
+  Img,
+  AbsoluteFill,
+} from "remotion";
 
-// ------------------------------------------------------------------
-// Typewriter with mild shake – "Quiet Quitting" reveal
-// ------------------------------------------------------------------
-const TypewriterShake: React.FC<{ text: string; startFrame: number; shake?: boolean }> = ({
-  text,
-  startFrame,
-  shake = false,
+// ---------- Color helpers ----------
+function hexToRgb(hex: string) {
+  hex = hex.replace("#", "");
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return { r, g, b };
+}
+function rgbToHex(r: number, g: number, b: number) {
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+function lerpColor(c1: string, c2: string, t: number) {
+  const a = hexToRgb(c1);
+  const b = hexToRgb(c2);
+  const r = Math.round(a.r + (b.r - a.r) * t);
+  const g = Math.round(a.g + (b.g - a.g) * t);
+  const bVal = Math.round(a.b + (b.b - a.b) * t);
+  return rgbToHex(r, g, bVal);
+}
+
+// ---------- Background gradient ----------
+const getBackgroundGradient = (frame: number) => {
+  const purple = "#2b0c3b";
+  const teal = "#1a8c8a";
+  const orange = "#ff7e5f";
+  const pink = "#feb47b";
+  const oceanDeep = "#0a3d62";
+  const oceanLight = "#3c6e71";
+
+  if (frame < 120) {
+    return `linear-gradient(135deg, ${purple}, ${teal})`;
+  } else if (frame < 150) {
+    const t = (frame - 120) / 30;
+    const c1 = lerpColor(purple, orange, t);
+    const c2 = lerpColor(teal, pink, t);
+    return `linear-gradient(135deg, ${c1}, ${c2})`;
+  } else if (frame < 800) {
+    return `linear-gradient(135deg, ${orange}, ${pink})`;
+  } else {
+    return `linear-gradient(135deg, ${oceanDeep}, ${oceanLight})`;
+  }
+};
+
+// ---------- Rough hand‑drawn line ----------
+const getWavyPath = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  segments = 30,
+  amplitude = 4,
+  phase = 0.7
+) => {
+  let d = `M ${x1} ${y1}`;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const x = x1 + dx * t;
+    const y = y1 + dy * t;
+    const perpX = -dy;
+    const perpY = dx;
+    const len = Math.sqrt(perpX * perpX + perpY * perpY);
+    const normX = perpX / len;
+    const normY = perpY / len;
+    const offset = amplitude * Math.sin(t * Math.PI * 5 + phase);
+    d += ` L ${x + normX * offset} ${y + normY * offset}`;
+  }
+  return d;
+};
+
+const RoughLine: React.FC<{
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  progress: number;
+  strokeWidth?: number;
+}> = ({ x1, y1, x2, y2, color, progress, strokeWidth = 6 }) => {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pathLength, setPathLength] = useState(100);
+  const d = getWavyPath(x1, y1, x2, y2);
+
+  useEffect(() => {
+    if (pathRef.current) {
+      setPathLength(pathRef.current.getTotalLength());
+    }
+  }, [d]);
+
+  const dashOffset = pathLength * (1 - progress);
+
+  return (
+    <svg
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        overflow: "visible",
+      }}
+    >
+      <path
+        ref={pathRef}
+        d={d}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray={pathLength}
+        strokeDashoffset={dashOffset}
+      />
+    </svg>
+  );
+};
+
+const RoughX: React.FC<{
+  width: number;
+  height: number;
+  color: string;
+  progress: number;
+}> = ({ width, height, color, progress }) => {
+  const w = width;
+  const h = height;
+  return (
+    <div style={{ width, height, position: "relative" }}>
+      <RoughLine x1={0} y1={0} x2={w} y2={h} color={color} progress={progress} />
+      <RoughLine x1={w} y1={0} x2={0} y2={h} color={color} progress={progress} />
+    </div>
+  );
+};
+
+// ---------- Checkmark ----------
+const CheckMark: React.FC<{ progress: number; size?: number; color?: string }> = ({
+  progress,
+  size = 60,
+  color = "#00e676",
 }) => {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pathLength, setPathLength] = useState(100);
+
+  useEffect(() => {
+    if (pathRef.current) {
+      setPathLength(pathRef.current.getTotalLength());
+    }
+  }, []);
+
+  const dashOffset = pathLength * (1 - progress);
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path
+        ref={pathRef}
+        d="M5 13l4 4L19 7"
+        stroke={color}
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray={pathLength}
+        strokeDashoffset={dashOffset}
+      />
+    </svg>
+  );
+};
+
+// ---------- Speech bubble (No way!) ----------
+const SpeechBubble: React.FC<{ text: string; left: number; top: number }> = ({
+  text,
+  left,
+  top,
+}) => (
+  <div
+    style={{
+      position: "absolute",
+      left,
+      top,
+      background: "white",
+      color: "#222",
+      padding: "10px 15px",
+      borderRadius: 12,
+      fontSize: 24,
+      fontWeight: "bold",
+      boxShadow: "3px 3px 10px rgba(0,0,0,0.3)",
+      transform: "rotate(-5deg)",
+      whiteSpace: "nowrap",
+    }}
+  >
+    {text}
+    <div
+      style={{
+        width: 0,
+        height: 0,
+        borderLeft: "10px solid transparent",
+        borderRight: "10px solid transparent",
+        borderTop: "10px solid white",
+        position: "absolute",
+        bottom: -10,
+        left: 20,
+      }}
+    />
+  </div>
+);
+
+// ---------- Main composition component ----------
+const BeatSyncedMotionCollage = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  return (
-    <span
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        transform: shake
-          ? `translateX(${Math.sin(frame * 0.5) * 3 * Math.min(1, (frame - startFrame) / 15)}px)`
-          : undefined,
-      }}
-    >
-      {text.split('').map((char, i) => {
-        const charFrame = frame - startFrame - i * 1.5;
-        const opacity = spring({
-          frame: Math.max(0, charFrame),
-          fps,
-          config: { damping: 200 },
-          from: 0,
-          to: 1,
-        });
-        return (
-          <span key={i} style={{ opacity, display: 'inline-block', whiteSpace: 'pre-wrap' }}>
-            {char}
-          </span>
-        );
-      })}
-    </span>
-  );
-};
+  const beatFrames = 15;
 
-// ------------------------------------------------------------------
-// Chromatic aberration layer for glitch feel
-// ------------------------------------------------------------------
-const ChromaticText: React.FC<{ text: string }> = ({ text }) => {
-  return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-      <span style={{ color: 'red', position: 'absolute', left: 2, top: 0 }}>{text}</span>
-      <span style={{ color: 'cyan', position: 'absolute', left: -2, top: 0 }}>{text}</span>
-      <span style={{ color: 'white' }}>{text}</span>
-    </div>
-  );
-};
+  // Background
+  const bgGradient = getBackgroundGradient(frame);
 
-// ------------------------------------------------------------------
-// Stamp component: red circle with diagonal line and text
-// ------------------------------------------------------------------
-const Stamp: React.FC<{ scale: number }> = ({ scale }) => {
+  // ---------- Scene 1 (0-150) ----------
+  const scene1Opacity = interpolate(frame, [120, 150], [1, 0], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Desk cutout animation
+  const tSlideIn = interpolate(frame, [0, 15], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const tShift = interpolate(frame, [75, 90], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  let deskTranslateX = -300 + 300 * tSlideIn + 60 * tShift;
+  const deskRotate = 5 * tSlideIn;
+  let deskScale = (0.8 + 0.2 * tSlideIn) * (1 - 0.3 * tShift);
+
+  // Shake during cross‑out (30‑40)
+  const shakeIntensity = interpolate(frame, [30, 35, 40], [0, 1, 0], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const shakeX = 6 * Math.sin(frame * 1.5) * shakeIntensity;
+  const shakeY = 4 * Math.cos(frame * 1.8) * shakeIntensity;
+  deskTranslateX += shakeX;
+
+  // Hidden question mark behind desk
+  const qmOpacity = interpolate(frame, [75, 90], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // "Quiet Quitting" words
+  const quietOpacity = interpolate(frame, [15, 30], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const quittingOpacity = interpolate(frame, [30, 45], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Red X
+  const xProgress = interpolate(frame, [30, 45], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const xOpacity = interpolate(frame, [30, 45], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // "Quiet Vacationing"
+  const vacSpring = spring({
+    frame: frame - 75,
+    fps,
+    config: { damping: 10, mass: 0.5, stiffness: 120 },
+  });
+  const vacTranslateX = interpolate(vacSpring, [0, 1], [800, 0]);
+  const vacOpacity = interpolate(frame, [75, 90], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // ---------- Scene 2 (150-450) ----------
+  // "Imagine this:" typewriter
+  const imagineText = "Imagine this:";
+  const imagineCharCount = Math.floor(
+    interpolate(frame, [150, 180], [0, imagineText.length], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    })
+  );
+
+  // Office cutouts entrance timings
+  const laptopT = interpolate(frame, [180, 200], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const laptopTranslateY = 400 * (1 - laptopT);
+  const laptopOpacity = laptopT;
+
+  const envSpring = spring({
+    frame: frame - 195,
+    fps,
+    config: { damping: 12, mass: 0.8 },
+  });
+  const envTranslateX = interpolate(envSpring, [0, 1], [-400, 0]);
+  const envOpacity = interpolate(frame, [195, 210], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  const autoSpring = spring({
+    frame: frame - 210,
+    fps,
+    config: { damping: 8, stiffness: 200 },
+  });
+  const autoScale = interpolate(autoSpring, [0, 1], [0, 1]);
+  const autoOpacity = interpolate(frame, [210, 225], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  const clockSpring = spring({
+    frame: frame - 210,
+    fps,
+    config: { damping: 15, mass: 0.9 },
+  });
+  const clockTranslateX = interpolate(clockSpring, [0, 1], [400, 0]);
+  const clockRotate = interpolate(clockSpring, [0, 1], [2000, 0]);
+  const clockOpacity = interpolate(frame, [210, 225], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Beat dance offset
+  const beatDance = 3 * Math.sin((frame * 2 * Math.PI) / beatFrames);
+
+  // Send / checkmark transition
+  const sendScale = spring({
+    frame: frame - 270,
+    fps,
+    config: { damping: 10 },
+  });
+  const sendProgress = interpolate(frame, [270, 285], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const checkStart = interpolate(frame, [285, 300], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Dissolve transition 300‑330
+  const dissolveT = interpolate(frame, [300, 330], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const officeFadeOut = 1 - dissolveT;
+
+  // Beach collage
+  const beachScale = interpolate(dissolveT, [0, 1], [0.5, 1]);
+  const beachOpacity = dissolveT;
+  // Beach breath after 330
+  let beachScaleFinal = beachScale;
+  if (frame >= 330) {
+    beachScaleFinal = 1 + 0.02 * Math.sin((frame * 2 * Math.PI) / beatFrames);
+  }
+  const waveShadowX = 5 * Math.sin(frame * 0.1);
+
+  // Sunglasses
+  const sunSpring = spring({
+    frame: frame - 360,
+    fps,
+    config: { damping: 8, mass: 1, stiffness: 150 },
+  });
+  const sunTranslateY = interpolate(sunSpring, [0, 1], [-300, 0]);
+
+  // Mini laptop
+  const miniLaptopSpring = spring({
+    frame: frame - 360,
+    fps,
+    config: { damping: 10 },
+  });
+  const miniLaptopScale = interpolate(miniLaptopSpring, [0, 1], [0, 0.15]);
+  const greenDotPulse = 1 + 0.3 * Math.sin((frame * 2 * Math.PI) / beatFrames);
+
+  // Scene 2 group opacity (office portion)
+  const scene2OfficeOpacity = interpolate(frame, [150, 180], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // ---------- Scene 3 (450-600) ----------
+  const checklistSlide = spring({
+    frame: frame - 450,
+    fps,
+    config: { damping: 14 },
+  });
+  const checklistX = interpolate(checklistSlide, [0, 1], [-500, 0]);
+
+  // Type‑on for checklist items
+  const item1Text = "PTO Request";
+  const item2Text = "Out‑of‑Office";
+  const item3Text = "Green dot on Slack";
+  const item1Chars = Math.floor(
+    interpolate(frame, [455, 470], [0, item1Text.length], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    })
+  );
+  const item2Chars = Math.floor(
+    interpolate(frame, [465, 480], [0, item2Text.length], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    })
+  );
+  const item3Chars = Math.floor(
+    interpolate(frame, [475, 490], [0, item3Text.length], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    })
+  );
+
+  // Cross‑out on first two items
+  const xItem1Progress = interpolate(frame, [480, 495], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const xItem2Progress = interpolate(frame, [510, 525], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Denied stamp
+  const stampScale = spring({
+    frame: frame - 485,
+    fps,
+    config: { damping: 10, stiffness: 150 },
+  });
+  const deniedScale = interpolate(stampScale, [0, 1], [0, 1]);
+
+  // No way bubble
+  const noWayAppear = interpolate(frame, [510, 520], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Slack panel zoom
+  const slackSpring = spring({
+    frame: frame - 540,
+    fps,
+    config: { damping: 12, stiffness: 120 },
+  });
+  const slackScale = interpolate(slackSpring, [0, 1], [0.5, 1]);
+  const slackTranslateX = interpolate(slackSpring, [0, 1], [300, 0]);
+
+  // Green dot pulse (overlay on slack panel)
+  const slackDotPulse = 1 + 0.4 * Math.sin((frame * 2 * Math.PI) / beatFrames);
+
+  // Sunglasses slide into panel
+  const sunSlideSpring = spring({
+    frame: frame - 555,
+    fps,
+    config: { damping: 10, mass: 0.7 },
+  });
+  const sunSlideX = interpolate(sunSlideSpring, [0, 1], [-60, 0]);
+
+  // ---------- Scene 4 (600-900) ----------
+  // Slack panel shrink to corner
+  const slackShrinkT = interpolate(frame, [600, 620], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const slackCornerScale = 1 - 0.8 * slackShrinkT;
+  const slackCornerX = 750 * slackShrinkT; // move to bottom right
+  const slackCornerY = 450 * slackShrinkT;
+
+  // Question marks
+  const qm1Spring = spring({
+    frame: frame - 600,
+    fps,
+    config: { damping: 12 },
+  });
+  const qm2Spring = spring({
+    frame: frame - 615,
+    fps,
+    config: { damping: 12 },
+  });
+  const qm3Spring = spring({
+    frame: frame - 630,
+    fps,
+    config: { damping: 12 },
+  });
+  const qm4Spring = spring({
+    frame: frame - 645,
+    fps,
+    config: { damping: 12 },
+  });
+  const qm1X = interpolate(qm1Spring, [0, 1], [-200, 0]);
+  const qm2X = interpolate(qm2Spring, [0, 1], [200, 0]);
+  const qm3Y = interpolate(qm3Spring, [0, 1], [-200, 0]);
+  const qm4Y = interpolate(qm4Spring, [0, 1], [200, 0]);
+  const qmPulse = 1 + 0.05 * Math.sin((frame * 2 * Math.PI) / beatFrames);
+  const qmRotate = 10 * Math.sin(frame * 0.2);
+
+  // Worker silhouette
+  const silhOpacity = interpolate(frame, [630, 645], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Worker mosaic grid
+  const mosaicImages = [
+    staticFile("images/worker_cafe.png"),
+    staticFile("images/worker_beach.png"),
+    staticFile("images/worker_sofa.png"),
+    staticFile("images/worker_cafe.png"),
+    staticFile("images/worker_beach.png"),
+    staticFile("images/worker_sofa.png"),
+  ];
+
+  const mosaicStartFrame = 660;
+  const mosaicTiles = mosaicImages.map((src, i) => {
+    const delay = i * 15;
+    const start = mosaicStartFrame + delay;
+    const tileSpring = spring({
+      frame: frame - start,
+      fps,
+      config: { damping: 12, mass: 0.8 },
+    });
+    const slideY = interpolate(tileSpring, [0, 1], [200, 0]);
+    const opacity = interpolate(frame, [start, start + 10], [0, 1], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    });
+    const wiggleY =
+      frame >= start + 5
+        ? 5 * Math.sin(frame * 2 + i * 1.5)
+        : 0;
+    return {
+      src,
+      slideY,
+      opacity,
+      wiggleY,
+    };
+  });
+
+  // "Why?" text
+  const whySpring = spring({
+    frame: frame - 720,
+    fps,
+    config: { damping: 8, stiffness: 150 },
+  });
+  const whyScale = interpolate(whySpring, [0, 1], [0, 1]);
+  const whyRotate = interpolate(whySpring, [0, 1], [-10, 0]);
+  const whyFadeOut = interpolate(frame, [750, 760], [1, 0], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Diving board
+  const boardSpring = spring({
+    frame: frame - 750,
+    fps,
+    config: { damping: 8, mass: 1, stiffness: 120 },
+  });
+  const boardY = interpolate(boardSpring, [0, 1], [-400, 0]);
+
+  // Swim trunks person walk
+  const personWalkX = interpolate(frame, [750, 780], [-200, 280], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
+  // Diver jump
+  const jumpProgress = interpolate(frame, [800, 805, 810], [0, 1, 2], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  let diverX = 0;
+  let diverY = 0;
+  let diverRotate = 0;
+  let diverOpacity = 1;
+  if (jumpProgress <= 1) {
+    diverX = interpolate(jumpProgress, [0, 1], [280, 150]);
+    diverY = interpolate(jumpProgress, [0, 1], [0, -120]);
+    diverRotate = interpolate(jumpProgress, [0, 1], [0, -20]);
+  } else {
+    const p = jumpProgress - 1;
+    diverX = interpolate(p, [0, 1], [150, -50]);
+    diverY = interpolate(p, [0, 1], [-120, 150]);
+    diverRotate = interpolate(p, [0, 1], [-20, 30]);
+    diverOpacity = interpolate(p, [0, 0.8], [1, 0], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    });
+  }
+
+  // Splash
+  const splashScale = spring({
+    frame: frame - 810,
+    fps,
+    config: { damping: 5, stiffness: 200 },
+  });
+  const splashFinalScale = interpolate(splashScale, [0, 1], [0.2, 1.5]);
+
+  // Ripple effect
+  const rippleProgress = interpolate(frame, [810, 840], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const rippleSize = rippleProgress * 2800;
+  const rippleOpacity = 1 - rippleProgress;
+
+  // "Let's dive in." typewriter
+  const diveText = "Let’s dive in.";
+  const diveChars = Math.floor(
+    interpolate(frame, [800, 830], [0, diveText.length], {
+      extrapolateRight: "clamp",
+      extrapolateLeft: "clamp",
+    })
+  );
+
+  // Final zoom & fade
+  const finalZoom = interpolate(frame, [850, 890], [1, 1.1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+  const fadeToBlackOpacity = interpolate(frame, [880, 900], [0, 1], {
+    extrapolateRight: "clamp",
+    extrapolateLeft: "clamp",
+  });
+
   return (
-    <div
-      style={{
-        transform: `scale(${scale})`,
-        transformOrigin: 'center center',
-        width: 160,
-        height: 160,
-      }}
-    >
+    <AbsoluteFill style={{ background: bgGradient, overflow: "hidden" }}>
+      {/* ========== SCENE 1 (0–150) ========== */}
       <div
         style={{
-          border: '8px solid red',
-          borderRadius: '50%',
-          width: '100%',
-          height: '100%',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: "absolute",
+          inset: 0,
+          opacity: scene1Opacity,
+          pointerEvents: "none",
         }}
       >
+        {/* Hidden question mark behind desk */}
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: '140%',
-            height: 6,
-            backgroundColor: 'red',
-            transform: 'translate(-50%, -50%) rotate(-45deg)',
+            position: "absolute",
+            left: "18%",
+            top: "45%",
+            width: 200,
+            opacity: qmOpacity,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
           }}
-        />
-        <span
+        >
+          <Img src={staticFile("images/question_mark.png")} style={{ width: "100%" }} />
+        </div>
+
+        {/* Desk cutout */}
+        <div
           style={{
-            fontFamily: 'Arial Black, sans-serif',
-            fontWeight: 'bold',
-            color: 'red',
-            fontSize: 36,
-            position: 'relative',
+            position: "absolute",
+            left: "18%",
+            top: "45%",
+            transform: `translate(${deskTranslateX}px, ${shakeY}px) rotate(${deskRotate}deg) scale(${deskScale})`,
+            transformOrigin: "center center",
+            filter: "drop-shadow(8px 8px 6px rgba(0,0,0,0.4))",
             zIndex: 1,
           }}
         >
-          NO PTO
-        </span>
-      </div>
-    </div>
-  );
-};
+          <Img src={staticFile("images/desk_laptop.png")} style={{ width: 400 }} />
+        </div>
 
-// ------------------------------------------------------------------
-// Underwater light ray (diagonal semi-transparent polygons)
-// ------------------------------------------------------------------
-const LightRay: React.FC<{ top: number; left: number; angle: number; width: number; opacity: number }> = ({
-  top,
-  left,
-  angle,
-  width,
-  opacity,
-}) => {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top,
-        left,
-        width,
-        height: 200,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.3), transparent)',
-        transform: `rotate(${angle}deg)`,
-        opacity,
-        clipPath: 'polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%)',
-      }}
-    />
-  );
-};
-
-// ------------------------------------------------------------------
-// Bubble generation & animation
-// ------------------------------------------------------------------
-const Bubbles: React.FC = () => {
-  const frame = useCurrentFrame();
-  const bubbles = React.useMemo(() => {
-    const arr = [];
-    for (let i = 0; i < 25; i++) {
-      arr.push({
-        x: Math.random() * 1920,
-        delay: Math.random() * 60,
-        speed: 0.5 + Math.random() * 1.5,
-        radius: 5 + Math.random() * 15,
-      });
-    }
-    return arr;
-  }, []);
-
-  return (
-    <>
-      {bubbles.map((b, i) => {
-        const y = 1080 - ((frame + b.delay) * b.speed) % 1200;
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: b.x,
-              top: y,
-              width: b.radius * 2,
-              height: b.radius * 2,
-              borderRadius: '50%',
-              backgroundColor: 'white',
-              opacity: 0.4,
-            }}
-          />
-        );
-      })}
-    </>
-  );
-};
-
-// ------------------------------------------------------------------
-// Wave wipe clip-path generator
-// ------------------------------------------------------------------
-const getWaveClip = (frame: number): string => {
-  const { width, height } = { width: 1920, height: 1080 };
-  const progress = interpolate(frame, [630, 700], [0, 1], { extrapolateRight: 'clamp' });
-  const amplitude = 40;
-  const frequency = 3;
-  const phase = frame * 0.05;
-  const xPos = progress * width; // wave edge position
-
-  // Build polygon that shows everything to the left of the wave edge
-  const points: string[] = [];
-  points.push(`0,0`); // top-left
-  // wave edge from top to bottom (x varying around xPos)
-  const steps = 40;
-  for (let i = 0; i <= steps; i++) {
-    const y = (i / steps) * height;
-    const offset = amplitude * Math.sin((y * frequency) / 100 + phase);
-    const x = xPos + offset;
-    points.push(`${x},${y}`);
-  }
-  // bottom-left
-  points.push(`0,${height}`);
-  return `polygon(${points.join(',')})`;
-};
-
-// ------------------------------------------------------------------
-// Main scene component
-// ------------------------------------------------------------------
-const QuietVacationingIntroScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-
-  // --- Background fade from black ---
-  const bgOpacity = interpolate(frame, [0, 10], [0, 1], { extrapolateRight: 'clamp' });
-
-  // --- "Quiet Quitting" section ---
-  const quietQuittingTyped = frame >= 10 && frame < 100;
-
-  // strike-through line (frames 60-70 draw, then 70-100 fades)
-  const strikeProgress = interpolate(frame, [60, 70], [0, 1], { extrapolateRight: 'clamp' });
-  const strikeOpacity = interpolate(frame, [70, 100], [1, 0], { extrapolateLeft: 'clamp' });
-
-  // fade out the word
-  const quitOpacity = interpolate(frame, [80, 100], [1, 0], { extrapolateLeft: 'clamp' });
-
-  // "Quiet Vacationing" spring entrance
-  const vacationSpring = spring({
-    frame: frame - 100,
-    fps,
-    config: { mass: 1, stiffness: 180, damping: 12 },
-  });
-  const vacationScale = vacationSpring;
-  const vacationRotateY = interpolate(vacationSpring, [0, 1], [10, 0]);
-  const vacationVisible = frame > 100;
-
-  // move label to corner after 150
-  const labelScale = interpolate(frame, [150, 160], [1, 0.2], { extrapolateRight: 'clamp' });
-  const labelX = interpolate(frame, [150, 160], [0, -width / 2 + 100], { extrapolateRight: 'clamp' });
-  const labelY = interpolate(frame, [150, 160], [0, -height / 2 + 80], { extrapolateRight: 'clamp' });
-
-  // --- Laptop slide in ---
-  const laptopSlide = spring({
-    frame: frame - 150,
-    fps,
-    config: { damping: 200 },
-    from: 0,
-    to: 1,
-  });
-  const laptopX = interpolate(laptopSlide, [0, 1], [width + 400, 600]);
-  const laptopScale = 0.8;
-
-  // Green dot pulse (cycle every 10 frames)
-  const dotPulse = 1 + 0.1 * Math.sin((frame * Math.PI) / 5);
-
-  // --- Emails on laptop ---
-  const emailData = [
-    { startFrame: 180, x: 100, y: -20 },
-    { startFrame: 200, x: 200, y: -50 },
-    { startFrame: 220, x: 300, y: -70 },
-  ];
-
-  // --- Beach morph mask ---
-  const morphStart = 300;
-  const morphEnd = 320;
-  const morphProgress = interpolate(frame, [morphStart, morphEnd], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  // green dot position on screen (relative to laptop screen area)
-  const dotScreenX = 120; // approximate within laptop screen
-  const dotScreenY = 100;
-  // circle radius expands from 0 to large enough to cover screen (use diagonal of screen)
-  const maxRadius = Math.sqrt((486) ** 2 + (280) ** 2); // laptop screen approx 486x280
-  const maskRadius = interpolate(morphProgress, [0, 1], [5, maxRadius * 1.5]);
-
-  // Laptop after morph: shrink and move
-  const laptopShrink = spring({
-    frame: frame - 320,
-    fps,
-    config: { damping: 100 },
-  });
-  const laptopShrinkScale = interpolate(laptopShrink, [0, 1], [0.8, 0.3]);
-  const laptopShrinkX = interpolate(laptopShrink, [0, 1], [600, 200]);
-
-  // Beach fade in behind laptop after morph
-  const beachOpacity = interpolate(frame, [300, 330], [0, 1], { extrapolateLeft: 'clamp' });
-
-  // --- Sunglasses fly-in ---
-  const glassesSpring = spring({
-    frame: frame - 330,
-    fps,
-    config: { mass: 1, stiffness: 150, damping: 12 },
-  });
-  const glassesY = interpolate(glassesSpring, [0, 1], [height, 700]);
-  const glassesRotate = interpolate(glassesSpring, [0, 1], [15, 0]);
-  const glassesScale = glassesSpring;
-
-  // --- NO PTO stamp ---
-  const stampSpring = spring({
-    frame: frame - 380,
-    fps,
-    config: { mass: 0.5, stiffness: 400, damping: 8 },
-  });
-  const stampScale = stampSpring;
-
-  // --- "No out-of-office message" ---
-  const noOoMx = spring({ frame: frame - 420, fps, from: -300, to: 0, config: { damping: 200 } });
-
-  // --- Question mark ---
-  const qmOpacity = interpolate(frame, [450, 480], [0, 1], { extrapolateRight: 'clamp' });
-  const qmScale = 1 + 0.05 * Math.sin(frame * 0.2) * Math.min(1, (frame - 450) / 30);
-  const qmPulse = Math.min(1, (frame - 450) / 30);
-
-  // "Why?" and "Is it bad?"
-  const whyX = spring({ frame: frame - 500, fps, from: -200, to: 0, config: { damping: 200 } });
-  const badX = spring({ frame: frame - 500, fps, from: 200, to: 0, config: { damping: 200 } });
-  const textFade = interpolate(frame, [550, 600], [1, 0], { extrapolateLeft: 'clamp' });
-
-  // --- Particles explosion (question mark) ---
-  const explosionStart = 550;
-  const particles = React.useMemo(
-    () =>
-      Array.from({ length: 20 }).map(() => ({
-        angle: Math.random() * 2 * Math.PI,
-        distance: 200 + Math.random() * 300,
-      })),
-    []
-  );
-
-  // --- "Let's dive in" typing ---
-  const diveStart = 600;
-  const diveTyped = frame >= diveStart && frame < 630;
-
-  // Arrow bob
-  const arrowBob = Math.sin(frame * 0.3) * 5;
-
-  // --- Wave wipe transition ---
-  const inWipe = frame >= 630 && frame <= 750;
-  const postWipe = frame > 750;
-
-  // --- Underwater elements ---
-  const diveTextFade = interpolate(frame, [800, 830], [0, 1], { extrapolateLeft: 'clamp' });
-  const diveTextFadeOut = interpolate(frame, [850, 870], [1, 0], { extrapolateLeft: 'clamp' });
-
-  return (
-    <AbsoluteFill style={{ backgroundColor: 'black', fontFamily: 'Arial, sans-serif', overflow: 'hidden' }}>
-      {/* Full backgrounds */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(135deg, #0a0b2e, #1b2a4a)',
-          opacity: bgOpacity,
-        }}
-      />
-
-      {/* Beach background (for later fade in) */}
-      <Img
-        src={staticFile('beach.jpg')}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          objectFit: 'cover',
-          opacity: frame >= 300 ? beachOpacity : 0,
-        }}
-      />
-
-      {/* --- "Quiet Quitting" text (frames 10-100) --- */}
-      {quietQuittingTyped && (
+        {/* "Quiet Quitting" text */}
         <div
           style={{
-            position: 'absolute',
-            top: '40%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: 120,
-            fontWeight: 'bold',
-            color: 'white',
-            textShadow: '0 5px 20px rgba(0,0,0,0.5)',
-            opacity: quitOpacity,
+            position: "absolute",
+            left: "32%",
+            top: "20%",
+            fontSize: 80,
+            fontFamily: "'Arial Black', sans-serif",
+            fontWeight: 900,
+            color: "white",
+            textShadow: "3px 3px 10px rgba(0,0,0,0.5)",
+            display: "flex",
+            gap: 30,
           }}
         >
-          <TypewriterShake text="Quiet Quitting" startFrame={10} shake={frame < 60} />
-          {/* strike-through line */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: 0,
-              height: 6,
-              backgroundColor: 'red',
-              width: `${strikeProgress * 100}%`,
-              opacity: strikeOpacity,
-              borderRadius: 3,
-            }}
-          />
+          <span style={{ opacity: quietOpacity }}>Quiet</span>
+          <span style={{ opacity: quittingOpacity }}>Quitting</span>
         </div>
-      )}
 
-      {/* "Quiet Vacationing" text (frames 100-150) */}
-      {vacationVisible && (
+        {/* Red X cross‑out */}
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -50%) scale(${labelScale * vacationScale}) rotateY(${vacationRotateY}deg)`,
-            transformOrigin: 'center center',
-            fontSize: 110,
-            fontWeight: 'bold',
-            background: 'linear-gradient(to right, cyan, yellow)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            textShadow: '0 0 15px rgba(0,0,0,0.3)',
-            whiteSpace: 'nowrap',
-            zIndex: 10,
+            position: "absolute",
+            left: "32%",
+            top: "20%",
+            width: 460,
+            height: 100,
+            opacity: xOpacity,
           }}
         >
-          <ChromaticText text="Quiet Vacationing" />
+          <RoughX width={460} height={100} color="#ff2244" progress={xProgress} />
         </div>
-      )}
 
-      {/* Persistent label in top-left corner after frame 150 */}
-      {frame > 150 && (
+        {/* "Quiet Vacationing" */}
         <div
           style={{
-            position: 'absolute',
-            top: labelY,
-            left: labelX,
-            transform: `scale(${labelScale})`,
-            fontSize: 22,
-            fontWeight: 'bold',
-            background: 'linear-gradient(to right, cyan, yellow)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            whiteSpace: 'nowrap',
-            zIndex: 100,
+            position: "absolute",
+            left: "50%",
+            top: "32%",
+            transform: `translateX(calc(-50% + ${vacTranslateX}px))`,
+            opacity: vacOpacity,
+            fontSize: 70,
+            fontFamily: "'Arial Black', sans-serif",
+            fontWeight: 900,
+            color: "white",
+            textShadow: "3px 3px 10px rgba(0,0,0,0.5)",
+            whiteSpace: "nowrap",
           }}
         >
           Quiet Vacationing
         </div>
-      )}
+      </div>
 
-      {/* Laptop and screen area */}
-      {frame >= 150 && (
+      {/* ========== SCENE 2 (150–450) ========== */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: interpolate(frame, [150, 160], [0, 1], {
+            extrapolateRight: "clamp",
+            extrapolateLeft: "clamp",
+          }),
+          pointerEvents: "none",
+        }}
+      >
+        {/* "Imagine this:" typewriter */}
         <div
           style={{
-            position: 'absolute',
-            left: frame < 320 ? laptopX : laptopShrinkX,
-            top: 200,
-            transform: `scale(${frame < 320 ? laptopScale : laptopShrinkScale})`,
-            transformOrigin: 'top left',
-            filter: 'drop-shadow(20px 30px 30px rgba(0,0,0,0.6))',
-            zIndex: 5,
+            position: "absolute",
+            left: "50%",
+            top: "8%",
+            transform: "translateX(-50%)",
+            fontSize: 75,
+            fontFamily: "'Brush Script MT', 'Comic Sans MS', cursive",
+            color: "white",
+            textShadow: "3px 3px 8px rgba(0,0,0,0.5)",
           }}
         >
-          <Img
-            src={staticFile('laptop-slack.png')}
-            style={{
-              width: 600,
-              height: 400,
-              objectFit: 'contain',
-              // Apply circular mask to screen area for beach reveal
-              maskImage:
-                frame >= morphStart && frame < morphEnd
-                  ? `radial-gradient(circle at ${dotScreenX}px ${dotScreenY}px, transparent ${maskRadius}px, black ${maskRadius}px)`
-                  : 'none',
-              WebkitMaskImage:
-                frame >= morphStart && frame < morphEnd
-                  ? `radial-gradient(circle at ${dotScreenX}px ${dotScreenY}px, transparent ${maskRadius}px, black ${maskRadius}px)`
-                  : 'none',
-            }}
-          />
-          {/* Green dot pulse – placed on avatar area (approximate coordinates) */}
+          {imagineText.slice(0, imagineCharCount)}
+        </div>
+
+        {/* Office scene group */}
+        <div style={{ opacity: scene2OfficeOpacity, pointerEvents: "none" }}>
+          {/* Laptop */}
           <div
             style={{
-              position: 'absolute',
-              top: 100,
-              left: 120,
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              backgroundColor: '#2ecc71',
-              transform: `scale(${dotPulse})`,
-              boxShadow: '0 0 8px #2ecc71',
+              position: "absolute",
+              left: "30%",
+              top: "55%",
+              transform: `translateY(${laptopTranslateY + beatDance}px)`,
+              opacity: laptopOpacity,
+              filter: "drop-shadow(6px 6px 5px rgba(0,0,0,0.3))",
             }}
-          />
+          >
+            <Img
+              src={staticFile("images/laptop_calendar.png")}
+              style={{ width: 350 }}
+            />
+          </div>
 
-          {/* Email icons (frames 180-280) */}
-          {emailData.map((email, idx) => {
-            if (frame < email.startFrame) return null;
-            const emailSpring = spring({
-              frame: frame - email.startFrame,
-              fps,
-              config: { damping: 12 },
-            });
-            const emailScale = emailSpring;
-            const emailY = interpolate(emailSpring, [0, 1], [0, -80]) + email.y;
-            const emailOpacity = interpolate(frame, [email.startFrame + 30, email.startFrame + 50], [1, 0], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-            });
-            return (
+          {/* Envelope */}
+          <div
+            style={{
+              position: "absolute",
+              left: "40%",
+              top: "35%",
+              transform: `translateX(${envTranslateX}px) translateY(${beatDance}px)`,
+              opacity: envOpacity,
+              filter: "drop-shadow(6px 6px 5px rgba(0,0,0,0.3))",
+            }}
+          >
+            <Img src={staticFile("images/envelope.png")} style={{ width: 130 }} />
+          </div>
+
+          {/* Auto‑send schedule */}
+          <div
+            style={{
+              position: "absolute",
+              left: "42%",
+              top: "50%",
+              transform: `scale(${autoScale}) translateY(${beatDance}px)`,
+              opacity: autoOpacity,
+              filter: "drop-shadow(6px 6px 5px rgba(0,0,0,0.3))",
+            }}
+          >
+            <Img
+              src={staticFile("images/auto_send_schedule.png")}
+              style={{ width: 160 }}
+            />
+          </div>
+
+          {/* Clock */}
+          <div
+            style={{
+              position: "absolute",
+              left: "65%",
+              top: "25%",
+              transform: `translateX(${clockTranslateX}px) rotate(${clockRotate}deg) translateY(${beatDance}px)`,
+              opacity: clockOpacity,
+              filter: "drop-shadow(6px 6px 5px rgba(0,0,0,0.3))",
+            }}
+          >
+            <Img src={staticFile("images/clock.png")} style={{ width: 120 }} />
+          </div>
+
+          {/* Send / checkmark transition on laptop screen */}
+          <div
+            style={{
+              position: "absolute",
+              left: "39%",
+              top: "58%",
+              width: 160,
+              height: 100,
+              opacity: sendProgress,
+            }}
+          >
+            <div
+              style={{
+                transform: `scale(${1 + sendProgress * 0.2})`,
+                transformOrigin: "center",
+              }}
+            >
+              <Img
+                src={staticFile("images/auto_send_schedule.png")}
+                style={{ width: 160 }}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: "44%",
+              top: "60%",
+              width: 60,
+              height: 60,
+              opacity: checkStart,
+            }}
+          >
+            <CheckMark progress={checkStart} />
+          </div>
+
+          {/* Dissolve out office elements */}
+          {dissolveT > 0 && (
+            <>
               <div
-                key={idx}
                 style={{
-                  position: 'absolute',
-                  top: 60 + email.y,
-                  left: 180 + email.x,
-                  transform: `scale(${emailScale}) translateY(${emailY}px)`,
-                  opacity: emailOpacity,
-                  display: 'flex',
-                  alignItems: 'center',
-                  filter: 'drop-shadow(0 5px 5px rgba(0,0,0,0.3))',
+                  position: "absolute",
+                  left: "30%",
+                  top: "55%",
+                  transform: `translate(${-dissolveT * 200}px, ${
+                    -dissolveT * 200
+                  }px) scale(${1 - dissolveT})`,
+                  opacity: officeFadeOut,
+                  filter: "drop-shadow(6px 6px 5px rgba(0,0,0,0.3))",
                 }}
               >
                 <Img
-                  src={staticFile('email-icon.png')}
-                  style={{ width: 30, height: 30, marginRight: 4 }}
-                />
-                <Img
-                  src={staticFile('clock-icon.png')}
-                  style={{ width: 16, height: 16, position: 'absolute', bottom: -4, right: -4 }}
+                  src={staticFile("images/laptop_calendar.png")}
+                  style={{ width: 350 }}
                 />
               </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Sunglasses */}
-      {frame >= 330 && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: glassesY,
-            left: '50%',
-            transform: `translateX(-50%) rotate(${glassesRotate}deg) scale(${glassesScale})`,
-            filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))',
-            zIndex: 15,
-          }}
-        >
-          <Img src={staticFile('sunglasses.png')} style={{ width: 300, height: 150 }} />
-          {/* Slack green dot pinned to temple */}
-          {frame > 390 && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 30,
-                right: 30,
-                width: 10,
-                height: 10,
-                borderRadius: '50%',
-                backgroundColor: '#2ecc71',
-                transform: `scale(${dotPulse})`,
-              }}
-            />
-          )}
-        </div>
-      )}
-
-      {/* NO PTO Stamp */}
-      {frame >= 380 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 150,
-            right: 200,
-            zIndex: 20,
-          }}
-        >
-          <Stamp scale={stampScale} />
-        </div>
-      )}
-
-      {/* "No out-of-office message" */}
-      {frame >= 420 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 400,
-            left: noOoMx,
-            fontSize: 36,
-            fontFamily: 'Arial, sans-serif',
-            fontStyle: 'italic',
-            color: 'red',
-            zIndex: 20,
-            transform: `translateX(${noOoMx}px)`,
-          }}
-        >
-          No out‑of‑office message
-        </div>
-      )}
-
-      {/* Question mark (hand-drawn style via SVG) */}
-      {frame >= 450 && frame < 600 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: `translate(-50%, -50%) scale(${qmScale})`,
-            opacity: qmOpacity,
-            zIndex: 25,
-          }}
-        >
-          <svg width="200" height="300" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M50 10 C80 10 90 30 90 55 C90 80 70 80 50 90 C30 100 30 120 30 120"
-              stroke="white"
-              strokeWidth="12"
-              strokeLinecap="round"
-            />
-            <circle cx="50" cy="135" r="8" fill="white" />
-          </svg>
-        </div>
-      )}
-
-      {/* Explosion particles */}
-      {frame >= explosionStart && frame < 600 &&
-        particles.map((p, i) => {
-          const particleSpring = spring({
-            frame: frame - explosionStart - i * 1,
-            fps,
-            config: { damping: 15 },
-          });
-          const distance = p.distance * particleSpring;
-          const x = width / 2 + Math.cos(p.angle) * distance;
-          const y = height / 2 + Math.sin(p.angle) * distance;
-          const opacity = interpolate(particleSpring, [0.5, 1], [1, 0], { extrapolateLeft: 'clamp' });
-          return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                backgroundColor: 'white',
-                left: x,
-                top: y,
-                opacity,
-              }}
-            />
-          );
-        })}
-
-      {/* "Why?" and "Is it bad?" */}
-      {frame >= 500 && (
-        <>
-          <div
-            style={{
-              position: 'absolute',
-              top: '35%',
-              left: 300,
-              transform: `rotate(-10deg) translateX(${whyX - 200}px)`,
-              opacity: textFade,
-              fontSize: 80,
-              fontWeight: 'bold',
-              fontFamily: '"Comic Sans MS", cursive',
-              color: 'white',
-              textShadow: '3px 3px 0 black',
-              zIndex: 25,
-            }}
-          >
-            Why?
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: 1200,
-              transform: `rotate(10deg) translateX(${badX + 200}px)`,
-              opacity: textFade,
-              fontSize: 80,
-              fontWeight: 'bold',
-              fontFamily: '"Comic Sans MS", cursive',
-              color: 'white',
-              textShadow: '3px 3px 0 black',
-              zIndex: 25,
-            }}
-          >
-            Is it bad?
-          </div>
-        </>
-      )}
-
-      {/* "Let's dive in" */}
-      {frame >= diveStart && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '40%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: 100,
-            fontWeight: 'bold',
-            color: 'white',
-            textShadow: '0 0 30px black',
-            zIndex: 30,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <TypewriterShake text="Let's dive in" startFrame={diveStart} />
-          {/* Arrow bob */}
-          {frame > 615 && (
-            <div
-              style={{
-                marginTop: 20,
-                textAlign: 'center',
-                fontSize: 80,
-                transform: `translateY(${arrowBob}px)`,
-              }}
-            >
-              ▼
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Wave wipe transition – clip new underwater scene */}
-      {(inWipe || postWipe) && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to bottom, #0a2a40, #082d52)',
-            zIndex: 35,
-            clipPath: inWipe ? getWaveClip(frame) : 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-          }}
-        >
-          {/* Underwater content */}
-          {postWipe && (
-            <>
-              <Bubbles />
-              <LightRay top={100} left={200} angle={-20} width={300} opacity={0.15} />
-              <LightRay top={300} left={800} angle={-30} width={500} opacity={0.1} />
-              <LightRay top={500} left={400} angle={-10} width={400} opacity={0.2} />
-              <LightRay top={700} left={1200} angle={-25} width={250} opacity={0.15} />
+              <div
+                style={{
+                  position: "absolute",
+                  left: "40%",
+                  top: "35%",
+                  transform: `translate(${dissolveT * 200}px, ${
+                    -dissolveT * 200
+                  }px) scale(${1 - dissolveT})`,
+                  opacity: officeFadeOut,
+                }}
+              >
+                <Img
+                  src={staticFile("images/envelope.png")}
+                  style={{ width: 130 }}
+                />
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "65%",
+                  top: "25%",
+                  transform: `translate(${-dissolveT * 200}px, ${
+                    dissolveT * 200
+                  }px) scale(${1 - dissolveT})`,
+                  opacity: officeFadeOut,
+                }}
+              >
+                <Img src={staticFile("images/clock.png")} style={{ width: 120 }} />
+              </div>
             </>
           )}
         </div>
-      )}
 
-      {/* Ghostly text under water */}
-      {frame >= 800 && (
+        {/* Beach collage entry */}
         <div
           style={{
-            position: 'absolute',
-            bottom: 100,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: 40,
-            color: 'rgba(255,255,255,0.3)',
-            fontStyle: 'italic',
-            zIndex: 40,
-            opacity: diveTextFade * diveTextFadeOut,
+            position: "absolute",
+            left: "50%",
+            top: "55%",
+            width: 800,
+            transform: `translate(-50%, -50%) scale(${beachScaleFinal}) translateX(${waveShadowX}px)`,
+            opacity: beachOpacity,
+            filter: "drop-shadow(10px 10px 8px rgba(0,0,0,0.4))",
           }}
         >
-          Diving into the trend…
+          <Img src={staticFile("images/beach_collage.png")} style={{ width: "100%" }} />
         </div>
-      )}
+
+        {/* Sunglasses drop */}
+        <div
+          style={{
+            position: "absolute",
+            left: "70%",
+            top: "12%",
+            transform: `translateY(${sunTranslateY}px) rotate(-15deg)`,
+            filter: "drop-shadow(6px 6px 6px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img src={staticFile("images/sunglasses.png")} style={{ width: 180 }} />
+        </div>
+
+        {/* Mini laptop with green dot */}
+        <div
+          style={{
+            position: "absolute",
+            left: "3%",
+            bottom: "3%",
+            transform: `scale(${miniLaptopScale})`,
+            transformOrigin: "bottom left",
+            filter: "drop-shadow(6px 6px 6px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/laptop_calendar.png")}
+            style={{ width: 350 }}
+          />
+          {/* Green dot overlay */}
+          <div
+            style={{
+              position: "absolute",
+              left: "22%",
+              top: "18%",
+              width: 22,
+              height: 22,
+              borderRadius: "50%",
+              background: "#00e676",
+              transform: `scale(${greenDotPulse})`,
+              boxShadow: "0 0 12px #00e676",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* ========== SCENE 3 (450–600) ========== */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: interpolate(frame, [450, 460], [0, 1], {
+            extrapolateRight: "clamp",
+            extrapolateLeft: "clamp",
+          }),
+          pointerEvents: "none",
+        }}
+      >
+        {/* Checklist with background image and text overlay */}
+        <div
+          style={{
+            position: "absolute",
+            left: "10%",
+            top: "30%",
+            width: 450,
+            transform: `translateX(${checklistX}px)`,
+            filter: "drop-shadow(8px 8px 8px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/checklist.png")}
+            style={{ width: "100%" }}
+          />
+          {/* Item texts positioned over the lines */}
+          <div
+            style={{
+              position: "absolute",
+              left: "20%",
+              top: "15%",
+              fontFamily: "'Courier New', monospace",
+              fontSize: 28,
+              fontWeight: "bold",
+              color: "#222",
+              transform: "translateY(-5px)",
+            }}
+          >
+            {item1Text.slice(0, item1Chars)}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: "20%",
+              top: "40%",
+              fontFamily: "'Courier New', monospace",
+              fontSize: 28,
+              fontWeight: "bold",
+              color: "#222",
+            }}
+          >
+            {item2Text.slice(0, item2Chars)}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              left: "20%",
+              top: "65%",
+              fontFamily: "'Courier New', monospace",
+              fontSize: 28,
+              fontWeight: "bold",
+              color:
+                frame >= 525 ? "#00e676" : "#222",
+              transform: `scale(${frame >= 525 ? 1 + 0.2 * Math.sin((frame * 2 * Math.PI) / beatFrames) : 1})`,
+            }}
+          >
+            {item3Text.slice(0, item3Chars)}
+          </div>
+
+          {/* Cross‑outs */}
+          {frame >= 480 && (
+            <div
+              style={{
+                position: "absolute",
+                left: "18%",
+                top: "10%",
+                width: 300,
+                height: 40,
+                opacity: xItem1Progress,
+              }}
+            >
+              <RoughX width={300} height={40} color="#ff2244" progress={xItem1Progress} />
+            </div>
+          )}
+          {frame >= 510 && (
+            <div
+              style={{
+                position: "absolute",
+                left: "18%",
+                top: "35%",
+                width: 300,
+                height: 40,
+                opacity: xItem2Progress,
+              }}
+            >
+              <RoughX width={300} height={40} color="#ff2244" progress={xItem2Progress} />
+            </div>
+          )}
+
+          {/* Denied stamp */}
+          {frame >= 485 && (
+            <div
+              style={{
+                position: "absolute",
+                right: "5%",
+                top: "0%",
+                width: 100,
+                transform: `scale(${deniedScale}) rotate(-10deg)`,
+              }}
+            >
+              <Img
+                src={staticFile("images/denied_stamp.png")}
+                style={{ width: "100%" }}
+              />
+            </div>
+          )}
+
+          {/* No way bubble */}
+          {frame >= 510 && (
+            <div style={{ opacity: noWayAppear }}>
+              <SpeechBubble text="No way!" left={-40} top={-10} />
+            </div>
+          )}
+        </div>
+
+        {/* Slack panel zoom in */}
+        {frame >= 540 && (
+          <div
+            style={{
+              position: "absolute",
+              right: "5%",
+              top: "25%",
+              width: 550,
+              transform: `translateX(${slackTranslateX}px) scale(${slackScale})`,
+              filter: "drop-shadow(10px 10px 12px rgba(0,0,0,0.5))",
+              zIndex: 2,
+            }}
+          >
+            {/* Slack panel image */}
+            <NoSpacer>
+              <div style={{ position: "relative" }}>
+                <Img
+                  src={staticFile("images/slack_panel.png")}
+                  style={{ width: "100%" }}
+                />
+                {/* Green dot pulsing overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "10%",
+                    top: "8%",
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "#00e676",
+                    boxShadow: "0 0 15px #00e676",
+                    transform: `scale(${slackDotPulse})`,
+                  }}
+                />
+                {/* Sunglasses sliding onto avatar */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "8%",
+                    top: "5%",
+                    width: 65,
+                    transform: `translateX(${sunSlideX}px)`,
+                  }}
+                >
+                  <Img
+                    src={staticFile("images/sunglasses.png")}
+                    style={{ width: "100%" }}
+                  />
+                </div>
+              </div>
+            </NoSpacer>
+          </div>
+        )}
+      </div>
+
+      {/* ========== SCENE 4 (600–900) ========== */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: `scale(${finalZoom})`,
+          opacity: interpolate(frame, [600, 610], [0, 1], {
+            extrapolateRight: "clamp",
+            extrapolateLeft: "clamp",
+          }),
+          pointerEvents: "none",
+        }}
+      >
+        {/* Shrinking slack panel to corner */}
+        {frame < 620 && (
+          <div
+            style={{
+              position: "absolute",
+              right: "5%",
+              top: "25%",
+              width: 550,
+              transform: `translate(${slackCornerX}px, ${slackCornerY}px) scale(${slackCornerScale})`,
+              filter: "drop-shadow(10px 10px 12px rgba(0,0,0,0.5))",
+            }}
+          >
+            <Img
+              src={staticFile("images/slack_panel.png")}
+              style={{ width: "100%" }}
+            />
+          </div>
+        )}
+
+        {/* Question marks */}
+        <div
+          style={{
+            position: "absolute",
+            left: "20%",
+            top: "30%",
+            transform: `translateX(${qm1X}px) rotate(${qmRotate}deg) scale(${qmPulse})`,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/question_mark.png")}
+            style={{ width: 80 }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: "70%",
+            top: "20%",
+            transform: `translateX(${qm2X}px) rotate(${-qmRotate}deg) scale(${qmPulse})`,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/question_mark.png")}
+            style={{ width: 80 }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: "40%",
+            top: "10%",
+            transform: `translateY(${qm3Y}px) rotate(${qmRotate * 0.8}deg) scale(${qmPulse})`,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/question_mark.png")}
+            style={{ width: 80 }}
+          />
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            left: "55%",
+            top: "75%",
+            transform: `translateY(${qm4Y}px) rotate(${-qmRotate * 0.7}deg) scale(${qmPulse})`,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/question_mark.png")}
+            style={{ width: 80 }}
+          />
+        </div>
+
+        {/* Thoughtful worker silhouette */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "45%",
+            transform: "translate(-50%, -50%)",
+            opacity: silhOpacity,
+          }}
+        >
+          <Img
+            src={staticFile("images/worker_silhouette.png")}
+            style={{ width: 250, filter: "drop-shadow(6px 6px 6px rgba(0,0,0,0.5))" }}
+          />
+        </div>
+
+        {/* Worker mosaic grid */}
+        <div
+          style={{
+            position: "absolute",
+            left: "10%",
+            top: "20%",
+            width: "80%",
+            height: "70%",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateRows: "repeat(2, 1fr)",
+            gap: 20,
+            opacity: interpolate(frame, [660, 680], [0, 1], {
+              extrapolateRight: "clamp",
+              extrapolateLeft: "clamp",
+            }),
+          }}
+        >
+          {mosaicTiles.map((tile, i) => (
+            <div
+              key={i}
+              style={{
+                position: "relative",
+                transform: `translateY(${tile.slideY + tile.wiggleY}px)`,
+                opacity: tile.opacity,
+              }}
+            >
+              <Img
+                src={tile.src}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  filter: "drop-shadow(6px 6px 6px rgba(0,0,0,0.4))",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* "Why?" text */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: `translate(-50%, -50%) scale(${whyScale}) rotate(${whyRotate}deg)`,
+            fontSize: 180,
+            fontFamily: "'Impact', sans-serif",
+            fontWeight: "bold",
+            color: "white",
+            textShadow: "5px 5px 15px rgba(0,0,0,0.7)",
+            opacity: whyFadeOut,
+          }}
+        >
+          Why?
+        </div>
+
+        {/* Diving board */}
+        <div
+          style={{
+            position: "absolute",
+            left: "55%",
+            top: "55%",
+            width: 400,
+            transform: `translateY(${boardY}px)`,
+            filter: "drop-shadow(8px 8px 8px rgba(0,0,0,0.4))",
+          }}
+        >
+          <Img
+            src={staticFile("images/diving_board.png")}
+            style={{ width: "100%" }}
+          />
+        </div>
+
+        {/* Swim trunks person walking */}
+        <div
+          style={{
+            position: "absolute",
+            left: `${personWalkX}px`,
+            top: "45%",
+            width: 130,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+            zIndex: 2,
+          }}
+        >
+          <Img
+            src={staticFile("images/swim_trunks_person.png")}
+            style={{ width: "100%" }}
+          />
+        </div>
+
+        {/* Diver jump */}
+        <div
+          style={{
+            position: "absolute",
+            left: `${280 + diverX}px`,
+            top: "45%",
+            width: 130,
+            transform: `translateY(${diverY}px) rotate(${diverRotate}deg)`,
+            opacity: diverOpacity,
+            filter: "drop-shadow(4px 4px 4px rgba(0,0,0,0.4))",
+            zIndex: 3,
+          }}
+        >
+          <Img
+            src={staticFile("images/swim_trunks_person.png")}
+            style={{ width: "100%" }}
+          />
+        </div>
+
+        {/* Splash */}
+        <div
+          style={{
+            position: "absolute",
+            left: "25%",
+            top: "65%",
+            width: 300,
+            transform: `scale(${splashFinalScale})`,
+            filter: "drop-shadow(0 0 20px rgba(255,255,255,0.6))",
+            zIndex: 4,
+          }}
+        >
+          <Img src={staticFile("images/splash.png")} style={{ width: "100%" }} />
+        </div>
+
+        {/* Ripple effect */}
+        <div
+          style={{
+            position: "absolute",
+            left: "30%",
+            top: "70%",
+            width: rippleSize,
+            height: rippleSize,
+            border: "6px solid rgba(255,255,255,0.5)",
+            borderRadius: "50%",
+            transform: "translate(-50%, -50%)",
+            opacity: rippleOpacity,
+            zIndex: 5,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* "Let's dive in." text */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "8%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: 70,
+            fontFamily: "'Arial Black', sans-serif",
+            fontWeight: 900,
+            color: "white",
+            textShadow: "0 0 20px #00aaff, 0 0 40px #00aaff",
+            letterSpacing: 4,
+            opacity: interpolate(frame, [800, 810], [0, 1], {
+              extrapolateRight: "clamp",
+              extrapolateLeft: "clamp",
+            }),
+          }}
+        >
+          {diveText.slice(0, diveChars)}
+        </div>
+      </div>
+
+      {/* Final fade to black */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "black",
+          opacity: fadeToBlackOpacity,
+          pointerEvents: "none",
+        }}
+      />
     </AbsoluteFill>
   );
 };
 
-// ------------------------------------------------------------------
-// Root composition registration
-// ------------------------------------------------------------------
-export default function RemotionRoot() {
+// Helper to avoid interfering with AbsoluteFill
+const NoSpacer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <>{children}</>
+);
+
+export default function BeatSyncedMotionCollageComposition() {
   return (
-    <Composition
-      id="quiet-vacationing-intro"
-      component={QuietVacationingIntroScene}
-      durationInFrames={900}
-      fps={30}
-      width={1920}
-      height={1080}
-    />
+    <>
+      <Composition
+        id="beat-synced-motion-collage"
+        component={BeatSyncedMotionCollage}
+        durationInFrames={900}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+    </>
   );
 }

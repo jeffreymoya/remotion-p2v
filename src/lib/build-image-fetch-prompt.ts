@@ -21,17 +21,28 @@ Rules:
 - Do not use URLs that require authentication, cookies, JavaScript, anti-bot checks, signed short-lived tokens, or manual download confirmation.
 - Search queries must be specific enough to recover a visually equivalent replacement, including subject, style, angle, background, mood, color, composition, and isolated/transparent needs.
 - Prefer isolated/subject-on-clean-background assets for overlays.
-- All images must work at 1920x1080 without important parts cut off.
+- For assets requiring transparency, avoid preview PNGs with checkerboard backgrounds baked into the pixels. The downloaded file must either have real alpha transparency or a simple removable real background.
 - No watermarks, no AI-looking artifacts, no copyrighted screenshots (use generic mockups).
 - Do not drift from the composition's intended style. Match the prompt's described tone, palette, perspective, realism level, framing, and animation role.
 - Do not pick generic images that only match the object name. The image must fit how the asset appears in the scene.
-- For full-screen backgrounds, specify landscape orientation, safe central subject placement, negative space requirements, and whether text/overlays must remain legible.
-- For overlay props, specify transparent or clean removable background, object angle, silhouette clarity, padding around edges, and whether the asset should feel photographic, illustrated, flat-icon, UI mockup, or hand-drawn.
-- For UI/screen assets, use generic mockups that evoke the described interface without copyrighted or real private content.
+- Categorize each asset_role precisely:
+  - "background": full-frame scene/backdrop assets only.
+  - "animated_object": props, people, products, icons, or visual elements that move independently or are positioned at coordinates.
+  - "static_overlay": fixed foreground overlays, labels, decor, cutout objects, or composited elements that sit over another scene.
+  - "screen_mockup": generic UI, device screens, app panels, charts, or rectangular inserts.
+- Role-specific requirements:
+  - background: landscape/full-frame, 1920x1080-safe, safe central subject placement, negative space requirements, and legible overlay zones.
+  - animated_object: source-native sizing is fine, subject fully visible, padded edges, silhouette clarity, transparent PNG preferred, no forced 16:9 crop.
+  - static_overlay: transparent or isolated preferred, object angle/style clarity, no forced 16:9 crop.
+  - screen_mockup: flat/generic UI insert, clean rectangular crop, no copyrighted or real private content, not necessarily 1920x1080.
+- Set needs_cutout true for animated_object/static_overlay items that should become transparent PNG cutouts after download. Prefer preferred_format "png" for those items.
 - Add clear exclusions in "visual_requirements" when adjacent-looking assets would be wrong.
 
 Output ONLY a JSON array. Each item must include:
 - "label": exact filename used in the composition (e.g. "beach.jpg")
+- "asset_role": "background", "animated_object", "static_overlay", or "screen_mockup"
+- "needs_cutout": boolean
+- "preferred_format": "jpg" or "png"
 - "image_url": optional direct downloadable image URL hint, or empty string
 - "source_url": optional source/attribution page URL for the image, or empty string
 - "query": live image search query
@@ -60,6 +71,7 @@ Rules:
 - Output ONLY a JSON array.
 - Return one replacement item for each failed label and no extra labels.
 - Keep the exact same "label" values from the failed items.
+- Preserve each failed item's asset_role, needs_cutout, and preferred_format values exactly when present. If a legacy failed item is missing one of those fields, infer the safest value from its label and visual_requirements.
 - Preserve the original visual_requirements and intended Remotion composition style.
 - Replace image_url with a different direct, publicly fetchable HTTP(S) image URL.
 - Do not reuse any failed URL.
@@ -71,6 +83,9 @@ Rules:
 
 Each replacement item must include:
 - "label"
+- "asset_role"
+- "needs_cutout"
+- "preferred_format"
 - "image_url"
 - "source_url"
 - "query"
@@ -98,6 +113,9 @@ Output ONLY the JSON array of replacement items.`;
 
 export interface ImageFetchItem {
   label: string;
+  asset_role?: "background" | "animated_object" | "static_overlay" | "screen_mockup";
+  needs_cutout?: boolean;
+  preferred_format?: "jpg" | "png";
   image_url?: string;
   source_url?: string;
   query: string;
@@ -105,6 +123,10 @@ export interface ImageFetchItem {
   rationale: string;
   resolved_path?: string;
   resolution_error?: string;
+  cutout_path?: string;
+  cutout_source_path?: string;
+  cutout_success?: boolean;
+  cutout_error?: string;
 }
 
 export function parseImageFetchResponse(raw: string): ImageFetchItem[] {

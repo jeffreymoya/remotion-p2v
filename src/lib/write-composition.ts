@@ -20,6 +20,19 @@ export function validateCompositionCode(code: string): void {
       "Generated code does not contain a React component export (export default or export {})",
     );
   }
+
+  // Ensure Composition is imported when it's used in JSX
+  const usesComposition = /<\s*Composition\b/.test(code);
+  if (usesComposition) {
+    const importsComposition = /\bComposition\b/.test(
+      code.match(/import\s*\{[^}]*\}\s*from\s*["']remotion["']/)?.[0] ?? "",
+    );
+    if (!importsComposition) {
+      throw new ValidationError(
+        "Generated code uses <Composition> but does not import {Composition} from 'remotion'",
+      );
+    }
+  }
 }
 
 function toKebabCase(str: string): string {
@@ -56,14 +69,21 @@ function extractComponentName(code: string, filename: string): string {
   return toPascalCase(path.basename(filename, ".tsx"));
 }
 
+function stripMarkdownFences(code: string): string {
+  return code
+    .replace(/^[\s\n]*```[^\n]*\n?/, "")
+    .replace(/[\s\n]*```[\s\n]*$/, "");
+}
+
 export function writeComposition(
   code: string,
   title: string,
   compositionsDir: string,
 ): { filePath: string; componentName: string } {
-  validateCompositionCode(code);
+  const stripped = stripMarkdownFences(code);
+  validateCompositionCode(stripped);
 
-  const cleaned = code.replace(/^\/\/\s*@ts-nocheck\s*\n?/i, "");
+  const cleaned = stripped.replace(/^\/\/\s*@ts-nocheck\s*\n?/i, "");
   const content = `// @ts-nocheck\n${cleaned}`;
 
   const kebab = toKebabCase(title);
@@ -91,13 +111,31 @@ export function regenerateBarrel(
 
   const imports: string[] = [];
   const exports: string[] = [];
+  const usedNames = new Set<string>();
+
+  function uniqueName(name: string, file: string): string {
+    if (!usedNames.has(name)) {
+      usedNames.add(name);
+      return name;
+    }
+
+    const baseName = toPascalCase(path.basename(file, path.extname(file)));
+    let candidate = baseName || name;
+    let suffix = 2;
+    while (usedNames.has(candidate)) {
+      candidate = `${baseName || name}${suffix}`;
+      suffix += 1;
+    }
+    usedNames.add(candidate);
+    return candidate;
+  }
 
   for (const file of files) {
     const content = fs.readFileSync(
       path.join(compositionsDir, file),
       "utf-8",
     );
-    const name = extractComponentName(content, file);
+    const name = uniqueName(extractComponentName(content, file), file);
     const modName = file.replace(/\.tsx?$/, "");
     imports.push(`import { default as ${name} } from "./${modName}";`);
     exports.push(`  ${name},`);

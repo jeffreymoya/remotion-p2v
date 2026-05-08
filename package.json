@@ -5,10 +5,21 @@
   "scripts": {
     "dev": "npx tsx src/cli.ts",
     "images": "npm run dev -- 0 --only=images",
+    "code": "npm run dev -- 0 --only=code",
+    "recode": "tsx scripts/recode.ts",
     "studio": "remotion studio",
     "build": "remotion render",
     "typecheck": "tsc --noEmit",
-    "smoke:images": "tsx scripts/download-images-smoke.ts"
+    "cutout:images": "tsx scripts/cutout-images.ts",
+    "recut:images": "tsx scripts/restore-originals-and-cutout.ts",
+    "recut:sticker": "tsx scripts/restore-originals-and-cutout.ts --require-label --alpha-min=128 --alpha-max=245 --keep-largest --outline-size=28 --outline-color=255,255,255,255 --outline-threshold=192 --hard-alpha",
+    "recut:sticker-smooth": "tsx scripts/restore-originals-and-cutout.ts --require-label --alpha-min=128 --alpha-max=245 --keep-largest --outline-size=28 --outline-color=255,255,255,255 --outline-threshold=192 --hard-alpha --smooth-alpha-blur=2 --smooth-alpha-black=10 --smooth-alpha-white=100",
+    "recut:sticker-smooth-hard": "tsx scripts/restore-originals-and-cutout.ts --require-label --alpha-min=128 --alpha-max=245 --keep-largest --outline-size=28 --outline-color=255,255,255,255 --outline-threshold=192 --hard-alpha --smooth-alpha-blur=2 --smooth-alpha-black=10 --smooth-alpha-white=100 --threshold-alpha=115",
+    "recut:diving-board": "tsx scripts/restore-originals-and-cutout.ts --label=diving_board.png --alpha-min=128 --alpha-max=245 --keep-largest --outline-size=28 --outline-color=255,255,255,255 --outline-threshold=192 --hard-alpha prompts/the-secret-rise-of-quiet-vacationing-0-00-0-30-images.json",
+    "smoke:images": "tsx scripts/download-images-smoke.ts",
+    "smoke:image-parser": "tsx scripts/image-fetch-parser-smoke.ts",
+    "smoke:cutout": "tsx scripts/cutout-images-smoke.ts",
+    "smoke:fake-transparency": "tsx scripts/fake-transparency-smoke.ts"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.457",

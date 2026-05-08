@@ -39,11 +39,12 @@ function parsePhase(value: string | undefined): Phase | undefined {
   return undefined;
 }
 
-function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase } {
+function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase; verbose: boolean } {
   const args = process.argv.slice(2);
   let segmentIndex = 0;
   let from: Phase = parsePhase(process.env.npm_config_from) ?? "prompt";
   let only = parsePhase(process.env.npm_config_only);
+  let verbose = false;
 
   for (const arg of args) {
     if (arg.startsWith("--from=")) {
@@ -64,13 +65,15 @@ function parseArgs(): { segmentIndex: number; from: Phase; only?: Phase } {
         console.error(`Unknown phase: ${phase}. Use --only=prompt|images|code`);
         process.exit(1);
       }
+    } else if (arg === "--verbose" || arg === "-v") {
+      verbose = true;
     } else if (!arg.startsWith("--")) {
       const n = parseInt(arg, 10);
       if (!isNaN(n) && n >= 0) segmentIndex = n;
     }
   }
 
-  return { segmentIndex, from, only };
+  return { segmentIndex, from, only, verbose };
 }
 
 function shouldRunPhase(phase: Phase, from: Phase, only: Phase | undefined): boolean {
@@ -142,8 +145,48 @@ function loadExemplars(): string[] {
   );
 }
 
+function loadCodeImageItems(imagePlanPath: string): ImageFetchItem[] {
+  if (!fs.existsSync(imagePlanPath)) {
+    console.warn(
+      `Image plan not found: ${imagePlanPath}. Code generation will rely on the prompt only.`,
+    );
+    return [];
+  }
+
+  try {
+    const raw = fs.readFileSync(imagePlanPath, "utf-8");
+    const items = parseImageFetchResponse(raw);
+    const availableItems = items.filter(
+      (item) => !item.resolution_error && (item.cutout_path || item.resolved_path),
+    );
+    const skipped = items.length - availableItems.length;
+
+    console.log(
+      `Loaded image asset manifest: ${imagePlanPath} (${availableItems.length} available${skipped > 0 ? `, ${skipped} skipped` : ""})\n`,
+    );
+    return availableItems;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(
+      `Could not parse image plan: ${imagePlanPath} (${message}). Code generation will rely on the prompt only.`,
+    );
+    return [];
+  }
+}
+
+function makeStreamWriter(label: string): (text: string) => void {
+  let started = false;
+  return (text: string) => {
+    if (!started) {
+      process.stdout.write(`  Stream (${label}): `);
+      started = true;
+    }
+    process.stdout.write(text);
+  };
+}
+
 async function main(): Promise<void> {
-  const { segmentIndex, from, only } = parseArgs();
+  const { segmentIndex, from, only, verbose } = parseArgs();
 
   if (!fs.existsSync(SCRIPT_PATH)) {
     console.error(`Script file not found: ${SCRIPT_PATH}`);
@@ -207,6 +250,7 @@ async function main(): Promise<void> {
         ],
         PROMPT_GEN_TEMPERATURE,
         PROMPT_GEN_REASONING,
+        { verbose, onChunk: verbose ? makeStreamWriter("prompt") : undefined },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {
@@ -216,6 +260,7 @@ async function main(): Promise<void> {
       throw err;
     }
 
+    if (verbose) process.stdout.write("\n");
     console.log(`  Got prompt (${remotionPrompt.length} chars)\n`);
     fs.writeFileSync(promptPath, remotionPrompt, "utf-8");
     console.log(`  Saved prompt: ${promptPath}\n`);
@@ -245,6 +290,7 @@ async function main(): Promise<void> {
         ],
         IMAGE_FETCH_TEMPERATURE,
         IMAGE_FETCH_REASONING,
+        { verbose, onChunk: verbose ? makeStreamWriter("image-plan") : undefined },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {
@@ -253,6 +299,8 @@ async function main(): Promise<void> {
       }
       throw err;
     }
+
+    if (verbose) process.stdout.write("\n");
 
     fs.writeFileSync(imagePlanPath, imagePlan, "utf-8");
     console.log(`  Saved image plan: ${imagePlanPath}`);
@@ -287,9 +335,11 @@ async function main(): Promise<void> {
 
   // ── Phase: code ──
   if (shouldRunPhase("code", from, only)) {
+    const codeImageItems = loadCodeImageItems(imagePlanPath);
+
     console.log("Step 2: Generating composition .tsx from Remotion prompt...");
     const { system: step2System, user: step2User } =
-      buildCompositionPrompt(remotionPrompt);
+      buildCompositionPrompt(remotionPrompt, codeImageItems);
 
     let compositionCode: string;
     try {
@@ -300,6 +350,7 @@ async function main(): Promise<void> {
         ],
         CODE_GEN_TEMPERATURE,
         CODE_GEN_REASONING,
+        { verbose, onChunk: verbose ? makeStreamWriter("code") : undefined },
       );
     } catch (err) {
       if (err instanceof DeepSeekError) {
@@ -309,6 +360,7 @@ async function main(): Promise<void> {
       throw err;
     }
 
+    if (verbose) process.stdout.write("\n");
     console.log(`  Got code (${compositionCode.length} chars)\n`);
 
     console.log("Validating and writing composition...");

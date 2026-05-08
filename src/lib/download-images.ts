@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
 
 export interface DownloadResult {
@@ -112,6 +113,123 @@ function hasImageMagicBytes(buffer: Buffer): boolean {
       buffer.subarray(8, 12).equals(Buffer.from("WEBP"))) ||
     buffer.subarray(0, 4).equals(Buffer.from("GIF8"))
   );
+}
+
+function shouldRejectFakeTransparency(item: ImageFetchItem): boolean {
+  const text = [
+    item.label,
+    item.query,
+    item.visual_requirements,
+    item.rationale,
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return (
+    path.extname(item.label).toLowerCase() === ".png" &&
+    (item.preferred_format === "png" ||
+      item.needs_cutout === true ||
+      text.includes("transparent") ||
+      text.includes("no background") ||
+      text.includes("cutout"))
+  );
+}
+
+function findPythonCommand(): string {
+  const localPython = path.join(process.cwd(), ".venv", "bin", "python");
+  return fs.existsSync(localPython) ? localPython : "python3";
+}
+
+export function validateDownloadedAsset(
+  item: ImageFetchItem,
+  filePath: string,
+): string | undefined {
+  if (!shouldRejectFakeTransparency(item)) {
+    return undefined;
+  }
+
+  const script = `
+from PIL import Image
+import sys
+
+path = sys.argv[1]
+image = Image.open(path).convert("RGBA")
+width, height = image.size
+pixels = image.getdata()
+total = width * height
+
+transparent = sum(1 for _, _, _, alpha in pixels if alpha < 250)
+if transparent / total > 0.01:
+    sys.exit(0)
+
+def bucket(pixel):
+    r, g, b, _ = pixel
+    if abs(r - g) > 8 or abs(g - b) > 8:
+        return None
+    if r >= 238:
+        return 1
+    if 185 <= r <= 235:
+        return 2
+    return None
+
+neutral = 0
+light = 0
+gray = 0
+for pixel in pixels:
+    value = bucket(pixel)
+    if value == 1:
+        light += 1
+        neutral += 1
+    elif value == 2:
+        gray += 1
+        neutral += 1
+
+neutral_ratio = neutral / total
+if neutral_ratio < 0.35 or light == 0 or gray == 0:
+    sys.exit(0)
+
+light_ratio = light / total
+gray_ratio = gray / total
+if light_ratio > 0.12 and gray_ratio > 0.12:
+    print("PNG appears to contain a baked checkerboard transparency preview instead of real alpha")
+    sys.exit(2)
+
+sample_step = max(1, min(width, height) // 80)
+transitions = 0
+comparisons = 0
+last = None
+for y in range(0, height, sample_step):
+    last = None
+    for x in range(0, width, sample_step):
+        value = bucket(image.getpixel((x, y)))
+        if value is None:
+            last = None
+            continue
+        if last is not None:
+            comparisons += 1
+            if value != last:
+                transitions += 1
+        last = value
+
+transition_ratio = transitions / comparisons if comparisons else 0
+if transition_ratio > 0.18:
+    print("PNG appears to contain a baked checkerboard transparency preview instead of real alpha")
+    sys.exit(2)
+`;
+
+  const result = spawnSync(findPythonCommand(), ["-c", script, filePath], {
+    encoding: "utf-8",
+  });
+
+  if (result.error) {
+    return undefined;
+  }
+
+  if (result.status === 2) {
+    return result.stdout.trim() || "PNG appears to contain fake transparency";
+  }
+
+  return undefined;
 }
 
 async function fetchText(url: string): Promise<string> {
@@ -236,6 +354,19 @@ async function tryCandidate(
     }
 
     fs.writeFileSync(filePath, buffer);
+    const assetError = validateDownloadedAsset(item, filePath);
+    if (assetError) {
+      fs.rmSync(filePath, { force: true });
+      return {
+        label: item.label,
+        path: filePath,
+        ok: false,
+        url,
+        sourceUrl: candidate.sourceUrl,
+        error: assetError,
+      };
+    }
+
     return {
       label: item.label,
       path: filePath,
