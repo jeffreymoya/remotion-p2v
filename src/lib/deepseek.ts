@@ -1,3 +1,4 @@
+import { traceable } from "langsmith/traceable";
 import { DEEPSEEK_BASE_URL, DEEPSEEK_MODEL } from "./config";
 
 interface DeepSeekMessage {
@@ -30,7 +31,7 @@ export class DeepSeekError extends Error {
   }
 }
 
-export async function deepseekChat(
+async function deepseekChatImpl(
   messages: DeepSeekMessage[],
   temperature: number,
   reasoning: ReasoningConfig,
@@ -166,3 +167,8 @@ export async function deepseekChat(
 
   return content;
 }
+
+export const deepseekChat = traceable(deepseekChatImpl, {
+  name: "deepseekChat",
+  run_type: "llm",
+});

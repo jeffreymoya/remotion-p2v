@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { WordTiming } from "./tts-elevenlabs";
 
 export interface SceneSpec {
   sceneIndex: number;
@@ -12,6 +13,7 @@ export interface SceneSpec {
   ttsText?: string;
   estimatedDurationSeconds?: number;
   audioPath?: string;
+  wordTimings?: WordTiming[];
 }
 
 export interface SceneManifest {

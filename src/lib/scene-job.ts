@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { traceable } from "langsmith/traceable";
 import type { Segment } from "./parse-script";
 import { deepseekChat, DeepSeekError } from "./deepseek";
 import { buildScenePrompt } from "./build-scene-prompt";
@@ -8,7 +9,7 @@ import {
   parseImageFetchResponse,
 } from "./build-image-fetch-prompt";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
-import { downloadImages } from "./download-images";
+import { refineImages } from "./refine-image";
 import { buildSceneJsonPrompt } from "./build-scene-json-prompt";
 import {
   writeSceneJson,
@@ -24,6 +25,7 @@ import {
   type SceneManifest,
   type SceneSpec,
 } from "./scene-manifest";
+import { runTtsPhase } from "./tts-phase";
 import {
   PROMPT_GEN_TEMPERATURE,
   CODE_GEN_TEMPERATURE,
@@ -34,7 +36,7 @@ import {
 } from "./config";
 import { type Phase, shouldRunPhase } from "./cli-args";
 import { makeDeepSeekRecorders } from "./deepseek-recorders";
-import { mergeDownloadResults, loadCodeImageItems } from "./image-plan-utils";
+import { loadCodeImageItems } from "./image-plan-utils";
 
 export type SceneJobStatus = "success" | "failed" | "skipped";
 
@@ -50,7 +52,7 @@ export interface SceneJobResult {
   artifactPaths: string[];
 }
 
-export async function runSceneJob(
+async function runSceneJobImpl(
   scene: SceneSpec,
   segmentSlug: string,
   segmentTitle: string,
@@ -62,6 +64,7 @@ export async function runSceneJob(
   },
   runDeepSeek: <T>(task: () => Promise<T>) => Promise<T>,
   runImageDownload: <T>(task: () => Promise<T>) => Promise<T>,
+  runTts: <T>(task: () => Promise<T>) => Promise<T>,
   runDir: string,
   exemplars: string[],
 ): Promise<SceneJobResult> {
@@ -86,6 +89,27 @@ export async function runSceneJob(
 
     const sceneDir = path.join(runDir, `scene-${String(scene.sceneIndex).padStart(3, "0")}`);
     fs.mkdirSync(sceneDir, { recursive: true });
+
+    // Mutable scene reference — TTS phase may update with audio path + word timings
+    let effectiveScene = scene;
+    let resolvedDurationInFrames: number | undefined;
+
+    // ── TTS phase ──
+    if (shouldRunPhase("tts", from, only)) {
+      if (!process.env.ELEVENLABS_API_KEY) {
+        console.log(
+          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] TTS skipped (no ELEVENLABS_API_KEY)`,
+        );
+      } else {
+        const ttsResult = await runTts(() =>
+          runTtsPhase(scene, segmentSlug, runDir, {
+            verbose: args.verbose,
+          }),
+        );
+        effectiveScene = ttsResult.updatedScene;
+        resolvedDurationInFrames = ttsResult.durationInFrames;
+      }
+    }
 
     // ── Prompt phase ──
     let remotionPrompt = "";
@@ -208,10 +232,12 @@ export async function runSceneJob(
       }
 
       if (imageItems.length > 0) {
-        const { downloaded, failed, results } = await downloadImages(
+        const { items: refinedItems, results } = await refineImages(
           imageItems,
           imgDir,
+          remotionPrompt,
           runImageDownload,
+          { runDeepSeek, verbose: args.verbose },
         );
         for (const r of results) {
           const detail = r.ok
@@ -221,11 +247,13 @@ export async function runSceneJob(
             `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] ${r.ok ? "OK" : "FAIL"}  ${r.label}${detail}`,
           );
         }
-        imageItems = mergeDownloadResults(imageItems, results);
+        imageItems = refinedItems;
         writeFileAtomically(
           sceneImagePlanPath,
           JSON.stringify(imageItems, null, 2),
         );
+        const downloaded = results.filter((r) => r.ok).length;
+        const failed = results.length - downloaded;
         console.log(
           `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Images: ${downloaded} downloaded, ${failed} failed`,
         );
@@ -235,7 +263,7 @@ export async function runSceneJob(
     // ── Code phase ──
     if (shouldRunPhase("code", from, only)) {
       const codeImageItems = loadCodeImageItems(sceneImagePlanPath);
-      const durationInFrames = Math.round(
+      const durationInFrames = resolvedDurationInFrames ?? Math.round(
         (scene.endSeconds - scene.startSeconds) * 30,
       );
       const compId = compositionId(segmentSlug, scene);
@@ -245,6 +273,8 @@ export async function runSceneJob(
         codeImageItems,
         compId,
         durationInFrames,
+        effectiveScene.wordTimings,
+        effectiveScene.audioPath,
       );
 
       const sceneResponse = await runDeepSeek(async () => {
@@ -336,6 +366,11 @@ export async function runSceneJob(
     };
   }
 }
+
+export const runSceneJob = traceable(runSceneJobImpl, {
+  name: "scene-job",
+  run_type: "chain",
+});
 
 export function printBatchSummary(
   results: SceneJobResult[],

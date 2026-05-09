@@ -1,9 +1,10 @@
-export type Phase = "narrative" | "prompt" | "images" | "code";
-export const PHASES: Phase[] = ["narrative", "prompt", "images", "code"];
+export type Phase = "narrative" | "tts" | "prompt" | "images" | "code";
+export const PHASES: Phase[] = ["narrative", "tts", "prompt", "images", "code"];
 
 export function parsePhase(value: string | undefined): Phase | undefined {
   if (
     value === "narrative" ||
+    value === "tts" ||
     value === "prompt" ||
     value === "images" ||
     value === "code"
@@ -43,7 +44,7 @@ export function parseArgs(): {
         from = parsedPhase;
       } else {
         console.error(
-          `Unknown phase: ${phase}. Use --from=narrative|prompt|images|code`,
+          `Unknown phase: ${phase}. Use --from=narrative|tts|prompt|images|code`,
         );
         process.exit(1);
       }
@@ -54,7 +55,7 @@ export function parseArgs(): {
         only = parsedPhase;
       } else {
         console.error(
-          `Unknown phase: ${phase}. Use --only=narrative|prompt|images|code`,
+          `Unknown phase: ${phase}. Use --only=narrative|tts|prompt|images|code`,
         );
         process.exit(1);
       }

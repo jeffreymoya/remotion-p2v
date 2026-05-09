@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderCatalogForPrompt } from "./component-catalog";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
+import type { WordTiming } from "./tts-elevenlabs";
 
 function toAssetPath(item: ImageFetchItem): string {
   const assetPath = item.cutout_path ?? item.resolved_path ?? item.label;
@@ -99,11 +100,45 @@ const NARRATIVE_RULES = `--- MANDATORY NARRATIVE RULES (violations = bad output)
 10. OVERLAY ENTRANCE VARIETY: BRoll overlayAssets should use a MIX of entrance styles
     (springPop, slideUp, slideLeft) — not just fadeIn for every overlay.`;
 
+function formatWordTimingHint(wordTimings: WordTiming[], fps: number): string {
+  if (wordTimings.length === 0) return "";
+
+  // Group words into ~1.5-second chunks for a compact frame guide
+  const chunks: Array<{ startFrame: number; endFrame: number; text: string }> = [];
+  let chunkWords: string[] = [];
+  let chunkStart = Math.round(wordTimings[0].startSeconds * fps);
+
+  for (const wt of wordTimings) {
+    chunkWords.push(wt.word);
+    const elapsed = wt.endSeconds - wordTimings[0].startSeconds;
+    const chunkDuration = wt.endSeconds - (chunkWords.length > 1
+      ? wordTimings[wordTimings.indexOf(wt) - chunkWords.length + 1]?.startSeconds ?? 0
+      : wt.startSeconds);
+
+    if (chunkDuration >= 1.5 || wt === wordTimings[wordTimings.length - 1]) {
+      const endFrame = Math.round(wt.endSeconds * fps);
+      chunks.push({
+        startFrame: chunkStart,
+        endFrame,
+        text: chunkWords.join(" "),
+      });
+      chunkWords = [];
+      chunkStart = endFrame;
+    }
+  }
+
+  return chunks
+    .map((c) => `frame ${c.startFrame}–${c.endFrame}: "${c.text}"`)
+    .join("\n");
+}
+
 export function buildSceneJsonPrompt(
   remotionPrompt: string,
   imageItems: ImageFetchItem[] = [],
   slug: string,
   durationInFrames: number,
+  wordTimings?: WordTiming[],
+  audioFile?: string,
 ): { system: string; user: string } {
   const catalog = renderCatalogForPrompt();
   const exemplar = loadExemplar();
@@ -136,10 +171,18 @@ ${NARRATIVE_RULES}
     ? `\nAvailable image assets:\n${assetManifest}\n\nUse these exact label values when referencing assets in blocks. Copy the matching path value into assets[].path for every asset you include.\n`
     : "";
 
+  const timingHint = wordTimings && wordTimings.length > 0
+    ? `\n--- WORD TIMING GUIDE (align block frameRanges to these boundaries) ---\n${formatWordTimingHint(wordTimings, 30)}\n`
+    : "";
+
+  const audioInstruction = audioFile
+    ? `\nIMPORTANT: Include "audioFile": "${audioFile}" in the top-level JSON object.\n`
+    : "";
+
   const user = `Write a scene script JSON for this Remotion prompt:
 
 ${remotionPrompt}
-${assetInstructions}
+${assetInstructions}${timingHint}${audioInstruction}
 Return ONLY the JSON. No explanation. No markdown fences.`;
 
   return { system, user };

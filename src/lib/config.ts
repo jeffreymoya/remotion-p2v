@@ -51,3 +51,10 @@ function validateConcurrency(envName: string, defaultValue: number): number {
 
 export const DEEPSEEK_CONCURRENCY = validateConcurrency("DEEPSEEK_CONCURRENCY", 3);
 export const IMAGE_DOWNLOAD_CONCURRENCY = validateConcurrency("IMAGE_DOWNLOAD_CONCURRENCY", 5);
+export const TTS_CONCURRENCY = validateConcurrency("TTS_CONCURRENCY", 2);
+
+// ── ElevenLabs TTS ──────────────────────────────────────────────────────
+export const ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1" as const;
+export const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "pNInz6obpgDQGcFmaJgB" as const; // "Adam"
+export const ELEVENLABS_MODEL_ID = process.env.ELEVENLABS_MODEL_ID ?? "eleven_multilingual_v2" as const;
+export const AUDIO_DIR = "public/audio" as const;

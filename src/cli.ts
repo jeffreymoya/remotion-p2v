@@ -9,6 +9,7 @@ import {
   SCENE_JSON_DIR,
   DEEPSEEK_CONCURRENCY,
   IMAGE_DOWNLOAD_CONCURRENCY,
+  TTS_CONCURRENCY,
 } from "./lib/config";
 import { createLimiter } from "./lib/concurrency";
 import { deriveSceneSlug } from "./lib/scene-manifest";
@@ -85,6 +86,7 @@ async function main(): Promise<void> {
 
   // Determine if scene pipeline phases are needed
   const needsScenePipeline =
+    shouldRunPhase("tts", from, only) ||
     shouldRunPhase("prompt", from, only) ||
     shouldRunPhase("images", from, only) ||
     shouldRunPhase("code", from, only);
@@ -114,6 +116,7 @@ async function main(): Promise<void> {
 
     const runDeepSeek = createLimiter(concurrency);
     const runImageDownload = createLimiter(IMAGE_DOWNLOAD_CONCURRENCY);
+    const runTts = createLimiter(TTS_CONCURRENCY);
 
     let scenes = manifest.scenes;
     if (sceneIndex !== undefined) {
@@ -140,6 +143,7 @@ async function main(): Promise<void> {
           { from, only, verbose: verbose && scenes.length === 1 },
           runDeepSeek,
           runImageDownload,
+          runTts,
           runDir,
           exemplars,
         ),

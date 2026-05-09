@@ -229,6 +229,7 @@ export const SceneScriptSchema = z.object({
   crossFadeFrames: z.number().int().nonnegative().default(15),
   assets: z.array(AssetRef),
   scenes: z.array(SceneBlock),
+  audioFile: z.string().optional(),
 });
 
 export type SceneScript = z.infer<typeof SceneScriptSchema>;

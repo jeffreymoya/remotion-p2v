@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, AbsoluteFill, interpolate } from "remotion";
+import { useCurrentFrame, AbsoluteFill, interpolate, Audio, staticFile } from "remotion";
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
 import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsMono";
 import { slide } from "@remotion/transitions/slide";
@@ -63,6 +63,9 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({ script }) => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: palette.bg }}>
+      {script.audioFile && (
+        <Audio src={staticFile(script.audioFile)} />
+      )}
       {script.scenes.map((block, i) => {
         const BlockComponent = BLOCK_MAP[block.type];
         if (!BlockComponent) return null;
