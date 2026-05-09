@@ -45,13 +45,59 @@ SceneScript {
 //                                           "from-bottom-left"|"from-bottom-right" }
 \`\`\``;
 
+// Stable hand-crafted exemplar demonstrating professional block variety.
+const EXEMPLAR_PATH = path.join("prompts", "exemplar-professional-scene.json");
+
 function loadExemplar(): string {
-  const exemplarPath = path.join("prompts", "the-secret-rise-of-quiet-vacationing-0-00-0-30-scene.json");
-  if (fs.existsSync(exemplarPath)) {
-    return fs.readFileSync(exemplarPath, "utf-8");
+  if (fs.existsSync(EXEMPLAR_PATH)) {
+    return fs.readFileSync(EXEMPLAR_PATH, "utf-8");
   }
   return "";
 }
+
+const NARRATIVE_RULES = `--- MANDATORY NARRATIVE RULES (violations = bad output) ---
+
+1. OPENING HOOK (REQUIRED): The FIRST block in "scenes" MUST be one of:
+   ContradictionHook, CostOfIgnoranceHook, HiddenMechanismHook, MythVsEvidenceHook.
+   No other block type is permitted in position 0. This is non-negotiable.
+
+2. BLOCK VARIETY (REQUIRED): Use at least 4 DISTINCT block types per script.
+   Repeating the same block type back-to-back is forbidden.
+   BRoll may appear at most TWICE total per script.
+
+3. BRoll DISCIPLINE (CRITICAL): BRoll is a STANDALONE cutaway (30–90 frames).
+   NEVER use BRoll as a persistent backdrop for text blocks (Callout, MicroQuestion, Reveal, etc.).
+   Text blocks must have their own dedicated frame range on a clean dark background.
+   Layering text over BRoll creates illegible, amateurish visuals.
+
+4. TRANSITIONS (REQUIRED): Every block AFTER the first MUST include a "transition" field.
+   Vary the kinds — do not repeat the same kind more than twice.
+   Use: slide (directional movement), wipe (masked reveal), flip (3D), fade (subtle).
+   Diagonal wipes (from-top-left, from-top-right, etc.) require kind "wipe".
+
+5. RETENTION BLOCK (REQUIRED): Every script MUST include at least ONE of:
+   StatCounter, ContrastReveal, Reveal, Reframe, MiniPayoff, Foreshadow.
+
+6. FRAME BUDGET per block type:
+   - Hook blocks (ContradictionHook, etc.): 90–150 frames minimum
+   - BRoll cutaways: 30–90 frames only
+   - Data/comparison (StatCounter, ComparisonSplit, DiagramScene): 90–180 frames
+   - Text reveal (ContrastReveal, Reveal, Reframe, ContrastReveal): 90–150 frames
+   - Callout: 45–90 frames — maximum, this is a punch not a lecture
+   - MicroQuestion, PromiseCard, ContextCard: 60–120 frames
+
+7. CALLOUT QUALITY: Callout "phrase" must NEVER be an empty string.
+   Every Callout must have substantive, non-empty text.
+
+8. DIAGRAM QUALITY: DiagramScene must have at least 3 meaningful nodes.
+   A single "?" node is meaningless — use MicroQuestion instead.
+
+9. ASSET DISCIPLINE: Only reference labels from the asset manifest.
+   If no assets are available, use ZERO BRolls and rely on text-based blocks.
+   Do not fabricate asset labels.
+
+10. OVERLAY ENTRANCE VARIETY: BRoll overlayAssets should use a MIX of entrance styles
+    (springPop, slideUp, slideLeft) — not just fadeIn for every overlay.`;
 
 export function buildSceneJsonPrompt(
   remotionPrompt: string,
@@ -71,19 +117,20 @@ ${catalog}
 --- SCHEMA SUMMARY ---
 ${SCHEMA_SUMMARY}
 
-${exemplar ? `--- EXEMPLAR ---\n${exemplar}\n` : ""}
---- CONSTRAINTS ---
+${exemplar ? `--- EXEMPLAR (study this — it shows professional block variety and proper transitions) ---\n${exemplar}\n` : ""}
+${NARRATIVE_RULES}
+
+--- HARD CONSTRAINTS ---
 - Total durationInFrames = ${durationInFrames}
-- Frame ranges should cover the full duration with intentional spacing
-- Scenes are rendered with cross-fade overlap at boundaries (default 15 frames)
-- Every asset used in a block must appear in the top-level assets[] array with its exact label and path from the asset manifest
-- Scene block asset fields must use asset labels, not paths. The renderer resolves labels to their public static paths
-- NEVER use CustomScene — it renders a placeholder error. Every scene MUST use a typed block from the catalog above. If no block fits perfectly, pick the closest match and adapt the props
+- Frame ranges must cover the full duration with no dead frames at the end
+- crossFadeFrames = 15 (default); only increase to 30 for deliberate slow dissolves
+- Every asset used in a block must appear in top-level assets[] with its exact label and path
+- Scene block asset fields use asset labels (not paths) — renderer resolves them
+- NEVER use CustomScene — it renders a red error box
 - Max 4 simultaneous visual elements at any frame
 - slug must be "${slug}"
 - fps must be 30, width 1920, height 1080
-- No markdown fences, no prose — JSON only
-- Each scene block accepts an optional "transition" field controlling how it enters during the crossfade window. Use "slide" for lateral movement, "wipe" for a masked reveal (supports diagonals), "flip" for a 3D card-flip, "fade" for pure opacity crossfade. Use sparingly — 1-2 per script max. Diagonal wipe directions (from-top-left etc.) are only valid with kind "wipe"`;
+- No markdown fences, no prose — JSON only`;
 
   const assetInstructions = assetManifest
     ? `\nAvailable image assets:\n${assetManifest}\n\nUse these exact label values when referencing assets in blocks. Copy the matching path value into assets[].path for every asset you include.\n`
