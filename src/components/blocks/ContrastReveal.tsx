@@ -1,5 +1,5 @@
 import React from "react";
-import { interpolate } from "remotion";
+import { interpolate, interpolateColors } from "remotion";
 import { palette, font } from "../tokens";
 
 interface ContrastRevealProps {
@@ -34,6 +34,12 @@ export const ContrastReveal: React.FC<ContrastRevealProps> = ({
     extrapolateRight: "clamp",
   });
 
+  const revealColor = interpolateColors(
+    localFrame,
+    [midPoint, midPoint + 20],
+    [palette.text, palette.accent],
+  );
+
   return (
     <div
       style={{
@@ -65,7 +71,7 @@ export const ContrastReveal: React.FC<ContrastRevealProps> = ({
           fontSize: 56,
           fontWeight: "bold",
           fontFamily: font.display,
-          color: palette.text,
+          color: revealColor,
           opacity: revealOpacity,
           transform: `translateX(${revealSlide}px)`,
           textAlign: "center",

@@ -1,5 +1,6 @@
 import React from "react";
 import { interpolate } from "remotion";
+import { noise2D } from "@remotion/noise";
 import { palette, font } from "../tokens";
 
 interface CostOfIgnoranceHookProps {
@@ -23,11 +24,12 @@ export const CostOfIgnoranceHook: React.FC<CostOfIgnoranceHookProps> = ({
     extrapolateRight: "clamp",
   });
 
+  const shakeAmplitude = interpolate(localFrame, [0, 30], [8, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const shake = localFrame < 30
-    ? Math.sin(localFrame * 0.8) * interpolate(localFrame, [0, 30], [8, 0], {
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      })
+    ? noise2D("shake-x", localFrame * 0.15, 0) * shakeAmplitude
     : 0;
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { spring, interpolate } from "remotion";
+import { spring, interpolate, interpolateColors, useVideoConfig } from "remotion";
 import { palette, font, easing } from "../tokens";
 import { Animate } from "../primitives";
 
@@ -18,9 +18,11 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
   reveal,
   style: visualStyle = "stark",
 }) => {
+  const { fps } = useVideoConfig();
   const [start] = frameRange;
   const localFrame = frame - start;
-  const midPoint = Math.floor((frameRange[1] - start) / 2);
+  const totalFrames = frameRange[1] - start;
+  const midPoint = Math.floor(totalFrames / 2);
 
   const setupOpacity = interpolate(localFrame, [0, 15, midPoint - 10, midPoint], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
@@ -34,11 +36,22 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
 
   const revealSlide = spring({
     frame: Math.max(0, localFrame - midPoint),
-    fps: 30,
+    fps,
     from: 60,
     to: 0,
     config: easing.spring,
   });
+
+  const setupColor = interpolateColors(
+    localFrame,
+    [0, midPoint - 10, midPoint],
+    [palette.negative, palette.negative, "rgba(248,113,113,0)"],
+  );
+  const revealColor = interpolateColors(
+    localFrame,
+    [midPoint, midPoint + 15, midPoint + 25, totalFrames],
+    [palette.accent, "#ffffff", palette.accent, palette.accent],
+  );
 
   return (
     <div
@@ -58,7 +71,7 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
           fontSize: 100,
           fontWeight: "bold",
           fontFamily: font.display,
-          color: palette.negative,
+          color: setupColor,
           textDecoration: "line-through",
           opacity: setupOpacity,
         }}
@@ -71,7 +84,7 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
           fontSize: 100,
           fontWeight: "bold",
           fontFamily: font.display,
-          color: palette.accent,
+          color: revealColor,
           opacity: revealOpacity,
           transform: `translateY(${revealSlide}px)`,
         }}

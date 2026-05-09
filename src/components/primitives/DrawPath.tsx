@@ -1,5 +1,6 @@
 import React from "react";
 import { interpolate } from "remotion";
+import { getLength } from "@remotion/paths";
 import { palette } from "../tokens";
 
 interface DrawPathProps {
@@ -19,14 +20,23 @@ export const DrawPath: React.FC<DrawPathProps> = ({
   d,
   stroke = palette.accent,
   strokeWidth = 3,
-  pathLength = 1000,
+  pathLength,
 }) => {
+  const computedLength = React.useMemo(() => {
+    if (pathLength !== undefined) return pathLength;
+    try {
+      return getLength(d);
+    } catch {
+      return 1000;
+    }
+  }, [d, pathLength]);
+
   const progress = interpolate(frame, [startFrame, startFrame + duration], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const dashOffset = pathLength * (1 - progress);
+  const dashOffset = computedLength * (1 - progress);
 
   return (
     <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
@@ -35,7 +45,7 @@ export const DrawPath: React.FC<DrawPathProps> = ({
         fill="none"
         stroke={stroke}
         strokeWidth={strokeWidth}
-        strokeDasharray={pathLength}
+        strokeDasharray={computedLength}
         strokeDashoffset={dashOffset}
       />
     </svg>

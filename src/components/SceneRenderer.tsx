@@ -1,8 +1,13 @@
 import React from "react";
-import { useCurrentFrame, AbsoluteFill } from "remotion";
+import { useCurrentFrame, AbsoluteFill, interpolate } from "remotion";
 import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
 import { loadFont as loadJetBrainsMono } from "@remotion/google-fonts/JetBrainsMono";
-import type { SceneScript, SceneBlockType } from "../lib/scene-script-schema";
+import { slide } from "@remotion/transitions/slide";
+import { fade } from "@remotion/transitions/fade";
+import { wipe } from "@remotion/transitions/wipe";
+import { flip } from "@remotion/transitions/flip";
+import type { TransitionPresentation } from "@remotion/transitions";
+import type { SceneScript, SceneBlockType, TransitionConfigType } from "../lib/scene-script-schema";
 import { palette } from "./tokens";
 import { Scene } from "./primitives";
 import * as Blocks from "./blocks";
@@ -10,6 +15,21 @@ import { createAssetResolver } from "./asset-resolver";
 
 loadInter("normal", { weights: ["400", "700", "800"], subsets: ["latin"] });
 loadJetBrainsMono("normal", { weights: ["400", "700"], subsets: ["latin"] });
+
+function presentationFor(
+  transition: TransitionConfigType,
+): TransitionPresentation<Record<string, unknown>> {
+  switch (transition.kind) {
+    case "slide":
+      return slide({ direction: transition.direction ?? "from-left" }) as TransitionPresentation<Record<string, unknown>>;
+    case "fade":
+      return fade() as TransitionPresentation<Record<string, unknown>>;
+    case "wipe":
+      return wipe({ direction: transition.direction ?? "from-left" }) as TransitionPresentation<Record<string, unknown>>;
+    case "flip":
+      return flip({ direction: transition.direction ?? "from-left" }) as TransitionPresentation<Record<string, unknown>>;
+  }
+}
 
 const BLOCK_MAP: Record<string, React.FC<any>> = {
   ContradictionHook: Blocks.ContradictionHook,
@@ -29,6 +49,7 @@ const BLOCK_MAP: Record<string, React.FC<any>> = {
   MiniPayoff: Blocks.MiniPayoff,
   Foreshadow: Blocks.Foreshadow,
   CustomScene: Blocks.CustomScene,
+  StatCounter: Blocks.StatCounter,
 };
 
 interface SceneRendererProps {
@@ -46,6 +67,22 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({ script }) => {
         const BlockComponent = BLOCK_MAP[block.type];
         if (!BlockComponent) return null;
 
+        const [blockStart] = block.frameRange;
+        const transitionProgress = interpolate(
+          frame,
+          [blockStart - crossFadeFrames, blockStart],
+          [0, 1],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+        );
+
+        const pres = block.transition
+          ? presentationFor(block.transition as TransitionConfigType)
+          : null;
+
+        const blockContent = (
+          <BlockComponent {...block} frame={frame} resolveAsset={resolveAsset} />
+        );
+
         return (
           <Scene
             key={i}
@@ -53,7 +90,21 @@ export const SceneRenderer: React.FC<SceneRendererProps> = ({ script }) => {
             frame={frame}
             crossFadeFrames={crossFadeFrames}
           >
-            <BlockComponent {...block} frame={frame} resolveAsset={resolveAsset} />
+            {pres ? (
+              <pres.component
+                presentationProgress={transitionProgress}
+                presentationDirection="entering"
+                passedProps={pres.props}
+                presentationDurationInFrames={crossFadeFrames}
+                onElementImage={() => {}}
+                onUnmount={() => {}}
+                bothEnteringAndExiting={false}
+              >
+                {blockContent}
+              </pres.component>
+            ) : (
+              blockContent
+            )}
           </Scene>
         );
       })}

@@ -1,5 +1,5 @@
 import React from "react";
-import { interpolate, spring } from "remotion";
+import { interpolate, spring, useVideoConfig } from "remotion";
 import { easing } from "../tokens";
 
 type Entrance = "fadeIn" | "slideUp" | "slideLeft" | "springPop";
@@ -19,6 +19,7 @@ export const Animate: React.FC<AnimateProps> = ({
   duration = 20,
   children,
 }) => {
+  const { fps } = useVideoConfig();
   const progress = Math.min(1, Math.max(0, (frame - startFrame) / duration));
 
   const style: React.CSSProperties = { opacity: 0 };
@@ -58,7 +59,7 @@ export const Animate: React.FC<AnimateProps> = ({
     case "springPop": {
       const scale = spring({
         frame: Math.max(0, frame - startFrame),
-        fps: 30,
+        fps,
         from: 0,
         to: 1,
         config: easing.snappy,

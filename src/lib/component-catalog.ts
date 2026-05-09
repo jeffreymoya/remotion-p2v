@@ -174,10 +174,33 @@ export const BLOCK_CATALOG: BlockEntry[] = [
       tease: "string: the foreshadowing statement",
     },
   },
+  {
+    name: "StatCounter",
+    role: "retention",
+    guidelineSection: "§4 Retention — Stat Counter",
+    whenToUse:
+      "Presents a single key statistic with animated count-up. Ideal for data-driven moments — conversion rates, costs, time savings, scale figures.",
+    props: {
+      value: 'string: Stat value including unit — e.g. "87%", "$2.4M", "10x"',
+      label: "string: Short label beneath the number",
+      sublabel: "string?: Optional secondary context",
+      color:
+        "string?: CSS accent color for the number (default: palette.accent #38bdf8)",
+    },
+  },
 ];
 
 export function renderCatalogForPrompt(): string {
-  return BLOCK_CATALOG.map((b) =>
+  const globalNote = `GLOBAL NOTE: Every block accepts an optional "transition" field that controls
+how it enters during the cross-fade window. Valid shapes:
+  { kind: "fade" }
+  { kind: "slide", direction?: "from-left"|"from-right"|"from-top"|"from-bottom" }
+  { kind: "flip",  direction?: "from-left"|"from-right"|"from-top"|"from-bottom" }
+  { kind: "wipe",  direction?: "from-left"|"from-right"|"from-top"|"from-bottom"|
+                               "from-top-left"|"from-top-right"|"from-bottom-left"|"from-bottom-right" }
+Use sparingly (1-2 per script). Diagonal directions are wipe-only.\n\n`;
+
+  return globalNote + BLOCK_CATALOG.map((b) =>
     `## ${b.name} [${b.role}] — ${b.guidelineSection}\n` +
     `When to use: ${b.whenToUse}\n` +
     `Props:\n` +

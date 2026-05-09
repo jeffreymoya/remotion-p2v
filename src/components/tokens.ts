@@ -16,11 +16,17 @@ export const font = {
   mono: "'JetBrains Mono', monospace",
 } as const;
 
-export const easing = {
-  smooth: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+import { Easing } from "remotion";
+
+export const easing: {
+  smooth: (t: number) => number;
+  spring: { damping: number; mass: number; stiffness: number };
+  snappy: { damping: number; mass: number; stiffness: number };
+} = {
+  smooth: Easing.bezier(0.25, 0.46, 0.45, 0.94),
   spring: { damping: 14, mass: 0.8, stiffness: 140 },
   snappy: { damping: 10, mass: 0.5, stiffness: 200 },
-} as const;
+};
 
 export const duration = {
   short: 15,

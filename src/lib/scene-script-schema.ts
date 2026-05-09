@@ -10,6 +10,23 @@ const AssetRef = z.object({
   cutoutPath: z.string().optional(),
 });
 
+// ── Transition mixin ────────────────────────────────────────────────────
+const CardinalDirection = z.enum(["from-left", "from-right", "from-top", "from-bottom"]);
+const WipeDirection = z.enum([
+  "from-left", "from-right", "from-top", "from-bottom",
+  "from-top-left", "from-top-right", "from-bottom-left", "from-bottom-right",
+]);
+
+const TransitionConfig = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("fade") }),
+  z.object({ kind: z.literal("slide"), direction: CardinalDirection.optional() }),
+  z.object({ kind: z.literal("flip"), direction: CardinalDirection.optional() }),
+  z.object({ kind: z.literal("wipe"), direction: WipeDirection.optional() }),
+]);
+export type TransitionConfigType = z.infer<typeof TransitionConfig>;
+
+const transitionMixin = { transition: TransitionConfig.optional() };
+
 // ── Hook blocks ─────────────────────────────────────────────────────────
 const ContradictionHookBlock = z.object({
   type: z.literal("ContradictionHook"),
@@ -17,6 +34,7 @@ const ContradictionHookBlock = z.object({
   setup: z.string(),
   reveal: z.string(),
   style: z.enum(["stark", "split"]).default("stark"),
+  ...transitionMixin,
 });
 
 const CostOfIgnoranceHookBlock = z.object({
@@ -24,6 +42,7 @@ const CostOfIgnoranceHookBlock = z.object({
   frameRange: FrameRange,
   cost: z.string(),
   who: z.string().optional(),
+  ...transitionMixin,
 });
 
 const HiddenMechanismHookBlock = z.object({
@@ -31,6 +50,7 @@ const HiddenMechanismHookBlock = z.object({
   frameRange: FrameRange,
   headline: z.string(),
   teaser: z.string(),
+  ...transitionMixin,
 });
 
 const MythVsEvidenceHookBlock = z.object({
@@ -38,6 +58,7 @@ const MythVsEvidenceHookBlock = z.object({
   frameRange: FrameRange,
   myth: z.string(),
   evidence: z.string(),
+  ...transitionMixin,
 });
 
 // ── Structure blocks ────────────────────────────────────────────────────
@@ -46,12 +67,14 @@ const PromiseCardBlock = z.object({
   frameRange: FrameRange,
   promise: z.string(),
   bullets: z.array(z.string()).optional(),
+  ...transitionMixin,
 });
 
 const ContextCardBlock = z.object({
   type: z.literal("ContextCard"),
   frameRange: FrameRange,
   body: z.string(),
+  ...transitionMixin,
 });
 
 // ── Visual-role blocks ──────────────────────────────────────────────────
@@ -62,6 +85,7 @@ const DiagramSceneBlock = z.object({
   nodes: z.array(z.object({ label: z.string(), x: z.number(), y: z.number() })),
   edges: z.array(z.object({ from: z.string(), to: z.string(), label: z.string().optional() })).optional(),
   annotation: z.string().optional(),
+  ...transitionMixin,
 });
 
 const ComparisonSplitBlock = z.object({
@@ -71,6 +95,7 @@ const ComparisonSplitBlock = z.object({
   rightLabel: z.string(),
   rows: z.array(z.object({ label: z.string(), left: z.string(), right: z.string() })),
   verdict: z.string().optional(),
+  ...transitionMixin,
 });
 
 const BRollBlock = z.object({
@@ -86,6 +111,7 @@ const BRollBlock = z.object({
     entranceFrame: z.number().int(),
   })).optional(),
   caption: z.string().optional(),
+  ...transitionMixin,
 });
 
 const CalloutBlock = z.object({
@@ -99,6 +125,7 @@ const CalloutBlock = z.object({
     icon: z.string().optional(),
     color: z.string().optional(),
   })).optional(),
+  ...transitionMixin,
 });
 
 // ── Retention beat blocks ───────────────────────────────────────────────
@@ -108,6 +135,7 @@ const MicroQuestionBlock = z.object({
   question: z.string(),
   questions: z.array(z.string()).optional(),
   style: z.enum(["typewriter", "fade"]).default("typewriter"),
+  ...transitionMixin,
 });
 
 const ContrastRevealBlock = z.object({
@@ -115,6 +143,7 @@ const ContrastRevealBlock = z.object({
   frameRange: FrameRange,
   setup: z.string(),
   reveal: z.string(),
+  ...transitionMixin,
 });
 
 const RevealBlock = z.object({
@@ -122,6 +151,7 @@ const RevealBlock = z.object({
   frameRange: FrameRange,
   headline: z.string(),
   body: z.string().optional(),
+  ...transitionMixin,
 });
 
 const ReframeBlock = z.object({
@@ -129,6 +159,7 @@ const ReframeBlock = z.object({
   frameRange: FrameRange,
   oldFrame: z.string(),
   newFrame: z.string(),
+  ...transitionMixin,
 });
 
 const MiniPayoffBlock = z.object({
@@ -136,20 +167,33 @@ const MiniPayoffBlock = z.object({
   frameRange: FrameRange,
   rule: z.string(),
   bullets: z.array(z.string()).optional(),
+  ...transitionMixin,
 });
 
 const ForeshadowBlock = z.object({
   type: z.literal("Foreshadow"),
   frameRange: FrameRange,
   tease: z.string(),
+  ...transitionMixin,
 });
 
 // ── Escape hatch ────────────────────────────────────────────────────────
+const StatCounterBlock = z.object({
+  type: z.literal("StatCounter"),
+  frameRange: FrameRange,
+  value: z.string(),
+  label: z.string(),
+  sublabel: z.string().optional(),
+  color: z.string().optional(),
+  ...transitionMixin,
+});
+
 const CustomSceneBlock = z.object({
   type: z.literal("CustomScene"),
   frameRange: FrameRange,
   description: z.string(),
   config: z.record(z.string(), z.unknown()),
+  ...transitionMixin,
 });
 
 // ── Root schema ─────────────────────────────────────────────────────────
@@ -170,6 +214,7 @@ export const SceneBlock = z.discriminatedUnion("type", [
   ReframeBlock,
   MiniPayoffBlock,
   ForeshadowBlock,
+  StatCounterBlock,
   CustomSceneBlock,
 ]);
 

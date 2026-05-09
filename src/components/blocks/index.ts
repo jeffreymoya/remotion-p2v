@@ -15,3 +15,4 @@ export { Reframe } from "./Reframe";
 export { MiniPayoff } from "./MiniPayoff";
 export { Foreshadow } from "./Foreshadow";
 export { CustomScene } from "./CustomScene";
+export { StatCounter } from "./StatCounter";

@@ -35,6 +35,14 @@ SceneScript {
   assets: Array<{ label: string, path?: string, role: "background"|"animated_object"|"static_overlay"|"screen_mockup", cutoutPath?: string }>,
   scenes: Array<SceneBlock>,  // ordered by frameRange; each block has { type, frameRange: [start, end], ...blockProps }>
 }
+
+// Each scene block also accepts:
+// transition?: { kind: "fade" }
+//            | { kind: "slide", direction?: "from-left"|"from-right"|"from-top"|"from-bottom" }
+//            | { kind: "flip",  direction?: "from-left"|"from-right"|"from-top"|"from-bottom" }
+//            | { kind: "wipe",  direction?: "from-left"|"from-right"|"from-top"|"from-bottom"|
+//                                           "from-top-left"|"from-top-right"|
+//                                           "from-bottom-left"|"from-bottom-right" }
 \`\`\``;
 
 function loadExemplar(): string {
@@ -74,7 +82,8 @@ ${exemplar ? `--- EXEMPLAR ---\n${exemplar}\n` : ""}
 - Max 4 simultaneous visual elements at any frame
 - slug must be "${slug}"
 - fps must be 30, width 1920, height 1080
-- No markdown fences, no prose — JSON only`;
+- No markdown fences, no prose — JSON only
+- Each scene block accepts an optional "transition" field controlling how it enters during the crossfade window. Use "slide" for lateral movement, "wipe" for a masked reveal (supports diagonals), "flip" for a 3D card-flip, "fade" for pure opacity crossfade. Use sparingly — 1-2 per script max. Diagonal wipe directions (from-top-left etc.) are only valid with kind "wipe"`;
 
   const assetInstructions = assetManifest
     ? `\nAvailable image assets:\n${assetManifest}\n\nUse these exact label values when referencing assets in blocks. Copy the matching path value into assets[].path for every asset you include.\n`
