@@ -140,6 +140,16 @@ function cleanArtifacts(segmentIndex: number): void {
     }
   }
 
+  // Audio (TTS output)
+  const AUDIO_DIR = "public/audio";
+  if (fs.existsSync(AUDIO_DIR)) {
+    for (const entry of fs.readdirSync(AUDIO_DIR)) {
+      const fullPath = path.join(AUDIO_DIR, entry);
+      fs.rmSync(fullPath, { recursive: true, force: true });
+      console.log(`Removed ${fullPath}`);
+    }
+  }
+
   removeDirContents(TMP_DIR);
   removeFilesInDir(OUT_DIR);
   resetCompositions();

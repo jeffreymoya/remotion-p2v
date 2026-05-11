@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import path from "node:path";
+import { traceable } from "langsmith/traceable";
 import type { Segment } from "./parse-script";
 import { deepseekChat, DeepSeekError } from "./deepseek";
 import {
@@ -11,12 +11,10 @@ import {
 } from "./scene-manifest";
 import { buildSceneManifestPrompt } from "./build-scene-manifest-prompt";
 import { type Phase, shouldRunPhase } from "./cli-args";
-import { makeDeepSeekRecorders } from "./deepseek-recorders";
 
-export async function loadOrGenerateManifest(
+async function loadOrGenerateManifestImpl(
   slug: string,
   effectiveSegment: Segment,
-  runDir: string,
   args: { from: Phase; only?: Phase; verbose: boolean },
 ): Promise<{ manifest: SceneManifest | null; manifestGenerated: boolean }> {
   const manifestFilePath = manifestPath(slug);
@@ -36,7 +34,7 @@ export async function loadOrGenerateManifest(
     }
   }
 
-  if (!manifest && shouldRunPhase("prompt", args.from, args.only)) {
+  if (!manifest && (shouldRunPhase("tts", args.from, args.only) || shouldRunPhase("images", args.from, args.only) || shouldRunPhase("code", args.from, args.only))) {
     console.log("Generating scene manifest from segment narrative...");
     const { system, user } = buildSceneManifestPrompt(
       effectiveSegment,
@@ -55,12 +53,7 @@ export async function loadOrGenerateManifest(
         },
         {
           verbose: args.verbose,
-          ...makeDeepSeekRecorders(
-            "manifest",
-            path.join(runDir, "00-manifest.response.txt"),
-            path.join(runDir, "00-manifest.thinking.txt"),
-            args.verbose,
-          ),
+          metadata: { phase: "manifest" },
         },
       );
       manifest = parseSceneManifest(raw);
@@ -72,11 +65,11 @@ export async function loadOrGenerateManifest(
     } catch (err) {
       if (err instanceof DeepSeekError) {
         console.error(
-          `DeepSeek API error (scene manifest): ${err.message}. Falling back to legacy single-composition mode.`,
+          `DeepSeek API error (scene manifest): ${err.message}.`,
         );
       } else {
         console.error(
-          `Scene manifest generation error: ${err instanceof Error ? err.message : String(err)}. Falling back to legacy single-composition mode.`,
+          `Scene manifest generation error: ${err instanceof Error ? err.message : String(err)}.`,
         );
       }
       manifest = null;
@@ -85,3 +78,8 @@ export async function loadOrGenerateManifest(
 
   return { manifest, manifestGenerated };
 }
+
+export const loadOrGenerateManifest = traceable(loadOrGenerateManifestImpl, {
+  name: "scene-manifest",
+  run_type: "chain",
+});

@@ -38,14 +38,14 @@ const plan: ImageFetchItem[] = [
   item({
     label: "plane.png",
     asset_role: "animated_object",
-    needs_cutout: true,
+    needs_background_removal: true,
     preferred_format: "png",
     resolved_path: "public/images/plane.png",
   }),
   item({
     label: "badge.png",
     asset_role: "static_overlay",
-    needs_cutout: true,
+    needs_background_removal: true,
     preferred_format: "png",
   }),
   item({
@@ -119,4 +119,4 @@ assert.equal(
   "restore dry-run should not replace current asset",
 );
 
-console.log("Cutout image dry-run smoke passed");
+console.log("Background removal image dry-run smoke passed");

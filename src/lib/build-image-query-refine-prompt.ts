@@ -1,63 +1,83 @@
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
 
 export function buildImageQueryRefinePrompt(
-  remotionPrompt: string,
+  narrative: string,
   failedItems: ImageFetchItem[],
-  qaFailures: Array<{ label: string; reason: string; suggestion?: string }>,
+  acquisitionFailures: Array<{ label: string; reason: string }>,
 ): { system: string; user: string } {
-  const system = `You are repairing a Remotion image download plan after visual quality review failed.
+  const system = `You are repairing a Remotion image acquisition plan after an acquisition attempt failed.
 
-The images were downloaded successfully but did not match the visual requirements semantically — wrong subject, poor angle, occluded, or unsuitable for cutout.
+The previous attempt failed while acquiring the asset, downloading it, or validating required output properties such as an alpha PNG.
 
 Rules:
 - Output ONLY a JSON array.
 - Return one replacement item for each failed label and no extra labels.
 - Keep the exact same "label" values from the failed items.
-- Preserve each failed item's asset_role, visual_purpose, needs_cutout, and preferred_format values exactly.
-- Use the vision reviewer's reason and suggestion to craft a better search query.
-- Replace "query" with a more specific search term that addresses the reviewer's feedback.
-- Replace "image_url" with a different direct, publicly fetchable HTTP(S) image URL if you can find a better one, or set it to null to rely on search.
-- Do not reuse any previous URL.
-- Do not use URLs from hosts that block automated downloads.
-- Prefer stable direct image URLs from hosts that allow unauthenticated automated fetches.
+- Preserve each failed item's asset_role, visual_purpose, and needs_background_removal values exactly.
+- Use the failure reason to craft a more reliable Pixabay search query.
+- Replace "query" with a more specific Pixabay search term that addresses the failure.
 
 Each replacement item must include:
 - "label"
 - "asset_role"
 - "visual_purpose"
-- "needs_cutout"
-- "preferred_format"
-- "image_url"
-- "source_url"
+- "needs_background_removal"
 - "query"
 - "visual_requirements"
 - "rationale"`;
 
-  const failureDetails = qaFailures
+  const failureDetails = acquisitionFailures
     .map((f) => {
       const parts = [`- label: "${f.label}" | reason: ${f.reason}`];
-      if (f.suggestion) {
-        parts.push(`  suggestion: ${f.suggestion}`);
-      }
       return parts.join("\n");
     })
     .join("\n");
 
-  const user = `The previous images were downloaded but failed visual quality review. Replace the search queries to find better matches.
+  const user = `The previous acquisition attempt failed. Replace the search queries to find more reliable matches.
 
---- Remotion Prompt ---
-${remotionPrompt}
---- End Prompt ---
+--- Scene Narrative ---
+${narrative}
+--- End Narrative ---
 
 --- Failed Items ---
 ${JSON.stringify(failedItems, null, 2)}
 --- End Failed Items ---
 
---- Vision QA Failures ---
+--- Acquisition Failures ---
 ${failureDetails}
---- End Vision QA Failures ---
+--- End Acquisition Failures ---
 
 Output ONLY the JSON array of replacement items.`;
+
+  return { system, user };
+}
+
+export function buildT2iPromptRefinePrompt(
+  item: ImageFetchItem,
+  failureReason: string,
+): { system: string; user: string } {
+  const system = `You are refining a text-to-image generation prompt after image acquisition failed.
+
+Rules:
+- Output ONLY the refined t2i_prompt as a single string (no JSON wrapping).
+- Keep the same subject and intent as the original prompt.
+- Address the acquisition failure by being more explicit about the required output.
+- Do not change the fundamental subject or purpose of the image.
+- Keep the prompt detailed and descriptive (see the original for style reference).
+- Do NOT include style keywords like "photorealistic" or "cinematic" — those are appended automatically.`;
+
+  const user = `Image acquisition for "${item.label}" failed.
+
+Original t2i_prompt:
+${item.t2i_prompt ?? "(none)"}
+
+Visual requirements:
+${item.visual_requirements}
+
+Failure reason:
+${failureReason}
+
+Write an improved t2i_prompt that addresses the failure. Output ONLY the refined prompt text.`;
 
   return { system, user };
 }

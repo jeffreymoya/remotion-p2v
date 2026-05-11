@@ -7,6 +7,8 @@ const AssetRef = z.object({
   label: z.string(),
   role: z.enum(["background", "animated_object", "static_overlay", "screen_mockup"]),
   path: z.string().optional(),
+  backgroundRemoved: z.boolean().optional(),
+  // Deprecated legacy field. Use path plus backgroundRemoved metadata instead.
   cutoutPath: z.string().optional(),
 });
 
@@ -188,14 +190,6 @@ const StatCounterBlock = z.object({
   ...transitionMixin,
 });
 
-const CustomSceneBlock = z.object({
-  type: z.literal("CustomScene"),
-  frameRange: FrameRange,
-  description: z.string(),
-  config: z.record(z.string(), z.unknown()),
-  ...transitionMixin,
-});
-
 // ── Root schema ─────────────────────────────────────────────────────────
 export const SceneBlock = z.discriminatedUnion("type", [
   ContradictionHookBlock,
@@ -215,7 +209,6 @@ export const SceneBlock = z.discriminatedUnion("type", [
   MiniPayoffBlock,
   ForeshadowBlock,
   StatCounterBlock,
-  CustomSceneBlock,
 ]);
 
 export const SceneScriptSchema = z.object({

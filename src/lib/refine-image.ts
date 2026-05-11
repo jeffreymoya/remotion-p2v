@@ -1,121 +1,195 @@
-import path from "node:path";
-import { downloadOne } from "./download-images";
-import type { DownloadResult } from "./download-images";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
 import {
-  buildImageFetchRepairPrompt,
-  parseImageFetchResponse,
-} from "./build-image-fetch-prompt";
-import { buildImageQueryRefinePrompt } from "./build-image-query-refine-prompt";
-import { visionQa } from "./vision-qa";
-import type { VisionQaResult } from "./vision-qa";
+  buildImageQueryRefinePrompt,
+  buildT2iPromptRefinePrompt,
+} from "./build-image-query-refine-prompt";
 import { deepseekChat } from "./deepseek";
 import { IMAGE_FETCH_TEMPERATURE, IMAGE_FETCH_REASONING } from "./config";
-import { mergeDownloadResults } from "./image-plan-utils";
+import type { StylePreset } from "./config";
+import { mergeAcquireResults } from "./image-plan-utils";
+import {
+  acquireImages as acquireImagesFromSources,
+  type AcquireResult,
+} from "./acquire-images";
+import { parseImageFetchResponse } from "./build-image-fetch-prompt";
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 2;
+const MAX_NETWORK_RETRIES = 2;
+
+type AcquireImagesFn = (
+  items: ImageFetchItem[],
+  imgDir: string,
+  style: StylePreset,
+) => Promise<AcquireResult[]>;
 
 export async function refineImages(
   items: ImageFetchItem[],
   imgDir: string,
-  remotionPrompt: string,
-  limiter: <T>(task: () => Promise<T>) => Promise<T>,
+  narrative: string,
+  style: StylePreset,
   options: {
     runDeepSeek: <T>(task: () => Promise<T>) => Promise<T>;
     maxAttempts?: number;
+    maxNetworkRetries?: number;
+    acquireImages?: AcquireImagesFn;
     verbose?: boolean;
   },
-): Promise<{ items: ImageFetchItem[]; results: DownloadResult[] }> {
+): Promise<{ items: ImageFetchItem[]; results: AcquireResult[] }> {
   const maxAttempts = options.maxAttempts ?? MAX_ATTEMPTS;
-  const allResults: DownloadResult[] = [];
+  const maxRefineRounds = Math.max(0, maxAttempts - 1);
+  const maxNetworkRetries = options.maxNetworkRetries ?? MAX_NETWORK_RETRIES;
+  const acquireImages = options.acquireImages ?? acquireImagesFromSources;
+  const allResults: AcquireResult[] = [];
   let currentItems = items;
+  let refineRounds = 0;
+  const networkRetryCounts = new Map<string, number>();
+  const terminalFailedLabels = new Set<string>();
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    // Download all items that don't have a resolved path yet
-    const toDownload = currentItems.filter((item) => !item.resolved_path);
-    if (toDownload.length === 0) break;
+  while (true) {
+    // Acquire all items that don't have a resolved path yet
+    const toAcquire = currentItems.filter(
+      (item) => !item.resolved_path && !terminalFailedLabels.has(item.label),
+    );
+    if (toAcquire.length === 0) break;
 
-    const downloadResults = await Promise.all(
-      toDownload.map((item) => limiter(() => downloadOne(item, imgDir))),
+    const acquireResults = await acquireImages(toAcquire, imgDir, style);
+
+    // Merge acquire results into items
+    currentItems = mergeAcquireResults(currentItems, acquireResults);
+
+    const failures = acquireResults.filter((r) => !r.ok);
+    const successes = acquireResults.filter((r) => r.ok);
+    for (const result of successes) {
+      allResults.push(result);
+    }
+
+    const networkFailures = failures.filter((f) =>
+      isNetworkFailure(f.error),
+    );
+    const retryableNetworkFailures: AcquireResult[] = [];
+    const terminalFailures: AcquireResult[] = [];
+    for (const failure of networkFailures) {
+      const retryCount = networkRetryCounts.get(failure.label) ?? 0;
+      if (retryCount >= maxNetworkRetries) {
+        terminalFailures.push(failure);
+        terminalFailedLabels.add(failure.label);
+        console.warn(
+          `  [retry] ${failure.label}: network failure after ${maxNetworkRetries} retr${maxNetworkRetries === 1 ? "y" : "ies"} (${failure.error ?? "unknown error"})`,
+        );
+      } else {
+        const nextRetryCount = retryCount + 1;
+        networkRetryCounts.set(failure.label, nextRetryCount);
+        retryableNetworkFailures.push(failure);
+        console.warn(
+          `  [retry] ${failure.label}: network failure, retry ${nextRetryCount}/${maxNetworkRetries} (${failure.error ?? "unknown error"})`,
+        );
+      }
+    }
+
+    const refinableFailures = failures.filter(
+      (f) => !isNetworkFailure(f.error) && hasErrorMessage(f.error),
+    );
+    const nonRefinableFailures = failures.filter(
+      (f) => !isNetworkFailure(f.error) && !hasErrorMessage(f.error),
+    );
+    for (const failure of nonRefinableFailures) {
+      terminalFailures.push(failure);
+      terminalFailedLabels.add(failure.label);
+      console.warn(
+        `  [refine] ${failure.label}: no acquisition error message; not refining`,
+      );
+    }
+
+    const refinableRetryFailures =
+      refineRounds < maxRefineRounds ? refinableFailures : [];
+
+    if (refinableFailures.length > 0 && refinableRetryFailures.length === 0) {
+      for (const failure of refinableFailures) {
+        terminalFailures.push(failure);
+        terminalFailedLabels.add(failure.label);
+      }
+    }
+
+    for (const failure of terminalFailures) {
+      allResults.push(failure);
+    }
+
+    const refinableLabels = new Set(
+      refinableRetryFailures.map((f) => f.label),
+    );
+    if (refinableLabels.size === 0) {
+      if (retryableNetworkFailures.length === 0) break;
+      continue;
+    }
+
+    refineRounds++;
+    console.log(
+      `  [refine] ${refinableLabels.size} failure(s), refining for retry (round ${refineRounds}/${maxRefineRounds})`,
     );
 
-    // Merge download results into items
-    currentItems = mergeDownloadResults(currentItems, downloadResults);
-
-    // Separate download successes and failures
-    const downloadFailures = downloadResults.filter((r) => !r.ok);
-    const downloadSuccesses = downloadResults.filter((r) => r.ok);
-
-    // Run vision QA on successfully downloaded images
-    const qaFailures: Array<{
-      label: string;
-      reason: string;
-      suggestion?: string;
-      item: ImageFetchItem;
-    }> = [];
-
-    for (const result of downloadSuccesses) {
-      const item = currentItems.find((i) => i.label === result.label);
-      if (!item) continue;
-
-      const qaResult: VisionQaResult = await visionQa(
-        result.path,
-        item.visual_requirements,
-        item.asset_role ?? "unspecified",
-      );
-
-      if (qaResult.ok) {
-        console.log(`  [vision-qa] OK: ${result.label}`);
-        allResults.push(result);
-      } else {
-        console.log(
-          `  [vision-qa] FAIL: ${result.label} — ${qaResult.reason ?? "unknown"}`,
+    // Refine non-background items (t2i prompt refinement)
+    const failedGenerated = currentItems.filter(
+      (i) => refinableLabels.has(i.label) && i.asset_role !== "background",
+    );
+    if (failedGenerated.length > 0) {
+      for (const item of failedGenerated) {
+        const failure = refinableRetryFailures.find(
+          (f) => f.label === item.label,
         );
-        qaFailures.push({
-          label: result.label,
-          reason: qaResult.reason ?? "visual mismatch",
-          suggestion: qaResult.suggestion,
-          item,
-        });
-        // Clear resolved path so it gets retried
-        const idx = currentItems.findIndex((i) => i.label === result.label);
-        if (idx !== -1) {
-          currentItems = currentItems.map((i, j) =>
-            j === idx
-              ? {
-                  ...i,
-                  resolved_path: undefined,
-                  resolution_error: `vision QA failed: ${qaResult.reason}`,
-                }
-              : i,
+        const suggestion =
+          failure?.error ?? item.resolution_error ?? "image acquisition failed";
+
+        const { system, user } = buildT2iPromptRefinePrompt(item, suggestion);
+        try {
+          const response = await options.runDeepSeek(() =>
+            deepseekChat(
+              [
+                { role: "system", content: system },
+                { role: "user", content: user },
+              ],
+              IMAGE_FETCH_TEMPERATURE,
+              IMAGE_FETCH_REASONING,
+              { metadata: { phase: "refine-t2i" } },
+            ),
+          );
+          const refined = parseRefinedT2iPrompt(response);
+          if (refined) {
+            currentItems = currentItems.map((i) =>
+              i.label === item.label
+                ? { ...i, t2i_prompt: refined, resolved_path: undefined, resolution_error: undefined }
+                : i,
+            );
+          }
+        } catch (err) {
+          console.warn(
+            `  [refine] t2i prompt refinement failed for ${item.label}: ${err instanceof Error ? err.message : String(err)}`,
           );
         }
       }
     }
 
-    // Handle download failures with URL repair (existing dead code, now wired)
-    if (downloadFailures.length > 0 && attempt < maxAttempts) {
-      const failedItems = currentItems.filter((item) =>
-        downloadFailures.some((f) => f.label === item.label),
-      );
-      const failures = downloadFailures.map((f) => ({
-        label: f.label,
-        url: f.url,
-        error: f.error,
-      }));
-
-      console.log(
-        `  [refine] ${downloadFailures.length} download failure(s), repairing URLs (attempt ${attempt + 1})`,
-      );
-
-      const { system, user } = buildImageFetchRepairPrompt(
-        remotionPrompt,
-        failedItems,
-        failures,
+    // Refine background items (query refinement)
+    const failedBackgrounds = currentItems.filter(
+      (i) => refinableLabels.has(i.label) && i.asset_role === "background",
+    );
+    if (failedBackgrounds.length > 0) {
+      const { system, user } = buildImageQueryRefinePrompt(
+        narrative,
+        failedBackgrounds,
+        failedBackgrounds.map((b) => {
+          const failure = refinableRetryFailures.find(
+            (f) => f.label === b.label,
+          );
+          return {
+            label: b.label,
+            reason:
+              failure?.error ?? b.resolution_error ?? "image acquisition failed",
+          };
+        }),
       );
 
       try {
-        const repairResponse = await options.runDeepSeek(() =>
+        const response = await options.runDeepSeek(() =>
           deepseekChat(
             [
               { role: "system", content: system },
@@ -123,17 +197,15 @@ export async function refineImages(
             ],
             IMAGE_FETCH_TEMPERATURE,
             IMAGE_FETCH_REASONING,
+            { metadata: { phase: "refine-query" } },
           ),
         );
-
-        const repairedItems = parseImageFetchResponse(repairResponse);
+        const refinedItems = parseImageFetchResponse(response);
         currentItems = currentItems.map((item) => {
-          const repair = repairedItems.find((r) => r.label === item.label);
+          const repair = refinedItems.find((r) => r.label === item.label);
           return repair
             ? {
                 ...item,
-                image_url: repair.image_url,
-                source_url: repair.source_url,
                 query: repair.query ?? item.query,
                 resolved_path: undefined,
                 resolution_error: undefined,
@@ -142,94 +214,58 @@ export async function refineImages(
         });
       } catch (err) {
         console.warn(
-          `  [refine] URL repair failed: ${err instanceof Error ? err.message : String(err)}`,
+          `  [refine] query refinement failed: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     }
-
-    // Handle vision QA failures with query refinement
-    if (qaFailures.length > 0 && attempt < maxAttempts) {
-      const failedItems = currentItems.filter((item) =>
-        qaFailures.some((f) => f.label === item.label),
-      );
-
-      console.log(
-        `  [refine] ${qaFailures.length} vision QA failure(s), refining queries (attempt ${attempt + 1})`,
-      );
-
-      const { system, user } = buildImageQueryRefinePrompt(
-        remotionPrompt,
-        failedItems,
-        qaFailures.map((f) => ({
-          label: f.label,
-          reason: f.reason,
-          suggestion: f.suggestion,
-        })),
-      );
-
-      try {
-        const refineResponse = await options.runDeepSeek(() =>
-          deepseekChat(
-            [
-              { role: "system", content: system },
-              { role: "user", content: user },
-            ],
-            IMAGE_FETCH_TEMPERATURE,
-            IMAGE_FETCH_REASONING,
-          ),
-        );
-
-        const refinedItems = parseImageFetchResponse(refineResponse);
-        currentItems = currentItems.map((item) => {
-          const refined = refinedItems.find((r) => r.label === item.label);
-          return refined
-            ? {
-                ...item,
-                image_url: refined.image_url,
-                source_url: refined.source_url,
-                query: refined.query ?? item.query,
-                resolved_path: undefined,
-                resolution_error: undefined,
-              }
-            : item;
-        });
-      } catch (err) {
-        console.warn(
-          `  [refine] Query refinement failed: ${err instanceof Error ? err.message : String(err)}`,
-        );
-      }
-    }
-
-    // If no failures remain, we're done
-    const remaining = currentItems.filter(
-      (item) => !item.resolved_path && !allResults.some((r) => r.label === item.label && r.ok),
-    );
-    if (remaining.length === 0) break;
   }
 
-  // Mark unresolved items
-  const finalItems = currentItems.map((item) => {
-    if (!item.resolved_path && !allResults.some((r) => r.label === item.label && r.ok)) {
-      return {
-        ...item,
-        resolution_error:
-          item.resolution_error ?? `vision QA failed after ${maxAttempts} attempts`,
-      };
-    }
-    return item;
-  });
+  return { items: currentItems, results: allResults };
+}
 
-  // Collect all results (successes from allResults + failures)
-  const finalResults = finalItems.map((item) => {
-    const success = allResults.find((r) => r.label === item.label && r.ok);
-    if (success) return success;
-    return {
-      label: item.label,
-      path: path.join(imgDir, item.label),
-      ok: false,
-      error: item.resolution_error ?? "unresolved",
-    };
-  });
+function hasErrorMessage(error: string | undefined): boolean {
+  return typeof error === "string" && error.trim().length > 0;
+}
 
-  return { items: finalItems, results: finalResults };
+export function isNetworkFailure(error: string | undefined): boolean {
+  const message = error?.trim();
+  if (!message) return false;
+  const normalized = message.toLowerCase();
+  return [
+    "aborted",
+    "aborterror",
+    "connection reset",
+    "connection refused",
+    "eai_again",
+    "econnrefused",
+    "econnreset",
+    "enotfound",
+    "etimedout",
+    "fetch failed",
+    "network",
+    "socket",
+    "terminated",
+    "timed out",
+    "timeout",
+    "tls",
+    "und_err",
+  ].some((needle) => normalized.includes(needle));
+}
+
+function parseRefinedT2iPrompt(raw: string): string | undefined {
+  const trimmed = raw.trim();
+  // Try JSON first
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (typeof parsed === "string") return parsed;
+    if (parsed?.t2i_prompt) return parsed.t2i_prompt;
+    if (Array.isArray(parsed) && parsed[0]?.t2i_prompt) return parsed[0].t2i_prompt;
+  } catch {
+    // Not JSON — treat as raw prompt text
+  }
+  // If it looks like a prompt (long enough, no JSON markers), use as-is
+  if (trimmed.length > 20 && !trimmed.startsWith("{") && !trimmed.startsWith("[")) {
+    return trimmed;
+  }
+  return undefined;
 }

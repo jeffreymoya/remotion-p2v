@@ -145,7 +145,7 @@ export function restoreOriginalsAndCutout(options: RestoreAndCutoutOptions): {
   if (failed.length > 0 && !options.dryRun) {
     fs.writeFileSync(planPath, JSON.stringify(items, null, 2), "utf-8");
     throw new Error(
-      `Restore failed for ${failed.length} item(s); cutout was not run.`,
+      `Restore failed for ${failed.length} item(s); background removal was not run.`,
     );
   }
 
@@ -218,7 +218,7 @@ function parseArgs(argv: string[]): RestoreAndCutoutOptions {
 
   if (!planPath) {
     throw new Error(
-      "Usage: npm run recut:images -- [--dry-run] [--label=file.png] [--alpha-min=0-255] [--alpha-max=0-255] [--outline-size=0-256] [--outline-color=R,G,B,A] [--outline-threshold=0-255] [--hard-alpha] [--keep-largest] [--smooth-alpha-blur=N] [--smooth-alpha-black=0-100] [--smooth-alpha-white=0-100] [--threshold-alpha=0-255] prompts/<slug>-images.json",
+      "Usage: npm run restore-background-remove:images -- [--dry-run] [--label=file.png] [--alpha-min=0-255] [--alpha-max=0-255] [--outline-size=0-256] [--outline-color=R,G,B,A] [--outline-threshold=0-255] [--hard-alpha] [--keep-largest] [--smooth-alpha-blur=N] [--smooth-alpha-black=0-100] [--smooth-alpha-white=0-100] [--threshold-alpha=0-255] prompts/<slug>-images.json",
     );
   }
   if (requireLabel && labels.length === 0) {
@@ -277,7 +277,16 @@ function parseArgs(argv: string[]): RestoreAndCutoutOptions {
   };
 }
 
-function main(): void {
+export function main(): void {
+  if (
+    process.argv[1] &&
+    path.basename(process.argv[1]) === "restore-originals-and-cutout.ts"
+  ) {
+    console.warn(
+      "`npm run recut:images` is deprecated. Use `npm run restore-background-remove:images` instead.",
+    );
+  }
+
   const options = parseArgs(process.argv.slice(2));
   const projectRoot = path.resolve(options.projectRoot ?? process.cwd());
   const resolvedPlanPath = resolveImagePlanPath(projectRoot, options.planPath);
@@ -308,7 +317,7 @@ function main(): void {
   const cutoutSelected = cutout.results.filter((result) => result.status !== "skipped");
   const cutoutErrors = cutoutSelected.filter((result) => result.status === "error").length;
   console.log(
-    `Restore + cutout ${options.dryRun ? "dry run" : "run"} complete: restored ${restored.length}, cutout ${cutoutSelected.length}, errors ${restoreErrors + cutoutErrors}`,
+    `Restore + background removal ${options.dryRun ? "dry run" : "run"} complete: restored ${restored.length}, processed ${cutoutSelected.length}, errors ${restoreErrors + cutoutErrors}`,
   );
 
   if (restoreErrors + cutoutErrors > 0) {

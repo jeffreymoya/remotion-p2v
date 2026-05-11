@@ -1,9 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { traceable } from "langsmith/traceable";
+import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import type { Segment } from "./parse-script";
 import { deepseekChat, DeepSeekError } from "./deepseek";
-import { buildScenePrompt } from "./build-scene-prompt";
 import {
   buildImageFetchPrompt,
   parseImageFetchResponse,
@@ -27,15 +26,14 @@ import {
 } from "./scene-manifest";
 import { runTtsPhase } from "./tts-phase";
 import {
-  PROMPT_GEN_TEMPERATURE,
   CODE_GEN_TEMPERATURE,
-  PROMPT_GEN_REASONING,
   CODE_GEN_REASONING,
   IMAGE_FETCH_TEMPERATURE,
   IMAGE_FETCH_REASONING,
+  DEFAULT_STYLE,
+  type StylePreset,
 } from "./config";
 import { type Phase, shouldRunPhase } from "./cli-args";
-import { makeDeepSeekRecorders } from "./deepseek-recorders";
 import { loadCodeImageItems } from "./image-plan-utils";
 
 export type SceneJobStatus = "success" | "failed" | "skipped";
@@ -43,7 +41,6 @@ export type SceneJobStatus = "success" | "failed" | "skipped";
 export interface SceneJobResult {
   scene: SceneSpec;
   status: SceneJobStatus;
-  promptPath?: string;
   imagePlanPath?: string;
   sceneJsonPath?: string;
   error?: string;
@@ -61,22 +58,30 @@ async function runSceneJobImpl(
     from: Phase;
     only?: Phase;
     verbose: boolean;
+    style?: StylePreset;
   },
   runDeepSeek: <T>(task: () => Promise<T>) => Promise<T>,
-  runImageDownload: <T>(task: () => Promise<T>) => Promise<T>,
   runTts: <T>(task: () => Promise<T>) => Promise<T>,
-  runDir: string,
-  exemplars: string[],
 ): Promise<SceneJobResult> {
   const startTime = Date.now();
   let deepseekCalls = 0;
   const artifactPaths: string[] = [];
+
+  const run = getCurrentRunTree(true);
+  if (run) {
+    run.metadata = {
+      ...run.metadata,
+      scene_index: scene.sceneIndex,
+      segment_slug: segmentSlug,
+      scene_title: scene.title,
+    };
+  }
+
   const from = args.from;
   const only = args.only;
 
   try {
     const outDir = sceneOutputDir(segmentSlug);
-    const scenePromptPath = path.join(outDir, sceneFileName(scene, ".txt"));
     const sceneImagePlanPath = path.join(
       outDir,
       sceneFileName(scene, "-images.json"),
@@ -87,95 +92,25 @@ async function runSceneJobImpl(
     );
     const imgDir = sceneImageDir(segmentSlug, scene);
 
-    const sceneDir = path.join(runDir, `scene-${String(scene.sceneIndex).padStart(3, "0")}`);
-    fs.mkdirSync(sceneDir, { recursive: true });
-
     // Mutable scene reference — TTS phase may update with audio path + word timings
     let effectiveScene = scene;
     let resolvedDurationInFrames: number | undefined;
 
     // ── TTS phase ──
     if (shouldRunPhase("tts", from, only)) {
-      if (!process.env.ELEVENLABS_API_KEY) {
+      if (!process.env.GOOGLE_CLOUD_API_KEY) {
         console.log(
-          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] TTS skipped (no ELEVENLABS_API_KEY)`,
+          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] TTS skipped (no GOOGLE_CLOUD_API_KEY)`,
         );
       } else {
         const ttsResult = await runTts(() =>
-          runTtsPhase(scene, segmentSlug, runDir, {
+          runTtsPhase(scene, segmentSlug, {
             verbose: args.verbose,
           }),
         );
         effectiveScene = ttsResult.updatedScene;
         resolvedDurationInFrames = ttsResult.durationInFrames;
       }
-    }
-
-    // ── Prompt phase ──
-    let remotionPrompt = "";
-    const needsPrompt =
-      shouldRunPhase("prompt", from, only) ||
-      shouldRunPhase("images", from, only) ||
-      shouldRunPhase("code", from, only);
-
-    if (shouldRunPhase("prompt", from, only)) {
-      let promptContent: string;
-      if (isArtifactReady(scenePromptPath)) {
-        promptContent = fs.readFileSync(scenePromptPath, "utf-8");
-        remotionPrompt = promptContent;
-        artifactPaths.push(scenePromptPath);
-        console.log(
-          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Prompt cached: ${scenePromptPath}`,
-        );
-      } else {
-        const { system, user } = buildScenePrompt(
-          scene,
-          segmentTitle,
-          segmentSlug,
-          exemplars,
-        );
-        promptContent = await runDeepSeek(async () => {
-          deepseekCalls++;
-          const recorders = makeDeepSeekRecorders(
-            `scene-${String(scene.sceneIndex).padStart(3, "0")}-prompt`,
-            path.join(sceneDir, "prompt.response.txt"),
-            path.join(sceneDir, "prompt.thinking.txt"),
-            args.verbose,
-          );
-          return deepseekChat(
-            [
-              { role: "system", content: system },
-              { role: "user", content: user },
-            ],
-            PROMPT_GEN_TEMPERATURE,
-            PROMPT_GEN_REASONING,
-            { verbose: false, ...recorders },
-          );
-        });
-        remotionPrompt = promptContent;
-        writeFileAtomically(scenePromptPath, promptContent);
-        artifactPaths.push(scenePromptPath);
-        console.log(
-          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Prompt saved: ${scenePromptPath} (${promptContent.length} chars)`,
-        );
-      }
-    } else if (needsPrompt) {
-      if (!isArtifactReady(scenePromptPath)) {
-        return {
-          scene,
-          status: "failed",
-          promptPath: scenePromptPath,
-          durationMs: Date.now() - startTime,
-          deepseekCalls,
-          artifactPaths,
-          error: `Prompt file not found: ${scenePromptPath}. Run with --from=prompt first.`,
-        };
-      }
-      remotionPrompt = fs.readFileSync(scenePromptPath, "utf-8");
-      artifactPaths.push(scenePromptPath);
-      console.log(
-        `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Prompt loaded: ${scenePromptPath}`,
-      );
     }
 
     // ── Images phase ──
@@ -197,15 +132,9 @@ async function runSceneJobImpl(
       }
 
       if (!isArtifactReady(sceneImagePlanPath) || imageItems.length === 0) {
-        const { system, user } = buildImageFetchPrompt(remotionPrompt);
+        const { system, user } = buildImageFetchPrompt(effectiveScene.narrative, effectiveScene.visualGoal);
         const imagePlanRaw = await runDeepSeek(async () => {
           deepseekCalls++;
-          const recorders = makeDeepSeekRecorders(
-            `scene-${String(scene.sceneIndex).padStart(3, "0")}-images`,
-            path.join(sceneDir, "images.response.txt"),
-            path.join(sceneDir, "images.thinking.txt"),
-            args.verbose,
-          );
           return deepseekChat(
             [
               { role: "system", content: system },
@@ -213,7 +142,7 @@ async function runSceneJobImpl(
             ],
             IMAGE_FETCH_TEMPERATURE,
             IMAGE_FETCH_REASONING,
-            { verbose: false, ...recorders },
+            { verbose: false, metadata: { phase: "images", scene_index: scene.sceneIndex } },
           );
         });
         writeFileAtomically(sceneImagePlanPath, imagePlanRaw);
@@ -232,17 +161,18 @@ async function runSceneJobImpl(
       }
 
       if (imageItems.length > 0) {
+        const style = args.style ?? DEFAULT_STYLE;
         const { items: refinedItems, results } = await refineImages(
           imageItems,
           imgDir,
-          remotionPrompt,
-          runImageDownload,
+          effectiveScene.narrative,
+          style,
           { runDeepSeek, verbose: args.verbose },
         );
         for (const r of results) {
           const detail = r.ok
-            ? ` (${r.url})`
-            : ` (${r.error ?? "download failed"})`;
+            ? ` (${r.path ?? "acquired"})`
+            : ` (${r.error ?? "acquisition failed"})`;
           console.log(
             `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] ${r.ok ? "OK" : "FAIL"}  ${r.label}${detail}`,
           );
@@ -252,10 +182,10 @@ async function runSceneJobImpl(
           sceneImagePlanPath,
           JSON.stringify(imageItems, null, 2),
         );
-        const downloaded = results.filter((r) => r.ok).length;
-        const failed = results.length - downloaded;
+        const acquired = results.filter((r) => r.ok).length;
+        const failed = results.length - acquired;
         console.log(
-          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Images: ${downloaded} downloaded, ${failed} failed`,
+          `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Images: ${acquired} acquired, ${failed} failed`,
         );
       }
     }
@@ -269,7 +199,8 @@ async function runSceneJobImpl(
       const compId = compositionId(segmentSlug, scene);
 
       const { system, user } = buildSceneJsonPrompt(
-        remotionPrompt,
+        effectiveScene.narrative,
+        effectiveScene.visualGoal,
         codeImageItems,
         compId,
         durationInFrames,
@@ -279,12 +210,6 @@ async function runSceneJobImpl(
 
       const sceneResponse = await runDeepSeek(async () => {
         deepseekCalls++;
-        const recorders = makeDeepSeekRecorders(
-          `scene-${String(scene.sceneIndex).padStart(3, "0")}-code`,
-          path.join(sceneDir, "code.response.txt"),
-          path.join(sceneDir, "code.thinking.txt"),
-          args.verbose,
-        );
         return deepseekChat(
           [
             { role: "system", content: system },
@@ -292,7 +217,7 @@ async function runSceneJobImpl(
           ],
           CODE_GEN_TEMPERATURE,
           CODE_GEN_REASONING,
-          { verbose: false, ...recorders },
+          { verbose: false, metadata: { phase: "code", scene_index: scene.sceneIndex } },
         );
       });
 
@@ -308,8 +233,6 @@ async function runSceneJobImpl(
         },
       );
       artifactPaths.push(outPath);
-      // TODO: verify outPath === sceneJsonPath and remove duplicate push
-      sceneJsonPath && artifactPaths.push(sceneJsonPath);
       console.log(
         `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Code: ${outPath} (${script.scenes.length} blocks, ${script.durationInFrames}f)`,
       );
@@ -319,7 +242,6 @@ async function runSceneJobImpl(
     return {
       scene,
       status: "success",
-      promptPath: scenePromptPath,
       imagePlanPath: sceneImagePlanPath,
       sceneJsonPath,
       durationMs,
@@ -350,7 +272,6 @@ async function runSceneJobImpl(
     return {
       scene,
       status: "failed",
-      promptPath: path.join(sceneOutputDir(segmentSlug), sceneFileName(scene, ".txt")),
       imagePlanPath: path.join(
         sceneOutputDir(segmentSlug),
         sceneFileName(scene, "-images.json"),

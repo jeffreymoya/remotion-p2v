@@ -1,0 +1,1 @@
+import "./cutout-images-smoke";

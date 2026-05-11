@@ -1,21 +1,19 @@
 import fs from "node:fs";
-import path from "node:path";
+import { traceable } from "langsmith/traceable";
 import type { Segment } from "./parse-script";
 import { deepseekChat, DeepSeekError } from "./deepseek";
 import {
   buildNarrativeCheckPrompt,
   parseNarrativeCheckResponse,
 } from "./build-narrative-check-prompt";
-import { makeDeepSeekRecorders } from "./deepseek-recorders";
 import {
   NARRATIVE_CHECK_TEMPERATURE,
   NARRATIVE_CHECK_REASONING,
 } from "./config";
 
-export async function runNarrativePhase(
+async function runNarrativePhaseImpl(
   segment: Segment,
   narrativePath: string,
-  runDir: string,
   args: { verbose: boolean },
 ): Promise<void> {
   console.log("Phase 0: Scoring and enhancing segment narrative...");
@@ -31,15 +29,7 @@ export async function runNarrativePhase(
       ],
       NARRATIVE_CHECK_TEMPERATURE,
       NARRATIVE_CHECK_REASONING,
-      {
-        verbose: args.verbose,
-        ...makeDeepSeekRecorders(
-          "narrative",
-          path.join(runDir, "00-narrative.response.txt"),
-          path.join(runDir, "00-narrative.thinking.txt"),
-          args.verbose,
-        ),
-      },
+      { verbose: args.verbose, metadata: { phase: "narrative" } },
     );
   } catch (err) {
     if (err instanceof DeepSeekError) {
@@ -72,6 +62,11 @@ export async function runNarrativePhase(
     console.warn("  Could not extract enhanced narrative from response.\n");
   }
 }
+
+export const runNarrativePhase = traceable(runNarrativePhaseImpl, {
+  name: "narrative",
+  run_type: "chain",
+});
 
 export function loadEnhancedNarrative(
   segment: Segment,

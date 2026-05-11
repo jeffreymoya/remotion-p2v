@@ -1,7 +1,7 @@
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
 
 function toStaticFilePath(item: ImageFetchItem): string {
-  const assetPath = item.cutout_path ?? item.resolved_path ?? item.label;
+  const assetPath = item.resolved_path ?? item.label;
 
   return assetPath
     .replace(/\\/g, "/")

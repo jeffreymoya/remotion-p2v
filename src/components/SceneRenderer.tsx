@@ -48,7 +48,6 @@ const BLOCK_MAP: Record<string, React.FC<any>> = {
   Reframe: Blocks.Reframe,
   MiniPayoff: Blocks.MiniPayoff,
   Foreshadow: Blocks.Foreshadow,
-  CustomScene: Blocks.CustomScene,
   StatCounter: Blocks.StatCounter,
 };
 

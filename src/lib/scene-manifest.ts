@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { WordTiming } from "./tts-elevenlabs";
+import type { WordTiming } from "./tts-google";
 
 export interface SceneSpec {
   sceneIndex: number;

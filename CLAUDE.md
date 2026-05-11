@@ -11,7 +11,7 @@ The pipeline is **JSON-driven**: instead of generating raw `.tsx` files, the LLM
 ## Commands
 
 ```sh
-npm run dev -- 0              # Run full pipeline for segment 0 (prompt → images → scene JSON)
+npm run dev -- 0              # Run full pipeline for segment 0 (images → scene JSON)
 npm run dev -- 0 --from=code  # Resume from code phase only
 npm run dev -- 0 --only=images # Run only the image-fetch phase
 npm run images                # Alias for --only=images on segment 0
@@ -38,11 +38,10 @@ npm run recut:sticker-smooth-hard       # Cutout with white outline, smooth alph
 
 ## Pipeline Architecture
 
-The CLI (`src/cli.ts`) processes one script segment at a time and runs four sequential phases:
+The CLI (`src/cli.ts`) processes one script segment at a time and runs three sequential phases:
 
-1. **prompt** – Calls DeepSeek with `buildPrompt()` + exemplars to produce a natural-language Remotion composition description. Saved to `prompts/<slug>.txt`.
-2. **images** – Calls DeepSeek with `buildImageFetchPrompt()` to produce a JSON asset manifest. Downloads each asset via DuckDuckGo image search (with a hint URL when available). Saved/updated at `prompts/<slug>-images.json`.
-3. **code** – Calls DeepSeek with `buildSceneJsonPrompt()` (attaching the block catalog + resolved asset manifest). Validates the response against `SceneScriptSchema`, writes `prompts/<slug>-scene.json`, and regenerates `src/generated/scene-scripts.ts`.
+1. **images** – Calls DeepSeek with `buildImageFetchPrompt()` to produce a JSON asset manifest. Downloads each asset via Pixabay/Runware. Saved/updated at `prompts/<slug>-images.json`.
+2. **code** – Calls DeepSeek with `buildSceneJsonPrompt()` (attaching the block catalog + resolved asset manifest). Validates the response against `SceneScriptSchema`, writes `prompts/<slug>-scene.json`, and regenerates `src/generated/scene-scripts.ts`.
 
 Each phase can be skipped or isolated with `--from=<phase>` or `--only=<phase>`. Cached artifacts from earlier phases are loaded automatically when a later phase is run in isolation.
 
@@ -50,9 +49,8 @@ Each phase can be skipped or isolated with `--from=<phase>` or `--only=<phase>`.
 
 ```
 script.txt
-  └─> Phase 1: buildPrompt() → prompts/{slug}.txt
-  └─> Phase 2: buildImageFetchPrompt() → prompts/{slug}-images.json + public/images/
-  └─> Phase 3: buildSceneJsonPrompt(prompt + assets) → prompts/{slug}-scene.json
+  └─> Phase 1: buildImageFetchPrompt(narrative, visualGoal) → prompts/{slug}-images.json + public/images/
+  └─> Phase 2: buildSceneJsonPrompt(narrative, visualGoal + assets) → prompts/{slug}-scene.json
                writeSceneScriptsModule() → src/generated/scene-scripts.ts
 
 Runtime (Remotion Studio / render):
@@ -71,11 +69,10 @@ Runtime (Remotion Studio / render):
 | `src/lib/config.ts` | All tunable constants: model name, temperatures, reasoning config, directories |
 | `src/lib/deepseek.ts` | Thin fetch wrapper for DeepSeek chat completions (streaming + non-streaming) |
 | `src/lib/parse-script.ts` | Parses `script.txt` into `Segment[]` objects (timestamp + narrative) |
-| `src/lib/build-prompt.ts` | Builds the system/user prompt for Phase 1 (Remotion prompt generation) |
 | `src/lib/build-image-fetch-prompt.ts` | Builds prompt + response parser for Phase 2; defines `ImageFetchItem` type |
 | `src/lib/download-images.ts` | Downloads images via hint URL or DuckDuckGo; validates magic bytes and fake-transparency |
 | `src/lib/component-catalog.ts` | Documents all 16 reusable blocks; `renderCatalogForPrompt()` injects docs into the LLM prompt |
-| `src/lib/build-scene-json-prompt.ts` | Builds the Phase 3 prompt: loads block catalog + assets, instructs LLM to output strict JSON |
+| `src/lib/build-scene-json-prompt.ts` | Builds the Phase 2 prompt: loads block catalog + assets, instructs LLM to output strict JSON |
 | `src/lib/scene-script-schema.ts` | Zod schemas for `SceneScript` and all 17 `SceneBlock` discriminated union types |
 | `src/lib/write-scene-json.ts` | Validates LLM JSON, writes `*-scene.json`, regenerates `src/generated/scene-scripts.ts` |
 | `src/components/SceneRenderer.tsx` | Maps `SceneScript` blocks to block components; wraps each in `<Scene>` for frame-range control |
@@ -102,7 +99,6 @@ Narrative text for this segment...
 
 | Artifact | Path | Phase |
 |---|---|---|
-| Remotion prompt | `prompts/{slug}.txt` | prompt |
 | Image asset manifest | `prompts/{slug}-images.json` | images |
 | Scene script JSON | `prompts/{slug}-scene.json` | code |
 | Scene scripts module | `src/generated/scene-scripts.ts` | code |

@@ -2,31 +2,44 @@ import fs from "node:fs";
 import { isArtifactReady } from "./scene-manifest";
 import { parseImageFetchResponse } from "./build-image-fetch-prompt";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
-import type { DownloadResult } from "./download-images";
+import type { AcquireResult } from "./acquire-images";
 
-export function mergeDownloadResults(
+export function mergeAcquireResults(
   items: ImageFetchItem[],
-  results: DownloadResult[],
+  results: AcquireResult[],
 ): ImageFetchItem[] {
   const byLabel = new Map(results.map((result) => [result.label, result]));
   return items.map((item) => {
     const result = byLabel.get(item.label);
     if (!result) return item;
-    const resolvedItem: ImageFetchItem = {
-      ...item,
-      image_url: result.ok ? (result.url ?? "") : (item.image_url ?? ""),
-      source_url: result.ok
-        ? (result.sourceUrl ?? item.source_url ?? "")
-        : (item.source_url ?? ""),
-    };
-    if (result.ok) {
-      resolvedItem.resolved_path = result.path;
-      delete resolvedItem.resolution_error;
-    } else {
-      resolvedItem.resolution_error = result.error ?? "image resolution failed";
-      delete resolvedItem.resolved_path;
+    if (result.ok && result.path) {
+      return {
+        ...item,
+        resolved_path: result.path,
+        runware_image_uuid: result.runwareImageUUID ?? item.runware_image_uuid,
+        background_removed:
+          result.backgroundRemoved ?? item.background_removed,
+        background_removal_model:
+          result.backgroundRemovalModel ?? item.background_removal_model,
+        background_removal_error:
+          result.backgroundRemovalError ?? item.background_removal_error,
+        resolution_error: result.backgroundRemovalError
+          ? undefined
+          : item.resolution_error,
+      };
     }
-    return resolvedItem;
+    return {
+      ...item,
+      resolution_error: result.error ?? "image acquisition failed",
+      resolved_path: undefined,
+      runware_image_uuid: result.runwareImageUUID ?? item.runware_image_uuid,
+      background_removed:
+        result.backgroundRemoved ?? item.background_removed,
+      background_removal_model:
+        result.backgroundRemovalModel ?? item.background_removal_model,
+      background_removal_error:
+        result.backgroundRemovalError ?? item.background_removal_error,
+    };
   });
 }
 
@@ -41,7 +54,7 @@ export function loadCodeImageItems(imagePlanPath: string): ImageFetchItem[] {
     const raw = fs.readFileSync(imagePlanPath, "utf-8");
     const items = parseImageFetchResponse(raw);
     const availableItems = items.filter(
-      (item) => !item.resolution_error && (item.cutout_path || item.resolved_path),
+      (item) => !item.resolution_error && item.resolved_path,
     );
     const skipped = items.length - availableItems.length;
     console.log(

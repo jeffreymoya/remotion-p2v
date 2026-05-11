@@ -3,25 +3,17 @@ import { Composition, Folder } from "remotion";
 import { registerRoot } from "remotion";
 import type { SceneScript } from "./lib/scene-script-schema";
 import { SceneRenderer } from "./components/SceneRenderer";
-import compositions from "./compositions";
 import { sceneScripts } from "./generated/scene-scripts";
+import { TtsSyncPoc } from "./components/TtsSyncPoc";
+import { POC_DURATION_IN_FRAMES } from "./poc-tts-data";
 
 interface SceneRendererProps extends Record<string, unknown> {
   script: SceneScript;
 }
 
-const legacyEntries = Object.entries(compositions) as Array<[string, React.ComponentType]>;
-
 const Root: React.FC = () => {
   return (
     <>
-      {legacyEntries.length > 0 ? (
-        <Folder name="Generated-Legacy">
-          {legacyEntries.map(([name, Component]) => (
-            <Component key={name} />
-          ))}
-        </Folder>
-      ) : null}
       <Folder name="Generated">
         {sceneScripts.map((s) => (
           <Composition
@@ -35,6 +27,16 @@ const Root: React.FC = () => {
             height={s.height}
           />
         ))}
+      </Folder>
+      <Folder name="POC">
+        <Composition
+          id="google-tts-sync"
+          component={TtsSyncPoc}
+          durationInFrames={POC_DURATION_IN_FRAMES}
+          fps={30}
+          width={1920}
+          height={1080}
+        />
       </Folder>
     </>
   );

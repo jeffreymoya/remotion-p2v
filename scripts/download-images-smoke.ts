@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { downloadOne } from "../src/lib/download-images";
-import type { ImageFetchItem } from "../src/lib/build-image-fetch-prompt";
+import type { LegacyImageItem } from "../src/lib/download-images";
 
 function hasImageMagicBytes(buffer: Buffer): boolean {
   return (
@@ -25,7 +25,7 @@ const baseItem = {
   rationale: "Smoke test for live image search resolution.",
 };
 
-const cases: ImageFetchItem[] = [
+const cases: LegacyImageItem[] = [
   {
     ...baseItem,
     label: "search-only.png",

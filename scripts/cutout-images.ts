@@ -71,7 +71,10 @@ const CUTOUT_ROLES = new Set<ImageFetchItem["asset_role"]>([
 ]);
 
 export function isCutoutCandidate(item: ImageFetchItem): boolean {
-  return CUTOUT_ROLES.has(item.asset_role) && item.needs_cutout === true;
+  return (
+    CUTOUT_ROLES.has(item.asset_role) &&
+    (item.needs_background_removal === true || item.needs_cutout === true)
+  );
 }
 
 function safeLabel(label: string): string {
@@ -104,7 +107,7 @@ export function resolveImagePlanPath(projectRoot: string, planPath: string): str
   }
 
   throw new Error(
-    `Cutout input must be an image plan JSON file. Received prompt text: ${toStoredPath(projectRoot, absolutePlanPath)}\n` +
+    `Background-removal input must be an image plan JSON file. Received prompt text: ${toStoredPath(projectRoot, absolutePlanPath)}\n` +
       `Expected matching image plan: ${toStoredPath(projectRoot, imagePlanPath)}`,
   );
 }
@@ -159,7 +162,7 @@ function assertRembgAvailable(command: string): void {
   if (result.error) {
     const installHint =
       result.error.message.includes("ENOENT")
-        ? "RemBG CLI not found. Install RemBG and make sure `rembg` is on PATH before running cutouts."
+        ? "RemBG CLI not found. Install RemBG and make sure `rembg` is on PATH before running background removal."
         : result.error.message;
     throw new Error(installHint);
   }
@@ -456,7 +459,8 @@ export function processCutoutItem(
     return {
       label: item.label,
       status: "skipped",
-      reason: "asset_role is not animated_object/static_overlay or needs_cutout is not true",
+      reason:
+        "asset_role is not animated_object/static_overlay or needs_background_removal is not true",
     };
   }
 
@@ -473,8 +477,8 @@ export function processCutoutItem(
 
   if (path.extname(item.label).toLowerCase() !== ".png") {
     const error =
-      `Cutout target label "${item.label}" must end in .png. ` +
-      "Change the image plan label and composition reference before running cutouts.";
+      `Background-removal target label "${item.label}" must end in .png. ` +
+      "Change the image plan label and composition reference before running background removal.";
     markCutoutError(item, error);
     return {
       label: item.label,
@@ -706,7 +710,7 @@ function parseArgs(argv: string[]): CutoutPlanOptions {
 
   if (!planPath) {
     throw new Error(
-      "Usage: npm run cutout:images -- [--dry-run] [--rembg=rembg] [--label=file.png] [--alpha-min=0-255] [--alpha-max=0-255] [--outline-size=0-256] [--outline-color=R,G,B,A] [--outline-threshold=0-255] [--hard-alpha] [--keep-largest] [--smooth-alpha-blur=N] [--smooth-alpha-black=0-100] [--smooth-alpha-white=0-100] [--threshold-alpha=0-255] prompts/<slug>-images.json\n" +
+      "Usage: npm run background-remove:images -- [--dry-run] [--rembg=rembg] [--label=file.png] [--alpha-min=0-255] [--alpha-max=0-255] [--outline-size=0-256] [--outline-color=R,G,B,A] [--outline-threshold=0-255] [--hard-alpha] [--keep-largest] [--smooth-alpha-blur=N] [--smooth-alpha-black=0-100] [--smooth-alpha-white=0-100] [--threshold-alpha=0-255] prompts/<slug>-images.json\n" +
         "You may also pass prompts/<slug>.txt when the matching prompts/<slug>-images.json exists.",
     );
   }
@@ -762,7 +766,13 @@ function parseArgs(argv: string[]): CutoutPlanOptions {
   };
 }
 
-function main(): void {
+export function main(): void {
+  if (process.argv[1] && path.basename(process.argv[1]) === "cutout-images.ts") {
+    console.warn(
+      "`npm run cutout:images` is deprecated. Use `npm run background-remove:images` instead.",
+    );
+  }
+
   const options = parseArgs(process.argv.slice(2));
   const projectRoot = path.resolve(options.projectRoot ?? process.cwd());
   const resolvedPlanPath = resolveImagePlanPath(projectRoot, options.planPath);
@@ -791,18 +801,18 @@ function main(): void {
     const missingRoleMetadata = items.every((item) => item.asset_role === undefined);
     if (missingRoleMetadata) {
       console.log(
-        "No eligible cutout items found. This image plan has no asset_role metadata; regenerate the image plan or mark object items with asset_role and needs_cutout.",
+        "No eligible background-removal items found. This image plan has no asset_role metadata; regenerate the image plan or mark object items with asset_role and needs_background_removal.",
       );
     } else {
       console.log(
-        "No eligible cutout items found. Only animated_object/static_overlay items with needs_cutout: true are processed.",
+        "No eligible background-removal items found. Only animated_object/static_overlay items with needs_background_removal: true are processed.",
       );
     }
   }
 
   const action = options.dryRun ? "would process" : "processed";
   console.log(
-    `Cutout ${options.dryRun ? "dry run" : "run"} complete: ${action} ${selected.length}, errors ${failed.length}`,
+    `Background removal ${options.dryRun ? "dry run" : "run"} complete: ${action} ${selected.length}, errors ${failed.length}`,
   );
 
   if (failed.length > 0) {

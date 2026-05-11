@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { validateDownloadedAsset } from "../src/lib/download-images";
-import type { ImageFetchItem } from "../src/lib/build-image-fetch-prompt";
+import type { LegacyImageItem } from "../src/lib/download-images";
 
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "fake-transparency-"));
 const imagePath = path.join(tmpDir, "fake-transparent.png");
@@ -38,15 +38,12 @@ image.save(path)
 assert.equal(generated.status, 0, generated.stderr);
 
 async function main(): Promise<void> {
-  const item: ImageFetchItem = {
+  const item: LegacyImageItem = {
     label: "splash.png",
-    asset_role: "animated_object",
-    needs_cutout: true,
+    needs_background_removal: true,
     preferred_format: "png",
-    image_url: "",
-    source_url: "",
     query: "water splash transparent png",
-    visual_requirements: "Transparent PNG splash cutout with no background.",
+    visual_requirements: "Transparent PNG splash with no background.",
     rationale: "Used as an overlay.",
   };
 

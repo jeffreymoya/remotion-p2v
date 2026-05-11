@@ -1,7 +1,24 @@
+/** @deprecated — This module is no longer used by the pipeline (replaced by acquire-images.ts).
+ *  Retained only for validateDownloadedAsset used by fake-transparency-smoke.ts.
+ */
+
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import type { ImageFetchItem } from "./build-image-fetch-prompt";
+
+/** Legacy interface for download-based image resolution. */
+export interface LegacyImageItem {
+  label: string;
+  preferred_format?: "jpg" | "png";
+  needs_background_removal?: boolean;
+  /** @deprecated Use needs_background_removal instead. */
+  needs_cutout?: boolean;
+  image_url?: string;
+  source_url?: string;
+  query?: string;
+  visual_requirements?: string;
+  rationale?: string;
+}
 
 export interface DownloadResult {
   label: string;
@@ -115,7 +132,7 @@ function hasImageMagicBytes(buffer: Buffer): boolean {
   );
 }
 
-function shouldRejectFakeTransparency(item: ImageFetchItem): boolean {
+function shouldRejectFakeTransparency(item: LegacyImageItem): boolean {
   const text = [
     item.label,
     item.query,
@@ -128,6 +145,7 @@ function shouldRejectFakeTransparency(item: ImageFetchItem): boolean {
   return (
     path.extname(item.label).toLowerCase() === ".png" &&
     (item.preferred_format === "png" ||
+      item.needs_background_removal === true ||
       item.needs_cutout === true ||
       text.includes("transparent") ||
       text.includes("no background") ||
@@ -141,7 +159,7 @@ function findPythonCommand(): string {
 }
 
 export function validateDownloadedAsset(
-  item: ImageFetchItem,
+  item: LegacyImageItem,
   filePath: string,
 ): string | undefined {
   if (!shouldRejectFakeTransparency(item)) {
@@ -295,7 +313,7 @@ async function findDuckDuckGoCandidates(query: string): Promise<ImageCandidate[]
 }
 
 async function tryCandidate(
-  item: ImageFetchItem,
+  item: LegacyImageItem,
   candidate: ImageCandidate,
   filePath: string,
 ): Promise<DownloadResult> {
@@ -387,7 +405,7 @@ async function tryCandidate(
 }
 
 export async function downloadOne(
-  item: ImageFetchItem,
+  item: LegacyImageItem,
   outputDir: string,
 ): Promise<DownloadResult> {
   const filePath = path.join(outputDir, sanitizeFilename(item.label));
@@ -407,7 +425,7 @@ export async function downloadOne(
   let searchCandidates: ImageCandidate[] = [];
   let searchError: string | undefined;
   try {
-    searchCandidates = await findDuckDuckGoCandidates(item.query);
+    searchCandidates = await findDuckDuckGoCandidates(item.query ?? item.label);
   } catch (err) {
     searchError = err instanceof Error ? err.message : "DuckDuckGo search failed";
   }
@@ -431,7 +449,7 @@ export async function downloadOne(
 }
 
 export async function downloadImages(
-  items: ImageFetchItem[],
+  items: LegacyImageItem[],
   outputDir: string,
   limiter?: <T>(task: () => Promise<T>) => Promise<T>,
 ): Promise<{ downloaded: number; failed: number; results: DownloadResult[] }> {

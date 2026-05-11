@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { generateSpeech } from "./tts-elevenlabs";
-import type { WordTiming } from "./tts-elevenlabs";
+import { generateSpeech } from "./tts-google";
+import type { WordTiming } from "./tts-google";
 import {
   isArtifactReady,
   writeFileAtomically,
@@ -18,19 +18,18 @@ export interface TtsPhaseResult {
 export async function runTtsPhase(
   scene: SceneSpec,
   segmentSlug: string,
-  runDir: string,
   options: { verbose: boolean },
 ): Promise<TtsPhaseResult> {
   const paddedIdx = padSceneIndex(scene.sceneIndex);
   const audioDir = path.join(AUDIO_DIR, segmentSlug);
-  const audioPath = path.join(audioDir, `scene-${paddedIdx}.mp3`);
+  const audioPath = path.join(audioDir, `scene-${paddedIdx}.wav`);
   const timingsPath = path.join(
     "prompts",
     segmentSlug,
     `scene-${paddedIdx}-timings.json`,
   );
 
-  // Cache check — reuse if both mp3 and timings exist
+  // Cache check — reuse if both wav and timings exist
   if (isArtifactReady(audioPath) && isArtifactReady(timingsPath)) {
     const timingsRaw = fs.readFileSync(timingsPath, "utf-8");
     const timings = JSON.parse(timingsRaw) as {

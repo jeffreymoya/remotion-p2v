@@ -2,10 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderCatalogForPrompt } from "./component-catalog";
 import type { ImageFetchItem } from "./build-image-fetch-prompt";
-import type { WordTiming } from "./tts-elevenlabs";
+import type { WordTiming } from "./tts-google";
 
 function toAssetPath(item: ImageFetchItem): string {
-  const assetPath = item.cutout_path ?? item.resolved_path ?? item.label;
+  const assetPath = item.resolved_path ?? item.label;
   return assetPath
     .replace(/\\/g, "/")
     .replace(/^\.?\//, "")
@@ -33,7 +33,7 @@ SceneScript {
   width: 1920,
   height: 1080,
   crossFadeFrames?: number,  // frames of overlap between scenes (default: 15)
-  assets: Array<{ label: string, path?: string, role: "background"|"animated_object"|"static_overlay"|"screen_mockup", cutoutPath?: string }>,
+  assets: Array<{ label: string, path?: string, role: "background"|"animated_object"|"static_overlay"|"screen_mockup", backgroundRemoved?: boolean }>,
   scenes: Array<SceneBlock>,  // ordered by frameRange; each block has { type, frameRange: [start, end], ...blockProps }>
 }
 
@@ -133,7 +133,8 @@ function formatWordTimingHint(wordTimings: WordTiming[], fps: number): string {
 }
 
 export function buildSceneJsonPrompt(
-  remotionPrompt: string,
+  narrative: string,
+  visualGoal: string,
   imageItems: ImageFetchItem[] = [],
   slug: string,
   durationInFrames: number,
@@ -161,7 +162,6 @@ ${NARRATIVE_RULES}
 - crossFadeFrames = 15 (default); only increase to 30 for deliberate slow dissolves
 - Every asset used in a block must appear in top-level assets[] with its exact label and path
 - Scene block asset fields use asset labels (not paths) — renderer resolves them
-- NEVER use CustomScene — it renders a red error box
 - Max 4 simultaneous visual elements at any frame
 - slug must be "${slug}"
 - fps must be 30, width 1920, height 1080
@@ -179,9 +179,14 @@ ${NARRATIVE_RULES}
     ? `\nIMPORTANT: Include "audioFile": "${audioFile}" in the top-level JSON object.\n`
     : "";
 
-  const user = `Write a scene script JSON for this Remotion prompt:
+  const user = `Write a scene script JSON for this Remotion composition:
 
-${remotionPrompt}
+--- Narrative ---
+${narrative}
+
+--- Visual Goal ---
+${visualGoal}
+
 ${assetInstructions}${timingHint}${audioInstruction}
 Return ONLY the JSON. No explanation. No markdown fences.`;
 
