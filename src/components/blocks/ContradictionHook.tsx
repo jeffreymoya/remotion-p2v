@@ -1,7 +1,32 @@
 import React from "react";
+import { z } from "zod";
 import { spring, interpolate, interpolateColors, useVideoConfig } from "remotion";
 import { palette, font, easing } from "../tokens";
 import { Animate } from "../primitives";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("ContradictionHook"),
+  frameRange: FrameRange,
+  setup: z.string(),
+  reveal: z.string(),
+  style: z.enum(["stark", "split"]).default("stark"),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "ContradictionHook",
+  role: "hook",
+  guidelineSection: "§1 Hook — Contradiction",
+  whenToUse: "Opening reveals that a common belief is wrong or incomplete.",
+  effect: "Two phrases in sequence: old belief appears large in red with strikethrough, fades out — new contradicting truth spring-slides in with cyan accent. Maximum dramatic impact in 3–5 seconds.",
+  props: {
+    setup: "string: The popular belief being set up",
+    reveal: "string: The contradiction that punctures it",
+    style: '"stark"|"split": visual treatment (default: stark)',
+  },
+};
 
 interface ContradictionHookProps {
   frameRange: [number, number];
@@ -19,9 +44,8 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
   style: visualStyle = "stark",
 }) => {
   const { fps } = useVideoConfig();
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const totalFrames = frameRange[1] - start;
+  const localFrame = frame;
+  const totalFrames = frameRange[1] - frameRange[0];
   const midPoint = Math.floor(totalFrames / 2);
 
   const setupOpacity = interpolate(localFrame, [0, 15, midPoint - 10, midPoint], [0, 1, 1, 0], {
@@ -94,3 +118,5 @@ export const ContradictionHook: React.FC<ContradictionHookProps> = ({
     </div>
   );
 };
+
+export { ContradictionHook as Component };

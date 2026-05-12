@@ -1,7 +1,7 @@
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import { DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEEPSEEK_TIMEOUT_MS } from "./config";
 
-interface DeepSeekMessage {
+export interface DeepSeekMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }

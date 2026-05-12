@@ -1,6 +1,33 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("ComparisonSplit"),
+  frameRange: FrameRange,
+  leftLabel: z.string(),
+  rightLabel: z.string(),
+  rows: z.array(z.object({ label: z.string(), left: z.string(), right: z.string() })),
+  verdict: z.string().optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "ComparisonSplit",
+  role: "visual",
+  guidelineSection: "§3 Visual — Comparison",
+  whenToUse: "Side-by-side comparison of two approaches, tools, or time periods.",
+  effect: "Column headers fade in; rows reveal staggered. Verdict line slides in at the end in accent color.",
+  props: {
+    leftLabel: "string: Left column header",
+    rightLabel: "string: Right column header",
+    rows: "{label: string, left: string, right: string}[]: Comparison rows",
+    verdict: "string?: Final summary line",
+  },
+};
 
 interface ComparisonRow {
   label: string;
@@ -25,9 +52,8 @@ export const ComparisonSplit: React.FC<ComparisonSplitProps> = ({
   rows,
   verdict,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const duration = frameRange[1] - start;
+  const localFrame = frame;
+  const duration = frameRange[1] - frameRange[0];
 
   const headerOpacity = interpolate(localFrame, [0, 15], [0, 1], {
     extrapolateLeft: "clamp",
@@ -111,3 +137,5 @@ export const ComparisonSplit: React.FC<ComparisonSplitProps> = ({
     </div>
   );
 };
+
+export { ComparisonSplit as Component };

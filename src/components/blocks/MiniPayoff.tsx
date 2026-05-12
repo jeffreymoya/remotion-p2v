@@ -1,6 +1,29 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("MiniPayoff"),
+  frameRange: FrameRange,
+  rule: z.string(),
+  bullets: z.array(z.string()).optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "MiniPayoff",
+  role: "retention",
+  guidelineSection: "§4 Retention — Mini Payoff",
+  whenToUse: "Delivers a memorable rule or principle with optional supporting bullets. Use as a mid-segment reward.",
+  effect: "Bold rule line spring-pops in; bullet points stagger up below.",
+  props: {
+    rule: "string: The core rule or principle",
+    bullets: "string[]?: Supporting evidence or examples",
+  },
+};
 
 interface MiniPayoffProps {
   frameRange: [number, number];
@@ -15,8 +38,7 @@ export const MiniPayoff: React.FC<MiniPayoffProps> = ({
   rule,
   bullets,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
+  const localFrame = frame;
 
   const ruleOpacity = interpolate(localFrame, [0, 20], [0, 1], {
     extrapolateLeft: "clamp",
@@ -74,3 +96,5 @@ export const MiniPayoff: React.FC<MiniPayoffProps> = ({
     </div>
   );
 };
+
+export { MiniPayoff as Component };

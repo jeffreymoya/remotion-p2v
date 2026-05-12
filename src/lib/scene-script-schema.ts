@@ -1,8 +1,13 @@
 import { z } from "zod";
+import { SceneBlock, type SceneBlockType } from "../components/blocks/_registry";
 
-// ── Shared ──────────────────────────────────────────────────────────────
-const FrameRange = z.tuple([z.number().int(), z.number().int()]);
+// Re-export shared primitives so existing consumers don't break
+export type { TransitionConfigType } from "./scene-schema-primitives";
 
+// Re-export registry-derived SceneBlock
+export { SceneBlock, type SceneBlockType };
+
+// ── Asset ref (used only by SceneScriptSchema, not by block files) ──────
 const AssetRef = z.object({
   label: z.string(),
   role: z.enum(["background", "animated_object", "static_overlay", "screen_mockup"]),
@@ -12,205 +17,7 @@ const AssetRef = z.object({
   cutoutPath: z.string().optional(),
 });
 
-// ── Transition mixin ────────────────────────────────────────────────────
-const CardinalDirection = z.enum(["from-left", "from-right", "from-top", "from-bottom"]);
-const WipeDirection = z.enum([
-  "from-left", "from-right", "from-top", "from-bottom",
-  "from-top-left", "from-top-right", "from-bottom-left", "from-bottom-right",
-]);
-
-const TransitionConfig = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("fade") }),
-  z.object({ kind: z.literal("slide"), direction: CardinalDirection.optional() }),
-  z.object({ kind: z.literal("flip"), direction: CardinalDirection.optional() }),
-  z.object({ kind: z.literal("wipe"), direction: WipeDirection.optional() }),
-]);
-export type TransitionConfigType = z.infer<typeof TransitionConfig>;
-
-const transitionMixin = { transition: TransitionConfig.optional() };
-
-// ── Hook blocks ─────────────────────────────────────────────────────────
-const ContradictionHookBlock = z.object({
-  type: z.literal("ContradictionHook"),
-  frameRange: FrameRange,
-  setup: z.string(),
-  reveal: z.string(),
-  style: z.enum(["stark", "split"]).default("stark"),
-  ...transitionMixin,
-});
-
-const CostOfIgnoranceHookBlock = z.object({
-  type: z.literal("CostOfIgnoranceHook"),
-  frameRange: FrameRange,
-  cost: z.string(),
-  who: z.string().optional(),
-  ...transitionMixin,
-});
-
-const HiddenMechanismHookBlock = z.object({
-  type: z.literal("HiddenMechanismHook"),
-  frameRange: FrameRange,
-  headline: z.string(),
-  teaser: z.string(),
-  ...transitionMixin,
-});
-
-const MythVsEvidenceHookBlock = z.object({
-  type: z.literal("MythVsEvidenceHook"),
-  frameRange: FrameRange,
-  myth: z.string(),
-  evidence: z.string(),
-  ...transitionMixin,
-});
-
-// ── Structure blocks ────────────────────────────────────────────────────
-const PromiseCardBlock = z.object({
-  type: z.literal("PromiseCard"),
-  frameRange: FrameRange,
-  promise: z.string(),
-  bullets: z.array(z.string()).optional(),
-  ...transitionMixin,
-});
-
-const ContextCardBlock = z.object({
-  type: z.literal("ContextCard"),
-  frameRange: FrameRange,
-  body: z.string(),
-  ...transitionMixin,
-});
-
-// ── Visual-role blocks ──────────────────────────────────────────────────
-const DiagramSceneBlock = z.object({
-  type: z.literal("DiagramScene"),
-  frameRange: FrameRange,
-  title: z.string().optional(),
-  nodes: z.array(z.object({ label: z.string(), x: z.number(), y: z.number() })),
-  edges: z.array(z.object({ from: z.string(), to: z.string(), label: z.string().optional() })).optional(),
-  annotation: z.string().optional(),
-  ...transitionMixin,
-});
-
-const ComparisonSplitBlock = z.object({
-  type: z.literal("ComparisonSplit"),
-  frameRange: FrameRange,
-  leftLabel: z.string(),
-  rightLabel: z.string(),
-  rows: z.array(z.object({ label: z.string(), left: z.string(), right: z.string() })),
-  verdict: z.string().optional(),
-  ...transitionMixin,
-});
-
-const BRollBlock = z.object({
-  type: z.literal("BRoll"),
-  frameRange: FrameRange,
-  backgroundAsset: z.string(),
-  overlayAssets: z.array(z.object({
-    label: z.string(),
-    x: z.number(),
-    y: z.number(),
-    scale: z.number().default(1),
-    entrance: z.enum(["fadeIn", "slideUp", "slideLeft", "springPop"]).default("fadeIn"),
-    entranceFrame: z.number().int(),
-  })).optional(),
-  caption: z.string().optional(),
-  ...transitionMixin,
-});
-
-const CalloutBlock = z.object({
-  type: z.literal("Callout"),
-  frameRange: FrameRange,
-  phrase: z.string(),
-  style: z.enum(["fullscreen", "overlay", "card"]).default("card"),
-  backgroundAsset: z.string().optional(),
-  lines: z.array(z.object({
-    text: z.string(),
-    icon: z.string().optional(),
-    color: z.string().optional(),
-  })).optional(),
-  ...transitionMixin,
-});
-
-// ── Retention beat blocks ───────────────────────────────────────────────
-const MicroQuestionBlock = z.object({
-  type: z.literal("MicroQuestion"),
-  frameRange: FrameRange,
-  question: z.string(),
-  questions: z.array(z.string()).optional(),
-  style: z.enum(["typewriter", "fade"]).default("typewriter"),
-  ...transitionMixin,
-});
-
-const ContrastRevealBlock = z.object({
-  type: z.literal("ContrastReveal"),
-  frameRange: FrameRange,
-  setup: z.string(),
-  reveal: z.string(),
-  ...transitionMixin,
-});
-
-const RevealBlock = z.object({
-  type: z.literal("Reveal"),
-  frameRange: FrameRange,
-  headline: z.string(),
-  body: z.string().optional(),
-  ...transitionMixin,
-});
-
-const ReframeBlock = z.object({
-  type: z.literal("Reframe"),
-  frameRange: FrameRange,
-  oldFrame: z.string(),
-  newFrame: z.string(),
-  ...transitionMixin,
-});
-
-const MiniPayoffBlock = z.object({
-  type: z.literal("MiniPayoff"),
-  frameRange: FrameRange,
-  rule: z.string(),
-  bullets: z.array(z.string()).optional(),
-  ...transitionMixin,
-});
-
-const ForeshadowBlock = z.object({
-  type: z.literal("Foreshadow"),
-  frameRange: FrameRange,
-  tease: z.string(),
-  ...transitionMixin,
-});
-
-// ── Escape hatch ────────────────────────────────────────────────────────
-const StatCounterBlock = z.object({
-  type: z.literal("StatCounter"),
-  frameRange: FrameRange,
-  value: z.string(),
-  label: z.string(),
-  sublabel: z.string().optional(),
-  color: z.string().optional(),
-  ...transitionMixin,
-});
-
 // ── Root schema ─────────────────────────────────────────────────────────
-export const SceneBlock = z.discriminatedUnion("type", [
-  ContradictionHookBlock,
-  CostOfIgnoranceHookBlock,
-  HiddenMechanismHookBlock,
-  MythVsEvidenceHookBlock,
-  PromiseCardBlock,
-  ContextCardBlock,
-  DiagramSceneBlock,
-  ComparisonSplitBlock,
-  BRollBlock,
-  CalloutBlock,
-  MicroQuestionBlock,
-  ContrastRevealBlock,
-  RevealBlock,
-  ReframeBlock,
-  MiniPayoffBlock,
-  ForeshadowBlock,
-  StatCounterBlock,
-]);
-
 export const SceneScriptSchema = z.object({
   schemaVersion: z.literal(1),
   title: z.string(),
@@ -226,5 +33,4 @@ export const SceneScriptSchema = z.object({
 });
 
 export type SceneScript = z.infer<typeof SceneScriptSchema>;
-export type SceneBlockType = z.infer<typeof SceneBlock>;
 export type AssetRefType = z.infer<typeof AssetRef>;

@@ -7,33 +7,32 @@ export interface BlockEntry {
   props: Record<string, string>;
 }
 
-export const BLOCK_CATALOG: BlockEntry[] = [
-  {
-    name: "ContradictionHook",
-    role: "hook",
-    guidelineSection: "§1 Hook — Contradiction",
-    whenToUse: "Opening reveals that a common belief is wrong or incomplete.",
-    effect: "Two phrases in sequence: old belief appears large in red with strikethrough, fades out — new contradicting truth spring-slides in with cyan accent. Maximum dramatic impact in 3–5 seconds.",
-    props: {
-      setup: "string: The popular belief being set up",
-      reveal: "string: The contradiction that punctures it",
-      style: '"stark"|"split": visual treatment (default: stark)',
-    },
-  },
-  {
-    name: "StatCounter",
-    role: "retention",
-    guidelineSection: "§4 Retention — Stat Counter",
-    whenToUse: "Presents a single key statistic with animated count-up. Best for data-driven moments — conversion rates, costs, time savings, scale figures.",
-    effect: "Number counts up from zero to target value with radial glow backdrop in the stat color; flashes white at the final value; label slides up below. Pure data drama — use when you have a real number to land.",
-    props: {
-      value: 'string: Stat value including unit — e.g. "87%", "$2.4M", "10x"',
-      label: "string: Short label beneath the number",
-      sublabel: "string?: Optional secondary context (source, time period, etc.)",
-      color: "string?: CSS accent color for the number (default: palette.accent #38bdf8)",
-    },
-  },
-];
+// Re-export from single source of truth
+export { BLOCK_CATALOG } from "../components/blocks/_registry";
+import { BLOCK_CATALOG } from "../components/blocks/_registry";
+import { MOTION_CATALOG } from "../motion/_registry";
+
+import { SceneBlock } from "./scene-script-schema";
+
+export function assertBlockRegistrySync(blockMapKeys: string[]): void {
+  // Reads the discriminated union's options array for runtime schema introspection.
+  const options = (SceneBlock as any)._def.options as any[];
+  const schemaNames = options
+    .map((o: any) => o._def.shape.type._def.values[0] as string)
+    .sort();
+  const catalogNames = BLOCK_CATALOG.map((b) => b.name).sort();
+  const mapNames = [...blockMapKeys].sort();
+
+  const missingFromCatalog = schemaNames.filter((n) => !catalogNames.includes(n));
+  const missingFromMap = schemaNames.filter((n) => !mapNames.includes(n));
+
+  if (missingFromCatalog.length > 0) {
+    throw new Error(`BLOCK_CATALOG missing entries: ${missingFromCatalog.join(", ")}`);
+  }
+  if (missingFromMap.length > 0) {
+    throw new Error(`BLOCK_MAP missing entries: ${missingFromMap.join(", ")}`);
+  }
+}
 
 export function renderCatalogForPrompt(): string {
   const globalNote = `GLOBAL NOTE: Every block accepts an optional "transition" field controlling how it enters during the cross-fade window:
@@ -50,5 +49,16 @@ Every block after the first MUST include a transition field. Vary kinds — do n
     `Visual effect: ${b.effect}\n` +
     `Props:\n` +
     Object.entries(b.props).map(([k, v]) => `  ${k}: ${v}`).join("\n"),
-  ).join("\n\n");
+  ).join("\n\n") + renderMotionCatalog();
+}
+
+function renderMotionCatalog(): string {
+  return `\n\n--- MOTION PLAYBOOK ---\n` +
+    `For each overlayAsset in a BRoll block, set the "motion" field to the behavior that best matches the object's nature.\n` +
+    `If no behavior fits, use "static".\n\n` +
+    MOTION_CATALOG.map((m) =>
+      `### ${m.name}\n` +
+      `When to use: ${m.whenToUse}\n` +
+      `Example objects: ${m.exampleObjects.join(", ") || "none"}`
+    ).join("\n\n");
 }

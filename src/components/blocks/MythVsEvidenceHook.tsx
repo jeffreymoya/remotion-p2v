@@ -1,6 +1,29 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("MythVsEvidenceHook"),
+  frameRange: FrameRange,
+  myth: z.string(),
+  evidence: z.string(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "MythVsEvidenceHook",
+  role: "hook",
+  guidelineSection: "§1 Hook — Myth vs Evidence",
+  whenToUse: "Opening that directly confronts a false belief with evidence. Use when the contrast is stark.",
+  effect: "50/50 vertical split: left panel shows myth with ✗ icon in red; right panel shows evidence with ✓ icon in green. Both panels slide in from opposite sides.",
+  props: {
+    myth: "string: The popular false belief",
+    evidence: "string: The contradicting evidence",
+  },
+};
 
 interface MythVsEvidenceHookProps {
   frameRange: [number, number];
@@ -15,9 +38,8 @@ export const MythVsEvidenceHook: React.FC<MythVsEvidenceHookProps> = ({
   myth,
   evidence,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const midPoint = Math.floor((frameRange[1] - start) / 2);
+  const localFrame = frame;
+  const midPoint = Math.floor((frameRange[1] - frameRange[0]) / 2);
 
   const mythOpacity = interpolate(localFrame, [0, 15], [0, 1], {
     extrapolateLeft: "clamp",
@@ -74,3 +96,5 @@ export const MythVsEvidenceHook: React.FC<MythVsEvidenceHookProps> = ({
     </div>
   );
 };
+
+export { MythVsEvidenceHook as Component };

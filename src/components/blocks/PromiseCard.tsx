@@ -1,6 +1,29 @@
 import React from "react";
-import { spring, interpolate } from "remotion";
+import { z } from "zod";
+import { spring, interpolate, useVideoConfig } from "remotion";
 import { palette, font, easing } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("PromiseCard"),
+  frameRange: FrameRange,
+  promise: z.string(),
+  bullets: z.array(z.string()).optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "PromiseCard",
+  role: "structure",
+  guidelineSection: "§2 Structure — Promise",
+  whenToUse: "Sets viewer expectations at the start of a segment. Use after the hook to frame what they'll learn.",
+  effect: "Card spring-slides up from bottom. Promise headline appears first; bullet points stagger in below.",
+  props: {
+    promise: "string: The payoff statement — what they'll walk away knowing",
+    bullets: "string[]?: Supporting points (2–4 max)",
+  },
+};
 
 interface PromiseCardProps {
   frameRange: [number, number];
@@ -15,12 +38,12 @@ export const PromiseCard: React.FC<PromiseCardProps> = ({
   promise,
   bullets,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
+  const { fps } = useVideoConfig();
+  const localFrame = frame;
 
   const slideUp = spring({
     frame: localFrame,
-    fps: 30,
+    fps,
     from: 200,
     to: 0,
     config: { damping: 15, stiffness: 100 },
@@ -99,3 +122,5 @@ export const PromiseCard: React.FC<PromiseCardProps> = ({
     </div>
   );
 };
+
+export { PromiseCard as Component };

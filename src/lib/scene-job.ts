@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import type { Segment } from "./parse-script";
-import { deepseekChat, DeepSeekError } from "./deepseek";
+import { deepseekChat, DeepSeekError, type DeepSeekMessage } from "./deepseek";
 import {
   buildImageFetchPrompt,
   parseImageFetchResponse,
@@ -208,34 +208,69 @@ async function runSceneJobImpl(
         effectiveScene.audioPath,
       );
 
-      const sceneResponse = await runDeepSeek(async () => {
-        deepseekCalls++;
-        return deepseekChat(
-          [
-            { role: "system", content: system },
-            { role: "user", content: user },
-          ],
-          CODE_GEN_TEMPERATURE,
-          CODE_GEN_REASONING,
-          { verbose: false, metadata: { phase: "code", scene_index: scene.sceneIndex } },
-        );
-      });
+      const MAX_RETRIES = 2;
+      let lastValidationError = "";
+      let sceneResponse = "";
 
-      const fileBase = sceneFileName(scene, "");
-      const { path: outPath, script } = writeSceneJson(
-        sceneResponse,
-        fileBase,
-        outDir,
-        {
-          expectedDurationFrames: durationInFrames,
-          expectedCompositionId: compId,
-          skipRegeneration: true,
-        },
-      );
-      artifactPaths.push(outPath);
-      console.log(
-        `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Code: ${outPath} (${script.scenes.length} blocks, ${script.durationInFrames}f)`,
-      );
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        const messages: DeepSeekMessage[] = [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ];
+
+        if (attempt > 0 && lastValidationError) {
+          messages.push(
+            { role: "assistant", content: sceneResponse },
+            {
+              role: "user",
+              content: `Your previous JSON failed schema validation. Fix ALL errors listed below and return ONLY the corrected JSON — no markdown fences, no prose.\n\nValidation errors:\n${lastValidationError}`,
+            },
+          );
+        }
+
+        sceneResponse = await runDeepSeek(async () => {
+          deepseekCalls++;
+          return deepseekChat(
+            messages,
+            CODE_GEN_TEMPERATURE,
+            CODE_GEN_REASONING,
+            {
+              verbose: false,
+              metadata: { phase: "code", scene_index: scene.sceneIndex, attempt },
+            },
+          );
+        });
+
+        try {
+          const fileBase = sceneFileName(scene, "");
+          const { path: outPath, script } = writeSceneJson(
+            sceneResponse,
+            fileBase,
+            outDir,
+            {
+              expectedDurationFrames: durationInFrames,
+              expectedCompositionId: compId,
+              skipRegeneration: true,
+            },
+          );
+          artifactPaths.push(outPath);
+          console.log(
+            `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Code: ${outPath} (${script.scenes.length} blocks, ${script.durationInFrames}f)${attempt > 0 ? ` [retry ${attempt}]` : ""}`,
+          );
+          break;
+        } catch (err) {
+          if (err instanceof SceneJsonValidationError) {
+            lastValidationError = err.message;
+            if (attempt < MAX_RETRIES) {
+              console.warn(
+                `  [scene ${String(scene.sceneIndex).padStart(3, "0")}] Validation failed, retrying (${attempt + 1}/${MAX_RETRIES})...`,
+              );
+              continue;
+            }
+          }
+          throw err;
+        }
+      }
     }
 
     const durationMs = Date.now() - startTime;

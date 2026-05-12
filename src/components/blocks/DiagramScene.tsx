@@ -1,7 +1,34 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
 import { DrawPath } from "../primitives";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("DiagramScene"),
+  frameRange: FrameRange,
+  title: z.string().optional(),
+  nodes: z.array(z.object({ label: z.string(), x: z.number(), y: z.number() })),
+  edges: z.array(z.object({ from: z.string(), to: z.string(), label: z.string().optional() })).optional(),
+  annotation: z.string().optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "DiagramScene",
+  role: "visual",
+  guidelineSection: "§3 Visual — Diagram",
+  whenToUse: "Shows relationships, flows, or structures between labeled concepts. Minimum 3 meaningful nodes.",
+  effect: "Title fades in; nodes reveal staggered (one every 10 frames). Edge paths draw progressively if provided. Annotation fades in at the end.",
+  props: {
+    title: "string?: Optional diagram title",
+    nodes: "{label: string, x: number, y: number}[]: Node list; x/y are percentage positions (0–100)",
+    edges: "{from: string, to: string, label?: string}[]?: Connections between node labels",
+    annotation: "string?: Summary text shown at the end",
+  },
+};
 
 interface DiagramNode {
   label: string;
@@ -32,9 +59,8 @@ export const DiagramScene: React.FC<DiagramSceneProps> = ({
   edges,
   annotation,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const duration = frameRange[1] - start;
+  const localFrame = frame;
+  const duration = frameRange[1] - frameRange[0];
 
   const titleOpacity = interpolate(localFrame, [0, 15], [0, 1], {
     extrapolateLeft: "clamp",
@@ -119,3 +145,5 @@ export const DiagramScene: React.FC<DiagramSceneProps> = ({
     </div>
   );
 };
+
+export { DiagramScene as Component };

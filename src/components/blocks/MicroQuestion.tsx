@@ -1,7 +1,32 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
 import { TypewriterText } from "../primitives";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("MicroQuestion"),
+  frameRange: FrameRange,
+  question: z.string(),
+  questions: z.array(z.string()).optional(),
+  style: z.enum(["typewriter", "fade"]).default("typewriter"),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "MicroQuestion",
+  role: "retention",
+  guidelineSection: "§4 Retention — Micro Question",
+  whenToUse: "Poses one or more rhetorical questions to maintain engagement. Use mid-segment to reset attention.",
+  effect: "Questions appear sequentially. Typewriter style reveals character-by-character; fade style uses opacity cross-fade.",
+  props: {
+    question: "string: Primary question",
+    questions: "string[]?: Additional questions shown sequentially",
+    style: '"typewriter"|"fade": Reveal style (default: typewriter)',
+  },
+};
 
 interface MicroQuestionProps {
   frameRange: [number, number];
@@ -18,9 +43,8 @@ export const MicroQuestion: React.FC<MicroQuestionProps> = ({
   questions,
   style: visualStyle = "typewriter",
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const duration = frameRange[1] - start;
+  const localFrame = frame;
+  const duration = frameRange[1] - frameRange[0];
   const allQuestions = questions ?? [question];
 
   return (
@@ -79,3 +103,5 @@ export const MicroQuestion: React.FC<MicroQuestionProps> = ({
     </div>
   );
 };
+
+export { MicroQuestion as Component };

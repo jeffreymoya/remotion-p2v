@@ -1,6 +1,29 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("Reframe"),
+  frameRange: FrameRange,
+  oldFrame: z.string(),
+  newFrame: z.string(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "Reframe",
+  role: "retention",
+  guidelineSection: "§4 Retention — Reframe",
+  whenToUse: "Replaces an old mental model with a new one. Similar to ContradictionHook but for mid-segment use.",
+  effect: "Old frame appears with strikethrough; new frame slides in below in accent color.",
+  props: {
+    oldFrame: "string: The old way of thinking (gets struck through)",
+    newFrame: "string: The new frame (revealed in accent color)",
+  },
+};
 
 interface ReframeProps {
   frameRange: [number, number];
@@ -15,9 +38,8 @@ export const Reframe: React.FC<ReframeProps> = ({
   oldFrame,
   newFrame,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const midPoint = Math.floor((frameRange[1] - start) / 2);
+  const localFrame = frame;
+  const midPoint = Math.floor((frameRange[1] - frameRange[0]) / 2);
 
   const oldOpacity = interpolate(localFrame, [0, 15, midPoint - 10, midPoint], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
@@ -72,3 +94,5 @@ export const Reframe: React.FC<ReframeProps> = ({
     </div>
   );
 };
+
+export { Reframe as Component };

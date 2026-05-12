@@ -1,6 +1,33 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate, interpolateColors } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("StatCounter"),
+  frameRange: FrameRange,
+  value: z.string(),
+  label: z.string(),
+  sublabel: z.string().optional(),
+  color: z.string().optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "StatCounter",
+  role: "retention",
+  guidelineSection: "§4 Retention — Stat Counter",
+  whenToUse: "Presents a single key statistic with animated count-up. Best for data-driven moments — conversion rates, costs, time savings, scale figures.",
+  effect: "Number counts up from zero to target value with radial glow backdrop in the stat color; flashes white at the final value; label slides up below. Pure data drama — use when you have a real number to land.",
+  props: {
+    value: 'string: Stat value including unit — e.g. "87%", "$2.4M", "10x"',
+    label: "string: Short label beneath the number",
+    sublabel: "string?: Optional secondary context (source, time period, etc.)",
+    color: "string?: CSS accent color for the number (default: palette.accent #38bdf8)",
+  },
+};
 
 interface StatCounterProps {
   frameRange: [number, number];
@@ -25,9 +52,8 @@ export const StatCounter: React.FC<StatCounterProps> = ({
   sublabel,
   color = palette.accent,
 }) => {
-  const [start, end] = frameRange;
-  const localFrame = frame - start;
-  const duration = end - start;
+  const localFrame = frame;
+  const duration = frameRange[1] - frameRange[0];
   const countDuration = Math.min(45, Math.floor(duration * 0.5));
   const emphasizeFrame = Math.floor(duration * 0.75);
 
@@ -113,3 +139,5 @@ export const StatCounter: React.FC<StatCounterProps> = ({
     </div>
   );
 };
+
+export { StatCounter as Component };

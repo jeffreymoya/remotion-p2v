@@ -89,6 +89,10 @@ export function writeSceneJson(
     throw new SceneJsonValidationError(`Invalid JSON: ${message}`);
   }
 
+  const rawDebugPath = path.join(sceneDir, `${slug}-scene.raw.txt`);
+  fs.mkdirSync(sceneDir, { recursive: true });
+  fs.writeFileSync(rawDebugPath, cleaned, "utf-8");
+
   const result = SceneScriptSchema.safeParse(parsed);
   if (!result.success) {
     const issues = result.error.issues

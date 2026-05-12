@@ -1,6 +1,29 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate, interpolateColors } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("ContrastReveal"),
+  frameRange: FrameRange,
+  setup: z.string(),
+  reveal: z.string(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "ContrastReveal",
+  role: "retention",
+  guidelineSection: "§4 Retention — Contrast Reveal",
+  whenToUse: "Reframes a concept by contrasting how two groups describe the same reality.",
+  effect: "Muted setup phrase fades out; accent-colored reveal phrase slides in from below.",
+  props: {
+    setup: "string: The first framing (shown in muted color, then fades)",
+    reveal: "string: The reframe (shown in accent color)",
+  },
+};
 
 interface ContrastRevealProps {
   frameRange: [number, number];
@@ -15,9 +38,8 @@ export const ContrastReveal: React.FC<ContrastRevealProps> = ({
   setup,
   reveal,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const midPoint = Math.floor((frameRange[1] - start) / 2);
+  const localFrame = frame;
+  const midPoint = Math.floor((frameRange[1] - frameRange[0]) / 2);
 
   const setupOpacity = interpolate(localFrame, [0, 15, midPoint - 5, midPoint + 5], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
@@ -83,3 +105,5 @@ export const ContrastReveal: React.FC<ContrastRevealProps> = ({
     </div>
   );
 };
+
+export { ContrastReveal as Component };

@@ -1,7 +1,38 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate, staticFile } from "remotion";
 import { palette, font } from "../tokens";
 import type { AssetResolver } from "../asset-resolver";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("Callout"),
+  frameRange: FrameRange,
+  phrase: z.string(),
+  style: z.enum(["fullscreen", "overlay", "card"]).default("card"),
+  backgroundAsset: z.string().optional(),
+  lines: z.array(z.object({
+    text: z.string(),
+    icon: z.string().optional(),
+    color: z.string().optional(),
+  })).optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "Callout",
+  role: "visual",
+  guidelineSection: "§3 Visual — Callout",
+  whenToUse: "Emphasizes a single key phrase. Maximum 45–90 frames — this is a punch, not a lecture. phrase must never be empty.",
+  effect: "Three layouts: fullscreen (giant phrase pulses with sine scale), overlay (blurred background + white card), card (centered card on dark bg). Optional lines stagger in below the phrase.",
+  props: {
+    phrase: "string: The key phrase to emphasize (required, non-empty)",
+    style: '"fullscreen"|"overlay"|"card": Visual treatment (default: card)',
+    backgroundAsset: "string?: Asset label; used only with overlay style",
+    lines: "{text: string, icon?: string, color?: string}[]?: Supporting bullet lines",
+  },
+};
 
 interface CalloutLine {
   text: string;
@@ -28,9 +59,8 @@ export const Callout: React.FC<CalloutProps> = ({
   lines,
   resolveAsset = (assetRef) => assetRef,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
-  const duration = frameRange[1] - start;
+  const localFrame = frame;
+  const duration = frameRange[1] - frameRange[0];
 
   if (visualStyle === "fullscreen") {
     const phraseOpacity = interpolate(localFrame, [0, 15], [0, 1], {
@@ -157,3 +187,5 @@ export const Callout: React.FC<CalloutProps> = ({
     </div>
   );
 };
+
+export { Callout as Component };

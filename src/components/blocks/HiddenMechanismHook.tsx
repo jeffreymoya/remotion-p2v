@@ -1,6 +1,29 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("HiddenMechanismHook"),
+  frameRange: FrameRange,
+  headline: z.string(),
+  teaser: z.string(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "HiddenMechanismHook",
+  role: "hook",
+  guidelineSection: "§1 Hook — Hidden Mechanism",
+  whenToUse: "Opening that promises to expose how something works behind the scenes.",
+  effect: "Headline stagger-reveals, then teaser slides up below with a muted accent color.",
+  props: {
+    headline: "string: The 'how X really works' headline",
+    teaser: "string: One-line hook that deepens curiosity",
+  },
+};
 
 interface HiddenMechanismHookProps {
   frameRange: [number, number];
@@ -15,8 +38,7 @@ export const HiddenMechanismHook: React.FC<HiddenMechanismHookProps> = ({
   headline,
   teaser,
 }) => {
-  const [start] = frameRange;
-  const localFrame = frame - start;
+  const localFrame = frame;
 
   const headlineOpacity = interpolate(localFrame, [0, 20], [0, 1], {
     extrapolateLeft: "clamp",
@@ -65,3 +87,5 @@ export const HiddenMechanismHook: React.FC<HiddenMechanismHookProps> = ({
     </div>
   );
 };
+
+export { HiddenMechanismHook as Component };

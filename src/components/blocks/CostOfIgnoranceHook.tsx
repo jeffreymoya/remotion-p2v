@@ -1,7 +1,30 @@
 import React from "react";
+import { z } from "zod";
 import { interpolate } from "remotion";
 import { noise2D } from "@remotion/noise";
 import { palette, font } from "../tokens";
+import { FrameRange, transitionMixin } from "../../lib/scene-schema-primitives";
+import type { BlockEntry } from "../../lib/component-catalog";
+
+export const schema = z.object({
+  type: z.literal("CostOfIgnoranceHook"),
+  frameRange: FrameRange,
+  cost: z.string(),
+  who: z.string().optional(),
+  ...transitionMixin,
+});
+
+export const catalogEntry: BlockEntry = {
+  name: "CostOfIgnoranceHook",
+  role: "hook",
+  guidelineSection: "§1 Hook — Cost of Ignorance",
+  whenToUse: "Opening that quantifies what the audience loses by not knowing this. Best when there's a concrete cost — money, time, opportunity.",
+  effect: "Alarming headline slams in with a decaying horizontal shake. 'Who' label fades in below.",
+  props: {
+    cost: "string: The cost or consequence headline",
+    who: "string?: Optional label identifying who bears the cost",
+  },
+};
 
 interface CostOfIgnoranceHookProps {
   frameRange: [number, number];
@@ -16,8 +39,7 @@ export const CostOfIgnoranceHook: React.FC<CostOfIgnoranceHookProps> = ({
   cost,
   who,
 }) => {
-  const [start, end] = frameRange;
-  const localFrame = frame - start;
+  const localFrame = frame;
 
   const textOpacity = interpolate(localFrame, [0, 20], [0, 1], {
     extrapolateLeft: "clamp",
@@ -75,3 +97,5 @@ export const CostOfIgnoranceHook: React.FC<CostOfIgnoranceHookProps> = ({
     </div>
   );
 };
+
+export { CostOfIgnoranceHook as Component };
