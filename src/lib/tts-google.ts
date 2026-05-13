@@ -67,13 +67,19 @@ async function generateSpeechImpl(
 
   const voiceName = options?.voiceName ?? GOOGLE_TTS_VOICE_NAME;
 
+  // Google TTS plain-text input ignores newlines. Replace \n\n with
+  // em-dash to force a dramatic pause that Chirp 3 HD voices honor;
+  // single \n is collapsed to a space. The narration source is kept
+  // unchanged (sentence segmenter still uses \n\n for paragraph splits).
+  const ttsText = text.replace(/\n\n+/g, " — ").replace(/\n/g, " ");
+
   const ttsRes = await fetch(
     `${GOOGLE_TTS_BASE_URL}/text:synthesize?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        input: { text },
+        input: { text: ttsText },
         voice: { languageCode: GOOGLE_TTS_LANGUAGE_CODE, name: voiceName },
         audioConfig: {
           audioEncoding: "LINEAR16",

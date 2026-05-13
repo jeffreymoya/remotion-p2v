@@ -4,6 +4,8 @@ import { registerRoot } from "remotion";
 import type { SceneScript } from "./lib/scene-script-schema";
 import { SceneRenderer } from "./components/SceneRenderer";
 import { sceneScripts } from "./generated/scene-scripts";
+import { inspireScripts } from "./generated/inspire-scripts";
+import { InspirationComposition } from "./components/InspirationComposition";
 import { TtsSyncPoc } from "./components/TtsSyncPoc";
 import { POC_DURATION_IN_FRAMES } from "./poc-tts-data";
 
@@ -21,6 +23,20 @@ const Root: React.FC = () => {
             id={s.slug}
             component={SceneRenderer as React.FC<SceneRendererProps>}
             defaultProps={{ script: s }}
+            durationInFrames={s.durationInFrames}
+            fps={s.fps}
+            width={s.width}
+            height={s.height}
+          />
+        ))}
+      </Folder>
+      <Folder name="Inspire">
+        {inspireScripts.map((s) => (
+          <Composition
+            key={s.slug}
+            id={s.slug}
+            component={InspirationComposition}
+            defaultProps={s}
             durationInFrames={s.durationInFrames}
             fps={s.fps}
             width={s.width}

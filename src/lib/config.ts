@@ -106,11 +106,12 @@ function validateTimeout(envName: string, defaultValue: number): number {
 
 // ── Pixabay ─────────────────────────────────────────────────────────────
 export const PIXABAY_BASE_URL = "https://pixabay.com/api/" as const;
+export const PIXABAY_VIDEOS_BASE_URL = "https://pixabay.com/api/videos/" as const;
 
 // ── Google TTS / STT ────────────────────────────────────────────
 export const GOOGLE_TTS_BASE_URL = "https://texttospeech.googleapis.com/v1" as const;
 export const GOOGLE_STT_BASE_URL = "https://speech.googleapis.com/v1" as const;
-export const GOOGLE_TTS_VOICE_NAME = process.env.GOOGLE_TTS_VOICE_NAME ?? "en-US-Chirp3-HD-Aoede" as const;
+export const GOOGLE_TTS_VOICE_NAME = process.env.GOOGLE_TTS_VOICE_NAME ?? "en-US-Chirp3-HD-Algieba" as const;
 export const GOOGLE_TTS_LANGUAGE_CODE = "en-US" as const;
 export const GOOGLE_TTS_SAMPLE_RATE = 24000 as const;
 export const AUDIO_DIR = "public/audio" as const;

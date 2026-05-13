@@ -22,7 +22,9 @@
     "smoke:cutout": "tsx scripts/cutout-images-smoke.ts",
     "smoke:fake-transparency": "tsx scripts/fake-transparency-smoke.ts",
     "smoke:limiter": "tsx scripts/limiter-smoke.ts",
-    "smoke:scene-manifest": "tsx scripts/scene-manifest-smoke.ts"
+    "smoke:scene-manifest": "tsx scripts/scene-manifest-smoke.ts",
+    "inspire": "tsx scripts/inspire.ts",
+    "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.457",
