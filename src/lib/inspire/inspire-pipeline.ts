@@ -1,3 +1,4 @@
+import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
 import path from "node:path";
 import { generateNarration } from "./narration-prompt";
@@ -10,9 +11,18 @@ import type { ClipPlan } from "./video-query-prompt";
 import { searchAndDownloadVideo } from "./pixabay-video-client";
 import { writeInspireJson } from "./write-inspire-script";
 import type { InspirationScript, Clip, Sentence } from "./inspire-schema";
+import { generateArtDirection } from "./art-direction-prompt";
+import { ArtDirectionSchema } from "./art-direction-schema";
+import type { ArtDirection } from "./art-direction-schema";
 
-export type InspirePhase = "narration" | "tts" | "videos" | "compose";
-const ALL_PHASES: InspirePhase[] = ["narration", "tts", "videos", "compose"];
+export type InspirePhase = "narration" | "tts" | "videos" | "artdirect" | "compose";
+const ALL_PHASES: InspirePhase[] = [
+  "narration",
+  "tts",
+  "videos",
+  "artdirect",
+  "compose",
+];
 
 interface PipelineOptions {
   topic: string;
@@ -50,11 +60,28 @@ function videoDir(slug: string): string {
   return `public/videos/inspire/${slug}`;
 }
 
+function artDirectPath(slug: string): string {
+  return `prompts/inspire/${slug}-artdirection.json`;
+}
+
 function clipVideoPath(slug: string, index: number): string {
   return path.join(videoDir(slug), `clip-${index}.mp4`);
 }
 
 // ── Phase 1: Narration ──────────────────────────────────────────────────
+function sanitizeNarration(raw: string): string {
+  // 1. The LLM sometimes emits the literal 4-char sequence `\n\n` instead
+  //    of real newlines; convert so TTS doesn't speak it and the segmenter
+  //    doesn't tokenize it as extra words.
+  // 2. Normalize curly punctuation to ASCII so the sentence segmenter's
+  //    `[^a-z0-9\s'-]` token regex doesn't split contractions like "it's".
+  return raw
+    .replace(/\\n\\n/g, "\n\n")
+    .replace(/\\n/g, "\n")
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"');
+}
+
 async function runNarrationPhase(
   topic: string,
   slug: string,
@@ -63,15 +90,18 @@ async function runNarrationPhase(
   const cached = narrationPath(slug);
   if (fs.existsSync(cached)) {
     console.log(`  [narration] cached: ${cached}`);
-    return fs.readFileSync(cached, "utf-8");
+    return sanitizeNarration(fs.readFileSync(cached, "utf-8"));
   }
 
   console.log(`  [narration] Generating narration for "${topic}"...`);
-  const narration = await generateNarration(topic, { verbose });
+  const narration = sanitizeNarration(await generateNarration(topic, { verbose }));
 
   fs.mkdirSync(path.dirname(cached), { recursive: true });
   fs.writeFileSync(cached, narration, "utf-8");
   console.log(`  [narration] saved: ${cached} (${narration.length} chars)`);
+
+  invalidateClipPlanCache(slug);
+  invalidateTtsCache(slug);
 
   return narration;
 }
@@ -248,7 +278,80 @@ async function runVideoPhase(
   return { clipPlan, clips, sentences };
 }
 
-// ── Phase 4: Compose ────────────────────────────────────────────────────
+// ── Phase 4: Art Direction ──────────────────────────────────────────────
+interface ArtDirectPhaseInput {
+  narration: string;
+  slug: string;
+  clipPlan: ClipPlan;
+  sentences: Sentence[];
+  verbose: boolean;
+}
+
+async function runArtDirectPhase(
+  input: ArtDirectPhaseInput,
+): Promise<ArtDirection> {
+  const cachePath = artDirectPath(input.slug);
+
+  if (fs.existsSync(cachePath)) {
+    try {
+      const parsed = ArtDirectionSchema.parse(
+        JSON.parse(fs.readFileSync(cachePath, "utf-8")),
+      );
+      console.log(`  [artdirect] cached: ${cachePath}`);
+      return parsed;
+    } catch (err) {
+      console.warn(
+        `  [artdirect] cache corrupt at ${cachePath} (${err instanceof Error ? err.message : String(err)}); regenerating`,
+      );
+    }
+  }
+
+  console.log(`  [artdirect] Generating art direction...`);
+  const ad = await generateArtDirection(
+    {
+      narration: input.narration,
+      sentences: input.sentences.map((s) => ({
+        sentenceIndex: s.sentenceIndex,
+        text: s.text,
+        tokenWordIndexes: s.tokenWordIndexes,
+      })),
+      clipPlan: input.clipPlan,
+    },
+    { verbose: input.verbose },
+  );
+
+  fs.mkdirSync(path.dirname(cachePath), { recursive: true });
+  fs.writeFileSync(cachePath, JSON.stringify(ad, null, 2));
+  console.log(`  [artdirect] saved: ${cachePath}`);
+  return ad;
+}
+
+function invalidateClipPlanCache(slug: string): void {
+  const cachePath = clipPlanPath(slug);
+  if (fs.existsSync(cachePath)) {
+    fs.unlinkSync(cachePath);
+    console.log(`  [videos] clip plan invalidated (narration changed): ${cachePath}`);
+  }
+}
+
+function invalidateTtsCache(slug: string): void {
+  for (const p of [audioPath(slug), timingsPath(slug)]) {
+    if (fs.existsSync(p)) {
+      fs.unlinkSync(p);
+      console.log(`  [tts] invalidated (narration changed): ${p}`);
+    }
+  }
+}
+
+function invalidateArtDirectCache(slug: string): void {
+  const cachePath = artDirectPath(slug);
+  if (fs.existsSync(cachePath)) {
+    fs.unlinkSync(cachePath);
+    console.log(`  [artdirect] invalidated: ${cachePath}`);
+  }
+}
+
+// ── Phase 5: Compose ────────────────────────────────────────────────────
 function runComposePhase(
   slug: string,
   topic: string,
@@ -258,6 +361,7 @@ function runComposePhase(
   clips: Clip[],
   sentences: Sentence[],
   strategy: "single" | "multi",
+  artDirection: ArtDirection,
 ): InspirationScript {
   const durationInFrames = Math.ceil(durationSeconds * 30);
 
@@ -285,6 +389,7 @@ function runComposePhase(
     fps: 30,
     width: 1920,
     height: 1080,
+    artDirection,
   };
 
   const { path: jsonPath } = writeInspireJson(script);
@@ -294,8 +399,13 @@ function runComposePhase(
   return script;
 }
 
+export const runInspirePipeline = traceable(runInspirePipelineImpl, {
+  name: "runInspirePipeline",
+  run_type: "chain",
+});
+
 // ── Main pipeline ───────────────────────────────────────────────────────
-export async function runInspirePipeline(
+async function runInspirePipelineImpl(
   options: PipelineOptions,
 ): Promise<InspirationScript> {
   const { topic, slug, verbose } = options;
@@ -311,7 +421,7 @@ export async function runInspirePipeline(
   } else {
     const cached = narrationPath(slug);
     if (fs.existsSync(cached)) {
-      narration = fs.readFileSync(cached, "utf-8");
+      narration = sanitizeNarration(fs.readFileSync(cached, "utf-8"));
       console.log(`  [narration] loaded: ${cached}`);
     } else {
       console.log(`  [narration] cache missing, generating...`);
@@ -349,6 +459,7 @@ export async function runInspirePipeline(
   let sentences: Sentence[];
   let strategy: "single" | "multi";
   if (shouldRun("videos", from)) {
+    invalidateArtDirectCache(slug);
     const videoResult = await runVideoPhase(
       narration,
       slug,
@@ -369,6 +480,7 @@ export async function runInspirePipeline(
       console.log(`  [videos] loaded from: ${jsonPath}`);
     } else {
       console.log(`  [videos] cache missing, generating...`);
+      invalidateArtDirectCache(slug);
       const videoResult = await runVideoPhase(
         narration,
         slug,
@@ -382,7 +494,26 @@ export async function runInspirePipeline(
     }
   }
 
-  // Phase 4: Compose
+  // Phase 4: Art Direction
+  const reconstructedClipPlan: ClipPlan = {
+    strategy,
+    clips: clips.map((c) => ({
+      query: c.query,
+      sentenceIndexes: sentences
+        .filter((s) => s.clipIndex === c.clipIndex)
+        .map((s) => s.sentenceIndex),
+    })),
+  };
+
+  const artDirection = await runArtDirectPhase({
+    narration,
+    slug,
+    clipPlan: reconstructedClipPlan,
+    sentences,
+    verbose,
+  });
+
+  // Phase 5: Compose
   const script = runComposePhase(
     slug,
     topic,
@@ -392,6 +523,7 @@ export async function runInspirePipeline(
     clips,
     sentences,
     strategy,
+    artDirection,
   );
 
   console.log(`\n━━ Done. Composition ID: ${slug} ━━\n`);

@@ -25,6 +25,8 @@ function readInspireScripts(): InspirationScript[] {
 
   for (const entry of entries) {
     if (!entry.endsWith(".json")) continue;
+    // Segment JSONs ({slug}-seg-01.json) are pipeline intermediates — exclude from registry.
+    if (/-seg-\d+\.json$/.test(entry)) continue;
     const filePath = path.join(INSPIRE_JSON_DIR, entry);
     const raw = fs.readFileSync(filePath, "utf-8");
     try {

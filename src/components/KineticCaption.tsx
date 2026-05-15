@@ -1,20 +1,29 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { AbsoluteFill, interpolate, spring } from "remotion";
 import type { WordTiming } from "../lib/tts-google";
 import type { Sentence } from "../lib/inspire/inspire-schema";
 import { palette } from "./tokens";
-import { loadFont } from "@remotion/google-fonts/Inter";
+import { loadFont } from "@remotion/google-fonts/CormorantGaramond";
+import { isQuoteSentence } from "../lib/inspire/art-direction-schema";
+import type { CaptionStyle } from "../lib/inspire/art-direction-schema";
+import { WORD_VARIANTS } from "./captions";
+import type { WordVariant } from "./captions";
 
 const { fontFamily } = loadFont();
+
+const ACTIVE_VARIANT: WordVariant = "fade";
 
 interface KineticCaptionProps {
   frame: number;
   fps: number;
   wordTimings: WordTiming[];
   sentences: Sentence[];
+  captionStyleBySentence?: Record<number, CaptionStyle>;
+  emphasisBySentence?: Record<number, number[]>;
 }
 
 const FADE_FRAMES = 10;
+const MAX_GROUP_CHARS = 120;
 
 function cleanDisplayText(text: string): string {
   return text
@@ -26,27 +35,85 @@ function cleanDisplayText(text: string): string {
     .trim();
 }
 
+interface DisplayGroup {
+  text: string;
+  sentenceIndexes: number[];
+  primarySentenceIndex: number;
+  startSeconds: number;
+  endSeconds: number;
+  startFrame: number;
+  endFrame: number;
+  tokenWordIndexes: number[];
+  isQuote: boolean;
+}
+
+function buildDisplayGroups(sentences: Sentence[]): DisplayGroup[] {
+  const groups: DisplayGroup[] = [];
+  let current: DisplayGroup | null = null;
+
+  for (const s of sentences) {
+    const cleaned = s.text.trim();
+    const quote = isQuoteSentence(s.text);
+
+    const canMerge =
+      current !== null &&
+      !quote &&
+      !current.isQuote &&
+      current.text.length + 1 + cleaned.length <= MAX_GROUP_CHARS;
+
+    if (canMerge && current) {
+      current.text = `${current.text} ${cleaned}`;
+      current.sentenceIndexes.push(s.sentenceIndex);
+      current.endSeconds = s.endSeconds;
+      current.endFrame = s.endFrame;
+      current.tokenWordIndexes = [
+        ...current.tokenWordIndexes,
+        ...s.tokenWordIndexes,
+      ];
+    } else {
+      if (current) groups.push(current);
+      current = {
+        text: cleaned,
+        sentenceIndexes: [s.sentenceIndex],
+        primarySentenceIndex: s.sentenceIndex,
+        startSeconds: s.startSeconds,
+        endSeconds: s.endSeconds,
+        startFrame: s.startFrame,
+        endFrame: s.endFrame,
+        tokenWordIndexes: [...s.tokenWordIndexes],
+        isQuote: quote,
+      };
+    }
+  }
+  if (current) groups.push(current);
+  return groups;
+}
+
 export const KineticCaption: React.FC<KineticCaptionProps> = ({
   frame,
   fps,
   wordTimings,
   sentences,
+  captionStyleBySentence,
+  emphasisBySentence,
 }) => {
   const t = frame / fps;
 
-  // Find current sentence
-  const currentSentence =
-    sentences.find((s) => t >= s.startSeconds && t < s.endSeconds) ??
-    sentences[sentences.length - 1]; // fall back to last sentence after audio ends
+  const displayGroups = React.useMemo(
+    () => buildDisplayGroups(sentences),
+    [sentences],
+  );
 
-  if (!currentSentence) return null;
+  const currentGroup =
+    displayGroups.find((g) => t >= g.startSeconds && t < g.endSeconds) ??
+    displayGroups[displayGroups.length - 1];
 
-  // Map sentence tokens to word timings
-  const sentenceWords = currentSentence.tokenWordIndexes
+  if (!currentGroup) return null;
+
+  const sentenceWords = currentGroup.tokenWordIndexes
     .filter((i) => i < wordTimings.length)
     .map((i) => wordTimings[i]);
 
-  // Active word: largest index where t >= word.startSeconds
   let activeWordIdx = -1;
   for (let i = 0; i < sentenceWords.length; i++) {
     if (t >= sentenceWords[i].startSeconds) {
@@ -54,9 +121,8 @@ export const KineticCaption: React.FC<KineticCaptionProps> = ({
     }
   }
 
-  // Sentence-level fade: fade out in last FADE_FRAMES, fade in over first FADE_FRAMES
-  const sentenceStartFrame = currentSentence.startFrame;
-  const sentenceEndFrame = currentSentence.endFrame;
+  const sentenceStartFrame = currentGroup.startFrame;
+  const sentenceEndFrame = currentGroup.endFrame;
   const sentenceDuration = sentenceEndFrame - sentenceStartFrame;
 
   const opacity =
@@ -72,62 +138,80 @@ export const KineticCaption: React.FC<KineticCaptionProps> = ({
           [0, 1, 1, 0],
           { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
         )
-      : interpolate(
-          frame,
-          [sentenceStartFrame, sentenceEndFrame],
-          [1, 1],
-          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-        );
+      : 1;
 
-  // Reconstruct display words from the sentence text, stripping TTS artifacts
-  const displayWords = cleanDisplayText(currentSentence.text)
-    .split(/\s+/)
-    .map((w) => w.replace(/^["'\(\)]+/, "").replace(/["'\(\)]+$/, ""))
-    .filter(Boolean);
+  // Quote detection is a deterministic override on top of the LLM directive.
+  const llmStyle = captionStyleBySentence?.[currentGroup.primarySentenceIndex];
+  const captionStyle: CaptionStyle = currentGroup.isQuote
+    ? "hero-quote"
+    : (llmStyle ?? "word-by-word");
 
-  return (
-    <AbsoluteFill
-      style={{
-        justifyContent: "flex-end",
-        paddingBottom: 120,
-        opacity,
-      }}
-    >
-      <div
+  if (captionStyle === "hero-quote") {
+    const quoteText = cleanDisplayText(currentGroup.text);
+    const localBlock = Math.max(0, frame - sentenceStartFrame);
+    const blockScale = spring({
+      frame: localBlock,
+      fps,
+      from: 0.92,
+      to: 1.0,
+      config: { damping: 12, stiffness: 180, mass: 0.8 },
+    });
+    const blockOpacity = interpolate(
+      frame,
+      [sentenceStartFrame, sentenceStartFrame + 8],
+      [0, 1],
+      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    );
+
+    return (
+      <AbsoluteFill
         style={{
-          display: "flex",
-          flexWrap: "wrap",
           justifyContent: "center",
           alignItems: "center",
-          padding: "0 120px",
-          fontFamily,
-          fontSize: 64,
-          lineHeight: 1.4,
-          textAlign: "center",
-          gap: "0 18px",
+          opacity,
         }}
       >
-        {displayWords.map((word, i) => {
-          const isActive = i === activeWordIdx;
-          const isSpoken = i < activeWordIdx;
-          const isUpcoming = i > activeWordIdx;
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "0 120px",
+            fontFamily,
+            fontSize: 152,
+            lineHeight: 1.2,
+            textAlign: "center",
+            color: palette.text,
+            fontWeight: 700,
+            fontStyle: "italic",
+            transform: `scale(${blockScale})`,
+            transformOrigin: "center center",
+            opacity: blockOpacity,
+            textShadow:
+              "0 2px 40px rgba(0,0,0,0.95), 0 0 60px rgba(255,255,255,0.08)",
+          }}
+        >
+          {quoteText}
+        </div>
+      </AbsoluteFill>
+    );
+  }
 
-          return (
-            <span
-              key={`${currentSentence.sentenceIndex}-${i}`}
-              style={{
-                color: isActive ? palette.accent : palette.text,
-                fontWeight: isActive ? 700 : 400,
-                fontSize: isActive ? "1.15em" : "1em",
-                opacity: isSpoken ? 0.6 : isUpcoming ? 0.3 : 1,
-                transition: "all 0.1s ease",
-              }}
-            >
-              {word}
-            </span>
-          );
-        })}
-      </div>
-    </AbsoluteFill>
+  const emphasisIndexes =
+    currentGroup.sentenceIndexes.length === 1
+      ? (emphasisBySentence?.[currentGroup.primarySentenceIndex] ?? [])
+      : [];
+
+  const WordCaptionComponent = WORD_VARIANTS[ACTIVE_VARIANT];
+  return (
+    <WordCaptionComponent
+      frame={frame}
+      fps={fps}
+      sentenceWords={sentenceWords}
+      activeWordIdx={activeWordIdx}
+      emphasisIndexes={emphasisIndexes}
+      opacity={opacity}
+      sentenceText={currentGroup.text}
+    />
   );
 };

@@ -69,8 +69,9 @@ async function deepseekChatImpl(
       model: DEEPSEEK_MODEL,
       messages,
       temperature,
-      reasoning_effort: reasoning.effort,
-      ...(reasoning.thinking.type === "enabled" ? { thinking: { type: "enabled" } } : {}),
+      ...(reasoning.thinking.type === "enabled"
+        ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
+        : {}),
     }),
     signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS),
   });

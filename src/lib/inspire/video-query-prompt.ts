@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { deepseekChat } from "../deepseek";
-import { CODE_GEN_TEMPERATURE, CODE_GEN_REASONING } from "../config";
+import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
 import type { SentenceTiming } from "./sentence-segmenter";
 
 // ── Clip plan schema ────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ Choose a video strategy and Pixabay search queries. Return ONLY the JSON.`;
       { role: "user", content: userPrompt },
     ],
     CODE_GEN_TEMPERATURE,
-    CODE_GEN_REASONING,
+    NARRATION_REASONING,
     { verbose: options?.verbose },
   );
 

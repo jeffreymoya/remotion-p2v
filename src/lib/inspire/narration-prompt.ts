@@ -1,5 +1,5 @@
 import { deepseekChat } from "../deepseek";
-import { CODE_GEN_TEMPERATURE, CODE_GEN_REASONING } from "../config";
+import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
 
 const SYSTEM_PROMPT = `You are a professional scriptwriter for short-form inspirational videos (45–90 seconds, ~140 WPM, 100–210 words).
 
@@ -9,8 +9,16 @@ You write narration text that will be spoken aloud by a neural TTS voice (Google
 - \`...\` — Extended pause. Creates dramatic tension or lets a point land.
 - \`—\` — Abrupt shift or interruption. Creates urgency.
 - \`( )\` — Aside or parenthetical. Voice naturally lowers.
-- \`" "\` — Quoted speech. Voice shifts to a "quoting" register.
 - \`\\n\\n\` — Section/paragraph break. Resets pacing and energy.
+
+## Required Structure (mandatory)
+Every narration MUST contain EXACTLY ONE sentence wrapped in double quotes.
+This quoted sentence represents an internal voice, a misguided belief, or a key aphorism.
+Rules for the quoted sentence:
+- It must be a standalone sentence — not nested inside parentheses or embedded mid-paragraph.
+- Length: 5–12 words.
+- Placed at a natural emotional peak — typically the tension or reveal beat.
+- Example: "You have to earn the right to rest."
 
 ## Structure Rules
 1. **Setup → Tension → Payoff**: open with a hook, build tension through the middle, resolve with a memorable landing line.
@@ -30,7 +38,8 @@ export async function generateNarration(
 
 Remember:
 - 45–90 seconds at ~140 WPM (100–210 words)
-- Use prosody marks (..., —, ( ), " ", \\n\\n) strategically
+- Use prosody marks (..., —, ( ), \\n\\n) strategically
+- Include EXACTLY ONE standalone quoted sentence (5–12 words, double quotes) at the tension or reveal beat
 - Setup → Tension → Payoff structure
 - End with a memorable short landing line
 - Return ONLY the narration text`;
@@ -41,7 +50,7 @@ Remember:
       { role: "user", content: userPrompt },
     ],
     CODE_GEN_TEMPERATURE,
-    CODE_GEN_REASONING,
+    NARRATION_REASONING,
     { verbose: options?.verbose },
   );
 

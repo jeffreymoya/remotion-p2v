@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ArtDirectionSchema } from "./art-direction-schema";
 
 // ── Word timing (mirrors tts-google.ts WordTiming) ──────────────────────
 const WordTimingSchema = z.object({
@@ -46,6 +47,7 @@ export const InspirationScriptSchema = z
     fps: z.literal(30),
     width: z.literal(1920),
     height: z.literal(1080),
+    artDirection: ArtDirectionSchema,
   })
   .refine(
     (s) => {

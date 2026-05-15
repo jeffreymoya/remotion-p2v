@@ -7,6 +7,11 @@ export const CODE_GEN_REASONING = {
   thinking: { type: "disabled" as const },
 };
 
+export const NARRATION_REASONING = {
+  effort: "low" as const,
+  thinking: { type: "disabled" as const },
+};
+
 export const OUTPUT_DIR = "src/compositions" as const;
 export const BARREL_PATH = "src/compositions/index.ts" as const;
 
