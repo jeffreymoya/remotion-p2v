@@ -2,43 +2,37 @@
 
 ## Project Structure & Module Organization
 
-This is a TypeScript Remotion project that turns prompt/script inputs into video compositions. Core application code lives in `src/`: `src/cli.ts` runs the generation pipeline, `src/lib/` contains prompt, parsing, image, and composition helpers, and `src/Root.tsx` registers Remotion compositions. Generated or hand-maintained compositions live in `src/compositions/`, with `src/compositions/index.ts` as the barrel export.
+This is a TypeScript Remotion project centered on the inspire longform pipeline. Core runtime code lives in `src/`: `src/Root.tsx` registers Remotion compositions, `src/components/` contains the active video composition and caption components, and `src/lib/inspire/` contains the narration, TTS, video-planning, download, art-direction, and longform orchestration logic.
 
-Operational scripts are in `scripts/`, examples and reference prompts in `examples/`, reusable prompt inputs in `prompts/`, and rendered/downloaded media in `public/images/`. Treat `prompts/`, `public/`, `.tmp/`, `.env`, and `credentials.json` as local/generated or sensitive unless intentionally preparing sample assets.
-
-## Roadmap
-
-Project direction:
-
-- The project is in POC phase and intentionally processes only the first script segment for now, but the intended production direction is to process every script segment.
-- The intended architecture is scene-level generation: each segment may contain multiple scenes, and each scene should eventually have its own pipeline for creating a Remotion prompt, downloading/processing images, generating a Remotion composition, and preserving those scene artifacts.
-- The final video should be assembled by stitching generated scene compositions/artifacts together rather than relying on one monolithic Remotion prompt/composition for a full segment or whole script.
-- A future pipeline addition should introduce TTS and synchronize scene animations/composition timing to the generated narration/audio.
-
-This roadmap was originally captured in the Memory MCP entity `remotion-p2v project direction`, created via `memory.create_entities`. Current MCP storage resolves to `/home/jeffreymoya/.npm/_npx/15b07286cbcc3329/node_modules/@modelcontextprotocol/server-memory/dist/memory.jsonl` because no `MEMORY_FILE_PATH` is configured. Treat that path as an implementation detail of the current `npx` cache; the durable instruction source is this section plus any sidecar docs under `/home/jeffreymoya/dev/_sidecar/remotion-p2v/`.
+Operational scripts live in `scripts/`. Generated pipeline artifacts are written under `prompts/inspire/`, `public/audio/inspire/`, `public/videos/inspire/`, and `src/generated/`. Treat `prompts/`, `public/`, `.tmp/`, `.env`, and `credentials.json` as local/generated or sensitive unless intentionally preparing sample assets.
 
 ## Build, Test, and Development Commands
 
-- `npm run dev -- 0`: run the CLI for segment `0` from `script.txt`.
-- `npm run images`: run only the image-fetch phase for segment `0`.
-- `npm run studio`: open Remotion Studio for previewing compositions.
-- `npm run build -- <composition-id> out/video.mp4`: render a composition with Remotion.
+- `npm run inspire -- "topic"`: run the longform inspire pipeline for a topic.
+- `npm run inspire -- "topic" --from=tts`: resume from a later inspire phase.
+- `npm run studio`: open Remotion Studio for previewing generated compositions.
+- `npm run build -- <composition-id> out/video.mp4`: render a composition.
 - `npm run typecheck`: run TypeScript checks with `tsc --noEmit`.
-- `npm run smoke:images`, `npm run smoke:image-parser`, `npm run smoke:cutout`, `npm run smoke:fake-transparency`: run focused smoke checks.
-- `npm run cutout:images` or `npm run recut:sticker-smooth-hard`: regenerate processed image cutouts.
+- `npm run smoke:inspire-segmenter`: run the sentence segmentation smoke test.
+
+## Pipeline Overview
+
+The active pipeline is topic-driven, not `script.txt`-driven:
+
+1. Generate a longform narration plan split into segments.
+2. For each segment, generate TTS audio and word timings.
+3. Produce a clip plan, download stock video clips, and generate art direction.
+4. Write segment JSON artifacts and a combined longform `InspirationScript`.
+5. Regenerate `src/generated/inspire-scripts.ts` so `src/Root.tsx` can register the composition.
 
 ## Coding Style & Naming Conventions
 
-Use strict TypeScript, ES modules, React JSX, and the `@/*` alias for `src/*` imports when helpful. Match the existing style: two-space indentation, double quotes, semicolons, explicit return types on exported or non-trivial functions, and `type` imports for type-only symbols. Name files with kebab-case (`build-image-fetch-prompt.ts`) and React components with PascalCase.
+Use strict TypeScript, ES modules, React JSX, and the `@/*` alias for `src/*` imports when helpful. Match the existing style: two-space indentation, double quotes, semicolons, explicit return types on exported or non-trivial functions, and `type` imports for type-only symbols. Name files with kebab-case and React components with PascalCase.
 
 ## Testing Guidelines
 
 There is no full unit-test suite yet; use `npm run typecheck` plus the relevant smoke script for changed behavior. Add new smoke scripts under `scripts/` using the `*-smoke.ts` naming pattern when testing pipeline behavior without introducing a formal test harness. For composition changes, preview with `npm run studio` and render a short output when practical.
 
-## Commit & Pull Request Guidelines
-
-Git history uses short Conventional Commit-style subjects such as `feat: ...`, `fix: ...`, and `chore: ...`. Keep commits scoped and imperative. Pull requests should describe the affected pipeline phase, include commands run, link related issues or notes, and attach screenshots or rendered clips for visible Remotion changes.
-
 ## Security & Configuration Tips
 
-Keep API keys and local credentials in `.env` or `credentials.json`; never hardcode secrets in `src/` or commit credential files. Run `npm audit` before publishing or pushing dependency changes.
+Keep API keys and local credentials in `.env` or `credentials.json`; never hardcode secrets in `src/` or commit credential files. The current pipeline may require `DEEPSEEK_API_KEY`, `GOOGLE_CLOUD_API_KEY`, `PIXABAY_API_KEY`, and `PEXELS_API_KEY` depending on which inspire phases you run.

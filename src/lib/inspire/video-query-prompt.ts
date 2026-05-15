@@ -27,7 +27,16 @@ Given a narration and its sentence-level timings, decide how many background vid
 ## Rules
 1. Every sentence must be covered by exactly one clip (no gaps, no overlaps).
 2. Sentence indexes must be contiguous within each clip group.
-3. Queries should describe cinematic, atmospheric stock footage (nature, cityscapes, abstract, people in motion).
+3. Choose queries from these visual categories — mix them across clips for variety:
+   - Nature / landscape: "mountain sunrise mist", "ocean waves calm", "forest light morning"
+   - Cityscapes / abstract: "city lights timelapse", "neon reflections rain", "abstract particles flow"
+   - People in motion: "crowd city walking", "runner morning trail"
+   - Human subject (contemplative): a single person in a reflective, introspective, or emotional state.
+     Examples: "person window light", "woman sitting alone", "man silhouette mountain",
+     "solitary figure sunset", "person rain street", "woman looking ocean"
+
+   For motivational or introspective narrations, include at least one clip from the
+   "Human subject (contemplative)" category. Do not use it for every clip — one per composition is the target.
 4. Prefer horizontal/landscape orientation footage.
 5. Use 2-4 word queries for best Pixabay results.
 6. For "single" strategy, clips array must have exactly 1 entry with ALL sentence indexes.

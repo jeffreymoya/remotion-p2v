@@ -1,34 +1,39 @@
 import fs from "node:fs";
 import path from "node:path";
 import { traceable } from "langsmith/traceable";
-import { PIXABAY_VIDEOS_BASE_URL, PIXABAY_TIMEOUT_MS, PIXABAY_VIDEO_PER_PAGE } from "../config";
+import { PEXELS_VIDEOS_BASE_URL, PEXELS_VIDEO_PER_PAGE, PIXABAY_TIMEOUT_MS } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
 
-export type { VideoDownloadResult } from "./video-source";
+const USER_AGENT = "Mozilla/5.0 (compatible; remotion-p2v-inspire/1.0)";
 
-const USER_AGENT =
-  "Mozilla/5.0 (compatible; remotion-p2v-inspire/1.0)";
-
-interface PixabayVideoFile {
-  url: string;
+interface PexelsVideoFile {
+  quality: "sd" | "hd" | "uhd";
+  file_type: string;
   width: number;
   height: number;
+  link: string;
 }
 
-interface PixabayVideoHit {
+interface PexelsVideoHit {
   id: number;
-  pageURL: string;
   duration: number;
-  videos: {
-    large?: PixabayVideoFile;
-    medium?: PixabayVideoFile;
-    small?: PixabayVideoFile;
-  };
+  url: string;
+  video_files: PexelsVideoFile[];
 }
 
-interface PixabayVideoResponse {
-  totalHits?: number;
-  hits?: PixabayVideoHit[];
+interface PexelsVideoResponse {
+  total_results?: number;
+  videos?: PexelsVideoHit[];
+}
+
+function pickBestFile(files: PexelsVideoFile[]): PexelsVideoFile | undefined {
+  const hd = files
+    .filter((f) => f.quality === "hd" && f.width >= 1920)
+    .sort((a, b) => b.width - a.width);
+  if (hd.length > 0) return hd[0];
+
+  const byWidth = [...files].sort((a, b) => b.width - a.width);
+  return byWidth[0];
 }
 
 async function searchAndDownloadVideoImpl(
@@ -37,21 +42,22 @@ async function searchAndDownloadVideoImpl(
   minDurationSeconds: number,
   options?: VideoSearchOptions,
 ): Promise<VideoDownloadResult> {
-  const apiKey = process.env.PIXABAY_API_KEY;
+  const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) {
-    return { ok: false, loop: false, error: "PIXABAY_API_KEY is not set" };
+    return { ok: false, loop: false, error: "PEXELS_API_KEY is not set" };
   }
 
-  const url = new URL(PIXABAY_VIDEOS_BASE_URL);
-  url.searchParams.set("key", apiKey);
-  url.searchParams.set("q", query);
-  url.searchParams.set("orientation", "horizontal");
-  url.searchParams.set("per_page", String(PIXABAY_VIDEO_PER_PAGE));
-  url.searchParams.set("min_width", "1920");
-  url.searchParams.set("safesearch", "true");
+  const url = new URL(PEXELS_VIDEOS_BASE_URL);
+  url.searchParams.set("query", query);
+  url.searchParams.set("orientation", "landscape");
+  url.searchParams.set("per_page", String(PEXELS_VIDEO_PER_PAGE));
+  url.searchParams.set("size", "large");
 
   const res = await fetch(url, {
-    headers: { "user-agent": USER_AGENT },
+    headers: {
+      Authorization: apiKey,
+      "user-agent": USER_AGENT,
+    },
     signal: AbortSignal.timeout(PIXABAY_TIMEOUT_MS),
   });
 
@@ -59,15 +65,15 @@ async function searchAndDownloadVideoImpl(
     return {
       ok: false,
       loop: false,
-      error: `Pixabay Video API HTTP ${res.status} ${res.statusText}`,
+      error: `Pexels Video API HTTP ${res.status} ${res.statusText}`,
     };
   }
 
-  const body = (await res.json()) as PixabayVideoResponse;
-  const hits = body.hits ?? [];
+  const body = (await res.json()) as PexelsVideoResponse;
+  const hits = body.videos ?? [];
 
   if (hits.length === 0) {
-    return { ok: false, loop: false, error: `no Pixabay video results for "${query}"` };
+    return { ok: false, loop: false, error: `no Pexels video results for "${query}"` };
   }
 
   // Tiered selection with dedup awareness
@@ -77,7 +83,7 @@ async function searchAndDownloadVideoImpl(
   const lruRank = new Map(lruSortedIds.map((id, i) => [id, i]));
   const lruScore = (id: number) => lruRank.get(id) ?? lruSortedIds.length;
 
-  let bestHit: PixabayVideoHit | undefined;
+  let bestHit: PexelsVideoHit | undefined;
   let needsLoop = false;
   let tier: SelectionTier = "last-resort";
 
@@ -110,7 +116,7 @@ async function searchAndDownloadVideoImpl(
       tier = "cooldown-loop";
     }
   }
-  // Tier 5: true last resort (intra-run excluded) — LRU
+  // Tier 5: true last resort — LRU
   if (!bestHit) {
     const sorted = [...hits].sort((a, b) => lruScore(a.id) - lruScore(b.id));
     bestHit = sorted[0];
@@ -118,25 +124,19 @@ async function searchAndDownloadVideoImpl(
     tier = "last-resort";
   }
 
-  const videoUrl =
-    bestHit.videos.large?.url ?? bestHit.videos.medium?.url;
-
-  if (!videoUrl) {
-    return { ok: false, loop: false, error: "no usable video URL in Pixabay result" };
+  const bestFile = pickBestFile(bestHit.video_files);
+  if (!bestFile) {
+    return { ok: false, loop: false, error: "no usable video file in Pexels result" };
   }
 
-  const videoRes = await fetch(videoUrl, {
+  const videoRes = await fetch(bestFile.link, {
     redirect: "follow",
     headers: { "user-agent": USER_AGENT },
-    signal: AbortSignal.timeout(PIXABAY_TIMEOUT_MS * 4), // videos are larger
+    signal: AbortSignal.timeout(PIXABAY_TIMEOUT_MS * 4),
   });
 
   if (!videoRes.ok) {
-    return {
-      ok: false,
-      loop: false,
-      error: `Video download HTTP ${videoRes.status}`,
-    };
+    return { ok: false, loop: false, error: `Video download HTTP ${videoRes.status}` };
   }
 
   const buffer = Buffer.from(await videoRes.arrayBuffer());
@@ -150,14 +150,14 @@ async function searchAndDownloadVideoImpl(
   return {
     ok: true,
     path: destPath,
-    sourceUrl: bestHit.pageURL,
+    sourceUrl: bestHit.url,
     videoId: bestHit.id,
     tier,
     loop: needsLoop,
   };
 }
 
-export const searchAndDownloadVideo = traceable(searchAndDownloadVideoImpl, {
-  name: "pixabay_video_search",
+export const searchAndDownloadVideoFromPexels = traceable(searchAndDownloadVideoImpl, {
+  name: "pexels_video_search",
   run_type: "tool",
 });

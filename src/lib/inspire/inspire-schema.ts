@@ -29,6 +29,8 @@ const ClipSchema = z.object({
   loop: z.boolean(),
   startFrame: z.number().int().min(0),
   endFrame: z.number().int().min(0),
+  videoId: z.number().int().positive().optional(),
+  videoSource: z.enum(["pixabay", "pexels"]).optional(),
 });
 
 // ── Root schema ─────────────────────────────────────────────────────────

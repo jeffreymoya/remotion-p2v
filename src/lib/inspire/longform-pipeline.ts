@@ -10,6 +10,7 @@ import { writeInspireJson } from "./write-inspire-script";
 import { InspirationScriptSchema } from "./inspire-schema";
 import type { InspirationScript } from "./inspire-schema";
 import { checkSox, dreamyVoice } from "./audio-postprocess";
+import { loadRegistry, saveRegistry, recordSlug } from "./video-registry";
 
 export interface LongformPipelineOptions {
   topic: string;
@@ -193,8 +194,14 @@ async function runLongformPipelineImpl(
       slug: sSlug,
       from: segFrom,
       verbose,
+      registryOptions: { skipRecordSlug: true },
     });
   }
+
+  // Record root slug once for the whole longform composition
+  const registry = loadRegistry();
+  recordSlug(registry, slug);
+  saveRegistry(registry);
 
   // Phase 6: Combine
   console.log(`\n── Combine: merging ${processCount} segments ──`);

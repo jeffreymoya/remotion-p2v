@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { InspirationScriptSchema } from "./inspire-schema";
 import type { InspirationScript } from "./inspire-schema";
-import { writeFileAtomically } from "../scene-manifest";
+import { writeFileAtomically } from "../file-utils";
 
 const INSPIRE_JSON_DIR = "prompts/inspire";
 const INSPIRE_MODULE_PATH = "src/generated/inspire-scripts.ts";
@@ -25,6 +25,7 @@ function readInspireScripts(): InspirationScript[] {
 
   for (const entry of entries) {
     if (!entry.endsWith(".json")) continue;
+    if (entry.startsWith("_")) continue;
     // Segment JSONs ({slug}-seg-01.json) are pipeline intermediates — exclude from registry.
     if (/-seg-\d+\.json$/.test(entry)) continue;
     const filePath = path.join(INSPIRE_JSON_DIR, entry);
