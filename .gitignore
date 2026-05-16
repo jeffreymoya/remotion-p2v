@@ -4,6 +4,9 @@ node_modules
 .tmp/
 credentials.json
 prompts/
-public/
+public/*
 out/
 src/compositions/
+# allow background-music directory
+!/public/background-music/
+!/public/background-music/**
