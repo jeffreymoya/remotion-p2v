@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "clean": "tsx scripts/clean.ts",
     "studio": "remotion studio",
     "build": "remotion render",
     "typecheck": "tsc --noEmit",
     "inspire": "tsx scripts/inspire.ts",
+    "inspire:quick": "tsx scripts/inspire.ts --segments=2 --limit=2 --clean",
     "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts"
   },
   "dependencies": {

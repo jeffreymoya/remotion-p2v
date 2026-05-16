@@ -56,9 +56,15 @@ unless a rule is explicitly scoped to a specific role (e.g. hook → Chapter 1).
 - **Colloquialisms over jargon.** Use everyday phrasing. Strip academic,
   corporate, and clinical vocabulary unless quoting evidence. "You know that
   feeling" beats "this experiential phenomenon".
-- **Prosody marks.** Use \`...\` (extended pause / pre-reveal suspense),
-  \`—\` (abrupt shift / urgency), \`( )\` (aside, voice naturally lowers),
-  \`\\n\\n\` (section reset). At least two distinct prosody marks per chapter.
+- **Prosody marks.** Use graduated pauses for dramatic pacing:
+  \`...\` (short pause — brief beat, mid-sentence hesitation),
+  \`... ...\` (medium pause — pre-reveal suspense, letting a point land),
+  \`... ... ...\` (long pause — major emotional beat, scene transition, or
+  after a climactic line that needs silence to breathe).
+  Also use \`—\` (abrupt shift / urgency), \`( )\` (aside, voice naturally
+  lowers), \`\\n\\n\` (section reset). Requirements: at least THREE pause marks
+  per chapter, using at least two different pause lengths. Place medium/long
+  pauses before reveals, after quoted anchors, and at emotional peaks.
 - **Quoted anchor.** Exactly ONE standalone double-quoted sentence per
   chapter, 5–12 words, at the emotional peak. Internal voice, belief, or
   aphorism — never dialogue between characters.

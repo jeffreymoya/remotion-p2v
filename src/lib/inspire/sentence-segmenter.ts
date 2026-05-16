@@ -27,21 +27,46 @@ function normalizeToken(w: string): string {
 }
 
 /**
+ * Opening-quote characters used for secondary quote-boundary splitting.
+ */
+const OPENING_QUOTE_CHARS = `""\u201C\u201F\u2033`;
+
+/**
  * Split narration into sentences:
  * 1. Split on `\n\n` into paragraphs.
  * 2. Within each paragraph, split on sentence terminators: . ? ! ...
- * 3. Trim, drop empties.
+ *    (accounting for optional closing quotes after punctuation).
+ * 3. Separate lead-in text from embedded quotes (split at `: "`).
+ * 4. Trim, drop empties.
  */
 function splitIntoSentences(narration: string): string[] {
   const paragraphs = narration.split(/\n\n+/);
   const sentences: string[] = [];
 
   for (const para of paragraphs) {
-    // Split on sentence-ending punctuation, keeping the delimiter with the sentence
-    const parts = para.split(/(?<=[.?!](?:\.{2})?)\s+/);
+    // Split on sentence-ending punctuation, allowing optional closing quotes.
+    // Negative lookahead prevents splitting compound pauses like "... ..." or "... ... ..."
+    const parts = para.split(/(?<=[.?!](?:\.{2})?["""''‟″]*)\s+(?!\.{3})/);
     for (const part of parts) {
       const trimmed = part.trim();
       if (trimmed.length > 0) {
+        // Secondary split: separate lead-in from embedded opening quote
+        const quoteIntroIdx = trimmed.search(
+          /[:,]\s+["""\u201C\u201F\u2033]/,
+        );
+        if (quoteIntroIdx !== -1) {
+          const matchResult = trimmed
+            .slice(quoteIntroIdx)
+            .match(/^[,:]\s+/);
+          if (matchResult) {
+            const splitPos = quoteIntroIdx + matchResult[0].length;
+            const leading = trimmed.slice(0, quoteIntroIdx + 1).trim();
+            const quoted = trimmed.slice(splitPos).trim();
+            if (leading.length > 0) sentences.push(leading);
+            if (quoted.length > 0) sentences.push(quoted);
+            continue;
+          }
+        }
         sentences.push(trimmed);
       }
     }
@@ -62,10 +87,113 @@ function tokenize(sentence: string): string[] {
 }
 
 /**
+ * Greedy two-pointer alignment of text tokens against STT word timings.
+ *
+ * Handles insertions (extra STT words not in text) and deletions (text tokens
+ * the STT missed) so that minor tokenization differences between the text
+ * tokenizer and the STT engine do not cause permanent cursor drift.
+ *
+ * Returns the indexes into `wordTimings` that were matched and the new cursor
+ * position (one past the last consumed STT word).
+ */
+function alignTokens(
+  tokens: string[],
+  wordTimings: WordTiming[],
+  cursor: number,
+): { tokenWordIndexes: number[]; newCursor: number; mismatches: Array<{ tokenIdx: number; expected: string; got: string }> } {
+  const tokenWordIndexes: number[] = [];
+  const mismatches: Array<{ tokenIdx: number; expected: string; got: string }> = [];
+
+  let ti = 0; // text pointer
+  let wi = cursor; // word-timings pointer
+
+  while (ti < tokens.length && wi < wordTimings.length) {
+    const expected = tokens[ti];
+    const actual = normalizeToken(wordTimings[wi].word);
+
+    if (expected === actual) {
+      // Perfect match — consume both
+      tokenWordIndexes.push(wi);
+      ti++;
+      wi++;
+    } else {
+      // Look ahead 1 in STT: was an extra STT word inserted?
+      const nextActual =
+        wi + 1 < wordTimings.length
+          ? normalizeToken(wordTimings[wi + 1].word)
+          : null;
+      // Look ahead 1 in text: was a text token not spoken?
+      const nextExpected = ti + 1 < tokens.length ? tokens[ti + 1] : null;
+
+      if (nextActual !== null && nextActual === expected) {
+        // STT has an extra word at wi — skip it (insertion in STT stream)
+        wi++;
+      } else if (nextExpected !== null && nextExpected === actual) {
+        // Text has an extra token the STT skipped — map current text token
+        // to wi anyway and advance text only (deletion in STT stream)
+        tokenWordIndexes.push(wi);
+        ti++;
+      } else {
+        // Irreconcilable at this position — consume both, record mismatch
+        mismatches.push({ tokenIdx: ti, expected, got: actual });
+        tokenWordIndexes.push(wi);
+        ti++;
+        wi++;
+      }
+    }
+  }
+
+  // If text tokens remain but STT is exhausted, map them to last known index
+  while (ti < tokens.length) {
+    tokenWordIndexes.push(Math.max(0, wi - 1));
+    ti++;
+  }
+
+  return { tokenWordIndexes, newCursor: wi, mismatches };
+}
+
+/**
+ * Resync the cursor by searching for the next sentence's leading tokens in
+ * the STT stream. Looks in a window around the current cursor position.
+ */
+function resyncCursor(
+  nextTokens: string[],
+  wordTimings: WordTiming[],
+  currentCursor: number,
+): number {
+  if (nextTokens.length === 0) return currentCursor;
+
+  const probeLen = Math.min(3, nextTokens.length);
+  const windowStart = Math.max(0, currentCursor - 3);
+  const windowEnd = Math.min(wordTimings.length - probeLen, currentCursor + 5);
+
+  let bestPos = currentCursor;
+  let bestScore = -1;
+
+  for (let pos = windowStart; pos <= windowEnd; pos++) {
+    let score = 0;
+    for (let k = 0; k < probeLen; k++) {
+      if (nextTokens[k] === normalizeToken(wordTimings[pos + k].word)) {
+        score++;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestPos = pos;
+    }
+  }
+
+  // Only accept resync if we matched at least 2 tokens (or all if fewer)
+  const threshold = Math.min(2, probeLen);
+  return bestScore >= threshold ? bestPos : currentCursor;
+}
+
+/**
  * Segment narration into sentences aligned to word timings from STT.
  *
- * Uses sequential positional alignment: walks a cursor through the global
- * wordTimings array, consuming tokens.length words per sentence.
+ * Uses greedy two-pointer alignment per sentence with inter-sentence
+ * resynchronization to prevent cursor drift from tokenization differences
+ * between the text tokenizer and the STT engine.
  */
 export function segmentSentences(
   narration: string,
@@ -84,41 +212,48 @@ export function segmentSentences(
     if (tokens.length === 0) continue;
 
     const firstWordIdx = wordCursor;
-    const tokenWordIndexes: number[] = [];
 
-    for (let j = 0; j < tokens.length; j++) {
-      const globalIdx = wordCursor + j;
-      if (globalIdx >= wordTimings.length) {
-        warnings.push(
-          `Sentence ${i}: ran out of word timings at token "${tokens[j]}" (index ${globalIdx})`,
-        );
-        // Still record the index even if out of bounds — caller will clamp
-        tokenWordIndexes.push(globalIdx);
-        continue;
-      }
+    const { tokenWordIndexes, newCursor, mismatches } = alignTokens(
+      tokens,
+      wordTimings,
+      wordCursor,
+    );
 
-      const expected = tokens[j];
-      const actual = normalizeToken(wordTimings[globalIdx].word);
-
-      if (expected !== actual) {
-        warnings.push(
-          `Sentence ${i}, token ${j}: expected "${expected}" got "${actual}" (positional alignment continues)`,
-        );
-      }
-
-      tokenWordIndexes.push(globalIdx);
+    for (const m of mismatches) {
+      warnings.push(
+        `Sentence ${i}, token ${m.tokenIdx}: expected "${m.expected}" got "${m.got}" (aligned)`,
+      );
     }
 
-    wordCursor += tokens.length;
+    if (newCursor > wordTimings.length) {
+      warnings.push(
+        `Sentence ${i}: ran out of word timings at token index ${newCursor}`,
+      );
+    }
+
+    wordCursor = newCursor;
+
+    // Resync cursor using next sentence's leading tokens
+    if (i + 1 < rawSentences.length) {
+      const nextTokens = tokenize(rawSentences[i + 1]);
+      wordCursor = resyncCursor(nextTokens, wordTimings, wordCursor);
+    }
 
     const lastWordIdx = Math.min(
-      firstWordIdx + tokens.length - 1,
+      tokenWordIndexes.length > 0
+        ? tokenWordIndexes[tokenWordIndexes.length - 1]
+        : firstWordIdx,
       wordTimings.length - 1,
     );
 
+    const effectiveStart =
+      tokenWordIndexes.length > 0
+        ? Math.min(tokenWordIndexes[0], wordTimings.length - 1)
+        : firstWordIdx;
+
     let startSeconds =
-      firstWordIdx < wordTimings.length
-        ? wordTimings[firstWordIdx].startSeconds
+      effectiveStart < wordTimings.length
+        ? wordTimings[effectiveStart].startSeconds
         : 0;
     let endSeconds =
       lastWordIdx < wordTimings.length
@@ -132,7 +267,17 @@ export function segmentSentences(
         ? wordTimings[wordCursor]?.startSeconds
         : undefined;
 
-    if (text.includes("...") || text.includes("—")) {
+    if (text.includes("... ... ...")) {
+      const maxExtend = nextSentenceStart
+        ? Math.min(nextSentenceStart, endSeconds + 1.2)
+        : Math.min(durationSeconds, endSeconds + 1.2);
+      endSeconds = maxExtend;
+    } else if (text.includes("... ...")) {
+      const maxExtend = nextSentenceStart
+        ? Math.min(nextSentenceStart, endSeconds + 0.8)
+        : Math.min(durationSeconds, endSeconds + 0.8);
+      endSeconds = maxExtend;
+    } else if (text.includes("...") || text.includes("—")) {
       const maxExtend = nextSentenceStart
         ? Math.min(nextSentenceStart, endSeconds + 0.5)
         : Math.min(durationSeconds, endSeconds + 0.5);

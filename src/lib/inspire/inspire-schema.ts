@@ -41,6 +41,7 @@ export const InspirationScriptSchema = z
     topic: z.string().min(1),
     narration: z.string().min(1),
     audioPath: z.string().min(1),
+    backgroundMusicPath: z.string().optional(),
     wordTimings: z.array(WordTimingSchema),
     sentences: z.array(SentenceSchema),
     clips: z.array(ClipSchema).min(1),

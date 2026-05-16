@@ -6,10 +6,14 @@ const SYSTEM_PROMPT = `You are a professional scriptwriter for short-form inspir
 You write narration text that will be spoken aloud by a neural TTS voice (Google Chirp 3 HD). The voice responds to punctuation for prosody — no SSML is used.
 
 ## Prosody Marks (critical — use intentionally)
-- \`...\` — Extended pause. Creates dramatic tension or lets a point land.
+- \`...\` — Short pause. A brief beat or mid-sentence hesitation.
+- \`... ...\` — Medium pause. Pre-reveal suspense or letting a point land.
+- \`... ... ...\` — Long pause. Major emotional beat, scene transition, or silence after a climactic line.
 - \`—\` — Abrupt shift or interruption. Creates urgency.
 - \`( )\` — Aside or parenthetical. Voice naturally lowers.
 - \`\\n\\n\` — Section/paragraph break. Resets pacing and energy.
+
+Use at least 3 pause marks per narration, varying the lengths. Place medium/long pauses before reveals, after emotional peaks, and after the quoted anchor sentence.
 
 ## Required Structure (mandatory)
 Every narration MUST contain EXACTLY ONE sentence wrapped in double quotes.
@@ -38,7 +42,7 @@ export async function generateNarration(
 
 Remember:
 - 45–90 seconds at ~140 WPM (100–210 words)
-- Use prosody marks (..., —, ( ), \\n\\n) strategically
+- Use graduated pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per narration with varied lengths
 - Include EXACTLY ONE standalone quoted sentence (5–12 words, double quotes) at the tension or reveal beat
 - Setup → Tension → Payoff structure
 - End with a memorable short landing line

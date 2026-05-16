@@ -11,6 +11,12 @@ import { InspirationScriptSchema } from "./inspire-schema";
 import type { InspirationScript } from "./inspire-schema";
 import { checkSox, dreamyVoice } from "./audio-postprocess";
 import { loadRegistry, saveRegistry, recordSlug } from "./video-registry";
+import {
+  loadMusicRegistry,
+  saveMusicRegistry,
+  pickNextTrack,
+  recordTrackUse,
+} from "./music-registry";
 
 export interface LongformPipelineOptions {
   topic: string;
@@ -228,7 +234,37 @@ async function runLongformPipelineImpl(
   );
 
   const combined = combineSegments(slug, topic, segmentScripts);
-  const { path: jsonPath } = writeInspireJson(combined);
+
+  // Background music: reuse cached track on reruns, otherwise LRU-pick
+  const cachedJsonPath = `prompts/inspire/${slug}.json`;
+  let backgroundMusicPath: string | undefined;
+  if (fs.existsSync(cachedJsonPath)) {
+    try {
+      const cached = JSON.parse(fs.readFileSync(cachedJsonPath, "utf-8"));
+      backgroundMusicPath = cached.backgroundMusicPath;
+    } catch {
+      // ignore — will pick fresh
+    }
+  }
+  if (!backgroundMusicPath) {
+    const musicReg = loadMusicRegistry();
+    const track = pickNextTrack(musicReg);
+    if (track) {
+      const updated = recordTrackUse(musicReg, track, slug);
+      saveMusicRegistry(updated);
+      backgroundMusicPath = track;
+      console.log(`  [music] selected: ${track}`);
+    } else {
+      console.log(`  [music] no tracks found in public/background-music/`);
+    }
+  } else {
+    console.log(`  [music] reusing cached: ${backgroundMusicPath}`);
+  }
+
+  const finalScript: InspirationScript = backgroundMusicPath
+    ? { ...combined, backgroundMusicPath }
+    : combined;
+  const { path: jsonPath } = writeInspireJson(finalScript);
 
   console.log(`  [combine] script: ${jsonPath}`);
   console.log(

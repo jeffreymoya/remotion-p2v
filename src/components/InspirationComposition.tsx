@@ -34,29 +34,80 @@ interface MoodLayer {
   shadows: string | null;
 }
 
-const MOOD_LAYERS: Record<OverlayMood, MoodLayer> = {
+interface ColorGrade {
+  filter: string;
+  overlay: MoodLayer;
+}
+
+const COLOR_GRADES: Record<OverlayMood, ColorGrade> = {
   warm: {
-    highlights:
-      "radial-gradient(ellipse at center, rgba(255,180,80,0.20), transparent 65%)",
-    shadows:
-      "linear-gradient(to bottom, rgba(20,40,90,0.25), transparent 40%)",
+    filter: "saturate(1.15) contrast(1.05) brightness(1.02) sepia(0.08)",
+    overlay: {
+      highlights:
+        "radial-gradient(ellipse at center, rgba(255,180,80,0.20), transparent 65%)",
+      shadows:
+        "linear-gradient(to bottom, rgba(20,40,90,0.25), transparent 40%)",
+    },
   },
   cool: {
-    highlights:
-      "radial-gradient(ellipse at center, rgba(80,180,255,0.20), transparent 65%)",
-    shadows:
-      "linear-gradient(to bottom, rgba(60,30,10,0.20), transparent 40%)",
+    filter: "saturate(0.9) contrast(1.05) brightness(1.0) hue-rotate(-8deg)",
+    overlay: {
+      highlights:
+        "radial-gradient(ellipse at center, rgba(80,180,255,0.20), transparent 65%)",
+      shadows:
+        "linear-gradient(to bottom, rgba(60,30,10,0.20), transparent 40%)",
+    },
   },
   dramatic: {
-    highlights: null,
-    shadows:
-      "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)",
+    filter: "saturate(0.8) contrast(1.2) brightness(0.95)",
+    overlay: {
+      highlights: null,
+      shadows:
+        "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)",
+    },
   },
-  neutral: { highlights: null, shadows: null },
+  neutral: {
+    filter: "none",
+    overlay: { highlights: null, shadows: null },
+  },
+  moody: {
+    filter: "saturate(0.6) contrast(1.15) brightness(0.88) hue-rotate(5deg)",
+    overlay: {
+      highlights: null,
+      shadows:
+        "linear-gradient(to bottom, rgba(10,10,30,0.35), transparent 50%)",
+    },
+  },
+  reflective: {
+    filter: "saturate(0.75) contrast(1.0) brightness(1.05) sepia(0.12)",
+    overlay: {
+      highlights:
+        "radial-gradient(ellipse at center, rgba(200,180,160,0.15), transparent 60%)",
+      shadows:
+        "linear-gradient(to bottom, rgba(40,30,60,0.2), transparent 45%)",
+    },
+  },
+  melancholic: {
+    filter: "saturate(0.45) contrast(1.1) brightness(0.9) hue-rotate(-5deg)",
+    overlay: {
+      highlights:
+        "radial-gradient(ellipse at center, rgba(100,120,180,0.12), transparent 65%)",
+      shadows:
+        "linear-gradient(to bottom, rgba(0,0,20,0.3), transparent 50%)",
+    },
+  },
+  ethereal: {
+    filter: "saturate(0.85) contrast(0.9) brightness(1.1) hue-rotate(10deg)",
+    overlay: {
+      highlights:
+        "radial-gradient(ellipse at center, rgba(200,180,255,0.18), transparent 55%)",
+      shadows: null,
+    },
+  },
 };
 
 const MoodOverlay: React.FC<{ mood: OverlayMood }> = ({ mood }) => {
-  const { highlights, shadows } = MOOD_LAYERS[mood];
+  const { highlights, shadows } = COLOR_GRADES[mood].overlay;
   return (
     <>
       {highlights ? (
@@ -78,8 +129,8 @@ const KenBurnsClip: React.FC<{
   durationFrames: number;
   loop: boolean;
   direction: KenBurnsDirection;
-  dramatic?: boolean;
-}> = ({ src, durationFrames, loop, direction, dramatic }) => {
+  colorGrade?: string;
+}> = ({ src, durationFrames, loop, direction, colorGrade }) => {
   const frame = useCurrentFrame();
 
   const baseScale =
@@ -120,7 +171,7 @@ const KenBurnsClip: React.FC<{
           height: "100%",
           transform: `scale(${scale}) translateX(${translateX}%)`,
           transformOrigin: "center center",
-          filter: dramatic ? "saturate(0.8) contrast(1.1)" : undefined,
+          filter: colorGrade && colorGrade !== "none" ? colorGrade : undefined,
         }}
       >
         {loop ? <Loop durationInFrames={durationFrames}>{video}</Loop> : video}
@@ -131,12 +182,15 @@ const KenBurnsClip: React.FC<{
 
 const TRANSITION_FRAMES = 15;
 
+const BG_MUSIC_VOLUME = 0.15;
+
 export const InspirationComposition: React.FC<InspirationScript> = (props) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const {
     clips,
     audioPath,
+    backgroundMusicPath,
     wordTimings,
     sentences,
     durationInFrames,
@@ -171,7 +225,7 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
           durationFrames={durationInFrames}
           loop={clips[0].loop}
           direction={clipDirective(clips[0].clipIndex).kenBurns}
-          dramatic={clipDirective(clips[0].clipIndex).overlayMood === "dramatic"}
+          colorGrade={COLOR_GRADES[clipDirective(clips[0].clipIndex).overlayMood].filter}
         />
       ) : (
         <TransitionSeries>
@@ -188,7 +242,7 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
                   durationFrames={duration}
                   loop={clip.loop}
                   direction={directive.kenBurns}
-                  dramatic={directive.overlayMood === "dramatic"}
+                  colorGrade={COLOR_GRADES[directive.overlayMood].filter}
                 />
               </TransitionSeries.Sequence>
             );
@@ -204,7 +258,7 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
                   durationInFrames: TRANSITION_FRAMES,
                 })}
               />,
-            ];
+            ];  
           })}
         </TransitionSeries>
       )}
@@ -231,6 +285,15 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
 
       {/* Audio */}
       <Audio src={staticFile(audioPath)} />
+
+      {/* Background music */}
+      {backgroundMusicPath && (
+        <Audio
+          src={staticFile(backgroundMusicPath)}
+          volume={BG_MUSIC_VOLUME}
+          loop
+        />
+      )}
 
       {/* Kinetic captions */}
       <KineticCaption

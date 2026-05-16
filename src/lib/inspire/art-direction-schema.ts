@@ -20,7 +20,16 @@ export const KenBurnsDirectionSchema = z.enum([
   "pan-right",
 ]);
 
-export const OverlayMoodSchema = z.enum(["warm", "cool", "dramatic", "neutral"]);
+export const OverlayMoodSchema = z.enum([
+  "warm",
+  "cool",
+  "dramatic",
+  "neutral",
+  "moody",
+  "reflective",
+  "melancholic",
+  "ethereal",
+]);
 
 export const SentenceDirectiveSchema = z.object({
   sentenceIndex: z.number().int().min(0),

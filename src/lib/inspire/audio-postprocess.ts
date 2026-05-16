@@ -3,12 +3,17 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-// EQ + light reverb — no echo/chorus to preserve caption sync and intelligibility.
+// EQ chain for warm, chest-resonant elder voice. No echo/chorus (breaks caption sync).
+// pitch is duration-preserving so word-timing alignment is safe.
+// reverb args: reverberance HF-damping room-scale stereo-depth pre-delay wet-gain
 const SOX_EFFECTS = [
   "norm", "-2",
-  "treble", "-3",
-  "bass", "+1.5",
-  "reverb", "35", "30", "60", "80", "20", "0",
+  "pitch", "-100",          // ~1 semitone down; subtle depth without formant smear
+  "bass", "+4", "200",      // chest weight at 200 Hz
+  "equalizer", "350", "1.0q", "+3",   // low-mid body / chest resonance
+  "equalizer", "3500", "1.0q", "-3",  // tame nasal/harsh band
+  "treble", "-5",           // warmth, reduce sibilance
+  "reverb", "6", "75", "20", "40", "5", "-8",   // very subtle, dark, dry room
 ];
 
 export function checkSox(): void {

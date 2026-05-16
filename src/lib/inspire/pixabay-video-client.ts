@@ -18,12 +18,46 @@ interface PixabayVideoFile {
 interface PixabayVideoHit {
   id: number;
   pageURL: string;
+  tags: string;
   duration: number;
   videos: {
     large?: PixabayVideoFile;
     medium?: PixabayVideoFile;
     small?: PixabayVideoFile;
   };
+}
+
+// ── Tag-based content filter ─────────────────────────────────────────────
+// Reject videos whose Pixabay tags indicate unsuitable content for
+// inspirational videos (animals, pets, toys, holidays, etc.).
+
+const BLOCKED_TAGS = new Set([
+  // Animals & pets
+  "animal", "animals", "pet", "pets", "dog", "dogs", "puppy", "puppies",
+  "cat", "cats", "kitten", "kittens", "bird", "birds", "fish", "horse",
+  "horses", "deer", "rabbit", "bunny", "wildlife", "lion", "eagle",
+  "wolf", "bear", "insect", "butterfly", "snake", "reptile", "parrot",
+  "hamster", "turtle", "frog", "cow", "pig", "sheep", "chicken", "duck",
+  "goose", "owl", "hawk", "fox", "monkey", "elephant", "giraffe", "zebra",
+  "penguin", "dolphin", "whale", "shark", "octopus", "crab", "squirrel",
+  "hedgehog", "panda", "koala", "kangaroo", "camel", "gorilla",
+  "reindeer", "moose", "elk",
+  // Toys & objects
+  "toy", "toys", "stuffed animal", "plush", "doll", "figurine", "teddy",
+  "teddy bear", "puppet", "lego", "action figure",
+  // Holiday & seasonal
+  "christmas", "santa", "easter", "halloween", "valentine", "xmas",
+  "holiday", "ornament", "decoration", "festive", "costume",
+  // Comedy & unsuitable tone
+  "funny", "comedy", "cartoon", "animation", "meme", "prank",
+  // Food
+  "food", "cooking", "recipe", "meal", "dish", "kitchen", "baking",
+  "cake", "dessert", "fruit", "vegetable",
+]);
+
+function hasBlockedTag(tags: string): boolean {
+  const tagList = tags.toLowerCase().split(",").map((t) => t.trim());
+  return tagList.some((tag) => BLOCKED_TAGS.has(tag));
 }
 
 interface PixabayVideoResponse {
@@ -64,10 +98,16 @@ async function searchAndDownloadVideoImpl(
   }
 
   const body = (await res.json()) as PixabayVideoResponse;
-  const hits = body.hits ?? [];
+  const rawHits = body.hits ?? [];
+
+  // Filter out videos with tags indicating unsuitable content
+  const hits = rawHits.filter((h) => !hasBlockedTag(h.tags ?? ""));
 
   if (hits.length === 0) {
-    return { ok: false, loop: false, error: `no Pixabay video results for "${query}"` };
+    const reason = rawHits.length > 0
+      ? `all ${rawHits.length} Pixabay results for "${query}" were filtered out (unsuitable content tags)`
+      : `no Pixabay video results for "${query}"`;
+    return { ok: false, loop: false, error: reason };
   }
 
   // Tiered selection with dedup awareness

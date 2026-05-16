@@ -47,7 +47,7 @@ ${developmentLine}- Chapter ${Math.max(2, segmentCount - 1)}: Turning Point / Re
 
 ## Per-Chapter Rules
 1. Each chapter must end at a natural break — not mid-thought or mid-sentence.
-2. Each chapter uses prosody marks: \`...\` (extended pause), \`—\` (abrupt shift), \`( )\` (aside), \`\\n\\n\` (section/paragraph break).
+2. Each chapter uses graduated prosody pauses: \`...\` (short pause / hesitation), \`... ...\` (medium pause / pre-reveal suspense), \`... ... ...\` (long pause / major emotional beat or silence after climactic lines). Also \`—\` (abrupt shift), \`( )\` (aside), \`\\n\\n\` (section break). Use at least 3 pause marks per chapter with at least 2 different pause lengths.
 3. Each chapter must contain EXACTLY ONE standalone sentence wrapped in double quotes — the internal voice, a belief, or an aphorism. Length: 5–12 words. Placed at the emotional peak of that chapter.
 4. Conversational tone — write as if speaking to one person.
 5. Word count per chapter: ${minWords}–${maxWords} words.
@@ -80,7 +80,7 @@ Remember:
 - ${segmentCount} chapters, each ${280}–${420} words (2–3 min at 140 WPM)
 - One cohesive narrative arc across all chapters
 - Exactly ONE quoted sentence per chapter (5–12 words, at the emotional peak)
-- Use prosody marks (..., —, ( ), \\n\\n) strategically
+- Use graduated pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter with varied lengths
 - Each chapter ends at a natural break
 - Return ONLY the JSON`;
 

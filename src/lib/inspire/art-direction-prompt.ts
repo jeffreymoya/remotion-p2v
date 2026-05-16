@@ -41,11 +41,11 @@ setup: Builds context before tension or reveal.
 
 tension: Pivot sentence. Often contains "but", "yet", "however", "instead", "except".
   → emphasisWordIndexes: 1 pivot word
-  → kenBurns: "pan-right"  overlayMood: "dramatic" or "cool"
+  → kenBurns: "pan-right"  overlayMood: "dramatic" or "moody"
 
 reveal: The insight. The "so" or "the truth is" sentence.
   → emphasisWordIndexes: 1-2 nouns naming the insight
-  → kenBurns: "zoom-out"  overlayMood: "warm" or "cool"
+  → kenBurns: "zoom-out"  overlayMood: "warm" or "reflective"
 
 payoff: Final punchy landing line (≤10 words).
   → emphasisWordIndexes: 1 final word ("you", "now", "start", "free")
@@ -68,6 +68,19 @@ zoom-in:  calm, building, intimacy, approaching
 zoom-out: expansive, revelation, pulling back for perspective
 pan-left: forward motion, progression
 pan-right: reflection, contrast, "but..."
+
+## OVERLAY MOOD & COLOR GRADING GUIDE
+Each mood applies a distinct color grade (CSS filter) plus optional gradient overlays:
+- "warm": golden highlights, slight saturation boost — comfort, hope, nostalgia
+- "cool": blue-shifted, slightly desaturated — objectivity, distance, contemplation
+- "dramatic": high contrast, crushed shadows — tension, stakes, confrontation
+- "neutral": no grading — informational body content
+- "moody": heavily desaturated, dark shadows, slight blue push — introspection, weight, gravity
+- "reflective": sepia-tinted, soft — memory, looking back, gentle wisdom
+- "melancholic": very desaturated, blue shadows — sadness, loss, longing
+- "ethereal": slight overexposure, purple tint, low contrast — dreamlike, transcendent, surreal
+
+Use "moody" or "melancholic" for heavy emotional beats. Use "reflective" for memoir or nostalgia content. Use "ethereal" for transcendent moments or abstract ideas. Vary moods across clips for visual storytelling.
 
 ## EMPHASIS WORD GUIDE
 Pick words that carry contrast ("isn't", "but", "never") or are the payoff noun.
