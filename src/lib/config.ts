@@ -10,7 +10,7 @@ export const NARRATION_REASONING = {
 // ── Network timeouts (ms) ──────────────────────────────────────────────
 export const DEEPSEEK_TIMEOUT_MS = validateTimeout("DEEPSEEK_TIMEOUT_MS", 300_000);
 export const PIXABAY_TIMEOUT_MS = validateTimeout("PIXABAY_TIMEOUT_MS", 30_000);
-export const GOOGLE_TTS_TIMEOUT_MS = validateTimeout("GOOGLE_TTS_TIMEOUT_MS", 30_000);
+export const GOOGLE_TTS_TIMEOUT_MS = validateTimeout("GOOGLE_TTS_TIMEOUT_MS", 60_000);
 
 function validateTimeout(envName: string, defaultValue: number): number {
   const raw = process.env[envName];
@@ -31,9 +31,12 @@ export const PIXABAY_COOLDOWN_RUNS = 10 as const;
 export const PEXELS_VIDEOS_BASE_URL = "https://api.pexels.com/videos/search" as const;
 export const PEXELS_VIDEO_PER_PAGE = 50 as const;
 
-// ── Google TTS / STT ────────────────────────────────────────────
+// ── Google TTS / STT / Vision ───────────────────────────────────
 export const GOOGLE_TTS_BASE_URL = "https://texttospeech.googleapis.com/v1" as const;
 export const GOOGLE_STT_BASE_URL = "https://speech.googleapis.com/v1" as const;
+export const GOOGLE_VISION_BASE_URL = "https://vision.googleapis.com/v1" as const;
+export const GOOGLE_VISION_TIMEOUT_MS = validateTimeout("GOOGLE_VISION_TIMEOUT_MS", 15_000);
+export const GOOGLE_VISION_BATCH_SIZE = 16 as const; // Vision API max per batch request
 export const GOOGLE_TTS_VOICE_NAME = process.env.GOOGLE_TTS_VOICE_NAME ?? "en-US-Chirp3-HD-Algieba" as const;
 export const GOOGLE_TTS_LANGUAGE_CODE = "en-US" as const;
 export const GOOGLE_TTS_SAMPLE_RATE = 24000 as const;
@@ -48,3 +51,12 @@ export const SPECIFICITY_MIN_NAMED_ENTITIES = 2;
 export const SPECIFICITY_MIN_DATED_MOMENTS = 1;
 export const PROSODY_MIN_MARKS = 3;
 export const PROSODY_MIN_DISTINCT_MARK_TYPES = 2;
+
+// ── Research phase ──────────────────────────────────────────────────────
+export const EXA_API_KEY = process.env.EXA_API_KEY;
+export const SEARCH_TIMEOUT_MS = validateTimeout("SEARCH_TIMEOUT_MS", 20_000);
+export const RESEARCH_TARGET_ANCHOR_COUNT = 16;
+export const RESEARCH_MIN_ANCHOR_COUNT = 8;
+export const RESEARCH_BRAINSTORM_OVERSAMPLE = 2.5;
+export const RESEARCH_VERIFY_CONCURRENCY = 5;
+export const RESEARCH_MAX_BRAINSTORM_ROUNDS = 2;

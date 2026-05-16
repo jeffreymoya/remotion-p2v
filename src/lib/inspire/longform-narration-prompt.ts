@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { deepseekChat } from "../deepseek";
+import { deepseekChat, deepseekChatJson } from "../deepseek";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
 import { NARRATION_GUIDELINES, VOICE_SAMPLE } from "./narration-guidelines";
+import type { Anchor, ResearchBundle } from "./research/research-schema";
 
 const LongformSegmentSchema = z.object({
   title: z.string().min(1),
@@ -109,4 +110,153 @@ Remember:
   }
 
   return result;
+}
+
+// ── Research-grounded plan + per-chapter draft ──────────────────────────
+
+const LongformChapterPlanSchema = z.object({
+  title: z.string().min(1),
+  role: z.string().min(1),
+  intent: z.string().min(1),
+  sceneSeed: z.string().min(1),
+  anchorIds: z.array(z.string()),
+});
+
+export const LongformPlanSchema = z.object({
+  segmentCount: z.number().int().min(1).max(8),
+  chapters: z.array(LongformChapterPlanSchema).min(1).max(8),
+});
+
+export type LongformPlan = z.infer<typeof LongformPlanSchema>;
+export type LongformChapterPlan = z.infer<typeof LongformChapterPlanSchema>;
+
+function formatAnchorsForPrompt(anchors: readonly Anchor[]): string {
+  return anchors
+    .map((a) => {
+      const parts = [`[${a.id}] (${a.kind}) ${a.claim}`];
+      if (a.detail) parts.push(`  Detail: ${a.detail}`);
+      if (a.quote) parts.push(`  Quote: "${a.quote}"`);
+      if (a.attribution.person) parts.push(`  Person: ${a.attribution.person}`);
+      if (a.attribution.work) parts.push(`  Work: ${a.attribution.work} (${a.attribution.year ?? "?"})`);
+      parts.push(`  Confidence: ${a.citation.verifierConfidence}`);
+      return parts.join("\n");
+    })
+    .join("\n\n");
+}
+
+export async function generateLongformPlan(
+  topic: string,
+  segmentCount: number,
+  research: ResearchBundle,
+  options?: { verbose?: boolean },
+): Promise<LongformPlan> {
+  const usableAnchors = research.anchors.filter((a) => a.status === "verified");
+
+  const systemPrompt = `You are a story architect planning a ${segmentCount}-chapter long-form narrated video about: "${topic}".
+
+You have ${usableAnchors.length} verified real-world anchors from research. Your job is to assign 1-3 anchors per chapter to ground the narration in reality. Not every chapter needs anchors — at most 1 chapter should be "anchor-heavy" (2-3 anchors). The rest should weave a single anchor into mostly scene-led prose, or have no anchors at all.
+
+## Available Anchors
+${formatAnchorsForPrompt(usableAnchors)}
+
+## Chapter Roles
+- Chapter 1: Open — drop into a specific scene
+- Chapter 2: Build — establish the problem through concrete detail
+${segmentCount > 4 ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate\n` : ""}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the quiet reframe
+- Chapter ${segmentCount}: Land — bring back the controlling object
+
+## Output
+Return JSON:
+{
+  "segmentCount": ${segmentCount},
+  "chapters": [
+    {
+      "title": "Chapter 1: ...",
+      "role": "open",
+      "intent": "one sentence describing what this chapter accomplishes",
+      "sceneSeed": "the concrete scene or image that opens this chapter",
+      "anchorIds": ["anc-001"]
+    }
+  ]
+}
+
+Rules:
+- Total anchor assignments across all chapters: aim for ${Math.min(usableAnchors.length, segmentCount + 2)}
+- At most 1 chapter with 3 anchors; prefer 0-1 per chapter
+- Use anchor IDs from the list above
+- Each chapter needs a specific sceneSeed — not a vague theme`;
+
+  const plan = await deepseekChatJson(
+    [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: `Plan a ${segmentCount}-chapter narration about "${topic}". Return only JSON.` },
+    ],
+    LongformPlanSchema,
+    CODE_GEN_TEMPERATURE,
+    NARRATION_REASONING,
+    { verbose: options?.verbose },
+  );
+
+  if (plan.chapters.length !== segmentCount) {
+    throw new Error(
+      `Expected ${segmentCount} chapters in plan, got ${plan.chapters.length}`,
+    );
+  }
+
+  return plan;
+}
+
+export async function generateChapterDraft(
+  plan: LongformPlan,
+  chapterIndex: number,
+  research: ResearchBundle,
+  priorChapters: readonly string[],
+  options?: { verbose?: boolean },
+): Promise<string> {
+  const chapter = plan.chapters[chapterIndex];
+  const assignedAnchors = research.anchors.filter((a) =>
+    chapter.anchorIds.includes(a.id),
+  );
+
+  const priorContext =
+    priorChapters.length > 0
+      ? `\n\n## Prior Chapters (for continuity — do not repeat their content)\n${priorChapters.map((c, i) => `Chapter ${i + 1}:\n${c.slice(0, 300)}...`).join("\n\n")}`
+      : "";
+
+  const anchorContext =
+    assignedAnchors.length > 0
+      ? `\n\n## Assigned Anchors (MUST incorporate — paraphrase, do not invent quotes)\n${formatAnchorsForPrompt(assignedAnchors)}\n\nIMPORTANT: Paraphrase these anchors naturally into the narration. Do NOT fabricate quotes. If an anchor has a verbatim quote with high confidence, you may use it — attributed correctly. Otherwise, paraphrase the claim in the narrator's voice.`
+      : "\n\n(No research anchors assigned to this chapter — rely on concrete scene-driven observation.)";
+
+  const systemPrompt = buildSystemPrompt(plan.segmentCount);
+
+  const userPrompt = `Write chapter ${chapterIndex + 1} of ${plan.segmentCount} about: "${research.topic}"
+
+Chapter plan:
+- Title: ${chapter.title}
+- Role: ${chapter.role}
+- Intent: ${chapter.intent}
+- Scene seed: ${chapter.sceneSeed}
+${anchorContext}${priorContext}
+
+Rules:
+- 280–420 words (2–3 min at 140 WPM)
+- Wise-elder voice
+- ≥2 named entities and ≥1 dated moment
+- ≤30% direct "you" address
+- Prosody pauses: at least 3 per chapter
+- End at a natural break
+- Return ONLY the narration text — no JSON, no titles, no stage directions`;
+
+  const raw = await deepseekChat(
+    [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    CODE_GEN_TEMPERATURE,
+    NARRATION_REASONING,
+    { verbose: options?.verbose },
+  );
+
+  return raw.trim();
 }

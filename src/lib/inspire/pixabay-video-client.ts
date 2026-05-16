@@ -3,6 +3,7 @@ import path from "node:path";
 import { traceable } from "langsmith/traceable";
 import { PIXABAY_VIDEOS_BASE_URL, PIXABAY_TIMEOUT_MS, PIXABAY_VIDEO_PER_PAGE } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
+import { screenThumbnails } from "./vision-screener";
 
 export type { VideoDownloadResult } from "./video-source";
 
@@ -13,6 +14,7 @@ interface PixabayVideoFile {
   url: string;
   width: number;
   height: number;
+  thumbnail?: string;
 }
 
 interface PixabayVideoHit {
@@ -53,6 +55,17 @@ const BLOCKED_TAGS = new Set([
   // Food
   "food", "cooking", "recipe", "meal", "dish", "kitchen", "baking",
   "cake", "dessert", "fruit", "vegetable",
+  // CGI, 3D, sci-fi, tech (non-cinematic)
+  "robot", "robots", "cyborg", "android", "3d", "3d render", "cgi",
+  "render", "sci-fi", "science fiction", "futuristic", "mech",
+  "mechanical", "artificial intelligence", "ai", "machine", "technology",
+  "digital", "virtual", "hologram", "spaceship", "spacecraft", "alien",
+  "space", "galaxy", "universe", "fantasy", "magic", "superhero",
+  "armor", "warrior", "game", "gaming", "video game",
+  // Abstract / motion graphics
+  "abstract", "fractal", "particles", "bokeh", "motion graphics",
+  "vfx", "effects", "smoke", "ink", "liquid", "fluid", "geometric",
+  "neon", "glow", "loop", "background", "wallpaper", "screensaver",
 ]);
 
 function hasBlockedTag(tags: string): boolean {
@@ -101,13 +114,33 @@ async function searchAndDownloadVideoImpl(
   const rawHits = body.hits ?? [];
 
   // Filter out videos with tags indicating unsuitable content
-  const hits = rawHits.filter((h) => !hasBlockedTag(h.tags ?? ""));
+  const tagFiltered = rawHits.filter((h) => !hasBlockedTag(h.tags ?? ""));
 
-  if (hits.length === 0) {
+  if (tagFiltered.length === 0) {
     const reason = rawHits.length > 0
       ? `all ${rawHits.length} Pixabay results for "${query}" were filtered out (unsuitable content tags)`
       : `no Pixabay video results for "${query}"`;
     return { ok: false, loop: false, error: reason };
+  }
+
+  // Visual content gate — batch-screen thumbnails via Cloud Vision
+  const thumbnailItems = tagFiltered.map((h) => ({
+    id: h.id,
+    thumbnailUrl:
+      h.videos.medium?.thumbnail ??
+      h.videos.small?.thumbnail ??
+      h.videos.large?.thumbnail ?? "",
+  })).filter((item) => item.thumbnailUrl !== "");
+
+  const passingIds = await screenThumbnails(thumbnailItems);
+  const hits = tagFiltered.filter((h) => passingIds.has(h.id));
+
+  if (hits.length === 0) {
+    return {
+      ok: false,
+      loop: false,
+      error: `all ${tagFiltered.length} tag-filtered Pixabay results for "${query}" were rejected by visual screen`,
+    };
   }
 
   // Tiered selection with dedup awareness

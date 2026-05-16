@@ -1,8 +1,8 @@
 import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
 import path from "node:path";
-import { generateLongformScript } from "./longform-narration-prompt";
-import type { LongformScript } from "./longform-narration-prompt";
+import { generateLongformScript, generateLongformPlan, generateChapterDraft } from "./longform-narration-prompt";
+import type { LongformScript, LongformPlan } from "./longform-narration-prompt";
 import { runInspirePipeline } from "./inspire-pipeline";
 import type { InspirePhase } from "./inspire-pipeline";
 import { combineSegments, concatWavBuffers } from "./combine-segments";
@@ -20,6 +20,13 @@ import {
 import { refineChapter } from "./refine/refine-chapter";
 import type { GateContext } from "./gates/gate-types";
 import { REFINE_MAX_REVISIONS } from "../config";
+import type { ResearchBundle } from "./research/research-schema";
+import {
+  runResearchPhase,
+  researchBundlePath,
+  loadCachedResearchBundle,
+  saveResearchBundle,
+} from "./research/research-pipeline";
 
 export interface LongformPipelineOptions {
   topic: string;
@@ -27,6 +34,7 @@ export interface LongformPipelineOptions {
   segmentCount: number;
   limit?: number;
   from?: InspirePhase | "refine";
+  skipResearch?: boolean;
   verbose: boolean;
   maxRevisions?: number;
   allowWords?: string[];
@@ -141,6 +149,45 @@ async function loadOrGenerateLongformScript(
   return script;
 }
 
+// ── Longform plan: load or generate (research-grounded) ──────────────────
+
+function planJsonPath(slug: string): string {
+  return `prompts/inspire/${slug}-plan.json`;
+}
+
+function loadCachedPlan(slug: string, segmentCount: number): LongformPlan | null {
+  const p = planJsonPath(slug);
+  if (!fs.existsSync(p)) return null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(p, "utf-8"));
+    // Detect old shape (has `segments` instead of `chapters`)
+    if ("segments" in raw && !("chapters" in raw)) {
+      console.log(`  [plan] old format detected — regenerating`);
+      fs.unlinkSync(p);
+      return null;
+    }
+    const data = raw as LongformPlan;
+    if (data.chapters.length !== segmentCount) {
+      console.log(
+        `  [plan] cached plan has ${data.chapters.length} chapters but ${segmentCount} requested — regenerating`,
+      );
+      fs.unlinkSync(p);
+      return null;
+    }
+    return data;
+  } catch {
+    console.log(`  [plan] cached plan corrupt — regenerating`);
+    fs.unlinkSync(p);
+    return null;
+  }
+}
+
+function savePlan(slug: string, plan: LongformPlan): void {
+  fs.mkdirSync("prompts/inspire", { recursive: true });
+  fs.writeFileSync(planJsonPath(slug), JSON.stringify(plan, null, 2));
+  console.log(`  [plan] saved: ${planJsonPath(slug)}`);
+}
+
 // ── Narration seeding with downstream cache invalidation ──────────────────
 
 function seedNarrationFile(slug: string, narration: string): void {
@@ -182,11 +229,18 @@ async function runLongformPipelineImpl(
   const { topic, slug, segmentCount, verbose } = options;
   const limit = options.limit ?? segmentCount;
   const processCount = Math.min(limit, segmentCount);
-  const forceRegenerate = options.from === "narration";
   const maxRevisions = options.maxRevisions ?? REFINE_MAX_REVISIONS;
+  const skipResearch = options.skipResearch ?? false;
+
+  const forceResearch = options.from === "research";
+  const forcePlan = options.from === "plan" || forceResearch;
+  const forceRegenerate = options.from === "narration" || forcePlan;
+
   const skipRefine = options.from !== undefined
     && options.from !== "narration"
-    && options.from !== "refine";
+    && options.from !== "refine"
+    && options.from !== "research"
+    && options.from !== "plan";
 
   // Fail fast before any network calls if sox is missing.
   checkSox();
@@ -195,6 +249,7 @@ async function runLongformPipelineImpl(
   // If the user requests --from=videos or later, propagate that to each segment.
   const segFrom: InspirePhase =
     !options.from || options.from === "narration" || options.from === "refine"
+    || options.from === "research" || options.from === "plan"
       ? "tts"
       : options.from;
 
@@ -202,14 +257,85 @@ async function runLongformPipelineImpl(
     `\n━━ Longform Pipeline: "${topic}" — ${segmentCount} segments, processing ${processCount} ━━\n`,
   );
 
-  // Phase 0: Longform script generation
-  const longformScript = await loadOrGenerateLongformScript(
-    topic,
-    slug,
-    segmentCount,
-    forceRegenerate,
-    verbose,
-  );
+  // ── Phase R: Research ──────────────────────────────────────────────────
+  let research: ResearchBundle | null = null;
+
+  if (!skipResearch) {
+    if (forceResearch || !fs.existsSync(researchBundlePath(slug))) {
+      console.log(`\n── Research: brainstorm + verify anchors ──`);
+      research = await runResearchPhase(topic, slug, segmentCount, { verbose });
+      saveResearchBundle(research);
+    } else {
+      research = loadCachedResearchBundle(slug);
+      if (research) {
+        console.log(
+          `  [research] loaded cached bundle: ${researchBundlePath(slug)} (${research.anchors.length} anchors)`,
+        );
+      }
+    }
+  }
+
+  // ── Phase P: Plan (research-grounded) ─────────────────────────────────
+  let plan: LongformPlan | null = null;
+
+  if (research) {
+    if (forcePlan || !loadCachedPlan(slug, segmentCount)) {
+      console.log(`\n── Plan: assigning anchors to chapters ──`);
+      plan = await generateLongformPlan(topic, segmentCount, research, { verbose });
+      savePlan(slug, plan);
+    } else {
+      plan = loadCachedPlan(slug, segmentCount);
+      if (plan) {
+        console.log(`  [plan] loaded cached plan: ${planJsonPath(slug)}`);
+      }
+    }
+  }
+
+  // ── Phase 0: Narration generation ─────────────────────────────────────
+  // Two paths: research-grounded (plan+draft) or legacy (monolithic script)
+  let longformScript: LongformScript;
+
+  if (plan && research) {
+    // Research-grounded path: generate per-chapter drafts
+    console.log(`\n── Narration: research-grounded per-chapter drafts ──`);
+    const priorChapters: string[] = [];
+    const segments: Array<{ title: string; narration: string }> = [];
+
+    for (let i = 0; i < segmentCount; i++) {
+      const chapter = plan.chapters[i];
+      const cached = segNarrationPath(segSlug(slug, i));
+
+      if (!forceRegenerate && fs.existsSync(cached)) {
+        const existing = fs.readFileSync(cached, "utf-8");
+        segments.push({ title: chapter.title, narration: existing });
+        priorChapters.push(existing);
+        if (verbose) {
+          console.log(`  [narration] chapter ${i + 1}: cached`);
+        }
+        continue;
+      }
+
+      console.log(`  [narration] chapter ${i + 1}: generating draft...`);
+      const draft = await generateChapterDraft(plan, i, research, priorChapters, { verbose });
+      segments.push({ title: chapter.title, narration: draft });
+      priorChapters.push(draft);
+    }
+
+    longformScript = { segmentCount, segments };
+
+    // Save the longform JSON for compatibility
+    fs.mkdirSync("prompts/inspire", { recursive: true });
+    fs.writeFileSync(longformJsonPath(slug), JSON.stringify(longformScript, null, 2));
+  } else {
+    // Legacy path: monolithic script generation
+    longformScript = await loadOrGenerateLongformScript(
+      topic,
+      slug,
+      segmentCount,
+      forceRegenerate,
+      verbose,
+    );
+  }
 
   // Phase 0.5: Refine each chapter through deterministic gates
   const chapterRoles: Array<GateContext["chapterRole"]> = assignChapterRoles(processCount);
@@ -221,6 +347,7 @@ async function runLongformPipelineImpl(
 
   for (let i = 0; i < processCount; i++) {
     const seg = longformScript.segments[i];
+    const chapterPlan = plan?.chapters[i];
 
     if (skipRefine) {
       refinedNarrations.push(seg.narration);
@@ -240,10 +367,10 @@ async function runLongformPipelineImpl(
     const result = await refineChapter(ctx, seg.narration, {
       maxRevisions,
       verbose,
-      chapterTitle: seg.title,
-      chapterRole: chapterRoles[i],
-      chapterIntent: `Chapter ${i + 1} of ${processCount}`,
-      sceneSeed: seg.title,
+      chapterTitle: chapterPlan?.title ?? seg.title,
+      chapterRole: chapterPlan?.role ?? chapterRoles[i],
+      chapterIntent: chapterPlan?.intent ?? `Chapter ${i + 1} of ${processCount}`,
+      sceneSeed: chapterPlan?.sceneSeed ?? seg.title,
       topic,
       slug: segSlug(slug, i),
     });

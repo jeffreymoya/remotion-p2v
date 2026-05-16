@@ -7,11 +7,12 @@
     "studio": "remotion studio",
     "build": "remotion render",
     "typecheck": "tsc --noEmit",
-    "inspire": "tsx scripts/inspire.ts",
-    "inspire:quick": "tsx scripts/inspire.ts --segments=2 --limit=2 --clean",
+    "inspire": "tsx --env-file=.env scripts/inspire.ts",
+    "inspire:quick": "tsx --env-file=.env scripts/inspire.ts --segments=2 --limit=2 --clean",
     "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts",
     "smoke:inspire-gates": "tsx scripts/inspire-gate-smoke.ts",
-    "test:gates": "tsx tests/inspire/gates/gate-tests.ts"
+    "test:gates": "tsx tests/inspire/gates/gate-tests.ts",
+    "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.457",
@@ -20,6 +21,7 @@
     "@remotion/paths": "^4.0.457",
     "@remotion/transitions": "^4.0.457",
     "@runware/sdk-js": "^1.2.10",
+    "exa-js": "^2.13.0",
     "langsmith": "^0.6.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

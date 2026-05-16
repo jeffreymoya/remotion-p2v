@@ -158,6 +158,7 @@ const KenBurnsClip: React.FC<{
 
   const video = (
     <OffthreadVideo
+      muted
       src={src}
       style={{ objectFit: "cover", width: "100%", height: "100%" }}
     />

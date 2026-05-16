@@ -1,0 +1,24 @@
+{
+  "candidate": {
+    "kind": "primary_quote",
+    "claim": "Viktor Frankl wrote that between stimulus and response there is a space",
+    "attributionGuess": {
+      "person": "Viktor Frankl",
+      "work": "Man's Search for Meaning",
+      "year": 1946
+    },
+    "quote": "Between stimulus and response there is a space. In that space is our freedom and our power to choose our response. In our response lies our growth and our freedom.",
+    "queryHint": "Viktor Frankl between stimulus and response space freedom"
+  },
+  "hits": [
+    {
+      "url": "https://www.gutenberg.org/ebooks/frankl-meaning",
+      "title": "Man's Search for Meaning - Project Gutenberg",
+      "snippet": "Between stimulus and response there is a space. In that space is our freedom and our power to choose our response.",
+      "text": "Viktor Frankl, the Austrian psychiatrist and Holocaust survivor, wrote extensively about meaning. Between stimulus and response there is a space. In that space is our freedom and our power to choose our response. In our response lies our growth and our freedom. This insight came from his years in concentration camps.",
+      "score": 0.95
+    }
+  ],
+  "expectedStatus": "verified",
+  "expectedConfidence": "high"
+}
