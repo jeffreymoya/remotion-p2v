@@ -57,6 +57,9 @@ export const REFINE_MAX_LLM_CALLS_PER_GATE = 2;
 export const FRESHNESS_GATE_SEVERITY: "warn" | "block" =
   (process.env.FRESHNESS_GATE_SEVERITY as "warn" | "block") ?? "warn";
 
+// ── Cross-chapter proofreader ───────────────────────────────────────────
+export const PROOFREAD_MAX_REDRAFTS_PER_CHAPTER = 1;
+
 // ── Research phase ──────────────────────────────────────────────────────
 export const EXA_API_KEY = process.env.EXA_API_KEY;
 export const SEARCH_TIMEOUT_MS = validateTimeout("SEARCH_TIMEOUT_MS", 20_000);

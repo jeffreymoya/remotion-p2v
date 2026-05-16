@@ -3,7 +3,7 @@ import path from "node:path";
 import { topicToSlug } from "../src/lib/inspire/slug";
 import { runLongformPipeline } from "../src/lib/inspire/longform-pipeline";
 
-const VALID_PHASES = ["research", "plan", "narration", "refine", "tts", "videos", "artdirect", "compose"] as const;
+const VALID_PHASES = ["research", "plan", "narration", "refine", "proofread", "tts", "videos", "artdirect", "compose"] as const;
 type PipelinePhase = (typeof VALID_PHASES)[number];
 
 function parsePhase(value: string): PipelinePhase | undefined {
@@ -23,10 +23,11 @@ Options:
   --max-revisions=N   Max gate-revision passes per chapter (default: 2)
   --allow-words=w1,w2 Allow specific banned words for this topic
   --skip-research     Skip the Exa research phase (use legacy narration path)
+  --skip-proofread    Skip the cross-chapter proofreader
   --clean             Delete all cached artifacts for this topic before running
   --verbose           Enable verbose logging
 
-Phases: research, plan, narration, refine, tts, videos, artdirect, compose
+Phases: research, plan, narration, refine, proofread, tts, videos, artdirect, compose
 
 Examples:
   tsx scripts/inspire.ts "the power of showing up every day"
@@ -105,6 +106,7 @@ async function main(): Promise<void> {
   let clean = false;
   let verbose = false;
   let skipResearch = false;
+  let skipProofread = false;
   let segmentCount = 5;
   let limit: number | undefined;
   let maxRevisions: number | undefined;
@@ -115,7 +117,7 @@ async function main(): Promise<void> {
       const phase = parsePhase(arg.split("=")[1]);
       if (!phase) {
         console.error(
-          `Unknown phase: ${arg.split("=")[1]}. Use --from=research|plan|narration|refine|tts|videos|artdirect|compose`,
+          `Unknown phase: ${arg.split("=")[1]}. Use --from=research|plan|narration|refine|proofread|tts|videos|artdirect|compose`,
         );
         process.exit(1);
       }
@@ -147,6 +149,8 @@ async function main(): Promise<void> {
       clean = true;
     } else if (arg === "--skip-research") {
       skipResearch = true;
+    } else if (arg === "--skip-proofread") {
+      skipProofread = true;
     } else if (arg === "--verbose") {
       verbose = true;
     } else if (!arg.startsWith("--")) {
@@ -176,7 +180,7 @@ async function main(): Promise<void> {
     limit = segmentCount;
   }
 
-  await runLongformPipeline({ topic, slug, segmentCount, limit, from, skipResearch, verbose, maxRevisions, allowWords });
+  await runLongformPipeline({ topic, slug, segmentCount, limit, from, skipResearch, skipProofread, verbose, maxRevisions, allowWords });
 }
 
 main().catch((err) => {

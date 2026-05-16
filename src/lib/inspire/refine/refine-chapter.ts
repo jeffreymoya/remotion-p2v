@@ -18,6 +18,8 @@ export interface RefineChapterOptions {
   wordBudget?: { min: number; max: number };
   /** Slug for writing refine-log artifacts */
   slug?: string;
+  /** Extra notes injected before the first revision (e.g. from proofreader). Forces at least one revision. */
+  additionalNotes?: GateNote[];
 }
 
 export interface RefineResult {
@@ -56,6 +58,18 @@ export async function refineChapter(
     blocking: detResult.blockingNotes.length,
     warn: detResult.warnNotes.length,
   });
+
+  // If additional notes are injected (e.g. from proofreader), prepend them as blocking
+  // and force at least one revision regardless of gate outcome.
+  const injectedNotes: GateNote[] = opts.additionalNotes ?? [];
+  if (injectedNotes.length > 0) {
+    detResult = {
+      ...detResult,
+      pass: false,
+      blockingNotes: [...injectedNotes, ...detResult.blockingNotes],
+    };
+    bestBlockCount = detResult.blockingNotes.length;
+  }
 
   // Deterministic revision loop
   while (!detResult.pass && revision < opts.maxRevisions) {

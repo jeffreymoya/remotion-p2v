@@ -19,7 +19,7 @@ import {
 } from "./music-registry";
 import { refineChapter } from "./refine/refine-chapter";
 import type { GateContext } from "./gates/gate-types";
-import { REFINE_MAX_REVISIONS } from "../config";
+import { REFINE_MAX_REVISIONS, PROOFREAD_MAX_REDRAFTS_PER_CHAPTER } from "../config";
 import type { ResearchBundle } from "./research/research-schema";
 import {
   runResearchPhase,
@@ -27,14 +27,17 @@ import {
   loadCachedResearchBundle,
   saveResearchBundle,
 } from "./research/research-pipeline";
+import { proofreadScript } from "./proofread/proofreader";
+import type { ProofreadFindings } from "./proofread/proofread-types";
 
 export interface LongformPipelineOptions {
   topic: string;
   slug: string;
   segmentCount: number;
   limit?: number;
-  from?: InspirePhase | "refine";
+  from?: InspirePhase | "refine" | "proofread";
   skipResearch?: boolean;
+  skipProofread?: boolean;
   verbose: boolean;
   maxRevisions?: number;
   allowWords?: string[];
@@ -221,6 +224,62 @@ function loadSegmentScript(segSlug: string): InspirationScript {
   return InspirationScriptSchema.parse(raw);
 }
 
+// ── Proofreader re-draft helper ───────────────────────────────────────────
+
+interface ProofreaderRedraftOpts {
+  maxRevisions: number;
+  verbose: boolean;
+  topic: string;
+  allowWords?: string[];
+}
+
+async function applyProofreaderRedrafts(
+  findings: ProofreadFindings,
+  chapters: string[],
+  plan: LongformPlan,
+  research: ResearchBundle,
+  slug: string,
+  chapterRoles: Array<GateContext["chapterRole"]>,
+  opts: ProofreaderRedraftOpts,
+): Promise<string[]> {
+  const updated = [...chapters];
+
+  for (const redraft of findings.redrafts) {
+    const i = redraft.chapterIndex;
+    const chapterPlan = plan.chapters[i];
+    const sSlug = segSlug(slug, i);
+
+    console.log(`  [proofread] re-drafting chapter ${i + 1} (${redraft.notes.length} notes)...`);
+
+    const ctx: GateContext = {
+      topic: opts.topic,
+      slug: sSlug,
+      chapterIndex: i,
+      chapterCount: chapters.length,
+      chapterRole: chapterRoles[i] ?? "build",
+      priorChapters: updated.filter((_, idx) => idx < i),
+      allowWords: opts.allowWords,
+    };
+
+    const result = await refineChapter(ctx, updated[i], {
+      maxRevisions: opts.maxRevisions,
+      verbose: opts.verbose,
+      chapterTitle: chapterPlan?.title ?? `Chapter ${i + 1}`,
+      chapterRole: chapterPlan?.role ?? chapterRoles[i] ?? "build",
+      chapterIntent: chapterPlan?.intent ?? `Chapter ${i + 1}`,
+      sceneSeed: chapterPlan?.sceneSeed ?? `Chapter ${i + 1}`,
+      topic: opts.topic,
+      slug: sSlug,
+      additionalNotes: redraft.notes,
+    });
+
+    updated[i] = result.final;
+    seedNarrationFile(sSlug, result.final);
+  }
+
+  return updated;
+}
+
 // ── Main longform pipeline ────────────────────────────────────────────────
 
 async function runLongformPipelineImpl(
@@ -240,7 +299,11 @@ async function runLongformPipelineImpl(
     && options.from !== "narration"
     && options.from !== "refine"
     && options.from !== "research"
-    && options.from !== "plan";
+    && options.from !== "plan"
+    && options.from !== "proofread";
+
+  const skipProofread = options.skipProofread ?? false;
+  const forceProofread = options.from === "proofread";
 
   // Fail fast before any network calls if sox is missing.
   checkSox();
@@ -250,6 +313,7 @@ async function runLongformPipelineImpl(
   const segFrom: InspirePhase =
     !options.from || options.from === "narration" || options.from === "refine"
     || options.from === "research" || options.from === "plan"
+    || options.from === "proofread"
       ? "tts"
       : options.from;
 
@@ -379,6 +443,53 @@ async function runLongformPipelineImpl(
     console.log(
       `  [refine] chapter ${i + 1}: ${result.lastResult.pass ? "PASS" : "FAIL"} after ${result.revisions} revision(s)`,
     );
+  }
+
+  // ── Phase P2: Cross-chapter proofread ──────────────────────────────────
+  const proofreadPath = `prompts/inspire/${slug}-proofread.json`;
+
+  if (!skipProofread && research && plan) {
+    const proofreadStale = forceProofread || !fs.existsSync(proofreadPath)
+      || refinedNarrations.some((_, i) => {
+        const narPath = segNarrationPath(segSlug(slug, i));
+        return fs.existsSync(narPath)
+          && fs.existsSync(proofreadPath)
+          && fs.statSync(narPath).mtimeMs > fs.statSync(proofreadPath).mtimeMs;
+      });
+
+    if (proofreadStale) {
+      console.log(`\n── Proofread: cross-chapter consistency check ──`);
+      const findings = await proofreadScript(refinedNarrations, plan, research, { verbose });
+      fs.mkdirSync("prompts/inspire", { recursive: true });
+      fs.writeFileSync(proofreadPath, JSON.stringify(findings, null, 2));
+
+      if (!findings.pass && findings.redrafts.length > 0) {
+        console.log(`  [proofread] ${findings.redrafts.length} chapter(s) need redrafts`);
+        const updated = await applyProofreaderRedrafts(
+          findings, refinedNarrations, plan, research, slug, chapterRoles, {
+            maxRevisions: PROOFREAD_MAX_REDRAFTS_PER_CHAPTER,
+            verbose,
+            topic,
+            allowWords: options.allowWords,
+          },
+        );
+        // Replace refined narrations with updated versions
+        for (let i = 0; i < updated.length; i++) {
+          refinedNarrations[i] = updated[i];
+        }
+
+        // Re-run proofread to surface residual issues
+        const recheck = await proofreadScript(refinedNarrations, plan, research, { verbose });
+        fs.writeFileSync(proofreadPath, JSON.stringify(recheck, null, 2));
+        if (!recheck.pass) {
+          console.warn(`  [proofread] residual issues remain after one redraft round — review ${proofreadPath} before render`);
+        }
+      } else if (findings.pass) {
+        console.log(`  [proofread] PASS — all cross-chapter gates satisfied`);
+      }
+    } else {
+      console.log(`  [proofread] using cached: ${proofreadPath}`);
+    }
   }
 
   // Phases 1-5 per segment
