@@ -110,7 +110,7 @@ function buildUserPrompt({ narration, sentences, clipPlan }: PromptInput): strin
   const clipSummary = clipPlan.clips
     .map(
       (c, i) =>
-        `[clip ${i}] query="${c.queries[0]}" sentences=[${c.sentenceIndexes.join(", ")}]`,
+        `[clip ${i}] query="${c.query}" sentences=[${c.sentenceIndexes.join(", ")}]`,
     )
     .join("\n");
 

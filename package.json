@@ -12,6 +12,8 @@
     "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts",
     "smoke:inspire-gates": "tsx scripts/inspire-gate-smoke.ts",
     "test:gates": "tsx tests/inspire/gates/gate-tests.ts",
+    "test:llm-gates": "tsx tests/inspire/gates/llm/llm-gate-tests.ts",
+    "gates:capture-llm": "tsx --env-file=.env scripts/inspire-capture-llm-fixtures.ts",
     "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts"
   },
   "dependencies": {

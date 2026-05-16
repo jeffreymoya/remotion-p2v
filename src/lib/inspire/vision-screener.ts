@@ -46,6 +46,9 @@ const REJECT_LABELS = new Set([
   "armour", "armor", "powered exoskeleton",
   // Abstract / motion graphics
   "fractal art", "psychedelic art", "digital compositing",
+  // Sexualized / glamour imagery
+  "bikini", "swimsuit", "swimwear", "lingerie", "underwear",
+  "undergarment", "thong",
 ]);
 
 // ── Core batch call ────────────────────────────────────────────────────────

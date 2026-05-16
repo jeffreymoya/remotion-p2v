@@ -34,8 +34,9 @@ Given a narration and its sentence-level timings, decide how many background vid
    - Moody cityscapes (cinematic, atmospheric): "city rain night", "neon reflections rain", "empty street dawn",
      "city skyline dusk", "bridge fog morning"
    - Human subject (contemplative): a single person in a reflective, introspective, or emotional state.
-     Examples: "person window light", "woman sitting alone", "man silhouette mountain",
-     "solitary figure sunset", "person rain street", "woman looking ocean"
+     Prefer everyday, non-glamour contexts with clear clothing and no beachwear or sensual posing.
+     Examples: "person window light", "person train window reflection", "man silhouette mountain",
+     "figure hill overlook", "person rain street", "walker empty road dawn"
 
    For motivational or introspective narrations, include at least one clip from the
    "Human subject (contemplative)" category and at least one from "Nature / landscape".
@@ -100,6 +101,12 @@ Content that is off-topic, distracting, or tonally wrong for inspirational video
 - No crowds, parties, concerts, festivals, celebrations
 - No medical, surgical, or clinical footage
 
+### Sexualized Or Glamour Imagery (STRICTLY FORBIDDEN)
+- No sexy, sensual, seductive, or erotic themes
+- No bikinis, swimsuits, swimwear, lingerie, underwear, or boudoir imagery
+- No glamour-model framing, suggestive posing, body-emphasis shots, or exposed-body closeups
+- No beachwear or shirtless/body-display footage unless the subject is incidental in a wide scenic landscape
+
 ### KEY PRINCIPLE
 Every clip must show a RECOGNIZABLE CINEMATIC SCENE — a real place, a real person in reflection, or real weather/nature at scale — that evokes deep emotion suitable for a 10-15 minute motivational narration. If a query could plausibly return animals, toys, holiday items, or random objects, DO NOT use it.
 
@@ -109,7 +116,7 @@ Return a JSON object matching this shape:
 {
   "strategy": "single" | "multi",
   "clips": [
-    { "queries": ["man sitting porch reflection", "person alone thinking", "solitary figure sunset"], "sentenceIndexes": [0, 1, 2] }
+    { "queries": ["man sitting porch reflection", "person window reflection", "figure hill overlook"], "sentenceIndexes": [0, 1, 2] }
   ]
 }
 \`\`\`

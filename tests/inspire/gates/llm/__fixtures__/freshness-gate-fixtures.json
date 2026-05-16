@@ -1,0 +1,21 @@
+{
+  "maria-sample": {
+    "pass": true,
+    "paraphrases": []
+  },
+  "resilience-seg-01": {
+    "pass": false,
+    "paraphrases": [
+      {
+        "sentence": "This is the part where I'm supposed to break.",
+        "source": "Viktor Frankl",
+        "suggestion": "Drop or rewrite — echoes Frankl's 'between stimulus and response' framing without attribution."
+      },
+      {
+        "sentence": "The courage to stay in the fire? That's the only path back to your own agency.",
+        "source": "Ryan Holiday / Stoics",
+        "suggestion": "Paraphrases 'the obstacle is the way' — either attribute explicitly or replace with a concrete personal observation."
+      }
+    ]
+  }
+}

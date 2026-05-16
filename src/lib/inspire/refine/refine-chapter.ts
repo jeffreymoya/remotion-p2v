@@ -1,11 +1,13 @@
-import type { Gate, GateContext, AggregateGateResult } from "../gates/gate-types";
-import { runGates, ALL_DETERMINISTIC_GATES } from "../gates/run-gates";
+import type { Gate, GateContext, AggregateGateResult, GateNote } from "../gates/gate-types";
+import { runGates, ALL_DETERMINISTIC_GATES, ALL_LLM_GATES } from "../gates/run-gates";
+import { LlmBudgetTracker } from "../gates/llm/llm-gate-runner";
 import { reviseChapter } from "./revise-chapter-prompt";
 import fs from "node:fs";
 
 export interface RefineChapterOptions {
   maxRevisions: number;
   gates?: readonly Gate[];
+  llmGates?: readonly Gate[];
   verbose?: boolean;
   /** Chapter metadata for the revision prompt */
   chapterTitle: string;
@@ -29,34 +31,40 @@ export async function refineChapter(
   initialDraft: string,
   opts: RefineChapterOptions,
 ): Promise<RefineResult> {
-  const gates = opts.gates ?? ALL_DETERMINISTIC_GATES;
+  const detGates = opts.gates ?? ALL_DETERMINISTIC_GATES;
+  const llmGates = opts.llmGates ?? ALL_LLM_GATES;
   const wordBudget = opts.wordBudget ?? { min: 280, max: 420 };
-  const revisionLog: Array<{ revision: number; blocking: number; warn: number }> = [];
+  const revisionLog: Array<{ revision: number; phase: string; blocking: number; warn: number }> = [];
+  const budgetTracker = new LlmBudgetTracker();
 
   let draft = initialDraft;
-  let lastResult = await runGates(draft, ctx, gates);
+  let revision = 0;
+
+  // Phase A: deterministic gates
+  let detResult = await runGates(draft, ctx, detGates);
+  let lastResult = detResult;
   let bestDraft = draft;
-  let bestBlockCount = lastResult.blockingNotes.length;
+  let bestBlockCount = detResult.blockingNotes.length;
 
   if (opts.verbose) {
-    logGateResult(0, lastResult);
+    logGateResult(0, detResult, "deterministic");
   }
 
   revisionLog.push({
     revision: 0,
-    blocking: lastResult.blockingNotes.length,
-    warn: lastResult.warnNotes.length,
+    phase: "deterministic",
+    blocking: detResult.blockingNotes.length,
+    warn: detResult.warnNotes.length,
   });
 
-  let revision = 0;
-  while (!lastResult.pass && revision < opts.maxRevisions) {
+  // Deterministic revision loop
+  while (!detResult.pass && revision < opts.maxRevisions) {
     revision++;
     console.log(
-      `  [refine] revision ${revision}/${opts.maxRevisions} — ${lastResult.blockingNotes.length} blocking, ${lastResult.warnNotes.length} warn`,
+      `  [refine] det revision ${revision}/${opts.maxRevisions} — ${detResult.blockingNotes.length} blocking, ${detResult.warnNotes.length} warn`,
     );
 
-    // Collect all notes (blocking first, then warn) for the revision prompt
-    const allNotes = [...lastResult.blockingNotes, ...lastResult.warnNotes];
+    const allNotes = [...detResult.blockingNotes, ...detResult.warnNotes];
 
     draft = await reviseChapter(
       {
@@ -72,33 +80,123 @@ export async function refineChapter(
       { verbose: opts.verbose },
     );
 
-    lastResult = await runGates(draft, ctx, gates);
+    detResult = await runGates(draft, ctx, detGates);
+    lastResult = detResult;
 
     if (opts.verbose) {
-      logGateResult(revision, lastResult);
+      logGateResult(revision, detResult, "deterministic");
     }
 
     revisionLog.push({
       revision,
-      blocking: lastResult.blockingNotes.length,
-      warn: lastResult.warnNotes.length,
+      phase: "deterministic",
+      blocking: detResult.blockingNotes.length,
+      warn: detResult.warnNotes.length,
     });
 
-    // Track least-bad draft
-    if (lastResult.blockingNotes.length < bestBlockCount) {
+    if (detResult.blockingNotes.length < bestBlockCount) {
       bestDraft = draft;
-      bestBlockCount = lastResult.blockingNotes.length;
+      bestBlockCount = detResult.blockingNotes.length;
     }
   }
 
-  // Use least-bad draft if gates still don't pass
-  const finalDraft = lastResult.pass ? draft : bestDraft;
-  if (!lastResult.pass) {
+  // Use least-bad draft if deterministic gates still don't pass
+  if (!detResult.pass) {
     console.log(
-      `  [refine] revision budget exhausted — using least-bad draft (${bestBlockCount} blocking notes remaining)`,
+      `  [refine] deterministic revision budget exhausted — using least-bad draft (${bestBlockCount} blocking)`,
     );
-    // Re-run gates on the best draft for accurate final result
-    lastResult = await runGates(finalDraft, ctx, gates);
+    draft = bestDraft;
+    detResult = await runGates(draft, ctx, detGates);
+    lastResult = detResult;
+  }
+
+  // Phase B: LLM judge gates (only if deterministic passed and we have LLM gates)
+  if (detResult.pass && llmGates.length > 0) {
+    // Filter to gates that still have budget
+    const eligibleLlmGates = llmGates.filter((g) => budgetTracker.hasRemaining(g.name));
+
+    if (eligibleLlmGates.length > 0) {
+      let llmResult = await runGates(draft, ctx, eligibleLlmGates);
+      for (const g of eligibleLlmGates) {
+        budgetTracker.record(g.name);
+      }
+
+      if (opts.verbose) {
+        logGateResult(revision, llmResult, "llm");
+      }
+
+      revisionLog.push({
+        revision,
+        phase: "llm",
+        blocking: llmResult.blockingNotes.length,
+        warn: llmResult.warnNotes.length,
+      });
+
+      // LLM revision loop — revise for LLM failures with remaining budget
+      let llmRevision = 0;
+      const llmMaxRevisions = opts.maxRevisions - revision;
+      while (!llmResult.pass && llmRevision < llmMaxRevisions) {
+        llmRevision++;
+        revision++;
+        console.log(
+          `  [refine] llm revision ${llmRevision} — ${llmResult.blockingNotes.length} blocking, ${llmResult.warnNotes.length} warn`,
+        );
+
+        const allNotes = [...llmResult.blockingNotes, ...llmResult.warnNotes];
+
+        draft = await reviseChapter(
+          {
+            chapterTitle: opts.chapterTitle,
+            chapterRole: opts.chapterRole,
+            chapterIntent: opts.chapterIntent,
+            sceneSeed: opts.sceneSeed,
+            topic: opts.topic,
+            previousDraft: draft,
+            gateNotes: allNotes,
+            wordBudget,
+          },
+          { verbose: opts.verbose },
+        );
+
+        // Re-run deterministic gates first — revision must not regress
+        detResult = await runGates(draft, ctx, detGates);
+        if (!detResult.pass) {
+          // LLM revision broke deterministic — revert to best and stop
+          console.log(`  [refine] llm revision regressed deterministic gates — stopping`);
+          draft = bestDraft;
+          lastResult = await runGates(draft, ctx, detGates);
+          break;
+        }
+
+        // Re-run LLM gates with budget check
+        const stillEligible = llmGates.filter((g) => budgetTracker.hasRemaining(g.name));
+        if (stillEligible.length === 0) break;
+
+        llmResult = await runGates(draft, ctx, stillEligible);
+        for (const g of stillEligible) {
+          budgetTracker.record(g.name);
+        }
+
+        if (opts.verbose) {
+          logGateResult(revision, llmResult, "llm");
+        }
+
+        revisionLog.push({
+          revision,
+          phase: "llm",
+          blocking: llmResult.blockingNotes.length,
+          warn: llmResult.warnNotes.length,
+        });
+      }
+
+      // Downgrade remaining blockers to warn if budget exhausted
+      if (!llmResult.pass) {
+        console.log(`  [refine] llm gate budget exhausted — downgrading remaining blockers to warn`);
+        lastResult = downgradeBlockingToWarn(llmResult, detResult);
+      } else {
+        lastResult = mergeResults(detResult, llmResult);
+      }
+    }
   }
 
   // Write refine-log artifact
@@ -112,15 +210,47 @@ export async function refineChapter(
   }
 
   return {
-    final: finalDraft,
+    final: draft,
     revisions: revision,
     lastResult,
   };
 }
 
-function logGateResult(revision: number, result: AggregateGateResult): void {
+/** Downgrade all blocking notes from LLM gates to warn severity. */
+function downgradeBlockingToWarn(
+  llmResult: AggregateGateResult,
+  detResult: AggregateGateResult,
+): AggregateGateResult {
+  const downgradedNotes: GateNote[] = llmResult.blockingNotes.map((n) => ({
+    ...n,
+    severity: "warn" as const,
+  }));
+
+  return {
+    pass: true,
+    results: [...detResult.results, ...llmResult.results],
+    blockingNotes: [],
+    warnNotes: [...detResult.warnNotes, ...llmResult.warnNotes, ...downgradedNotes],
+  };
+}
+
+/** Merge deterministic and LLM results into one aggregate. */
+function mergeResults(
+  detResult: AggregateGateResult,
+  llmResult: AggregateGateResult,
+): AggregateGateResult {
+  return {
+    pass: detResult.pass && llmResult.pass,
+    results: [...detResult.results, ...llmResult.results],
+    blockingNotes: [...detResult.blockingNotes, ...llmResult.blockingNotes],
+    warnNotes: [...detResult.warnNotes, ...llmResult.warnNotes],
+  };
+}
+
+function logGateResult(revision: number, result: AggregateGateResult, phase?: string): void {
   const label = revision === 0 ? "initial" : `revision ${revision}`;
-  console.log(`  [refine] ${label}: ${result.pass ? "PASS" : "FAIL"}`);
+  const phaseLabel = phase ? ` [${phase}]` : "";
+  console.log(`  [refine] ${label}${phaseLabel}: ${result.pass ? "PASS" : "FAIL"}`);
   for (const r of result.results) {
     const metrics = r.metrics
       ? ` (${Object.entries(r.metrics).map(([k, v]) => `${k}=${v}`).join(", ")})`

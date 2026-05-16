@@ -52,6 +52,11 @@ export const SPECIFICITY_MIN_DATED_MOMENTS = 1;
 export const PROSODY_MIN_MARKS = 3;
 export const PROSODY_MIN_DISTINCT_MARK_TYPES = 2;
 
+// ── LLM judge gates ─────────────────────────────────────────────────────
+export const REFINE_MAX_LLM_CALLS_PER_GATE = 2;
+export const FRESHNESS_GATE_SEVERITY: "warn" | "block" =
+  (process.env.FRESHNESS_GATE_SEVERITY as "warn" | "block") ?? "warn";
+
 // ── Research phase ──────────────────────────────────────────────────────
 export const EXA_API_KEY = process.env.EXA_API_KEY;
 export const SEARCH_TIMEOUT_MS = validateTimeout("SEARCH_TIMEOUT_MS", 20_000);

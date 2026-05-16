@@ -52,6 +52,10 @@ const BLOCKED_TAGS = new Set([
   "holiday", "ornament", "decoration", "festive", "costume",
   // Comedy & unsuitable tone
   "funny", "comedy", "cartoon", "animation", "meme", "prank",
+  // Sexualized / glamour content
+  "sexy", "sensual", "seductive", "erotic", "glamour", "boudoir",
+  "bikini", "swimsuit", "swimwear", "bathing suit", "beachwear",
+  "lingerie", "underwear", "undergarment", "thong", "topless", "nude",
   // Food
   "food", "cooking", "recipe", "meal", "dish", "kitchen", "baking",
   "cake", "dessert", "fruit", "vegetable",

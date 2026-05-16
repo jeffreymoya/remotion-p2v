@@ -1,0 +1,33 @@
+{
+  "maria-sample": {
+    "pass": true,
+    "controllingObject": "the pothos (Maria's houseplant)",
+    "swapPoints": []
+  },
+  "resilience-seg-01": {
+    "pass": false,
+    "controllingObject": "the forge",
+    "swapPoints": [
+      {
+        "from": "the floor disappearing / freefall",
+        "to": "a forge",
+        "evidenceSentence": "It's a forge."
+      },
+      {
+        "from": "a forge",
+        "to": "a hammer",
+        "evidenceSentence": "We cling to the comfortable shape of who we were, terrified of the hammer."
+      },
+      {
+        "from": "a hammer",
+        "to": "a fire",
+        "evidenceSentence": "The courage to stay in the fire?"
+      },
+      {
+        "from": "a fire",
+        "to": "a weight / raw material",
+        "evidenceSentence": "The weight you've been carrying isn't a punishment."
+      }
+    ]
+  }
+}

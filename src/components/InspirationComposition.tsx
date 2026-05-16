@@ -158,8 +158,8 @@ const KenBurnsClip: React.FC<{
 
   const video = (
     <OffthreadVideo
-      muted
       src={src}
+      volume={0}
       style={{ objectFit: "cover", width: "100%", height: "100%" }}
     />
   );
@@ -259,7 +259,7 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
                   durationInFrames: TRANSITION_FRAMES,
                 })}
               />,
-            ];  
+            ];
           })}
         </TransitionSeries>
       )}
