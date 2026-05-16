@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "inspire": "tsx scripts/inspire.ts",
     "inspire:quick": "tsx scripts/inspire.ts --segments=2 --limit=2 --clean",
-    "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts"
+    "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts",
+    "smoke:inspire-gates": "tsx scripts/inspire-gate-smoke.ts",
+    "test:gates": "tsx tests/inspire/gates/gate-tests.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.457",

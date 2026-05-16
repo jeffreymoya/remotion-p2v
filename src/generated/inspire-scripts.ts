@@ -5,2679 +5,3109 @@ export const inspireScripts: InspirationScript[] = [
     "schemaVersion": 1,
     "slug": "resilience",
     "topic": "resilience",
-    "narration": "You know that moment when the floor just ... disappears? Not the slow, creaking kind of warning. The instant kind. One second you're standing on solid ground, the next you're in freefall. I remember staring at an email that ended a decade of work in three sentences. My hands went cold. The silence in the room got loud ... ... and in that silence, a single thought surfaced, sharp as glass. \"This is the part where I'm supposed to break.\" But here's what nobody tells you about hitting the ground. The impact isn't the end of the story. It's the moment the story actually begins. We've been sold a lie about resilience, haven't we? We picture it as a triumphant bounce-back, a shiny before-and-after photo where the struggle is just a blurry middle chapter we skip past. But real resilience ... ... it's not a spring. It's a forge. It's the place where you get heated until you're unrecognizable, beaten until you're reshaped, and cooled until you're something entirely new. Right now, somewhere in your life, you're avoiding that heat. We all do. We cling to the comfortable shape of who we were, terrified of the hammer. But drift ... ... that's the real enemy. The quiet, comfortable drift away from your own becoming. The courage to stay in the fire? That's the only path back to your own agency. ... ... ... The weight you've been carrying isn't a punishment. It's the raw material.\n\nLet me take you back to that empty room, the glow of the screen on my face. For weeks, I wore my failure like a second skin. I'd wake up and for a blissful half-second, I'd forget. Then the weight would settle back on my chest, a familiar, crushing fog. I was living in the wreckage, cataloging every splinter. I told myself I was processing, but really ... I was just building a shrine to what was lost. The voice in my head was relentless, a prosecutor listing every mistake. And the worst part? I believed it. I had confused my comfort zone with my identity, and when it vanished, I thought I had vanished with it. ... ... But one morning, a different thought cut through the noise. Not a loud one. A whisper. \"The wall you keep hitting is not a cage.\" It was a reframe so simple it felt like a physical shift. The wall wasn't there to stop me. It was there to show me what I was willing to do to get past it. That's the turning point, isn't it? The moment you stop asking \"Why is this happening to me?\" and start asking \"What is this asking of me?\" ... ... ... See, resilience isn't about returning to who you were. That person was built for a world that no longer exists. Resilience is the courage to meet this new, sharper world and say, \"Then I will become sharper, too.\" It's the honesty to admit you're afraid, and the clarity to act anyway. It's moving from the paralysis of \"I can't\" to the purpose of \"I must.\" ... ... ... So, what's the wall in front of you right now? Don't look away. Walk toward it. The fog will lift. You will not break. You're being forged.",
+    "narration": "My Uncle Ray had this chair. A blue wingback, velvet worn down to the weave on the arms, a spring that poked you if you sat wrong. He bought it in 1974, the year he opened his hardware store on Cedar Avenue. (I still remember the smell of that place \u2014 sawdust and pipe tobacco.)\n\nRay was not a soft man. He'd lost half his thumb to a table saw in '82 and just wrapped it in a shop rag and finished the day. But that chair... ... he'd sit in it every evening, same time, 6:15, with a cup of coffee that had gone cold an hour before. He'd stare out the window at the bird feeder he'd built from scrap pine. Just sit. Just stare.\n\nI asked him once, I must have been twenty-two, what he was doing. \"Waiting,\" he said. I thought he was being mysterious. I was young. I wanted everything to be a lesson.\n\n... ...\n\nLast October, Ray's store finally closed. Forty-seven years. The big-box place out on Route 9 had been eating at him for a decade, and then the pandemic just... finished the job. I drove up to help him clear out the inventory. We didn't talk much. We sorted brass fittings into bins, labeled shelves for auction. At one point I looked over and he was just standing there, holding a box of three-penny nails, not moving.\n\n\"Ray?\"\n\nHe set the box down. \"You know,\" he said, \"I've been sitting in that chair every night for forty-seven years, and I don't think I ever once fixed the spring.\"\n\n... ... ...\n\nI want to tell you what happened next. But first I need to tell you about the bird feeder.\n\nThat bird feeder \u2014 the one Ray built from scrap pine \u2014 was a mess. Honestly. The roof was crooked, the perch was too short, and the seed tray had a gap where the cheap stuff would spill out. He'd built it in a hurry, the day after his wife, my Aunt Carol, died. That was March 3rd, 1998. I remember the date because it was my mother's birthday, and she got the call during the cake.\n\nRay never talked about Carol after the funeral. Not once. He just built that feeder and hung it outside the window where the blue chair faced. And every evening at 6:15, he'd watch the chickadees and the finches and the occasional squirrel who'd figured out the baffle.\n\n... ...\n\nSo after the store closed, I was at his house, and I finally asked him \u2014 about the chair, about the spring, about why he never fixed it. We were on the porch. It was cold. He had his hands in his jacket pockets, and he was looking at the feeder, which by then was basically held together by hope and old paint.\n\n\"I didn't fix it,\" he said, \"because I needed one thing in the house that was as broken as I felt.\" He paused. \"And I needed to know it could still hold me.\"\n\n... ... ...\n\nWe sat with that for a while. The wind picked up. A chickadee landed on the crooked perch, wobbled, and flew off. Ray watched it go.\n\n\"I'm going to fix the spring now,\" he said. Not like a declaration. Like he was telling me he'd pick up milk on Tuesday.\n\nI think about that blue chair a lot now. Not the fixing \u2014 the waiting. The forty-seven years of sitting in something broken because it was the only thing that knew the shape of the weight. ... I'm not going to tell you what to do with that. I'm just going to leave it here, between us, like a cold cup of coffee on a windowsill.",
     "audioPath": "audio/inspire/resilience.wav",
-    "backgroundMusicPath": "background-music/sb_adriftamonginfinitestars(chosic.com).mp3",
+    "backgroundMusicPath": "background-music/scott-buckley-moonlight(chosic.com).mp3",
     "wordTimings": [
       {
-        "word": "you",
+        "word": "my",
         "startSeconds": 0,
-        "endSeconds": 0.2
-      },
-      {
-        "word": "know",
-        "startSeconds": 0.2,
         "endSeconds": 0.4
       },
       {
-        "word": "that",
+        "word": "Uncle",
         "startSeconds": 0.4,
-        "endSeconds": 0.4
+        "endSeconds": 0.5
       },
       {
-        "word": "moment",
-        "startSeconds": 0.4,
-        "endSeconds": 0.7
+        "word": "Ray",
+        "startSeconds": 0.5,
+        "endSeconds": 0.9
       },
       {
-        "word": "when",
-        "startSeconds": 0.7,
-        "endSeconds": 1
-      },
-      {
-        "word": "the",
-        "startSeconds": 1,
+        "word": "had",
+        "startSeconds": 0.9,
         "endSeconds": 1.1
       },
       {
-        "word": "floor",
+        "word": "this",
         "startSeconds": 1.1,
-        "endSeconds": 1.8
+        "endSeconds": 1.4
       },
       {
-        "word": "just",
-        "startSeconds": 1.8,
-        "endSeconds": 2.2
+        "word": "chair",
+        "startSeconds": 1.4,
+        "endSeconds": 1.7
       },
       {
-        "word": "disappears",
-        "startSeconds": 2.2,
-        "endSeconds": 3.8
+        "word": "a",
+        "startSeconds": 1.7,
+        "endSeconds": 2.7
       },
       {
-        "word": "not",
-        "startSeconds": 4.6,
-        "endSeconds": 5.2
+        "word": "blue",
+        "startSeconds": 2.7,
+        "endSeconds": 3.1
+      },
+      {
+        "word": "Wing",
+        "startSeconds": 3.1,
+        "endSeconds": 3.4
+      },
+      {
+        "word": "back",
+        "startSeconds": 3.4,
+        "endSeconds": 3.6
+      },
+      {
+        "word": "velvet",
+        "startSeconds": 3.6,
+        "endSeconds": 4.7
+      },
+      {
+        "word": "worn",
+        "startSeconds": 4.7,
+        "endSeconds": 5.4
+      },
+      {
+        "word": "down",
+        "startSeconds": 5.4,
+        "endSeconds": 5.6
+      },
+      {
+        "word": "to",
+        "startSeconds": 5.6,
+        "endSeconds": 5.8
       },
       {
         "word": "the",
-        "startSeconds": 5.2,
-        "endSeconds": 5.5
+        "startSeconds": 5.8,
+        "endSeconds": 5.8
       },
       {
-        "word": "slow",
-        "startSeconds": 5.5,
-        "endSeconds": 6.1
-      },
-      {
-        "word": "creaking",
-        "startSeconds": 6.1,
-        "endSeconds": 6.8
-      },
-      {
-        "word": "kind",
-        "startSeconds": 6.8,
-        "endSeconds": 7.3
-      },
-      {
-        "word": "of",
-        "startSeconds": 7.3,
-        "endSeconds": 7.5
-      },
-      {
-        "word": "warning",
-        "startSeconds": 7.5,
-        "endSeconds": 8.1
-      },
-      {
-        "word": "the",
-        "startSeconds": 9,
-        "endSeconds": 9.2
-      },
-      {
-        "word": "instant",
-        "startSeconds": 9.2,
-        "endSeconds": 10.1
-      },
-      {
-        "word": "kind",
-        "startSeconds": 10.1,
-        "endSeconds": 10.6
-      },
-      {
-        "word": "1",
-        "startSeconds": 11.4,
-        "endSeconds": 12.2
-      },
-      {
-        "word": "second",
-        "startSeconds": 12.2,
-        "endSeconds": 12.4
-      },
-      {
-        "word": "you're",
-        "startSeconds": 12.4,
-        "endSeconds": 13.1
-      },
-      {
-        "word": "standing",
-        "startSeconds": 13.1,
-        "endSeconds": 13.3
+        "word": "weave",
+        "startSeconds": 5.8,
+        "endSeconds": 6.3
       },
       {
         "word": "on",
-        "startSeconds": 13.3,
-        "endSeconds": 13.3
-      },
-      {
-        "word": "Solid",
-        "startSeconds": 13.3,
-        "endSeconds": 13.8
-      },
-      {
-        "word": "Ground",
-        "startSeconds": 13.8,
-        "endSeconds": 14.2
+        "startSeconds": 6.3,
+        "endSeconds": 6.4
       },
       {
         "word": "the",
-        "startSeconds": 14.2,
-        "endSeconds": 15.1
+        "startSeconds": 6.4,
+        "endSeconds": 6.5
       },
       {
-        "word": "next",
-        "startSeconds": 15.1,
-        "endSeconds": 15.4
+        "word": "arms",
+        "startSeconds": 6.5,
+        "endSeconds": 7
       },
       {
-        "word": "you're",
-        "startSeconds": 15.4,
-        "endSeconds": 16
+        "word": "a",
+        "startSeconds": 7,
+        "endSeconds": 7.9
       },
       {
-        "word": "in",
-        "startSeconds": 16,
-        "endSeconds": 16.1
-      },
-      {
-        "word": "freefall",
-        "startSeconds": 16.1,
-        "endSeconds": 16.5
-      },
-      {
-        "word": "I",
-        "startSeconds": 16.5,
-        "endSeconds": 17.5
-      },
-      {
-        "word": "remember",
-        "startSeconds": 17.5,
-        "endSeconds": 17.6
-      },
-      {
-        "word": "staring",
-        "startSeconds": 17.6,
-        "endSeconds": 18.4
-      },
-      {
-        "word": "at",
-        "startSeconds": 18.4,
-        "endSeconds": 18.6
-      },
-      {
-        "word": "an",
-        "startSeconds": 18.6,
-        "endSeconds": 18.9
-      },
-      {
-        "word": "email",
-        "startSeconds": 18.9,
-        "endSeconds": 19.1
+        "word": "spring",
+        "startSeconds": 7.9,
+        "endSeconds": 8.4
       },
       {
         "word": "that",
+        "startSeconds": 8.4,
+        "endSeconds": 8.7
+      },
+      {
+        "word": "poked",
+        "startSeconds": 8.7,
+        "endSeconds": 9.1
+      },
+      {
+        "word": "you",
+        "startSeconds": 9.1,
+        "endSeconds": 9.2
+      },
+      {
+        "word": "if",
+        "startSeconds": 9.2,
+        "endSeconds": 9.4
+      },
+      {
+        "word": "you",
+        "startSeconds": 9.4,
+        "endSeconds": 9.5
+      },
+      {
+        "word": "sat",
+        "startSeconds": 9.5,
+        "endSeconds": 9.8
+      },
+      {
+        "word": "wrong",
+        "startSeconds": 9.8,
+        "endSeconds": 10.2
+      },
+      {
+        "word": "he",
+        "startSeconds": 10.2,
+        "endSeconds": 10.9
+      },
+      {
+        "word": "bought",
+        "startSeconds": 10.9,
+        "endSeconds": 11.2
+      },
+      {
+        "word": "it",
+        "startSeconds": 11.2,
+        "endSeconds": 11.6
+      },
+      {
+        "word": "in",
+        "startSeconds": 11.6,
+        "endSeconds": 11.8
+      },
+      {
+        "word": "1974",
+        "startSeconds": 11.8,
+        "endSeconds": 12.7
+      },
+      {
+        "word": "the",
+        "startSeconds": 12.7,
+        "endSeconds": 13.6
+      },
+      {
+        "word": "year",
+        "startSeconds": 13.6,
+        "endSeconds": 13.9
+      },
+      {
+        "word": "he",
+        "startSeconds": 13.9,
+        "endSeconds": 14.1
+      },
+      {
+        "word": "opened",
+        "startSeconds": 14.1,
+        "endSeconds": 14.5
+      },
+      {
+        "word": "his",
+        "startSeconds": 14.5,
+        "endSeconds": 14.7
+      },
+      {
+        "word": "hardware",
+        "startSeconds": 14.7,
+        "endSeconds": 15.4
+      },
+      {
+        "word": "store",
+        "startSeconds": 15.4,
+        "endSeconds": 15.8
+      },
+      {
+        "word": "on",
+        "startSeconds": 15.8,
+        "endSeconds": 16.1
+      },
+      {
+        "word": "Cedar",
+        "startSeconds": 16.1,
+        "endSeconds": 16.7
+      },
+      {
+        "word": "Avenue",
+        "startSeconds": 16.7,
+        "endSeconds": 17
+      },
+      {
+        "word": "I",
+        "startSeconds": 17,
+        "endSeconds": 18.1
+      },
+      {
+        "word": "still",
+        "startSeconds": 18.1,
+        "endSeconds": 18.5
+      },
+      {
+        "word": "remember",
+        "startSeconds": 18.5,
+        "endSeconds": 18.5
+      },
+      {
+        "word": "the",
+        "startSeconds": 18.5,
+        "endSeconds": 18.8
+      },
+      {
+        "word": "smell",
+        "startSeconds": 18.8,
+        "endSeconds": 19.1
+      },
+      {
+        "word": "of",
         "startSeconds": 19.1,
+        "endSeconds": 19.2
+      },
+      {
+        "word": "that",
+        "startSeconds": 19.2,
         "endSeconds": 19.4
       },
       {
-        "word": "ended",
+        "word": "place",
         "startSeconds": 19.4,
         "endSeconds": 19.8
       },
       {
-        "word": "a",
+        "word": "sawdust",
         "startSeconds": 19.8,
-        "endSeconds": 20.2
-      },
-      {
-        "word": "decade",
-        "startSeconds": 20.2,
-        "endSeconds": 20.5
-      },
-      {
-        "word": "of",
-        "startSeconds": 20.5,
-        "endSeconds": 20.8
-      },
-      {
-        "word": "work",
-        "startSeconds": 20.8,
         "endSeconds": 21.2
       },
       {
-        "word": "in",
+        "word": "and",
         "startSeconds": 21.2,
-        "endSeconds": 22.1
+        "endSeconds": 21.6
       },
       {
-        "word": "3",
-        "startSeconds": 22.1,
-        "endSeconds": 22.4
+        "word": "piped",
+        "startSeconds": 21.6,
+        "endSeconds": 22
       },
       {
-        "word": "sentences",
-        "startSeconds": 22.4,
-        "endSeconds": 22.8
+        "word": "tobacco",
+        "startSeconds": 22,
+        "endSeconds": 22.7
       },
       {
-        "word": "my",
-        "startSeconds": 22.8,
+        "word": "Ray",
+        "startSeconds": 23.5,
         "endSeconds": 24
       },
       {
-        "word": "hands",
+        "word": "was",
         "startSeconds": 24,
         "endSeconds": 24.3
       },
       {
-        "word": "went",
+        "word": "not",
         "startSeconds": 24.3,
-        "endSeconds": 24.7
-      },
-      {
-        "word": "cold",
-        "startSeconds": 24.7,
-        "endSeconds": 25.1
-      },
-      {
-        "word": "the",
-        "startSeconds": 26.3,
-        "endSeconds": 26.4
-      },
-      {
-        "word": "silence",
-        "startSeconds": 26.4,
-        "endSeconds": 27
-      },
-      {
-        "word": "in",
-        "startSeconds": 27,
-        "endSeconds": 27.2
-      },
-      {
-        "word": "the",
-        "startSeconds": 27.2,
-        "endSeconds": 27.3
-      },
-      {
-        "word": "room",
-        "startSeconds": 27.3,
-        "endSeconds": 27.5
-      },
-      {
-        "word": "got",
-        "startSeconds": 27.5,
-        "endSeconds": 27.9
-      },
-      {
-        "word": "loud",
-        "startSeconds": 27.9,
-        "endSeconds": 28.4
-      },
-      {
-        "word": "and",
-        "startSeconds": 28.4,
-        "endSeconds": 29.3
-      },
-      {
-        "word": "in",
-        "startSeconds": 29.3,
-        "endSeconds": 29.7
-      },
-      {
-        "word": "that",
-        "startSeconds": 29.7,
-        "endSeconds": 29.9
-      },
-      {
-        "word": "silence",
-        "startSeconds": 29.9,
-        "endSeconds": 30.6
+        "endSeconds": 24.5
       },
       {
         "word": "a",
-        "startSeconds": 30.6,
-        "endSeconds": 31.3
+        "startSeconds": 24.5,
+        "endSeconds": 24.9
       },
       {
-        "word": "single",
-        "startSeconds": 31.3,
-        "endSeconds": 31.7
+        "word": "soft",
+        "startSeconds": 24.9,
+        "endSeconds": 25.1
       },
       {
-        "word": "thought",
-        "startSeconds": 31.7,
-        "endSeconds": 32.3
+        "word": "man",
+        "startSeconds": 25.1,
+        "endSeconds": 25.3
       },
       {
-        "word": "surface",
-        "startSeconds": 32.3,
-        "endSeconds": 32.8
+        "word": "he",
+        "startSeconds": 25.3,
+        "endSeconds": 26
       },
       {
-        "word": "sharp",
-        "startSeconds": 32.8,
-        "endSeconds": 34
+        "word": "had",
+        "startSeconds": 26,
+        "endSeconds": 26.2
       },
       {
-        "word": "as",
-        "startSeconds": 34,
-        "endSeconds": 34.2
+        "word": "lost",
+        "startSeconds": 26.2,
+        "endSeconds": 26.3
       },
       {
-        "word": "glass",
-        "startSeconds": 34.2,
-        "endSeconds": 34.7
+        "word": "half",
+        "startSeconds": 26.3,
+        "endSeconds": 26.6
       },
       {
-        "word": "this",
-        "startSeconds": 34.7,
-        "endSeconds": 35.8
+        "word": "his",
+        "startSeconds": 26.6,
+        "endSeconds": 26.8
       },
       {
-        "word": "is",
-        "startSeconds": 35.8,
-        "endSeconds": 36.6
+        "word": "thumb",
+        "startSeconds": 26.8,
+        "endSeconds": 27.2
+      },
+      {
+        "word": "to",
+        "startSeconds": 27.2,
+        "endSeconds": 27.4
+      },
+      {
+        "word": "a",
+        "startSeconds": 27.4,
+        "endSeconds": 27.8
+      },
+      {
+        "word": "table",
+        "startSeconds": 27.8,
+        "endSeconds": 27.8
+      },
+      {
+        "word": "saw",
+        "startSeconds": 27.8,
+        "endSeconds": 28.4
+      },
+      {
+        "word": "in",
+        "startSeconds": 28.4,
+        "endSeconds": 28.5
+      },
+      {
+        "word": "82",
+        "startSeconds": 28.5,
+        "endSeconds": 29.6
+      },
+      {
+        "word": "and",
+        "startSeconds": 29.6,
+        "endSeconds": 30.3
+      },
+      {
+        "word": "just",
+        "startSeconds": 30.3,
+        "endSeconds": 30.5
+      },
+      {
+        "word": "wrapped",
+        "startSeconds": 30.5,
+        "endSeconds": 31.1
+      },
+      {
+        "word": "it",
+        "startSeconds": 31.1,
+        "endSeconds": 31.1
+      },
+      {
+        "word": "in",
+        "startSeconds": 31.1,
+        "endSeconds": 31.2
+      },
+      {
+        "word": "a",
+        "startSeconds": 31.2,
+        "endSeconds": 31.4
+      },
+      {
+        "word": "shop",
+        "startSeconds": 31.4,
+        "endSeconds": 31.9
+      },
+      {
+        "word": "Rag",
+        "startSeconds": 31.9,
+        "endSeconds": 32.1
+      },
+      {
+        "word": "and",
+        "startSeconds": 32.1,
+        "endSeconds": 32.7
+      },
+      {
+        "word": "finished",
+        "startSeconds": 32.7,
+        "endSeconds": 32.9
       },
       {
         "word": "the",
+        "startSeconds": 32.9,
+        "endSeconds": 33.1
+      },
+      {
+        "word": "day",
+        "startSeconds": 33.1,
+        "endSeconds": 33.3
+      },
+      {
+        "word": "but",
+        "startSeconds": 33.3,
+        "endSeconds": 34
+      },
+      {
+        "word": "that",
+        "startSeconds": 34,
+        "endSeconds": 34.4
+      },
+      {
+        "word": "chair",
+        "startSeconds": 34.4,
+        "endSeconds": 34.8
+      },
+      {
+        "word": "he'd",
+        "startSeconds": 35.7,
+        "endSeconds": 36.1
+      },
+      {
+        "word": "sit",
+        "startSeconds": 36.1,
+        "endSeconds": 36.5
+      },
+      {
+        "word": "in",
+        "startSeconds": 36.5,
+        "endSeconds": 36.6
+      },
+      {
+        "word": "it",
         "startSeconds": 36.6,
         "endSeconds": 36.8
       },
       {
-        "word": "part",
+        "word": "every",
         "startSeconds": 36.8,
-        "endSeconds": 37.2
+        "endSeconds": 37.1
       },
       {
-        "word": "where",
-        "startSeconds": 37.2,
+        "word": "evening",
+        "startSeconds": 37.1,
         "endSeconds": 37.4
       },
       {
-        "word": "I'm",
+        "word": "same",
         "startSeconds": 37.4,
-        "endSeconds": 37.7
+        "endSeconds": 38.4
       },
       {
-        "word": "supposed",
-        "startSeconds": 37.7,
-        "endSeconds": 38.2
-      },
-      {
-        "word": "to",
-        "startSeconds": 38.2,
-        "endSeconds": 38.2
-      },
-      {
-        "word": "break",
-        "startSeconds": 38.2,
+        "word": "time",
+        "startSeconds": 38.4,
         "endSeconds": 38.7
       },
       {
-        "word": "but",
-        "startSeconds": 39.8,
-        "endSeconds": 40
+        "word": "6:15",
+        "startSeconds": 38.7,
+        "endSeconds": 40.1
       },
       {
-        "word": "here's",
-        "startSeconds": 40,
-        "endSeconds": 40.3
+        "word": "with",
+        "startSeconds": 40.1,
+        "endSeconds": 40.8
       },
       {
-        "word": "what",
-        "startSeconds": 40.3,
-        "endSeconds": 40.6
+        "word": "a",
+        "startSeconds": 40.8,
+        "endSeconds": 41
       },
       {
-        "word": "nobody",
-        "startSeconds": 40.6,
-        "endSeconds": 40.9
+        "word": "cup",
+        "startSeconds": 41,
+        "endSeconds": 41.2
       },
       {
-        "word": "tells",
-        "startSeconds": 40.9,
-        "endSeconds": 41.4
+        "word": "of",
+        "startSeconds": 41.2,
+        "endSeconds": 41.2
       },
       {
-        "word": "you",
-        "startSeconds": 41.4,
+        "word": "coffee",
+        "startSeconds": 41.2,
         "endSeconds": 41.6
       },
       {
-        "word": "about",
+        "word": "that",
         "startSeconds": 41.6,
-        "endSeconds": 41.9
+        "endSeconds": 42
       },
       {
-        "word": "hitting",
-        "startSeconds": 41.9,
-        "endSeconds": 42.4
+        "word": "had",
+        "startSeconds": 42,
+        "endSeconds": 42.3
       },
       {
-        "word": "the",
-        "startSeconds": 42.4,
+        "word": "gone",
+        "startSeconds": 42.3,
         "endSeconds": 42.5
       },
       {
-        "word": "ground",
+        "word": "cold",
         "startSeconds": 42.5,
-        "endSeconds": 43
+        "endSeconds": 42.8
       },
       {
-        "word": "the",
-        "startSeconds": 43,
-        "endSeconds": 43.8
+        "word": "an",
+        "startSeconds": 42.8,
+        "endSeconds": 43.5
       },
       {
-        "word": "impact",
-        "startSeconds": 43.8,
-        "endSeconds": 44.3
-      },
-      {
-        "word": "isn't",
-        "startSeconds": 44.3,
-        "endSeconds": 44.9
-      },
-      {
-        "word": "the",
-        "startSeconds": 44.9,
-        "endSeconds": 45
-      },
-      {
-        "word": "end",
-        "startSeconds": 45,
-        "endSeconds": 45.5
-      },
-      {
-        "word": "of",
-        "startSeconds": 45.5,
-        "endSeconds": 45.5
-      },
-      {
-        "word": "the",
-        "startSeconds": 45.5,
-        "endSeconds": 45.7
-      },
-      {
-        "word": "story",
-        "startSeconds": 45.7,
-        "endSeconds": 46.2
-      },
-      {
-        "word": "it's",
-        "startSeconds": 46.2,
-        "endSeconds": 47.2
-      },
-      {
-        "word": "the",
-        "startSeconds": 47.2,
-        "endSeconds": 47.3
-      },
-      {
-        "word": "moment",
-        "startSeconds": 47.3,
-        "endSeconds": 47.6
-      },
-      {
-        "word": "the",
-        "startSeconds": 47.6,
-        "endSeconds": 48
-      },
-      {
-        "word": "story",
-        "startSeconds": 48,
-        "endSeconds": 48.5
-      },
-      {
-        "word": "actually",
-        "startSeconds": 48.5,
-        "endSeconds": 49
-      },
-      {
-        "word": "begins",
-        "startSeconds": 49,
-        "endSeconds": 49.6
-      },
-      {
-        "word": "we've",
-        "startSeconds": 49.6,
-        "endSeconds": 50.6
-      },
-      {
-        "word": "been",
-        "startSeconds": 50.6,
-        "endSeconds": 50.7
-      },
-      {
-        "word": "sold",
-        "startSeconds": 50.7,
-        "endSeconds": 51.2
-      },
-      {
-        "word": "a",
-        "startSeconds": 51.2,
-        "endSeconds": 51.9
-      },
-      {
-        "word": "lie",
-        "startSeconds": 51.9,
-        "endSeconds": 52
-      },
-      {
-        "word": "about",
-        "startSeconds": 52,
-        "endSeconds": 52.1
-      },
-      {
-        "word": "resilience",
-        "startSeconds": 52.1,
-        "endSeconds": 52.9
-      },
-      {
-        "word": "haven't",
-        "startSeconds": 52.9,
-        "endSeconds": 53.3
-      },
-      {
-        "word": "we",
-        "startSeconds": 53.3,
-        "endSeconds": 53.5
-      },
-      {
-        "word": "we",
-        "startSeconds": 53.5,
-        "endSeconds": 54.1
-      },
-      {
-        "word": "picture",
-        "startSeconds": 54.194375,
-        "endSeconds": 54.694375
-      },
-      {
-        "word": "it",
-        "startSeconds": 54.694375,
-        "endSeconds": 54.894375000000004
-      },
-      {
-        "word": "as",
-        "startSeconds": 54.894375000000004,
-        "endSeconds": 55.094375
-      },
-      {
-        "word": "a",
-        "startSeconds": 55.094375,
-        "endSeconds": 55.194375
-      },
-      {
-        "word": "triumphant",
-        "startSeconds": 55.194375,
-        "endSeconds": 55.994375
-      },
-      {
-        "word": "bounced",
-        "startSeconds": 55.994375,
-        "endSeconds": 56.394375000000004
-      },
-      {
-        "word": "back",
-        "startSeconds": 56.394375000000004,
-        "endSeconds": 56.694375
-      },
-      {
-        "word": "a",
-        "startSeconds": 56.694375,
-        "endSeconds": 57.494375
-      },
-      {
-        "word": "shiny",
-        "startSeconds": 57.494375,
-        "endSeconds": 57.894375000000004
+        "word": "hour",
+        "startSeconds": 43.5,
+        "endSeconds": 43.7
       },
       {
         "word": "before",
-        "startSeconds": 57.894375000000004,
-        "endSeconds": 58.194375
+        "startSeconds": 43.7,
+        "endSeconds": 43.8
       },
       {
-        "word": "and",
-        "startSeconds": 58.194375,
-        "endSeconds": 58.694375
+        "word": "he'd",
+        "startSeconds": 45,
+        "endSeconds": 45.4
       },
       {
-        "word": "after",
-        "startSeconds": 58.694375,
-        "endSeconds": 58.994375
+        "word": "stare",
+        "startSeconds": 45.4,
+        "endSeconds": 45.9
       },
       {
-        "word": "photo",
-        "startSeconds": 58.994375,
-        "endSeconds": 59.494375
-      },
-      {
-        "word": "where",
-        "startSeconds": 59.494375,
-        "endSeconds": 60.194375
+        "word": "out",
+        "startSeconds": 45.9,
+        "endSeconds": 46
       },
       {
         "word": "the",
-        "startSeconds": 60.194375,
-        "endSeconds": 60.394375000000004
+        "startSeconds": 46,
+        "endSeconds": 46
       },
       {
-        "word": "struggle",
-        "startSeconds": 60.394375000000004,
-        "endSeconds": 60.594375
+        "word": "window",
+        "startSeconds": 46,
+        "endSeconds": 46.3
       },
       {
-        "word": "is",
-        "startSeconds": 60.594375,
-        "endSeconds": 60.894375000000004
-      },
-      {
-        "word": "just",
-        "startSeconds": 60.894375000000004,
-        "endSeconds": 60.994375
-      },
-      {
-        "word": "a",
-        "startSeconds": 60.994375,
-        "endSeconds": 61.394375000000004
-      },
-      {
-        "word": "blurry",
-        "startSeconds": 61.394375000000004,
-        "endSeconds": 61.794375
-      },
-      {
-        "word": "middle",
-        "startSeconds": 61.794375,
-        "endSeconds": 62.094375
-      },
-      {
-        "word": "chapter",
-        "startSeconds": 62.094375,
-        "endSeconds": 62.594375
-      },
-      {
-        "word": "we",
-        "startSeconds": 62.594375,
-        "endSeconds": 62.894375
-      },
-      {
-        "word": "skip",
-        "startSeconds": 62.894375,
-        "endSeconds": 63.094375
-      },
-      {
-        "word": "past",
-        "startSeconds": 63.094375,
-        "endSeconds": 63.694375
-      },
-      {
-        "word": "but",
-        "startSeconds": 63.694375,
-        "endSeconds": 64.294375
-      },
-      {
-        "word": "real",
-        "startSeconds": 64.294375,
-        "endSeconds": 64.994375
-      },
-      {
-        "word": "resilience",
-        "startSeconds": 64.994375,
-        "endSeconds": 65.794375
-      },
-      {
-        "word": "it's",
-        "startSeconds": 65.794375,
-        "endSeconds": 66.794375
-      },
-      {
-        "word": "not",
-        "startSeconds": 66.794375,
-        "endSeconds": 66.894375
-      },
-      {
-        "word": "a",
-        "startSeconds": 66.894375,
-        "endSeconds": 67.294375
-      },
-      {
-        "word": "spring",
-        "startSeconds": 67.294375,
-        "endSeconds": 67.794375
-      },
-      {
-        "word": "it's",
-        "startSeconds": 67.794375,
-        "endSeconds": 68.594375
-      },
-      {
-        "word": "a",
-        "startSeconds": 68.594375,
-        "endSeconds": 68.894375
-      },
-      {
-        "word": "forge",
-        "startSeconds": 68.894375,
-        "endSeconds": 69.294375
-      },
-      {
-        "word": "it's",
-        "startSeconds": 69.294375,
-        "endSeconds": 69.994375
+        "word": "at",
+        "startSeconds": 46.3,
+        "endSeconds": 46.6
       },
       {
         "word": "the",
-        "startSeconds": 69.994375,
-        "endSeconds": 70.094375
+        "startSeconds": 46.6,
+        "endSeconds": 46.7
       },
       {
-        "word": "place",
-        "startSeconds": 70.094375,
-        "endSeconds": 70.494375
+        "word": "bird",
+        "startSeconds": 46.7,
+        "endSeconds": 47.1
       },
       {
-        "word": "where",
-        "startSeconds": 70.494375,
-        "endSeconds": 70.794375
+        "word": "feeder",
+        "startSeconds": 47.1,
+        "endSeconds": 47.4
       },
       {
-        "word": "you",
-        "startSeconds": 70.794375,
-        "endSeconds": 70.894375
-      },
-      {
-        "word": "get",
-        "startSeconds": 70.894375,
-        "endSeconds": 71.094375
-      },
-      {
-        "word": "heated",
-        "startSeconds": 71.094375,
-        "endSeconds": 71.594375
-      },
-      {
-        "word": "until",
-        "startSeconds": 71.594375,
-        "endSeconds": 72.494375
-      },
-      {
-        "word": "your",
-        "startSeconds": 72.494375,
-        "endSeconds": 72.994375
-      },
-      {
-        "word": "unrecognizable",
-        "startSeconds": 72.994375,
-        "endSeconds": 73.794375
-      },
-      {
-        "word": "beaten",
-        "startSeconds": 73.794375,
-        "endSeconds": 74.994375
-      },
-      {
-        "word": "until",
-        "startSeconds": 74.994375,
-        "endSeconds": 75.594375
-      },
-      {
-        "word": "you're",
-        "startSeconds": 75.594375,
-        "endSeconds": 76.294375
-      },
-      {
-        "word": "reshaped",
-        "startSeconds": 76.294375,
-        "endSeconds": 76.69437500000001
-      },
-      {
-        "word": "and",
-        "startSeconds": 76.69437500000001,
-        "endSeconds": 77.494375
-      },
-      {
-        "word": "cooled",
-        "startSeconds": 77.494375,
-        "endSeconds": 78.19437500000001
-      },
-      {
-        "word": "until",
-        "startSeconds": 78.19437500000001,
-        "endSeconds": 78.394375
-      },
-      {
-        "word": "you're",
-        "startSeconds": 78.394375,
-        "endSeconds": 78.894375
-      },
-      {
-        "word": "something",
-        "startSeconds": 78.894375,
-        "endSeconds": 78.994375
-      },
-      {
-        "word": "entirely",
-        "startSeconds": 78.994375,
-        "endSeconds": 79.69437500000001
-      },
-      {
-        "word": "new",
-        "startSeconds": 79.69437500000001,
-        "endSeconds": 80.294375
-      },
-      {
-        "word": "right",
-        "startSeconds": 80.294375,
-        "endSeconds": 81.394375
-      },
-      {
-        "word": "now",
-        "startSeconds": 81.394375,
-        "endSeconds": 81.594375
-      },
-      {
-        "word": "somewhere",
-        "startSeconds": 81.594375,
-        "endSeconds": 82.19437500000001
-      },
-      {
-        "word": "in",
-        "startSeconds": 82.19437500000001,
-        "endSeconds": 82.394375
-      },
-      {
-        "word": "your",
-        "startSeconds": 82.394375,
-        "endSeconds": 82.494375
-      },
-      {
-        "word": "life",
-        "startSeconds": 82.494375,
-        "endSeconds": 82.69437500000001
-      },
-      {
-        "word": "your",
-        "startSeconds": 82.69437500000001,
-        "endSeconds": 83.19437500000001
-      },
-      {
-        "word": "voice",
-        "startSeconds": 83.19437500000001,
-        "endSeconds": 83.594375
-      },
-      {
-        "word": "that",
-        "startSeconds": 83.594375,
-        "endSeconds": 83.994375
-      },
-      {
-        "word": "heat",
-        "startSeconds": 83.994375,
-        "endSeconds": 84.294375
-      },
-      {
-        "word": "we",
-        "startSeconds": 84.294375,
-        "endSeconds": 85.294375
-      },
-      {
-        "word": "all",
-        "startSeconds": 85.294375,
-        "endSeconds": 85.594375
-      },
-      {
-        "word": "do",
-        "startSeconds": 85.594375,
-        "endSeconds": 85.794375
-      },
-      {
-        "word": "we",
-        "startSeconds": 85.794375,
-        "endSeconds": 86.99437499999999
-      },
-      {
-        "word": "cling",
-        "startSeconds": 86.99437499999999,
-        "endSeconds": 87.594375
-      },
-      {
-        "word": "to",
-        "startSeconds": 87.594375,
-        "endSeconds": 87.594375
-      },
-      {
-        "word": "the",
-        "startSeconds": 87.594375,
-        "endSeconds": 87.69437500000001
-      },
-      {
-        "word": "comfortable",
-        "startSeconds": 87.69437500000001,
-        "endSeconds": 88.19437500000001
-      },
-      {
-        "word": "shape",
-        "startSeconds": 88.19437500000001,
-        "endSeconds": 88.69437500000001
-      },
-      {
-        "word": "of",
-        "startSeconds": 88.69437500000001,
-        "endSeconds": 88.794375
-      },
-      {
-        "word": "who",
-        "startSeconds": 88.794375,
-        "endSeconds": 89.094375
-      },
-      {
-        "word": "we",
-        "startSeconds": 89.094375,
-        "endSeconds": 89.19437500000001
-      },
-      {
-        "word": "were",
-        "startSeconds": 89.19437500000001,
-        "endSeconds": 89.49437499999999
-      },
-      {
-        "word": "terrified",
-        "startSeconds": 89.49437499999999,
-        "endSeconds": 90.794375
-      },
-      {
-        "word": "of",
-        "startSeconds": 90.794375,
-        "endSeconds": 90.99437499999999
-      },
-      {
-        "word": "the",
-        "startSeconds": 90.99437499999999,
-        "endSeconds": 90.99437499999999
-      },
-      {
-        "word": "hammer",
-        "startSeconds": 90.99437499999999,
-        "endSeconds": 91.49437499999999
-      },
-      {
-        "word": "butt",
-        "startSeconds": 91.49437499999999,
-        "endSeconds": 91.894375
-      },
-      {
-        "word": "drift",
-        "startSeconds": 91.894375,
-        "endSeconds": 92.49437499999999
-      },
-      {
-        "word": "that's",
-        "startSeconds": 92.49437499999999,
-        "endSeconds": 93.894375
-      },
-      {
-        "word": "the",
-        "startSeconds": 93.894375,
-        "endSeconds": 93.894375
-      },
-      {
-        "word": "real",
-        "startSeconds": 93.894375,
-        "endSeconds": 94.19437500000001
-      },
-      {
-        "word": "enemy",
-        "startSeconds": 94.19437500000001,
-        "endSeconds": 94.69437500000001
-      },
-      {
-        "word": "The",
-        "startSeconds": 94.69437500000001,
-        "endSeconds": 95.594375
-      },
-      {
-        "word": "Quiet",
-        "startSeconds": 95.594375,
-        "endSeconds": 95.99437499999999
-      },
-      {
-        "word": "comfortable",
-        "startSeconds": 95.99437499999999,
-        "endSeconds": 96.594375
-      },
-      {
-        "word": "drift",
-        "startSeconds": 96.594375,
-        "endSeconds": 97.19437500000001
-      },
-      {
-        "word": "away",
-        "startSeconds": 97.19437500000001,
-        "endSeconds": 97.394375
-      },
-      {
-        "word": "from",
-        "startSeconds": 97.394375,
-        "endSeconds": 97.69437500000001
-      },
-      {
-        "word": "your",
-        "startSeconds": 97.69437500000001,
-        "endSeconds": 97.794375
-      },
-      {
-        "word": "own",
-        "startSeconds": 97.794375,
-        "endSeconds": 97.99437499999999
-      },
-      {
-        "word": "becoming",
-        "startSeconds": 97.99437499999999,
-        "endSeconds": 98.69437500000001
-      },
-      {
-        "word": "the",
-        "startSeconds": 99.49437499999999,
-        "endSeconds": 99.594375
-      },
-      {
-        "word": "courage",
-        "startSeconds": 99.594375,
-        "endSeconds": 100.094375
-      },
-      {
-        "word": "to",
-        "startSeconds": 100.094375,
-        "endSeconds": 100.394375
-      },
-      {
-        "word": "stay",
-        "startSeconds": 100.394375,
-        "endSeconds": 100.69437500000001
-      },
-      {
-        "word": "in",
-        "startSeconds": 100.69437500000001,
-        "endSeconds": 100.794375
-      },
-      {
-        "word": "the",
-        "startSeconds": 100.794375,
-        "endSeconds": 100.794375
-      },
-      {
-        "word": "fire",
-        "startSeconds": 100.794375,
-        "endSeconds": 101.294375
-      },
-      {
-        "word": "that's",
-        "startSeconds": 102.19437500000001,
-        "endSeconds": 102.594375
-      },
-      {
-        "word": "the",
-        "startSeconds": 102.594375,
-        "endSeconds": 102.594375
-      },
-      {
-        "word": "only",
-        "startSeconds": 102.594375,
-        "endSeconds": 102.894375
-      },
-      {
-        "word": "path",
-        "startSeconds": 102.894375,
-        "endSeconds": 103.49437499999999
-      },
-      {
-        "word": "back",
-        "startSeconds": 103.49437499999999,
-        "endSeconds": 103.99437499999999
-      },
-      {
-        "word": "to",
-        "startSeconds": 103.99437499999999,
-        "endSeconds": 104.094375
-      },
-      {
-        "word": "your",
-        "startSeconds": 104.094375,
-        "endSeconds": 104.294375
-      },
-      {
-        "word": "own",
-        "startSeconds": 104.294375,
-        "endSeconds": 104.394375
-      },
-      {
-        "word": "agency",
-        "startSeconds": 104.394375,
-        "endSeconds": 105.19437500000001
-      },
-      {
-        "word": "the",
-        "startSeconds": 105.19437500000001,
-        "endSeconds": 105.99437499999999
-      },
-      {
-        "word": "weight",
-        "startSeconds": 105.99437499999999,
-        "endSeconds": 106.394375
-      },
-      {
-        "word": "you've",
-        "startSeconds": 106.394375,
-        "endSeconds": 106.69437500000001
-      },
-      {
-        "word": "been",
-        "startSeconds": 106.69437500000001,
-        "endSeconds": 106.794375
-      },
-      {
-        "word": "carrying",
-        "startSeconds": 106.794375,
-        "endSeconds": 107.294375
-      },
-      {
-        "word": "isn't",
-        "startSeconds": 107.294375,
-        "endSeconds": 107.894375
-      },
-      {
-        "word": "a",
-        "startSeconds": 107.894375,
-        "endSeconds": 108.394375
-      },
-      {
-        "word": "punishment",
-        "startSeconds": 108.394375,
-        "endSeconds": 108.594375
-      },
-      {
-        "word": "it's",
-        "startSeconds": 109.34470833333333,
-        "endSeconds": 109.64470833333333
-      },
-      {
-        "word": "the",
-        "startSeconds": 109.64470833333333,
-        "endSeconds": 109.84470833333333
-      },
-      {
-        "word": "raw",
-        "startSeconds": 109.84470833333333,
-        "endSeconds": 110.34470833333333
-      },
-      {
-        "word": "material",
-        "startSeconds": 110.34470833333333,
-        "endSeconds": 110.74470833333334
-      },
-      {
-        "word": "let",
-        "startSeconds": 111.13333333333334,
-        "endSeconds": 111.33333333333334
-      },
-      {
-        "word": "me",
-        "startSeconds": 111.33333333333334,
-        "endSeconds": 111.33333333333334
-      },
-      {
-        "word": "take",
-        "startSeconds": 111.33333333333334,
-        "endSeconds": 111.53333333333335
-      },
-      {
-        "word": "you",
-        "startSeconds": 111.53333333333335,
-        "endSeconds": 111.83333333333334
-      },
-      {
-        "word": "back",
-        "startSeconds": 111.83333333333334,
-        "endSeconds": 112.03333333333335
-      },
-      {
-        "word": "to",
-        "startSeconds": 112.03333333333335,
-        "endSeconds": 112.13333333333334
-      },
-      {
-        "word": "that",
-        "startSeconds": 112.13333333333334,
-        "endSeconds": 112.43333333333334
-      },
-      {
-        "word": "empty",
-        "startSeconds": 112.43333333333334,
-        "endSeconds": 112.73333333333333
-      },
-      {
-        "word": "room",
-        "startSeconds": 112.73333333333333,
-        "endSeconds": 113.13333333333334
-      },
-      {
-        "word": "the",
-        "startSeconds": 113.13333333333334,
-        "endSeconds": 113.63333333333334
-      },
-      {
-        "word": "glow",
-        "startSeconds": 113.63333333333334,
-        "endSeconds": 114.23333333333333
-      },
-      {
-        "word": "of",
-        "startSeconds": 114.23333333333333,
-        "endSeconds": 114.33333333333334
-      },
-      {
-        "word": "the",
-        "startSeconds": 114.33333333333334,
-        "endSeconds": 114.43333333333334
-      },
-      {
-        "word": "screen",
-        "startSeconds": 114.43333333333334,
-        "endSeconds": 114.93333333333334
-      },
-      {
-        "word": "on",
-        "startSeconds": 114.93333333333334,
-        "endSeconds": 115.13333333333334
-      },
-      {
-        "word": "my",
-        "startSeconds": 115.13333333333334,
-        "endSeconds": 115.23333333333333
-      },
-      {
-        "word": "face",
-        "startSeconds": 115.23333333333333,
-        "endSeconds": 115.73333333333333
-      },
-      {
-        "word": "for",
-        "startSeconds": 115.73333333333333,
-        "endSeconds": 116.53333333333335
-      },
-      {
-        "word": "weeks",
-        "startSeconds": 116.53333333333335,
-        "endSeconds": 116.93333333333334
-      },
-      {
-        "word": "I",
-        "startSeconds": 116.93333333333334,
-        "endSeconds": 117.53333333333335
-      },
-      {
-        "word": "wore",
-        "startSeconds": 117.53333333333335,
-        "endSeconds": 117.93333333333334
-      },
-      {
-        "word": "my",
-        "startSeconds": 117.93333333333334,
-        "endSeconds": 118.13333333333334
-      },
-      {
-        "word": "failure",
-        "startSeconds": 118.13333333333334,
-        "endSeconds": 118.73333333333333
-      },
-      {
-        "word": "like",
-        "startSeconds": 118.73333333333333,
-        "endSeconds": 118.83333333333334
-      },
-      {
-        "word": "a",
-        "startSeconds": 118.83333333333334,
-        "endSeconds": 119.13333333333334
-      },
-      {
-        "word": "second",
-        "startSeconds": 119.13333333333334,
-        "endSeconds": 119.33333333333334
-      },
-      {
-        "word": "skin",
-        "startSeconds": 119.33333333333334,
-        "endSeconds": 119.93333333333334
-      },
-      {
-        "word": "I'd",
-        "startSeconds": 119.93333333333334,
-        "endSeconds": 120.73333333333333
-      },
-      {
-        "word": "wake",
-        "startSeconds": 120.73333333333333,
-        "endSeconds": 121.03333333333335
-      },
-      {
-        "word": "up",
-        "startSeconds": 121.03333333333335,
-        "endSeconds": 121.13333333333334
-      },
-      {
-        "word": "and",
-        "startSeconds": 121.13333333333334,
-        "endSeconds": 121.53333333333335
-      },
-      {
-        "word": "for",
-        "startSeconds": 121.53333333333335,
-        "endSeconds": 121.63333333333334
-      },
-      {
-        "word": "a",
-        "startSeconds": 121.63333333333334,
-        "endSeconds": 121.73333333333333
-      },
-      {
-        "word": "blissful",
-        "startSeconds": 121.73333333333333,
-        "endSeconds": 122.23333333333333
-      },
-      {
-        "word": "half",
-        "startSeconds": 122.23333333333333,
-        "endSeconds": 122.53333333333335
-      },
-      {
-        "word": "second",
-        "startSeconds": 122.53333333333335,
-        "endSeconds": 122.93333333333334
-      },
-      {
-        "word": "I'd",
-        "startSeconds": 122.93333333333334,
-        "endSeconds": 123.43333333333334
-      },
-      {
-        "word": "forget",
-        "startSeconds": 123.43333333333334,
-        "endSeconds": 123.83333333333334
-      },
-      {
-        "word": "then",
-        "startSeconds": 123.83333333333334,
-        "endSeconds": 124.53333333333335
-      },
-      {
-        "word": "the",
-        "startSeconds": 124.53333333333335,
-        "endSeconds": 124.73333333333333
-      },
-      {
-        "word": "weight",
-        "startSeconds": 124.73333333333333,
-        "endSeconds": 125.03333333333335
-      },
-      {
-        "word": "would",
-        "startSeconds": 125.03333333333335,
-        "endSeconds": 125.23333333333333
-      },
-      {
-        "word": "settle",
-        "startSeconds": 125.23333333333333,
-        "endSeconds": 125.53333333333335
-      },
-      {
-        "word": "back",
-        "startSeconds": 125.53333333333335,
-        "endSeconds": 125.73333333333333
-      },
-      {
-        "word": "on",
-        "startSeconds": 125.73333333333333,
-        "endSeconds": 126.03333333333335
-      },
-      {
-        "word": "my",
-        "startSeconds": 126.03333333333335,
-        "endSeconds": 126.13333333333334
-      },
-      {
-        "word": "chest",
-        "startSeconds": 126.13333333333334,
-        "endSeconds": 126.53333333333335
-      },
-      {
-        "word": "a",
-        "startSeconds": 126.53333333333335,
-        "endSeconds": 127.23333333333335
-      },
-      {
-        "word": "familiar",
-        "startSeconds": 127.23333333333335,
-        "endSeconds": 127.53333333333333
-      },
-      {
-        "word": "crushing",
-        "startSeconds": 127.53333333333333,
-        "endSeconds": 128.53333333333333
-      },
-      {
-        "word": "fog",
-        "startSeconds": 128.53333333333333,
-        "endSeconds": 128.93333333333334
-      },
-      {
-        "word": "I",
-        "startSeconds": 128.93333333333334,
-        "endSeconds": 129.63333333333333
-      },
-      {
-        "word": "was",
-        "startSeconds": 129.63333333333333,
-        "endSeconds": 129.73333333333335
-      },
-      {
-        "word": "living",
-        "startSeconds": 129.73333333333335,
-        "endSeconds": 129.93333333333334
-      },
-      {
-        "word": "in",
-        "startSeconds": 129.93333333333334,
-        "endSeconds": 130.23333333333335
-      },
-      {
-        "word": "the",
-        "startSeconds": 130.23333333333335,
-        "endSeconds": 130.23333333333335
-      },
-      {
-        "word": "wreckage",
-        "startSeconds": 130.23333333333335,
-        "endSeconds": 130.93333333333334
-      },
-      {
-        "word": "cataloging",
-        "startSeconds": 130.93333333333334,
-        "endSeconds": 131.93333333333334
-      },
-      {
-        "word": "every",
-        "startSeconds": 131.93333333333334,
-        "endSeconds": 132.53333333333333
-      },
-      {
-        "word": "Splinter",
-        "startSeconds": 132.53333333333333,
-        "endSeconds": 133.13333333333333
-      },
-      {
-        "word": "I",
-        "startSeconds": 133.13333333333333,
-        "endSeconds": 134.03333333333333
-      },
-      {
-        "word": "told",
-        "startSeconds": 134.03333333333333,
-        "endSeconds": 134.23333333333335
-      },
-      {
-        "word": "myself",
-        "startSeconds": 134.23333333333335,
-        "endSeconds": 134.63333333333333
-      },
-      {
-        "word": "I",
-        "startSeconds": 134.63333333333333,
-        "endSeconds": 135.03333333333333
-      },
-      {
-        "word": "was",
-        "startSeconds": 135.03333333333333,
-        "endSeconds": 135.03333333333333
-      },
-      {
-        "word": "processing",
-        "startSeconds": 135.03333333333333,
-        "endSeconds": 135.53333333333333
-      },
-      {
-        "word": "but",
-        "startSeconds": 135.53333333333333,
-        "endSeconds": 136.23333333333335
-      },
-      {
-        "word": "really",
-        "startSeconds": 136.23333333333335,
-        "endSeconds": 136.63333333333333
-      },
-      {
-        "word": "I",
-        "startSeconds": 136.63333333333333,
-        "endSeconds": 137.43333333333334
-      },
-      {
-        "word": "was",
-        "startSeconds": 137.43333333333334,
-        "endSeconds": 137.53333333333333
-      },
-      {
-        "word": "just",
-        "startSeconds": 137.53333333333333,
-        "endSeconds": 137.63333333333333
-      },
-      {
-        "word": "building",
-        "startSeconds": 137.63333333333333,
-        "endSeconds": 138.03333333333333
-      },
-      {
-        "word": "a",
-        "startSeconds": 138.03333333333333,
-        "endSeconds": 138.23333333333335
-      },
-      {
-        "word": "shrine",
-        "startSeconds": 138.23333333333335,
-        "endSeconds": 138.63333333333333
-      },
-      {
-        "word": "to",
-        "startSeconds": 138.63333333333333,
-        "endSeconds": 139.03333333333333
-      },
-      {
-        "word": "what",
-        "startSeconds": 139.03333333333333,
-        "endSeconds": 139.13333333333333
-      },
-      {
-        "word": "was",
-        "startSeconds": 139.13333333333333,
-        "endSeconds": 139.13333333333333
-      },
-      {
-        "word": "lost",
-        "startSeconds": 139.13333333333333,
-        "endSeconds": 139.43333333333334
-      },
-      {
-        "word": "the",
-        "startSeconds": 139.43333333333334,
-        "endSeconds": 140.33333333333334
-      },
-      {
-        "word": "voice",
-        "startSeconds": 140.33333333333334,
-        "endSeconds": 140.53333333333333
-      },
-      {
-        "word": "in",
-        "startSeconds": 140.53333333333333,
-        "endSeconds": 140.73333333333335
-      },
-      {
-        "word": "my",
-        "startSeconds": 140.73333333333335,
-        "endSeconds": 140.83333333333334
-      },
-      {
-        "word": "head",
-        "startSeconds": 140.83333333333334,
-        "endSeconds": 141.13333333333333
-      },
-      {
-        "word": "was",
-        "startSeconds": 141.13333333333333,
-        "endSeconds": 141.33333333333334
-      },
-      {
-        "word": "relentless",
-        "startSeconds": 141.33333333333334,
-        "endSeconds": 141.93333333333334
-      },
-      {
-        "word": "a",
-        "startSeconds": 141.93333333333334,
-        "endSeconds": 142.73333333333335
-      },
-      {
-        "word": "prosecutor",
-        "startSeconds": 142.73333333333335,
-        "endSeconds": 143.43333333333334
-      },
-      {
-        "word": "listing",
-        "startSeconds": 143.43333333333334,
-        "endSeconds": 143.93333333333334
-      },
-      {
-        "word": "every",
-        "startSeconds": 143.93333333333334,
-        "endSeconds": 144.43333333333334
-      },
-      {
-        "word": "mistake",
-        "startSeconds": 144.43333333333334,
-        "endSeconds": 144.83333333333334
-      },
-      {
-        "word": "and",
-        "startSeconds": 145.73333333333335,
-        "endSeconds": 145.93333333333334
-      },
-      {
-        "word": "the",
-        "startSeconds": 145.93333333333334,
-        "endSeconds": 146.13333333333333
-      },
-      {
-        "word": "worst",
-        "startSeconds": 146.13333333333333,
-        "endSeconds": 146.43333333333334
-      },
-      {
-        "word": "part",
-        "startSeconds": 146.43333333333334,
-        "endSeconds": 147.13333333333333
-      },
-      {
-        "word": "I",
-        "startSeconds": 148.13333333333333,
-        "endSeconds": 148.43333333333334
-      },
-      {
-        "word": "believed",
-        "startSeconds": 148.43333333333334,
-        "endSeconds": 148.83333333333334
-      },
-      {
-        "word": "it",
-        "startSeconds": 148.83333333333334,
-        "endSeconds": 148.93333333333334
-      },
-      {
-        "word": "I",
-        "startSeconds": 148.93333333333334,
-        "endSeconds": 149.73333333333335
-      },
-      {
-        "word": "had",
-        "startSeconds": 149.73333333333335,
-        "endSeconds": 150.13333333333333
-      },
-      {
-        "word": "confused",
-        "startSeconds": 150.13333333333333,
-        "endSeconds": 150.43333333333334
-      },
-      {
-        "word": "my",
-        "startSeconds": 150.43333333333334,
-        "endSeconds": 150.63333333333333
-      },
-      {
-        "word": "comfort",
-        "startSeconds": 150.63333333333333,
-        "endSeconds": 151.03333333333333
-      },
-      {
-        "word": "zone",
-        "startSeconds": 151.03333333333333,
-        "endSeconds": 151.33333333333334
-      },
-      {
-        "word": "with",
-        "startSeconds": 151.33333333333334,
-        "endSeconds": 151.53333333333333
-      },
-      {
-        "word": "my",
-        "startSeconds": 151.53333333333333,
-        "endSeconds": 151.73333333333335
-      },
-      {
-        "word": "identity",
-        "startSeconds": 151.73333333333335,
-        "endSeconds": 152.13333333333333
-      },
-      {
-        "word": "and",
-        "startSeconds": 152.13333333333333,
-        "endSeconds": 152.83333333333334
-      },
-      {
-        "word": "1",
-        "startSeconds": 152.83333333333334,
-        "endSeconds": 153.33333333333334
-      },
-      {
-        "word": "Advantage",
-        "startSeconds": 153.33333333333334,
-        "endSeconds": 153.73333333333335
-      },
-      {
-        "word": "I",
-        "startSeconds": 153.73333333333335,
-        "endSeconds": 154.43333333333334
-      },
-      {
-        "word": "thought",
-        "startSeconds": 154.43333333333334,
-        "endSeconds": 154.53333333333333
-      },
-      {
-        "word": "I",
-        "startSeconds": 154.53333333333333,
-        "endSeconds": 154.93333333333334
-      },
-      {
-        "word": "had",
-        "startSeconds": 154.93333333333334,
-        "endSeconds": 155.33333333333334
-      },
-      {
-        "word": "vanished",
-        "startSeconds": 155.33333333333334,
-        "endSeconds": 155.43333333333334
-      },
-      {
-        "word": "with",
-        "startSeconds": 155.43333333333334,
-        "endSeconds": 155.73333333333335
-      },
-      {
-        "word": "it",
-        "startSeconds": 155.73333333333335,
-        "endSeconds": 155.83333333333334
-      },
-      {
-        "word": "but",
-        "startSeconds": 156.73333333333335,
-        "endSeconds": 157.03333333333333
-      },
-      {
-        "word": "1",
-        "startSeconds": 157.03333333333333,
-        "endSeconds": 157.33333333333334
-      },
-      {
-        "word": "morning",
-        "startSeconds": 157.33333333333334,
-        "endSeconds": 157.63333333333333
-      },
-      {
-        "word": "a",
-        "startSeconds": 157.63333333333333,
-        "endSeconds": 158.03333333333333
-      },
-      {
-        "word": "different",
-        "startSeconds": 158.03333333333333,
-        "endSeconds": 158.43333333333334
-      },
-      {
-        "word": "thought",
-        "startSeconds": 158.43333333333334,
-        "endSeconds": 158.63333333333333
-      },
-      {
-        "word": "cut",
-        "startSeconds": 158.63333333333333,
-        "endSeconds": 159.03333333333333
-      },
-      {
-        "word": "through",
-        "startSeconds": 159.03333333333333,
-        "endSeconds": 159.23333333333335
-      },
-      {
-        "word": "the",
-        "startSeconds": 159.23333333333335,
-        "endSeconds": 159.43333333333334
-      },
-      {
-        "word": "noise",
-        "startSeconds": 159.43333333333334,
-        "endSeconds": 159.83333333333334
-      },
-      {
-        "word": "not",
-        "startSeconds": 160.73333333333335,
-        "endSeconds": 161.13333333333333
-      },
-      {
-        "word": "a",
-        "startSeconds": 161.13333333333333,
-        "endSeconds": 162.03333333333333
-      },
-      {
-        "word": "loud",
-        "startSeconds": 162.03333333333333,
-        "endSeconds": 162.23333333333335
-      },
-      {
-        "word": "1",
-        "startSeconds": 162.23333333333335,
-        "endSeconds": 162.33333333333334
-      },
-      {
-        "word": "a",
-        "startSeconds": 163.33333333333334,
-        "endSeconds": 163.63333333333333
-      },
-      {
-        "word": "whisper",
-        "startSeconds": 163.63333333333333,
-        "endSeconds": 163.93333333333334
-      },
-      {
-        "word": "the",
-        "startSeconds": 164.66591666666667,
-        "endSeconds": 164.96591666666666
-      },
-      {
-        "word": "wall",
-        "startSeconds": 164.96591666666666,
-        "endSeconds": 165.46591666666666
-      },
-      {
-        "word": "you",
-        "startSeconds": 165.46591666666666,
-        "endSeconds": 165.56591666666668
-      },
-      {
-        "word": "keep",
-        "startSeconds": 165.56591666666668,
-        "endSeconds": 165.86591666666666
-      },
-      {
-        "word": "hitting",
-        "startSeconds": 165.86591666666666,
-        "endSeconds": 166.16591666666667
-      },
-      {
-        "word": "is",
-        "startSeconds": 166.16591666666667,
-        "endSeconds": 166.46591666666666
-      },
-      {
-        "word": "not",
-        "startSeconds": 166.46591666666666,
-        "endSeconds": 166.86591666666666
-      },
-      {
-        "word": "a",
-        "startSeconds": 166.86591666666666,
-        "endSeconds": 167.46591666666666
-      },
-      {
-        "word": "cage",
-        "startSeconds": 167.46591666666666,
-        "endSeconds": 167.76591666666667
-      },
-      {
-        "word": "it",
-        "startSeconds": 167.76591666666667,
-        "endSeconds": 168.66591666666667
-      },
-      {
-        "word": "was",
-        "startSeconds": 168.66591666666667,
-        "endSeconds": 168.86591666666666
-      },
-      {
-        "word": "a",
-        "startSeconds": 168.86591666666666,
-        "endSeconds": 169.16591666666667
-      },
-      {
-        "word": "reframe",
-        "startSeconds": 169.16591666666667,
-        "endSeconds": 169.86591666666666
-      },
-      {
-        "word": "so",
-        "startSeconds": 169.86591666666666,
-        "endSeconds": 170.16591666666667
-      },
-      {
-        "word": "simple",
-        "startSeconds": 170.16591666666667,
-        "endSeconds": 170.36591666666666
-      },
-      {
-        "word": "it",
-        "startSeconds": 170.36591666666666,
-        "endSeconds": 170.66591666666667
-      },
-      {
-        "word": "felt",
-        "startSeconds": 170.66591666666667,
-        "endSeconds": 170.96591666666666
-      },
-      {
-        "word": "like",
-        "startSeconds": 170.96591666666666,
-        "endSeconds": 171.06591666666668
-      },
-      {
-        "word": "a",
-        "startSeconds": 171.06591666666668,
-        "endSeconds": 171.46591666666666
-      },
-      {
-        "word": "physical",
-        "startSeconds": 171.46591666666666,
-        "endSeconds": 171.66591666666667
-      },
-      {
-        "word": "shift",
-        "startSeconds": 171.66591666666667,
-        "endSeconds": 172.16591666666667
-      },
-      {
-        "word": "the",
-        "startSeconds": 172.16591666666667,
-        "endSeconds": 172.76591666666667
-      },
-      {
-        "word": "wall",
-        "startSeconds": 172.76591666666667,
-        "endSeconds": 173.16591666666667
-      },
-      {
-        "word": "wasn't",
-        "startSeconds": 173.16591666666667,
-        "endSeconds": 173.66591666666667
-      },
-      {
-        "word": "there",
-        "startSeconds": 173.66591666666667,
-        "endSeconds": 174.16591666666667
-      },
-      {
-        "word": "to",
-        "startSeconds": 174.16591666666667,
-        "endSeconds": 174.26591666666667
-      },
-      {
-        "word": "stop",
-        "startSeconds": 174.26591666666667,
-        "endSeconds": 174.56591666666668
-      },
-      {
-        "word": "me",
-        "startSeconds": 174.56591666666668,
-        "endSeconds": 174.86591666666666
-      },
-      {
-        "word": "it",
-        "startSeconds": 174.86591666666666,
-        "endSeconds": 175.66591666666667
-      },
-      {
-        "word": "was",
-        "startSeconds": 175.66591666666667,
-        "endSeconds": 175.76591666666667
-      },
-      {
-        "word": "there",
-        "startSeconds": 175.76591666666667,
-        "endSeconds": 176.16591666666667
-      },
-      {
-        "word": "to",
-        "startSeconds": 176.16591666666667,
-        "endSeconds": 176.3659166666667
-      },
-      {
-        "word": "show",
-        "startSeconds": 176.3659166666667,
-        "endSeconds": 176.66591666666667
-      },
-      {
-        "word": "me",
-        "startSeconds": 176.66591666666667,
-        "endSeconds": 176.8659166666667
-      },
-      {
-        "word": "what",
-        "startSeconds": 176.8659166666667,
-        "endSeconds": 177.26591666666667
-      },
-      {
-        "word": "I",
-        "startSeconds": 177.26591666666667,
-        "endSeconds": 177.46591666666666
-      },
-      {
-        "word": "was",
-        "startSeconds": 177.46591666666666,
-        "endSeconds": 177.56591666666668
-      },
-      {
-        "word": "willing",
-        "startSeconds": 177.56591666666668,
-        "endSeconds": 177.8659166666667
-      },
-      {
-        "word": "to",
-        "startSeconds": 177.8659166666667,
-        "endSeconds": 178.16591666666667
-      },
-      {
-        "word": "do",
-        "startSeconds": 178.16591666666667,
-        "endSeconds": 178.46591666666666
-      },
-      {
-        "word": "to",
-        "startSeconds": 178.46591666666666,
-        "endSeconds": 178.96591666666666
-      },
-      {
-        "word": "get",
-        "startSeconds": 178.96591666666666,
-        "endSeconds": 178.96591666666666
-      },
-      {
-        "word": "past",
-        "startSeconds": 178.96591666666666,
-        "endSeconds": 179.66591666666667
-      },
-      {
-        "word": "it",
-        "startSeconds": 179.66591666666667,
-        "endSeconds": 179.76591666666667
-      },
-      {
-        "word": "that's",
-        "startSeconds": 179.76591666666667,
-        "endSeconds": 180.46591666666666
-      },
-      {
-        "word": "the",
-        "startSeconds": 180.46591666666666,
-        "endSeconds": 180.56591666666668
-      },
-      {
-        "word": "turning",
-        "startSeconds": 180.56591666666668,
-        "endSeconds": 181.06591666666668
-      },
-      {
-        "word": "point",
-        "startSeconds": 181.06591666666668,
-        "endSeconds": 181.16591666666667
-      },
-      {
-        "word": "isn't",
-        "startSeconds": 181.16591666666667,
-        "endSeconds": 181.76591666666667
-      },
-      {
-        "word": "it",
-        "startSeconds": 181.76591666666667,
-        "endSeconds": 181.76591666666667
-      },
-      {
-        "word": "the",
-        "startSeconds": 183.16591666666667,
-        "endSeconds": 183.3659166666667
-      },
-      {
-        "word": "moment",
-        "startSeconds": 183.3659166666667,
-        "endSeconds": 183.56591666666668
-      },
-      {
-        "word": "you",
-        "startSeconds": 183.56591666666668,
-        "endSeconds": 183.8659166666667
-      },
-      {
-        "word": "stop",
-        "startSeconds": 183.8659166666667,
-        "endSeconds": 184.26591666666667
-      },
-      {
-        "word": "asking",
-        "startSeconds": 184.26591666666667,
-        "endSeconds": 184.56591666666668
-      },
-      {
-        "word": "why",
-        "startSeconds": 184.56591666666668,
-        "endSeconds": 185.26591666666667
-      },
-      {
-        "word": "is",
-        "startSeconds": 185.26591666666667,
-        "endSeconds": 185.3659166666667
-      },
-      {
-        "word": "this",
-        "startSeconds": 185.3659166666667,
-        "endSeconds": 185.46591666666666
-      },
-      {
-        "word": "happening",
-        "startSeconds": 185.46591666666666,
-        "endSeconds": 185.96591666666666
-      },
-      {
-        "word": "to",
-        "startSeconds": 185.96591666666666,
-        "endSeconds": 186.26591666666667
-      },
-      {
-        "word": "me",
-        "startSeconds": 186.26591666666667,
-        "endSeconds": 186.3659166666667
-      },
-      {
-        "word": "and",
-        "startSeconds": 186.3659166666667,
-        "endSeconds": 187.26591666666667
-      },
-      {
-        "word": "start",
-        "startSeconds": 187.26591666666667,
-        "endSeconds": 187.46591666666666
-      },
-      {
-        "word": "asking",
-        "startSeconds": 187.46591666666666,
-        "endSeconds": 187.66591666666667
-      },
-      {
-        "word": "what",
-        "startSeconds": 187.66591666666667,
-        "endSeconds": 188.3659166666667
-      },
-      {
-        "word": "is",
-        "startSeconds": 188.3659166666667,
-        "endSeconds": 188.56591666666668
-      },
-      {
-        "word": "this",
-        "startSeconds": 188.56591666666668,
-        "endSeconds": 188.66591666666667
-      },
-      {
-        "word": "asking",
-        "startSeconds": 188.66591666666667,
-        "endSeconds": 189.26591666666667
-      },
-      {
-        "word": "of",
-        "startSeconds": 189.26591666666667,
-        "endSeconds": 189.56591666666668
-      },
-      {
-        "word": "me",
-        "startSeconds": 189.56591666666668,
-        "endSeconds": 189.66591666666667
-      },
-      {
-        "word": "see",
-        "startSeconds": 190.76591666666667,
-        "endSeconds": 191.06591666666668
-      },
-      {
-        "word": "resilience",
-        "startSeconds": 191.06591666666668,
-        "endSeconds": 191.8659166666667
-      },
-      {
-        "word": "isn't",
-        "startSeconds": 191.8659166666667,
-        "endSeconds": 192.56591666666668
-      },
-      {
-        "word": "about",
-        "startSeconds": 192.56591666666668,
-        "endSeconds": 192.76591666666667
-      },
-      {
-        "word": "returning",
-        "startSeconds": 192.76591666666667,
-        "endSeconds": 193.3659166666667
-      },
-      {
-        "word": "to",
-        "startSeconds": 193.3659166666667,
-        "endSeconds": 193.56591666666668
-      },
-      {
-        "word": "who",
-        "startSeconds": 193.56591666666668,
-        "endSeconds": 193.76591666666667
-      },
-      {
-        "word": "you",
-        "startSeconds": 193.76591666666667,
-        "endSeconds": 193.96591666666666
-      },
-      {
-        "word": "were",
-        "startSeconds": 193.96591666666666,
-        "endSeconds": 194.16591666666667
-      },
-      {
-        "word": "that",
-        "startSeconds": 194.16591666666667,
-        "endSeconds": 195.16591666666667
-      },
-      {
-        "word": "person",
-        "startSeconds": 195.16591666666667,
-        "endSeconds": 195.46591666666666
-      },
-      {
-        "word": "was",
-        "startSeconds": 195.46591666666666,
-        "endSeconds": 195.76591666666667
+        "word": "he'd",
+        "startSeconds": 47.4,
+        "endSeconds": 47.7
       },
       {
         "word": "built",
-        "startSeconds": 195.76591666666667,
-        "endSeconds": 195.96591666666666
-      },
-      {
-        "word": "for",
-        "startSeconds": 195.96591666666666,
-        "endSeconds": 196.26591666666667
-      },
-      {
-        "word": "a",
-        "startSeconds": 196.26591666666667,
-        "endSeconds": 196.3659166666667
-      },
-      {
-        "word": "world",
-        "startSeconds": 196.3659166666667,
-        "endSeconds": 196.66591666666667
-      },
-      {
-        "word": "that",
-        "startSeconds": 196.66591666666667,
-        "endSeconds": 196.96591666666666
-      },
-      {
-        "word": "no",
-        "startSeconds": 196.96591666666666,
-        "endSeconds": 197.3659166666667
-      },
-      {
-        "word": "longer",
-        "startSeconds": 197.3659166666667,
-        "endSeconds": 197.3659166666667
-      },
-      {
-        "word": "exists",
-        "startSeconds": 197.3659166666667,
-        "endSeconds": 198.06591666666668
-      },
-      {
-        "word": "resilience",
-        "startSeconds": 199.46591666666666,
-        "endSeconds": 200.3659166666667
-      },
-      {
-        "word": "is",
-        "startSeconds": 200.3659166666667,
-        "endSeconds": 200.56591666666668
-      },
-      {
-        "word": "the",
-        "startSeconds": 200.56591666666668,
-        "endSeconds": 200.66591666666667
-      },
-      {
-        "word": "courage",
-        "startSeconds": 200.66591666666667,
-        "endSeconds": 200.96591666666666
-      },
-      {
-        "word": "to",
-        "startSeconds": 200.96591666666666,
-        "endSeconds": 201.26591666666667
-      },
-      {
-        "word": "meet",
-        "startSeconds": 201.26591666666667,
-        "endSeconds": 201.46591666666666
-      },
-      {
-        "word": "this",
-        "startSeconds": 201.46591666666666,
-        "endSeconds": 201.76591666666667
-      },
-      {
-        "word": "new",
-        "startSeconds": 201.76591666666667,
-        "endSeconds": 202.06591666666668
-      },
-      {
-        "word": "sharper",
-        "startSeconds": 202.06591666666668,
-        "endSeconds": 202.66591666666667
-      },
-      {
-        "word": "world",
-        "startSeconds": 202.66591666666667,
-        "endSeconds": 202.96591666666666
-      },
-      {
-        "word": "and",
-        "startSeconds": 202.96591666666666,
-        "endSeconds": 203.66591666666667
-      },
-      {
-        "word": "say",
-        "startSeconds": 203.66591666666667,
-        "endSeconds": 203.76591666666667
-      },
-      {
-        "word": "then",
-        "startSeconds": 203.76591666666667,
-        "endSeconds": 204.56591666666668
-      },
-      {
-        "word": "I",
-        "startSeconds": 204.56591666666668,
-        "endSeconds": 204.76591666666667
-      },
-      {
-        "word": "will",
-        "startSeconds": 204.76591666666667,
-        "endSeconds": 204.8659166666667
-      },
-      {
-        "word": "become",
-        "startSeconds": 204.8659166666667,
-        "endSeconds": 205.26591666666667
-      },
-      {
-        "word": "sharper",
-        "startSeconds": 205.26591666666667,
-        "endSeconds": 205.76591666666667
-      },
-      {
-        "word": "too",
-        "startSeconds": 205.76591666666667,
-        "endSeconds": 206.06591666666668
-      },
-      {
-        "word": "it's",
-        "startSeconds": 206.06591666666668,
-        "endSeconds": 206.76591666666667
-      },
-      {
-        "word": "the",
-        "startSeconds": 206.76591666666667,
-        "endSeconds": 206.8659166666667
-      },
-      {
-        "word": "honesty",
-        "startSeconds": 206.8659166666667,
-        "endSeconds": 207.46591666666666
-      },
-      {
-        "word": "to",
-        "startSeconds": 207.46591666666666,
-        "endSeconds": 207.76591666666667
-      },
-      {
-        "word": "admit",
-        "startSeconds": 207.76591666666667,
-        "endSeconds": 208.06591666666668
-      },
-      {
-        "word": "your",
-        "startSeconds": 208.06591666666668,
-        "endSeconds": 208.26591666666667
-      },
-      {
-        "word": "afraid",
-        "startSeconds": 208.26591666666667,
-        "endSeconds": 209.06591666666668
-      },
-      {
-        "word": "and",
-        "startSeconds": 209.06591666666668,
-        "endSeconds": 209.66591666666667
-      },
-      {
-        "word": "the",
-        "startSeconds": 209.66591666666667,
-        "endSeconds": 209.8659166666667
-      },
-      {
-        "word": "clarity",
-        "startSeconds": 209.8659166666667,
-        "endSeconds": 210.46591666666666
-      },
-      {
-        "word": "to",
-        "startSeconds": 210.46591666666666,
-        "endSeconds": 210.66591666666667
-      },
-      {
-        "word": "act",
-        "startSeconds": 210.66591666666667,
-        "endSeconds": 211.16591666666667
-      },
-      {
-        "word": "anyway",
-        "startSeconds": 211.16591666666667,
-        "endSeconds": 211.66591666666667
-      },
-      {
-        "word": "it's",
-        "startSeconds": 212.76591666666667,
-        "endSeconds": 213.06591666666668
-      },
-      {
-        "word": "moving",
-        "startSeconds": 213.06591666666668,
-        "endSeconds": 213.46591666666666
+        "startSeconds": 47.7,
+        "endSeconds": 47.9
       },
       {
         "word": "from",
-        "startSeconds": 213.46591666666666,
-        "endSeconds": 213.56591666666668
+        "startSeconds": 47.9,
+        "endSeconds": 48.1
       },
       {
-        "word": "the",
-        "startSeconds": 213.56591666666668,
-        "endSeconds": 213.76591666666667
+        "word": "scrap",
+        "startSeconds": 48.1,
+        "endSeconds": 48.6
       },
       {
-        "word": "paralysis",
-        "startSeconds": 213.76591666666667,
-        "endSeconds": 214.56591666666668
+        "word": "Pine",
+        "startSeconds": 48.6,
+        "endSeconds": 48.9
       },
       {
-        "word": "of",
-        "startSeconds": 214.56591666666668,
-        "endSeconds": 214.8659166666667
+        "word": "just",
+        "startSeconds": 48.9,
+        "endSeconds": 49.5
       },
       {
-        "word": "I",
-        "startSeconds": 214.8659166666667,
-        "endSeconds": 215.46591666666666
+        "word": "sit",
+        "startSeconds": 49.5,
+        "endSeconds": 49.9
       },
       {
-        "word": "can't",
-        "startSeconds": 215.46591666666666,
-        "endSeconds": 215.8659166666667
+        "word": "just",
+        "startSeconds": 49.9,
+        "endSeconds": 50.6
       },
       {
-        "word": "to",
-        "startSeconds": 215.8659166666667,
-        "endSeconds": 216.66591666666667
-      },
-      {
-        "word": "the",
-        "startSeconds": 216.66591666666667,
-        "endSeconds": 216.66591666666667
-      },
-      {
-        "word": "purpose",
-        "startSeconds": 216.66591666666667,
-        "endSeconds": 217.16591666666667
-      },
-      {
-        "word": "of",
-        "startSeconds": 217.16591666666667,
-        "endSeconds": 217.3659166666667
+        "word": "stare",
+        "startSeconds": 50.6,
+        "endSeconds": 51.2
       },
       {
         "word": "I",
-        "startSeconds": 217.3659166666667,
-        "endSeconds": 218.16591666666667
+        "startSeconds": 51.2,
+        "endSeconds": 52.1
+      },
+      {
+        "word": "asked",
+        "startSeconds": 52.1,
+        "endSeconds": 52.3
+      },
+      {
+        "word": "him",
+        "startSeconds": 52.3,
+        "endSeconds": 52.7
+      },
+      {
+        "word": "once",
+        "startSeconds": 52.7,
+        "endSeconds": 53
+      },
+      {
+        "word": "I",
+        "startSeconds": 53.35725,
+        "endSeconds": 53.75725
       },
       {
         "word": "must",
-        "startSeconds": 218.16591666666667,
-        "endSeconds": 218.46591666666666
+        "startSeconds": 53.75725,
+        "endSeconds": 53.75725
       },
       {
-        "word": "so",
-        "startSeconds": 219.25120833333335,
-        "endSeconds": 219.45120833333334
+        "word": "have",
+        "startSeconds": 53.75725,
+        "endSeconds": 54.05725
       },
       {
-        "word": "what's",
-        "startSeconds": 219.45120833333334,
-        "endSeconds": 219.95120833333334
+        "word": "been",
+        "startSeconds": 54.05725,
+        "endSeconds": 54.05725
       },
       {
-        "word": "the",
-        "startSeconds": 219.95120833333334,
-        "endSeconds": 219.95120833333334
+        "word": "22",
+        "startSeconds": 54.05725,
+        "endSeconds": 54.75725
       },
       {
-        "word": "wall",
-        "startSeconds": 219.95120833333334,
-        "endSeconds": 220.25120833333335
+        "word": "what",
+        "startSeconds": 54.75725,
+        "endSeconds": 55.65725
       },
       {
-        "word": "in",
-        "startSeconds": 220.25120833333335,
-        "endSeconds": 220.75120833333335
+        "word": "he",
+        "startSeconds": 55.65725,
+        "endSeconds": 55.85725
       },
       {
-        "word": "front",
-        "startSeconds": 220.75120833333335,
-        "endSeconds": 220.75120833333335
+        "word": "was",
+        "startSeconds": 55.85725,
+        "endSeconds": 55.85725
       },
       {
-        "word": "of",
-        "startSeconds": 220.75120833333335,
-        "endSeconds": 220.85120833333332
+        "word": "doing",
+        "startSeconds": 55.85725,
+        "endSeconds": 55.95725
       },
       {
-        "word": "you",
-        "startSeconds": 220.85120833333332,
-        "endSeconds": 221.15120833333333
+        "word": "waiting",
+        "startSeconds": 55.95725,
+        "endSeconds": 57.35725
       },
       {
-        "word": "right",
-        "startSeconds": 221.15120833333333,
-        "endSeconds": 221.45120833333334
+        "word": "he",
+        "startSeconds": 57.35725,
+        "endSeconds": 58.05725
       },
       {
-        "word": "now",
-        "startSeconds": 221.45120833333334,
-        "endSeconds": 221.45120833333334
+        "word": "said",
+        "startSeconds": 58.05725,
+        "endSeconds": 58.25725
       },
       {
-        "word": "don't",
-        "startSeconds": 222.65120833333333,
-        "endSeconds": 222.95120833333334
+        "word": "I",
+        "startSeconds": 58.25725,
+        "endSeconds": 58.95725
       },
       {
-        "word": "look",
-        "startSeconds": 222.95120833333334,
-        "endSeconds": 223.15120833333333
+        "word": "thought",
+        "startSeconds": 58.95725,
+        "endSeconds": 59.15725
       },
       {
-        "word": "away",
-        "startSeconds": 223.15120833333333,
-        "endSeconds": 223.55120833333334
+        "word": "he",
+        "startSeconds": 59.15725,
+        "endSeconds": 59.25725
       },
       {
-        "word": "walk",
-        "startSeconds": 223.55120833333334,
-        "endSeconds": 224.65120833333333
-      },
-      {
-        "word": "toward",
-        "startSeconds": 224.65120833333333,
-        "endSeconds": 225.05120833333334
-      },
-      {
-        "word": "it",
-        "startSeconds": 225.05120833333334,
-        "endSeconds": 225.35120833333332
-      },
-      {
-        "word": "the",
-        "startSeconds": 226.05120833333334,
-        "endSeconds": 226.15120833333333
-      },
-      {
-        "word": "fog",
-        "startSeconds": 226.15120833333333,
-        "endSeconds": 226.55120833333334
-      },
-      {
-        "word": "will",
-        "startSeconds": 226.55120833333334,
-        "endSeconds": 226.75120833333335
-      },
-      {
-        "word": "lift",
-        "startSeconds": 226.75120833333335,
-        "endSeconds": 227.15120833333333
-      },
-      {
-        "word": "you",
-        "startSeconds": 227.15120833333333,
-        "endSeconds": 227.75120833333335
-      },
-      {
-        "word": "will",
-        "startSeconds": 227.75120833333335,
-        "endSeconds": 227.85120833333332
-      },
-      {
-        "word": "not",
-        "startSeconds": 227.85120833333332,
-        "endSeconds": 228.05120833333334
-      },
-      {
-        "word": "break",
-        "startSeconds": 228.05120833333334,
-        "endSeconds": 228.65120833333333
-      },
-      {
-        "word": "you're",
-        "startSeconds": 228.65120833333333,
-        "endSeconds": 229.45120833333334
+        "word": "was",
+        "startSeconds": 59.25725,
+        "endSeconds": 59.35725
       },
       {
         "word": "being",
-        "startSeconds": 229.45120833333334,
-        "endSeconds": 229.65120833333333
+        "startSeconds": 59.35725,
+        "endSeconds": 59.55725
       },
       {
-        "word": "forged",
-        "startSeconds": 229.65120833333333,
-        "endSeconds": 230.35120833333332
+        "word": "mysterious",
+        "startSeconds": 59.55725,
+        "endSeconds": 60.15725
+      },
+      {
+        "word": "I",
+        "startSeconds": 60.15725,
+        "endSeconds": 61.05725
+      },
+      {
+        "word": "was",
+        "startSeconds": 61.05725,
+        "endSeconds": 61.05725
+      },
+      {
+        "word": "young",
+        "startSeconds": 61.05725,
+        "endSeconds": 61.557249999999996
+      },
+      {
+        "word": "I",
+        "startSeconds": 61.557249999999996,
+        "endSeconds": 62.25725
+      },
+      {
+        "word": "wanted",
+        "startSeconds": 62.25725,
+        "endSeconds": 62.75725
+      },
+      {
+        "word": "everything",
+        "startSeconds": 62.75725,
+        "endSeconds": 63.057249999999996
+      },
+      {
+        "word": "to",
+        "startSeconds": 63.057249999999996,
+        "endSeconds": 63.25725
+      },
+      {
+        "word": "be",
+        "startSeconds": 63.25725,
+        "endSeconds": 63.35725
+      },
+      {
+        "word": "a",
+        "startSeconds": 63.35725,
+        "endSeconds": 63.75725
+      },
+      {
+        "word": "lesson",
+        "startSeconds": 63.75725,
+        "endSeconds": 63.85725
+      },
+      {
+        "word": "last",
+        "startSeconds": 63.85725,
+        "endSeconds": 64.85725
+      },
+      {
+        "word": "October",
+        "startSeconds": 64.85725,
+        "endSeconds": 65.35725
+      },
+      {
+        "word": "raise",
+        "startSeconds": 65.35725,
+        "endSeconds": 66.65725
+      },
+      {
+        "word": "store",
+        "startSeconds": 66.65725,
+        "endSeconds": 66.95725
+      },
+      {
+        "word": "finally",
+        "startSeconds": 66.95725,
+        "endSeconds": 67.35725
+      },
+      {
+        "word": "closed",
+        "startSeconds": 67.35725,
+        "endSeconds": 67.85725
+      },
+      {
+        "word": "47",
+        "startSeconds": 67.85725,
+        "endSeconds": 69.55725
+      },
+      {
+        "word": "years",
+        "startSeconds": 69.55725,
+        "endSeconds": 69.75725
+      },
+      {
+        "word": "The",
+        "startSeconds": 70.65725,
+        "endSeconds": 70.85725
+      },
+      {
+        "word": "Big",
+        "startSeconds": 70.85725,
+        "endSeconds": 71.05725
+      },
+      {
+        "word": "Box",
+        "startSeconds": 71.05725,
+        "endSeconds": 71.35725
+      },
+      {
+        "word": "place",
+        "startSeconds": 71.35725,
+        "endSeconds": 71.95725
+      },
+      {
+        "word": "out",
+        "startSeconds": 71.95725,
+        "endSeconds": 72.35725
+      },
+      {
+        "word": "on",
+        "startSeconds": 72.35725,
+        "endSeconds": 72.45725
+      },
+      {
+        "word": "Route",
+        "startSeconds": 72.45725,
+        "endSeconds": 72.85725
+      },
+      {
+        "word": "9",
+        "startSeconds": 72.85725,
+        "endSeconds": 73.05725
+      },
+      {
+        "word": "had",
+        "startSeconds": 73.05725,
+        "endSeconds": 73.35725
+      },
+      {
+        "word": "been",
+        "startSeconds": 73.35725,
+        "endSeconds": 73.35725
+      },
+      {
+        "word": "eating",
+        "startSeconds": 73.35725,
+        "endSeconds": 73.75725
+      },
+      {
+        "word": "at",
+        "startSeconds": 73.75725,
+        "endSeconds": 74.15725
+      },
+      {
+        "word": "him",
+        "startSeconds": 74.15725,
+        "endSeconds": 74.15725
+      },
+      {
+        "word": "for",
+        "startSeconds": 74.15725,
+        "endSeconds": 74.35725
+      },
+      {
+        "word": "a",
+        "startSeconds": 74.35725,
+        "endSeconds": 74.75725
+      },
+      {
+        "word": "decade",
+        "startSeconds": 74.75725,
+        "endSeconds": 74.85725
+      },
+      {
+        "word": "and",
+        "startSeconds": 74.85725,
+        "endSeconds": 75.95725
+      },
+      {
+        "word": "then",
+        "startSeconds": 75.95725,
+        "endSeconds": 76.05725
+      },
+      {
+        "word": "the",
+        "startSeconds": 76.05725,
+        "endSeconds": 76.25725
+      },
+      {
+        "word": "pandemic",
+        "startSeconds": 76.25725,
+        "endSeconds": 76.55725
+      },
+      {
+        "word": "just",
+        "startSeconds": 76.55725,
+        "endSeconds": 76.95725
+      },
+      {
+        "word": "finish",
+        "startSeconds": 77.85725,
+        "endSeconds": 78.25725
+      },
+      {
+        "word": "the",
+        "startSeconds": 78.25725,
+        "endSeconds": 78.35725
+      },
+      {
+        "word": "job",
+        "startSeconds": 78.35725,
+        "endSeconds": 78.65725
+      },
+      {
+        "word": "I",
+        "startSeconds": 78.65725,
+        "endSeconds": 79.65725
+      },
+      {
+        "word": "drove",
+        "startSeconds": 79.65725,
+        "endSeconds": 79.85725
+      },
+      {
+        "word": "up",
+        "startSeconds": 79.85725,
+        "endSeconds": 79.95725
+      },
+      {
+        "word": "to",
+        "startSeconds": 79.95725,
+        "endSeconds": 80.05725
+      },
+      {
+        "word": "help",
+        "startSeconds": 80.05725,
+        "endSeconds": 80.25725
+      },
+      {
+        "word": "him",
+        "startSeconds": 80.25725,
+        "endSeconds": 80.45725
+      },
+      {
+        "word": "clear",
+        "startSeconds": 80.45725,
+        "endSeconds": 80.75725
+      },
+      {
+        "word": "out",
+        "startSeconds": 80.75725,
+        "endSeconds": 80.95725
+      },
+      {
+        "word": "the",
+        "startSeconds": 80.95725,
+        "endSeconds": 81.15725
+      },
+      {
+        "word": "inventory",
+        "startSeconds": 81.15725,
+        "endSeconds": 81.55725
+      },
+      {
+        "word": "we",
+        "startSeconds": 81.55725,
+        "endSeconds": 82.75725
+      },
+      {
+        "word": "didn't",
+        "startSeconds": 82.75725,
+        "endSeconds": 82.95725
+      },
+      {
+        "word": "talk",
+        "startSeconds": 82.95725,
+        "endSeconds": 83.25725
+      },
+      {
+        "word": "much",
+        "startSeconds": 83.25725,
+        "endSeconds": 83.65725
+      },
+      {
+        "word": "we",
+        "startSeconds": 83.65725,
+        "endSeconds": 84.75725
+      },
+      {
+        "word": "sorted",
+        "startSeconds": 84.75725,
+        "endSeconds": 85.15725
+      },
+      {
+        "word": "brass",
+        "startSeconds": 85.15725,
+        "endSeconds": 85.65725
+      },
+      {
+        "word": "fittings",
+        "startSeconds": 85.65725,
+        "endSeconds": 85.95725
+      },
+      {
+        "word": "into",
+        "startSeconds": 85.95725,
+        "endSeconds": 86.25725
+      },
+      {
+        "word": "bins",
+        "startSeconds": 86.25725,
+        "endSeconds": 86.65725
+      },
+      {
+        "word": "labeled",
+        "startSeconds": 86.65725,
+        "endSeconds": 87.75725
+      },
+      {
+        "word": "shells",
+        "startSeconds": 87.75725,
+        "endSeconds": 88.35725
+      },
+      {
+        "word": "for",
+        "startSeconds": 88.35725,
+        "endSeconds": 88.45725
+      },
+      {
+        "word": "auction",
+        "startSeconds": 88.45725,
+        "endSeconds": 88.85725
+      },
+      {
+        "word": "at",
+        "startSeconds": 88.85725,
+        "endSeconds": 89.65725
+      },
+      {
+        "word": "1",
+        "startSeconds": 89.65725,
+        "endSeconds": 90.15725
+      },
+      {
+        "word": "point",
+        "startSeconds": 90.15725,
+        "endSeconds": 90.25725
+      },
+      {
+        "word": "I",
+        "startSeconds": 90.25725,
+        "endSeconds": 90.55725000000001
+      },
+      {
+        "word": "looked",
+        "startSeconds": 90.55725000000001,
+        "endSeconds": 90.65725
+      },
+      {
+        "word": "over",
+        "startSeconds": 90.65725,
+        "endSeconds": 90.95725
+      },
+      {
+        "word": "and",
+        "startSeconds": 90.95725,
+        "endSeconds": 91.35725
+      },
+      {
+        "word": "he",
+        "startSeconds": 91.35725,
+        "endSeconds": 91.35725
+      },
+      {
+        "word": "was",
+        "startSeconds": 91.35725,
+        "endSeconds": 91.45725
+      },
+      {
+        "word": "just",
+        "startSeconds": 91.45725,
+        "endSeconds": 91.65725
+      },
+      {
+        "word": "standing",
+        "startSeconds": 91.65725,
+        "endSeconds": 92.05725000000001
+      },
+      {
+        "word": "there",
+        "startSeconds": 92.05725000000001,
+        "endSeconds": 92.35725
+      },
+      {
+        "word": "holding",
+        "startSeconds": 92.35725,
+        "endSeconds": 93.15725
+      },
+      {
+        "word": "a",
+        "startSeconds": 93.15725,
+        "endSeconds": 93.55725000000001
+      },
+      {
+        "word": "box",
+        "startSeconds": 93.55725000000001,
+        "endSeconds": 93.65725
+      },
+      {
+        "word": "of",
+        "startSeconds": 93.65725,
+        "endSeconds": 93.85725
+      },
+      {
+        "word": "3",
+        "startSeconds": 93.85725,
+        "endSeconds": 94.25725
+      },
+      {
+        "word": "penny",
+        "startSeconds": 94.25725,
+        "endSeconds": 94.75725
+      },
+      {
+        "word": "nails",
+        "startSeconds": 94.75725,
+        "endSeconds": 95.05725000000001
+      },
+      {
+        "word": "not",
+        "startSeconds": 95.05725000000001,
+        "endSeconds": 95.65725
+      },
+      {
+        "word": "moving",
+        "startSeconds": 95.65725,
+        "endSeconds": 96.25725
+      },
+      {
+        "word": "Rey",
+        "startSeconds": 97.05725000000001,
+        "endSeconds": 97.65725
+      },
+      {
+        "word": "he",
+        "startSeconds": 97.65725,
+        "endSeconds": 98.35725
+      },
+      {
+        "word": "set",
+        "startSeconds": 98.35725,
+        "endSeconds": 98.65725
+      },
+      {
+        "word": "the",
+        "startSeconds": 98.65725,
+        "endSeconds": 98.75725
+      },
+      {
+        "word": "box",
+        "startSeconds": 98.75725,
+        "endSeconds": 99.05725000000001
+      },
+      {
+        "word": "down",
+        "startSeconds": 99.05725000000001,
+        "endSeconds": 99.35725
+      },
+      {
+        "word": "you",
+        "startSeconds": 99.35725,
+        "endSeconds": 100.25725
+      },
+      {
+        "word": "know",
+        "startSeconds": 100.25725,
+        "endSeconds": 100.55725000000001
+      },
+      {
+        "word": "he",
+        "startSeconds": 100.55725000000001,
+        "endSeconds": 101.15725
+      },
+      {
+        "word": "said",
+        "startSeconds": 101.15725,
+        "endSeconds": 101.45725
+      },
+      {
+        "word": "I've",
+        "startSeconds": 101.45725,
+        "endSeconds": 102.45725
+      },
+      {
+        "word": "been",
+        "startSeconds": 102.45725,
+        "endSeconds": 102.55725000000001
+      },
+      {
+        "word": "sitting",
+        "startSeconds": 102.55725000000001,
+        "endSeconds": 102.85725
+      },
+      {
+        "word": "in",
+        "startSeconds": 102.85725,
+        "endSeconds": 103.05725000000001
+      },
+      {
+        "word": "that",
+        "startSeconds": 103.05725000000001,
+        "endSeconds": 103.25725
+      },
+      {
+        "word": "chair",
+        "startSeconds": 103.25725,
+        "endSeconds": 103.75725
+      },
+      {
+        "word": "every",
+        "startSeconds": 103.75725,
+        "endSeconds": 104.15725
+      },
+      {
+        "word": "night",
+        "startSeconds": 104.15725,
+        "endSeconds": 104.45725
+      },
+      {
+        "word": "for",
+        "startSeconds": 104.45725,
+        "endSeconds": 104.65725
+      },
+      {
+        "word": "47",
+        "startSeconds": 104.65725,
+        "endSeconds": 105.65725
+      },
+      {
+        "word": "years",
+        "startSeconds": 105.65725,
+        "endSeconds": 105.65725
+      },
+      {
+        "word": "and",
+        "startSeconds": 106.39783333333334,
+        "endSeconds": 106.79783333333334
+      },
+      {
+        "word": "I",
+        "startSeconds": 106.79783333333334,
+        "endSeconds": 106.99783333333333
+      },
+      {
+        "word": "don't",
+        "startSeconds": 106.99783333333333,
+        "endSeconds": 106.99783333333333
+      },
+      {
+        "word": "think",
+        "startSeconds": 106.99783333333333,
+        "endSeconds": 107.09783333333334
+      },
+      {
+        "word": "I",
+        "startSeconds": 107.09783333333334,
+        "endSeconds": 107.39783333333334
+      },
+      {
+        "word": "ever",
+        "startSeconds": 107.39783333333334,
+        "endSeconds": 107.59783333333334
+      },
+      {
+        "word": "once",
+        "startSeconds": 107.59783333333334,
+        "endSeconds": 107.99783333333333
+      },
+      {
+        "word": "fixed",
+        "startSeconds": 107.99783333333333,
+        "endSeconds": 108.49783333333333
+      },
+      {
+        "word": "the",
+        "startSeconds": 108.49783333333333,
+        "endSeconds": 108.59783333333334
+      },
+      {
+        "word": "spring",
+        "startSeconds": 108.59783333333334,
+        "endSeconds": 109.19783333333334
+      },
+      {
+        "word": "I",
+        "startSeconds": 109.19783333333334,
+        "endSeconds": 109.79783333333334
+      },
+      {
+        "word": "want",
+        "startSeconds": 109.79783333333334,
+        "endSeconds": 110.29783333333334
+      },
+      {
+        "word": "to",
+        "startSeconds": 110.29783333333334,
+        "endSeconds": 110.29783333333334
+      },
+      {
+        "word": "tell",
+        "startSeconds": 110.29783333333334,
+        "endSeconds": 110.39783333333334
+      },
+      {
+        "word": "you",
+        "startSeconds": 110.39783333333334,
+        "endSeconds": 110.39783333333334
+      },
+      {
+        "word": "what",
+        "startSeconds": 110.39783333333334,
+        "endSeconds": 110.59783333333334
+      },
+      {
+        "word": "happened",
+        "startSeconds": 110.59783333333334,
+        "endSeconds": 111.19783333333334
+      },
+      {
+        "word": "next",
+        "startSeconds": 111.19783333333334,
+        "endSeconds": 111.29783333333334
+      },
+      {
+        "word": "but",
+        "startSeconds": 111.29783333333334,
+        "endSeconds": 112.39783333333334
+      },
+      {
+        "word": "first",
+        "startSeconds": 112.39783333333334,
+        "endSeconds": 112.69783333333334
+      },
+      {
+        "word": "I",
+        "startSeconds": 112.69783333333334,
+        "endSeconds": 112.99783333333333
+      },
+      {
+        "word": "need",
+        "startSeconds": 112.99783333333333,
+        "endSeconds": 113.09783333333334
+      },
+      {
+        "word": "to",
+        "startSeconds": 113.09783333333334,
+        "endSeconds": 113.29783333333334
+      },
+      {
+        "word": "tell",
+        "startSeconds": 113.29783333333334,
+        "endSeconds": 113.59783333333334
+      },
+      {
+        "word": "you",
+        "startSeconds": 113.59783333333334,
+        "endSeconds": 113.59783333333334
+      },
+      {
+        "word": "about",
+        "startSeconds": 113.59783333333334,
+        "endSeconds": 113.89783333333334
+      },
+      {
+        "word": "the",
+        "startSeconds": 113.89783333333334,
+        "endSeconds": 114.19783333333334
+      },
+      {
+        "word": "bird",
+        "startSeconds": 114.19783333333334,
+        "endSeconds": 114.59783333333334
+      },
+      {
+        "word": "feeder",
+        "startSeconds": 114.59783333333334,
+        "endSeconds": 114.99783333333333
+      },
+      {
+        "word": "that",
+        "startSeconds": 115.26666666666667,
+        "endSeconds": 115.76666666666667
+      },
+      {
+        "word": "bird",
+        "startSeconds": 115.76666666666667,
+        "endSeconds": 116.16666666666667
+      },
+      {
+        "word": "feeder",
+        "startSeconds": 116.16666666666667,
+        "endSeconds": 116.66666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 116.66666666666667,
+        "endSeconds": 117.16666666666667
+      },
+      {
+        "word": "1",
+        "startSeconds": 117.16666666666667,
+        "endSeconds": 117.56666666666666
+      },
+      {
+        "word": "ray",
+        "startSeconds": 117.56666666666666,
+        "endSeconds": 118.16666666666667
+      },
+      {
+        "word": "built",
+        "startSeconds": 118.16666666666667,
+        "endSeconds": 118.36666666666666
+      },
+      {
+        "word": "from",
+        "startSeconds": 118.36666666666666,
+        "endSeconds": 118.46666666666667
+      },
+      {
+        "word": "scrap",
+        "startSeconds": 118.46666666666667,
+        "endSeconds": 119.06666666666666
+      },
+      {
+        "word": "Pine",
+        "startSeconds": 119.06666666666666,
+        "endSeconds": 119.56666666666666
+      },
+      {
+        "word": "was",
+        "startSeconds": 119.56666666666666,
+        "endSeconds": 119.96666666666667
+      },
+      {
+        "word": "a",
+        "startSeconds": 119.96666666666667,
+        "endSeconds": 120.36666666666666
+      },
+      {
+        "word": "mess",
+        "startSeconds": 120.36666666666666,
+        "endSeconds": 120.66666666666667
+      },
+      {
+        "word": "honestly",
+        "startSeconds": 120.66666666666667,
+        "endSeconds": 121.66666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 121.66666666666667,
+        "endSeconds": 122.56666666666666
+      },
+      {
+        "word": "roof",
+        "startSeconds": 122.56666666666666,
+        "endSeconds": 123.06666666666666
+      },
+      {
+        "word": "was",
+        "startSeconds": 123.06666666666666,
+        "endSeconds": 123.16666666666667
+      },
+      {
+        "word": "crooked",
+        "startSeconds": 123.16666666666667,
+        "endSeconds": 123.66666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 123.66666666666667,
+        "endSeconds": 124.06666666666666
+      },
+      {
+        "word": "perch",
+        "startSeconds": 124.06666666666666,
+        "endSeconds": 124.56666666666666
+      },
+      {
+        "word": "was",
+        "startSeconds": 124.56666666666666,
+        "endSeconds": 124.66666666666667
+      },
+      {
+        "word": "too",
+        "startSeconds": 124.66666666666667,
+        "endSeconds": 124.96666666666667
+      },
+      {
+        "word": "short",
+        "startSeconds": 124.96666666666667,
+        "endSeconds": 125.26666666666667
+      },
+      {
+        "word": "and",
+        "startSeconds": 125.26666666666667,
+        "endSeconds": 125.96666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 125.96666666666667,
+        "endSeconds": 126.16666666666667
+      },
+      {
+        "word": "seed",
+        "startSeconds": 126.16666666666667,
+        "endSeconds": 126.56666666666666
+      },
+      {
+        "word": "tray",
+        "startSeconds": 126.56666666666666,
+        "endSeconds": 126.96666666666667
+      },
+      {
+        "word": "had",
+        "startSeconds": 126.96666666666667,
+        "endSeconds": 127.16666666666667
+      },
+      {
+        "word": "a",
+        "startSeconds": 127.16666666666667,
+        "endSeconds": 127.36666666666666
+      },
+      {
+        "word": "gap",
+        "startSeconds": 127.36666666666666,
+        "endSeconds": 127.56666666666666
+      },
+      {
+        "word": "where",
+        "startSeconds": 127.56666666666666,
+        "endSeconds": 127.86666666666666
+      },
+      {
+        "word": "the",
+        "startSeconds": 127.86666666666666,
+        "endSeconds": 128.26666666666665
+      },
+      {
+        "word": "Sheep",
+        "startSeconds": 128.26666666666665,
+        "endSeconds": 128.46666666666667
+      },
+      {
+        "word": "stuff",
+        "startSeconds": 128.46666666666667,
+        "endSeconds": 128.76666666666665
+      },
+      {
+        "word": "would",
+        "startSeconds": 128.76666666666665,
+        "endSeconds": 128.86666666666667
+      },
+      {
+        "word": "spill",
+        "startSeconds": 128.86666666666667,
+        "endSeconds": 129.36666666666667
+      },
+      {
+        "word": "out",
+        "startSeconds": 129.36666666666667,
+        "endSeconds": 129.46666666666667
+      },
+      {
+        "word": "he'd",
+        "startSeconds": 129.46666666666667,
+        "endSeconds": 130.56666666666666
+      },
+      {
+        "word": "built",
+        "startSeconds": 130.56666666666666,
+        "endSeconds": 130.76666666666665
+      },
+      {
+        "word": "it",
+        "startSeconds": 130.76666666666665,
+        "endSeconds": 130.96666666666667
+      },
+      {
+        "word": "in",
+        "startSeconds": 130.96666666666667,
+        "endSeconds": 131.16666666666666
+      },
+      {
+        "word": "a",
+        "startSeconds": 131.16666666666666,
+        "endSeconds": 131.36666666666667
+      },
+      {
+        "word": "hurry",
+        "startSeconds": 131.36666666666667,
+        "endSeconds": 131.46666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 131.46666666666667,
+        "endSeconds": 131.76666666666665
+      },
+      {
+        "word": "day",
+        "startSeconds": 131.76666666666665,
+        "endSeconds": 132.06666666666666
+      },
+      {
+        "word": "after",
+        "startSeconds": 132.06666666666666,
+        "endSeconds": 132.16666666666666
+      },
+      {
+        "word": "his",
+        "startSeconds": 132.16666666666666,
+        "endSeconds": 132.46666666666667
+      },
+      {
+        "word": "wife",
+        "startSeconds": 132.46666666666667,
+        "endSeconds": 132.96666666666667
+      },
+      {
+        "word": "my",
+        "startSeconds": 132.96666666666667,
+        "endSeconds": 133.66666666666666
+      },
+      {
+        "word": "Aunt",
+        "startSeconds": 133.66666666666666,
+        "endSeconds": 133.86666666666667
+      },
+      {
+        "word": "Carol",
+        "startSeconds": 133.86666666666667,
+        "endSeconds": 134.36666666666667
+      },
+      {
+        "word": "died",
+        "startSeconds": 134.36666666666667,
+        "endSeconds": 134.76666666666665
+      },
+      {
+        "word": "that",
+        "startSeconds": 134.76666666666665,
+        "endSeconds": 135.76666666666665
+      },
+      {
+        "word": "was",
+        "startSeconds": 135.76666666666665,
+        "endSeconds": 135.86666666666667
+      },
+      {
+        "word": "March",
+        "startSeconds": 135.86666666666667,
+        "endSeconds": 136.36666666666667
+      },
+      {
+        "word": "3rd",
+        "startSeconds": 136.36666666666667,
+        "endSeconds": 136.86666666666667
+      },
+      {
+        "word": "1998",
+        "startSeconds": 136.86666666666667,
+        "endSeconds": 137.86666666666667
+      },
+      {
+        "word": "I",
+        "startSeconds": 137.86666666666667,
+        "endSeconds": 138.96666666666667
+      },
+      {
+        "word": "remember",
+        "startSeconds": 138.96666666666667,
+        "endSeconds": 139.26666666666665
+      },
+      {
+        "word": "the",
+        "startSeconds": 139.26666666666665,
+        "endSeconds": 139.66666666666666
+      },
+      {
+        "word": "date",
+        "startSeconds": 139.66666666666666,
+        "endSeconds": 140.06666666666666
+      },
+      {
+        "word": "because",
+        "startSeconds": 140.06666666666666,
+        "endSeconds": 140.26666666666665
+      },
+      {
+        "word": "it",
+        "startSeconds": 140.26666666666665,
+        "endSeconds": 140.56666666666666
+      },
+      {
+        "word": "was",
+        "startSeconds": 140.56666666666666,
+        "endSeconds": 140.66666666666666
+      },
+      {
+        "word": "my",
+        "startSeconds": 140.66666666666666,
+        "endSeconds": 140.76666666666665
+      },
+      {
+        "word": "mother's",
+        "startSeconds": 140.76666666666665,
+        "endSeconds": 141.26666666666665
+      },
+      {
+        "word": "birthday",
+        "startSeconds": 141.26666666666665,
+        "endSeconds": 141.76666666666665
+      },
+      {
+        "word": "and",
+        "startSeconds": 141.76666666666665,
+        "endSeconds": 142.26666666666665
+      },
+      {
+        "word": "she",
+        "startSeconds": 142.26666666666665,
+        "endSeconds": 142.46666666666667
+      },
+      {
+        "word": "got",
+        "startSeconds": 142.46666666666667,
+        "endSeconds": 142.66666666666666
+      },
+      {
+        "word": "the",
+        "startSeconds": 142.66666666666666,
+        "endSeconds": 142.86666666666667
+      },
+      {
+        "word": "call",
+        "startSeconds": 142.86666666666667,
+        "endSeconds": 143.26666666666665
+      },
+      {
+        "word": "during",
+        "startSeconds": 143.26666666666665,
+        "endSeconds": 143.56666666666666
+      },
+      {
+        "word": "the",
+        "startSeconds": 143.56666666666666,
+        "endSeconds": 143.76666666666665
+      },
+      {
+        "word": "cake",
+        "startSeconds": 143.76666666666665,
+        "endSeconds": 144.16666666666666
+      },
+      {
+        "word": "rain",
+        "startSeconds": 144.16666666666666,
+        "endSeconds": 145.06666666666666
+      },
+      {
+        "word": "never",
+        "startSeconds": 145.06666666666666,
+        "endSeconds": 145.36666666666667
+      },
+      {
+        "word": "talked",
+        "startSeconds": 145.36666666666667,
+        "endSeconds": 145.76666666666665
+      },
+      {
+        "word": "about",
+        "startSeconds": 145.76666666666665,
+        "endSeconds": 146.06666666666666
+      },
+      {
+        "word": "Carol",
+        "startSeconds": 146.06666666666666,
+        "endSeconds": 146.76666666666665
+      },
+      {
+        "word": "after",
+        "startSeconds": 146.76666666666665,
+        "endSeconds": 147.06666666666666
+      },
+      {
+        "word": "the",
+        "startSeconds": 147.06666666666666,
+        "endSeconds": 147.26666666666665
+      },
+      {
+        "word": "funeral",
+        "startSeconds": 147.26666666666665,
+        "endSeconds": 147.76666666666665
+      },
+      {
+        "word": "not",
+        "startSeconds": 147.76666666666665,
+        "endSeconds": 148.76666666666665
+      },
+      {
+        "word": "once",
+        "startSeconds": 148.76666666666665,
+        "endSeconds": 149.36666666666667
+      },
+      {
+        "word": "he",
+        "startSeconds": 150.36666666666667,
+        "endSeconds": 150.76666666666665
+      },
+      {
+        "word": "just",
+        "startSeconds": 150.76666666666665,
+        "endSeconds": 150.86666666666667
+      },
+      {
+        "word": "built",
+        "startSeconds": 150.86666666666667,
+        "endSeconds": 151.26666666666665
+      },
+      {
+        "word": "that",
+        "startSeconds": 151.26666666666665,
+        "endSeconds": 151.46666666666667
+      },
+      {
+        "word": "feeder",
+        "startSeconds": 151.46666666666667,
+        "endSeconds": 152.06666666666666
+      },
+      {
+        "word": "and",
+        "startSeconds": 152.06666666666666,
+        "endSeconds": 152.36666666666667
+      },
+      {
+        "word": "hung",
+        "startSeconds": 152.36666666666667,
+        "endSeconds": 152.76666666666665
+      },
+      {
+        "word": "it",
+        "startSeconds": 152.76666666666665,
+        "endSeconds": 152.96666666666667
+      },
+      {
+        "word": "outside",
+        "startSeconds": 152.96666666666667,
+        "endSeconds": 153.26666666666665
+      },
+      {
+        "word": "the",
+        "startSeconds": 153.26666666666665,
+        "endSeconds": 153.56666666666666
+      },
+      {
+        "word": "window",
+        "startSeconds": 153.56666666666666,
+        "endSeconds": 153.86666666666667
+      },
+      {
+        "word": "where",
+        "startSeconds": 153.86666666666667,
+        "endSeconds": 154.36666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 154.36666666666667,
+        "endSeconds": 154.46666666666667
+      },
+      {
+        "word": "blue",
+        "startSeconds": 154.46666666666667,
+        "endSeconds": 154.76666666666665
+      },
+      {
+        "word": "chair",
+        "startSeconds": 154.76666666666665,
+        "endSeconds": 155.06666666666666
+      },
+      {
+        "word": "faced",
+        "startSeconds": 155.06666666666666,
+        "endSeconds": 155.66666666666666
+      },
+      {
+        "word": "and",
+        "startSeconds": 155.66666666666666,
+        "endSeconds": 156.46666666666667
+      },
+      {
+        "word": "every",
+        "startSeconds": 156.46666666666667,
+        "endSeconds": 157.06666666666666
+      },
+      {
+        "word": "evening",
+        "startSeconds": 157.06666666666666,
+        "endSeconds": 157.36666666666667
+      },
+      {
+        "word": "at",
+        "startSeconds": 157.36666666666667,
+        "endSeconds": 157.96666666666667
+      },
+      {
+        "word": "6:15",
+        "startSeconds": 157.96666666666667,
+        "endSeconds": 158.56666666666666
+      },
+      {
+        "word": "he'd",
+        "startSeconds": 158.56666666666666,
+        "endSeconds": 159.16666666666666
+      },
+      {
+        "word": "watched",
+        "startSeconds": 159.16666666666666,
+        "endSeconds": 159.46666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 159.46666666666667,
+        "endSeconds": 159.56666666666666
+      },
+      {
+        "word": "chickadees",
+        "startSeconds": 159.56666666666666,
+        "endSeconds": 160.46666666666667
+      },
+      {
+        "word": "in",
+        "startSeconds": 160.46666666666667,
+        "endSeconds": 160.56666666666666
+      },
+      {
+        "word": "the",
+        "startSeconds": 160.56666666666666,
+        "endSeconds": 160.66666666666666
+      },
+      {
+        "word": "finches",
+        "startSeconds": 160.66666666666666,
+        "endSeconds": 161.16666666666666
+      },
+      {
+        "word": "and",
+        "startSeconds": 161.16666666666666,
+        "endSeconds": 161.36666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 161.36666666666667,
+        "endSeconds": 161.46666666666667
+      },
+      {
+        "word": "occasional",
+        "startSeconds": 161.46666666666667,
+        "endSeconds": 161.96666666666667
+      },
+      {
+        "word": "squirrel",
+        "startSeconds": 161.96666666666667,
+        "endSeconds": 162.56666666666666
+      },
+      {
+        "word": "who'd",
+        "startSeconds": 162.56666666666666,
+        "endSeconds": 163.16666666666666
+      },
+      {
+        "word": "figured",
+        "startSeconds": 163.16666666666666,
+        "endSeconds": 163.36666666666667
+      },
+      {
+        "word": "out",
+        "startSeconds": 163.36666666666667,
+        "endSeconds": 163.46666666666667
+      },
+      {
+        "word": "the",
+        "startSeconds": 163.46666666666667,
+        "endSeconds": 163.66666666666666
+      },
+      {
+        "word": "baffle",
+        "startSeconds": 163.66666666666666,
+        "endSeconds": 164.16666666666666
+      },
+      {
+        "word": "so",
+        "startSeconds": 164.752625,
+        "endSeconds": 164.952625
+      },
+      {
+        "word": "after",
+        "startSeconds": 164.952625,
+        "endSeconds": 165.352625
+      },
+      {
+        "word": "the",
+        "startSeconds": 165.352625,
+        "endSeconds": 165.452625
+      },
+      {
+        "word": "store",
+        "startSeconds": 165.452625,
+        "endSeconds": 165.952625
+      },
+      {
+        "word": "closed",
+        "startSeconds": 165.952625,
+        "endSeconds": 166.452625
+      },
+      {
+        "word": "I",
+        "startSeconds": 166.452625,
+        "endSeconds": 166.652625
+      },
+      {
+        "word": "was",
+        "startSeconds": 166.652625,
+        "endSeconds": 166.752625
+      },
+      {
+        "word": "at",
+        "startSeconds": 166.752625,
+        "endSeconds": 167.052625
+      },
+      {
+        "word": "his",
+        "startSeconds": 167.052625,
+        "endSeconds": 167.352625
+      },
+      {
+        "word": "house",
+        "startSeconds": 167.352625,
+        "endSeconds": 167.452625
+      },
+      {
+        "word": "and",
+        "startSeconds": 167.452625,
+        "endSeconds": 167.752625
+      },
+      {
+        "word": "I",
+        "startSeconds": 167.752625,
+        "endSeconds": 167.952625
+      },
+      {
+        "word": "finally",
+        "startSeconds": 167.952625,
+        "endSeconds": 168.352625
+      },
+      {
+        "word": "asked",
+        "startSeconds": 168.352625,
+        "endSeconds": 168.752625
+      },
+      {
+        "word": "him",
+        "startSeconds": 168.752625,
+        "endSeconds": 169.152625
+      },
+      {
+        "word": "about",
+        "startSeconds": 169.152625,
+        "endSeconds": 169.552625
+      },
+      {
+        "word": "the",
+        "startSeconds": 169.552625,
+        "endSeconds": 169.852625
+      },
+      {
+        "word": "chair",
+        "startSeconds": 169.852625,
+        "endSeconds": 170.352625
+      },
+      {
+        "word": "about",
+        "startSeconds": 170.352625,
+        "endSeconds": 170.952625
+      },
+      {
+        "word": "the",
+        "startSeconds": 170.952625,
+        "endSeconds": 171.252625
+      },
+      {
+        "word": "spring",
+        "startSeconds": 171.252625,
+        "endSeconds": 171.852625
+      },
+      {
+        "word": "about",
+        "startSeconds": 171.852625,
+        "endSeconds": 172.352625
+      },
+      {
+        "word": "why",
+        "startSeconds": 172.352625,
+        "endSeconds": 173.052625
+      },
+      {
+        "word": "he",
+        "startSeconds": 173.052625,
+        "endSeconds": 173.352625
+      },
+      {
+        "word": "never",
+        "startSeconds": 173.352625,
+        "endSeconds": 173.452625
+      },
+      {
+        "word": "fixed",
+        "startSeconds": 173.452625,
+        "endSeconds": 173.752625
+      },
+      {
+        "word": "it",
+        "startSeconds": 173.752625,
+        "endSeconds": 173.952625
+      },
+      {
+        "word": "we",
+        "startSeconds": 173.952625,
+        "endSeconds": 174.652625
+      },
+      {
+        "word": "were",
+        "startSeconds": 174.652625,
+        "endSeconds": 174.852625
+      },
+      {
+        "word": "on",
+        "startSeconds": 174.852625,
+        "endSeconds": 175.052625
+      },
+      {
+        "word": "the",
+        "startSeconds": 175.052625,
+        "endSeconds": 175.152625
+      },
+      {
+        "word": "porch",
+        "startSeconds": 175.152625,
+        "endSeconds": 175.652625
+      },
+      {
+        "word": "it",
+        "startSeconds": 175.652625,
+        "endSeconds": 176.452625
+      },
+      {
+        "word": "was",
+        "startSeconds": 176.452625,
+        "endSeconds": 176.552625
+      },
+      {
+        "word": "cold",
+        "startSeconds": 176.552625,
+        "endSeconds": 176.952625
+      },
+      {
+        "word": "he",
+        "startSeconds": 176.952625,
+        "endSeconds": 177.852625
+      },
+      {
+        "word": "had",
+        "startSeconds": 177.852625,
+        "endSeconds": 177.952625
+      },
+      {
+        "word": "his",
+        "startSeconds": 177.952625,
+        "endSeconds": 178.352625
+      },
+      {
+        "word": "hands",
+        "startSeconds": 178.352625,
+        "endSeconds": 178.452625
+      },
+      {
+        "word": "in",
+        "startSeconds": 178.452625,
+        "endSeconds": 179.052625
+      },
+      {
+        "word": "his",
+        "startSeconds": 179.052625,
+        "endSeconds": 179.152625
+      },
+      {
+        "word": "jacket",
+        "startSeconds": 179.152625,
+        "endSeconds": 179.352625
+      },
+      {
+        "word": "pockets",
+        "startSeconds": 179.352625,
+        "endSeconds": 179.852625
+      },
+      {
+        "word": "and",
+        "startSeconds": 179.852625,
+        "endSeconds": 180.652625
+      },
+      {
+        "word": "he",
+        "startSeconds": 180.652625,
+        "endSeconds": 180.752625
+      },
+      {
+        "word": "was",
+        "startSeconds": 180.752625,
+        "endSeconds": 180.852625
+      },
+      {
+        "word": "looking",
+        "startSeconds": 180.852625,
+        "endSeconds": 180.952625
+      },
+      {
+        "word": "at",
+        "startSeconds": 180.952625,
+        "endSeconds": 181.252625
+      },
+      {
+        "word": "the",
+        "startSeconds": 181.252625,
+        "endSeconds": 181.352625
+      },
+      {
+        "word": "feeder",
+        "startSeconds": 181.352625,
+        "endSeconds": 181.852625
+      },
+      {
+        "word": "which",
+        "startSeconds": 181.852625,
+        "endSeconds": 182.05262499999998
+      },
+      {
+        "word": "by",
+        "startSeconds": 182.05262499999998,
+        "endSeconds": 182.352625
+      },
+      {
+        "word": "then",
+        "startSeconds": 182.352625,
+        "endSeconds": 182.652625
+      },
+      {
+        "word": "was",
+        "startSeconds": 182.652625,
+        "endSeconds": 182.752625
+      },
+      {
+        "word": "basically",
+        "startSeconds": 182.752625,
+        "endSeconds": 183.352625
+      },
+      {
+        "word": "held",
+        "startSeconds": 183.352625,
+        "endSeconds": 183.952625
+      },
+      {
+        "word": "together",
+        "startSeconds": 183.952625,
+        "endSeconds": 184.352625
+      },
+      {
+        "word": "by",
+        "startSeconds": 184.352625,
+        "endSeconds": 184.652625
+      },
+      {
+        "word": "hope",
+        "startSeconds": 184.652625,
+        "endSeconds": 185.152625
+      },
+      {
+        "word": "and",
+        "startSeconds": 185.152625,
+        "endSeconds": 185.352625
+      },
+      {
+        "word": "old",
+        "startSeconds": 185.352625,
+        "endSeconds": 185.752625
+      },
+      {
+        "word": "paint",
+        "startSeconds": 185.752625,
+        "endSeconds": 186.05262499999998
+      },
+      {
+        "word": "I",
+        "startSeconds": 186.752625,
+        "endSeconds": 187.252625
+      },
+      {
+        "word": "didn't",
+        "startSeconds": 187.252625,
+        "endSeconds": 187.452625
+      },
+      {
+        "word": "fix",
+        "startSeconds": 187.452625,
+        "endSeconds": 187.852625
+      },
+      {
+        "word": "it",
+        "startSeconds": 187.852625,
+        "endSeconds": 187.952625
+      },
+      {
+        "word": "he",
+        "startSeconds": 187.952625,
+        "endSeconds": 188.752625
+      },
+      {
+        "word": "said",
+        "startSeconds": 188.752625,
+        "endSeconds": 188.952625
+      },
+      {
+        "word": "because",
+        "startSeconds": 188.952625,
+        "endSeconds": 189.752625
+      },
+      {
+        "word": "I",
+        "startSeconds": 189.752625,
+        "endSeconds": 190.05262499999998
+      },
+      {
+        "word": "needed",
+        "startSeconds": 190.05262499999998,
+        "endSeconds": 190.352625
+      },
+      {
+        "word": "1",
+        "startSeconds": 190.352625,
+        "endSeconds": 191.05262499999998
+      },
+      {
+        "word": "thing",
+        "startSeconds": 191.05262499999998,
+        "endSeconds": 191.152625
+      },
+      {
+        "word": "in",
+        "startSeconds": 191.152625,
+        "endSeconds": 191.352625
+      },
+      {
+        "word": "the",
+        "startSeconds": 191.352625,
+        "endSeconds": 191.452625
+      },
+      {
+        "word": "house",
+        "startSeconds": 191.452625,
+        "endSeconds": 191.752625
+      },
+      {
+        "word": "that",
+        "startSeconds": 191.752625,
+        "endSeconds": 191.952625
+      },
+      {
+        "word": "was",
+        "startSeconds": 191.952625,
+        "endSeconds": 192.152625
+      },
+      {
+        "word": "as",
+        "startSeconds": 192.152625,
+        "endSeconds": 192.452625
+      },
+      {
+        "word": "broken",
+        "startSeconds": 192.452625,
+        "endSeconds": 192.852625
+      },
+      {
+        "word": "as",
+        "startSeconds": 192.852625,
+        "endSeconds": 193.05262499999998
+      },
+      {
+        "word": "I",
+        "startSeconds": 193.05262499999998,
+        "endSeconds": 193.152625
+      },
+      {
+        "word": "felt",
+        "startSeconds": 193.152625,
+        "endSeconds": 193.55262499999998
+      },
+      {
+        "word": "he",
+        "startSeconds": 193.55262499999998,
+        "endSeconds": 194.152625
+      },
+      {
+        "word": "paused",
+        "startSeconds": 194.152625,
+        "endSeconds": 194.652625
+      },
+      {
+        "word": "and",
+        "startSeconds": 195.652625,
+        "endSeconds": 195.752625
+      },
+      {
+        "word": "I",
+        "startSeconds": 195.752625,
+        "endSeconds": 195.852625
+      },
+      {
+        "word": "needed",
+        "startSeconds": 195.852625,
+        "endSeconds": 196.252625
+      },
+      {
+        "word": "to",
+        "startSeconds": 196.252625,
+        "endSeconds": 196.352625
+      },
+      {
+        "word": "know",
+        "startSeconds": 196.352625,
+        "endSeconds": 196.55262499999998
+      },
+      {
+        "word": "it",
+        "startSeconds": 196.55262499999998,
+        "endSeconds": 196.952625
+      },
+      {
+        "word": "could",
+        "startSeconds": 196.952625,
+        "endSeconds": 197.152625
+      },
+      {
+        "word": "still",
+        "startSeconds": 197.152625,
+        "endSeconds": 197.352625
+      },
+      {
+        "word": "hold",
+        "startSeconds": 197.352625,
+        "endSeconds": 197.75262500000002
+      },
+      {
+        "word": "me",
+        "startSeconds": 197.75262500000002,
+        "endSeconds": 198.05262499999998
+      },
+      {
+        "word": "we",
+        "startSeconds": 198.852625,
+        "endSeconds": 199.152625
+      },
+      {
+        "word": "sat",
+        "startSeconds": 199.152625,
+        "endSeconds": 199.55262499999998
+      },
+      {
+        "word": "with",
+        "startSeconds": 199.55262499999998,
+        "endSeconds": 199.652625
+      },
+      {
+        "word": "that",
+        "startSeconds": 199.652625,
+        "endSeconds": 199.852625
+      },
+      {
+        "word": "for",
+        "startSeconds": 199.852625,
+        "endSeconds": 200.152625
+      },
+      {
+        "word": "a",
+        "startSeconds": 200.152625,
+        "endSeconds": 200.352625
+      },
+      {
+        "word": "while",
+        "startSeconds": 200.352625,
+        "endSeconds": 200.452625
+      },
+      {
+        "word": "the",
+        "startSeconds": 200.452625,
+        "endSeconds": 201.352625
+      },
+      {
+        "word": "wind",
+        "startSeconds": 201.352625,
+        "endSeconds": 201.852625
+      },
+      {
+        "word": "picked",
+        "startSeconds": 201.852625,
+        "endSeconds": 202.152625
+      },
+      {
+        "word": "up",
+        "startSeconds": 202.152625,
+        "endSeconds": 202.25262500000002
+      },
+      {
+        "word": "a",
+        "startSeconds": 202.25262500000002,
+        "endSeconds": 203.25262500000002
+      },
+      {
+        "word": "chicky",
+        "startSeconds": 203.25262500000002,
+        "endSeconds": 203.75262500000002
+      },
+      {
+        "word": "landed",
+        "startSeconds": 203.75262500000002,
+        "endSeconds": 204.152625
+      },
+      {
+        "word": "on",
+        "startSeconds": 204.152625,
+        "endSeconds": 204.352625
+      },
+      {
+        "word": "the",
+        "startSeconds": 204.352625,
+        "endSeconds": 204.352625
+      },
+      {
+        "word": "Crooked",
+        "startSeconds": 204.352625,
+        "endSeconds": 204.952625
+      },
+      {
+        "word": "perch",
+        "startSeconds": 204.952625,
+        "endSeconds": 205.25262500000002
+      },
+      {
+        "word": "wobbled",
+        "startSeconds": 205.25262500000002,
+        "endSeconds": 206.152625
+      },
+      {
+        "word": "and",
+        "startSeconds": 206.152625,
+        "endSeconds": 206.352625
+      },
+      {
+        "word": "flew",
+        "startSeconds": 206.352625,
+        "endSeconds": 206.75262500000002
+      },
+      {
+        "word": "off",
+        "startSeconds": 206.75262500000002,
+        "endSeconds": 206.852625
+      },
+      {
+        "word": "Ray",
+        "startSeconds": 207.75262500000002,
+        "endSeconds": 208.352625
+      },
+      {
+        "word": "watched",
+        "startSeconds": 208.352625,
+        "endSeconds": 208.852625
+      },
+      {
+        "word": "it",
+        "startSeconds": 208.852625,
+        "endSeconds": 208.952625
+      },
+      {
+        "word": "go",
+        "startSeconds": 208.952625,
+        "endSeconds": 209.25262500000002
+      },
+      {
+        "word": "I'm",
+        "startSeconds": 210.152625,
+        "endSeconds": 210.352625
+      },
+      {
+        "word": "going",
+        "startSeconds": 210.352625,
+        "endSeconds": 210.452625
+      },
+      {
+        "word": "to",
+        "startSeconds": 210.452625,
+        "endSeconds": 210.652625
+      },
+      {
+        "word": "fix",
+        "startSeconds": 210.652625,
+        "endSeconds": 210.952625
+      },
+      {
+        "word": "the",
+        "startSeconds": 210.952625,
+        "endSeconds": 211.152625
+      },
+      {
+        "word": "spring",
+        "startSeconds": 211.152625,
+        "endSeconds": 211.652625
+      },
+      {
+        "word": "now",
+        "startSeconds": 211.652625,
+        "endSeconds": 211.952625
+      },
+      {
+        "word": "he",
+        "startSeconds": 211.952625,
+        "endSeconds": 212.55262499999998
+      },
+      {
+        "word": "said",
+        "startSeconds": 212.55262499999998,
+        "endSeconds": 212.75262500000002
+      },
+      {
+        "word": "not",
+        "startSeconds": 212.75262500000002,
+        "endSeconds": 213.652625
+      },
+      {
+        "word": "like",
+        "startSeconds": 213.652625,
+        "endSeconds": 213.852625
+      },
+      {
+        "word": "a",
+        "startSeconds": 213.852625,
+        "endSeconds": 214.05262499999998
+      },
+      {
+        "word": "declaration",
+        "startSeconds": 214.05262499999998,
+        "endSeconds": 214.55262499999998
+      },
+      {
+        "word": "like",
+        "startSeconds": 214.55262499999998,
+        "endSeconds": 215.55262499999998
+      },
+      {
+        "word": "he",
+        "startSeconds": 215.55262499999998,
+        "endSeconds": 215.75262500000002
+      },
+      {
+        "word": "was",
+        "startSeconds": 215.75262500000002,
+        "endSeconds": 215.75262500000002
+      },
+      {
+        "word": "telling",
+        "startSeconds": 215.75262500000002,
+        "endSeconds": 216.152625
+      },
+      {
+        "word": "me",
+        "startSeconds": 216.152625,
+        "endSeconds": 216.25262500000002
+      },
+      {
+        "word": "he'd",
+        "startSeconds": 216.25262500000002,
+        "endSeconds": 216.652625
+      },
+      {
+        "word": "pick",
+        "startSeconds": 216.652625,
+        "endSeconds": 216.852625
+      },
+      {
+        "word": "up",
+        "startSeconds": 216.852625,
+        "endSeconds": 216.852625
+      },
+      {
+        "word": "milk",
+        "startSeconds": 216.852625,
+        "endSeconds": 217.352625
+      },
+      {
+        "word": "on",
+        "startSeconds": 217.352625,
+        "endSeconds": 217.55262499999998
+      },
+      {
+        "word": "Tuesday",
+        "startSeconds": 217.55262499999998,
+        "endSeconds": 217.952625
+      },
+      {
+        "word": "I",
+        "startSeconds": 218.8735,
+        "endSeconds": 219.2735
+      },
+      {
+        "word": "think",
+        "startSeconds": 219.2735,
+        "endSeconds": 219.2735
+      },
+      {
+        "word": "about",
+        "startSeconds": 219.2735,
+        "endSeconds": 219.4735
+      },
+      {
+        "word": "that",
+        "startSeconds": 219.4735,
+        "endSeconds": 219.7735
+      },
+      {
+        "word": "blue",
+        "startSeconds": 219.7735,
+        "endSeconds": 220.1735
+      },
+      {
+        "word": "chair",
+        "startSeconds": 220.1735,
+        "endSeconds": 220.4735
+      },
+      {
+        "word": "a",
+        "startSeconds": 220.4735,
+        "endSeconds": 220.7735
+      },
+      {
+        "word": "lot",
+        "startSeconds": 220.7735,
+        "endSeconds": 220.7735
+      },
+      {
+        "word": "now",
+        "startSeconds": 220.7735,
+        "endSeconds": 221.07350000000002
+      },
+      {
+        "word": "not",
+        "startSeconds": 221.07350000000002,
+        "endSeconds": 221.7735
+      },
+      {
+        "word": "the",
+        "startSeconds": 221.7735,
+        "endSeconds": 221.8735
+      },
+      {
+        "word": "fixing",
+        "startSeconds": 221.8735,
+        "endSeconds": 222.3735
+      },
+      {
+        "word": "the",
+        "startSeconds": 222.3735,
+        "endSeconds": 223.07350000000002
+      },
+      {
+        "word": "waiting",
+        "startSeconds": 223.07350000000002,
+        "endSeconds": 223.4735
+      },
+      {
+        "word": "the",
+        "startSeconds": 223.4735,
+        "endSeconds": 224.2735
+      },
+      {
+        "word": "47",
+        "startSeconds": 224.2735,
+        "endSeconds": 225.07350000000002
+      },
+      {
+        "word": "years",
+        "startSeconds": 225.07350000000002,
+        "endSeconds": 225.1735
+      },
+      {
+        "word": "of",
+        "startSeconds": 225.1735,
+        "endSeconds": 225.4735
+      },
+      {
+        "word": "sitting",
+        "startSeconds": 225.4735,
+        "endSeconds": 225.8735
+      },
+      {
+        "word": "in",
+        "startSeconds": 225.8735,
+        "endSeconds": 226.1735
+      },
+      {
+        "word": "something",
+        "startSeconds": 226.1735,
+        "endSeconds": 226.3735
+      },
+      {
+        "word": "broken",
+        "startSeconds": 226.3735,
+        "endSeconds": 226.9735
+      },
+      {
+        "word": "because",
+        "startSeconds": 226.9735,
+        "endSeconds": 227.2735
+      },
+      {
+        "word": "it",
+        "startSeconds": 227.2735,
+        "endSeconds": 227.57350000000002
+      },
+      {
+        "word": "was",
+        "startSeconds": 227.57350000000002,
+        "endSeconds": 227.57350000000002
+      },
+      {
+        "word": "the",
+        "startSeconds": 227.57350000000002,
+        "endSeconds": 227.7735
+      },
+      {
+        "word": "only",
+        "startSeconds": 227.7735,
+        "endSeconds": 227.9735
+      },
+      {
+        "word": "thing",
+        "startSeconds": 227.9735,
+        "endSeconds": 228.4735
+      },
+      {
+        "word": "that",
+        "startSeconds": 228.4735,
+        "endSeconds": 228.8735
+      },
+      {
+        "word": "knew",
+        "startSeconds": 228.8735,
+        "endSeconds": 229.1735
+      },
+      {
+        "word": "the",
+        "startSeconds": 229.1735,
+        "endSeconds": 229.3735
+      },
+      {
+        "word": "shape",
+        "startSeconds": 229.3735,
+        "endSeconds": 229.6735
+      },
+      {
+        "word": "of",
+        "startSeconds": 229.6735,
+        "endSeconds": 229.6735
+      },
+      {
+        "word": "the",
+        "startSeconds": 229.6735,
+        "endSeconds": 229.8735
+      },
+      {
+        "word": "weight",
+        "startSeconds": 229.8735,
+        "endSeconds": 230.2735
+      },
+      {
+        "word": "I'm",
+        "startSeconds": 231.07350000000002,
+        "endSeconds": 231.4735
+      },
+      {
+        "word": "not",
+        "startSeconds": 231.4735,
+        "endSeconds": 231.4735
+      },
+      {
+        "word": "going",
+        "startSeconds": 231.4735,
+        "endSeconds": 231.7735
+      },
+      {
+        "word": "to",
+        "startSeconds": 231.7735,
+        "endSeconds": 231.7735
+      },
+      {
+        "word": "tell",
+        "startSeconds": 231.7735,
+        "endSeconds": 231.9735
+      },
+      {
+        "word": "you",
+        "startSeconds": 231.9735,
+        "endSeconds": 231.9735
+      },
+      {
+        "word": "what",
+        "startSeconds": 231.9735,
+        "endSeconds": 232.3735
+      },
+      {
+        "word": "to",
+        "startSeconds": 232.3735,
+        "endSeconds": 232.4735
+      },
+      {
+        "word": "do",
+        "startSeconds": 232.4735,
+        "endSeconds": 232.4735
+      },
+      {
+        "word": "with",
+        "startSeconds": 232.4735,
+        "endSeconds": 232.6735
+      },
+      {
+        "word": "that",
+        "startSeconds": 232.6735,
+        "endSeconds": 232.9735
+      },
+      {
+        "word": "I'm",
+        "startSeconds": 232.9735,
+        "endSeconds": 233.9735
+      },
+      {
+        "word": "just",
+        "startSeconds": 233.9735,
+        "endSeconds": 233.9735
+      },
+      {
+        "word": "going",
+        "startSeconds": 233.9735,
+        "endSeconds": 234.1735
+      },
+      {
+        "word": "to",
+        "startSeconds": 234.1735,
+        "endSeconds": 234.1735
+      },
+      {
+        "word": "leave",
+        "startSeconds": 234.1735,
+        "endSeconds": 234.4735
+      },
+      {
+        "word": "it",
+        "startSeconds": 234.4735,
+        "endSeconds": 234.57350000000002
+      },
+      {
+        "word": "here",
+        "startSeconds": 234.57350000000002,
+        "endSeconds": 234.8735
+      },
+      {
+        "word": "between",
+        "startSeconds": 234.8735,
+        "endSeconds": 235.57350000000002
+      },
+      {
+        "word": "us",
+        "startSeconds": 235.57350000000002,
+        "endSeconds": 235.8735
+      },
+      {
+        "word": "like",
+        "startSeconds": 235.8735,
+        "endSeconds": 236.4735
+      },
+      {
+        "word": "a",
+        "startSeconds": 236.4735,
+        "endSeconds": 236.6735
+      },
+      {
+        "word": "cold",
+        "startSeconds": 236.6735,
+        "endSeconds": 237.07350000000002
+      },
+      {
+        "word": "cup",
+        "startSeconds": 237.07350000000002,
+        "endSeconds": 237.4735
+      },
+      {
+        "word": "of",
+        "startSeconds": 237.4735,
+        "endSeconds": 237.57350000000002
+      },
+      {
+        "word": "coffee",
+        "startSeconds": 237.57350000000002,
+        "endSeconds": 237.8735
+      },
+      {
+        "word": "on",
+        "startSeconds": 237.8735,
+        "endSeconds": 238.1735
+      },
+      {
+        "word": "a",
+        "startSeconds": 238.1735,
+        "endSeconds": 238.2735
+      },
+      {
+        "word": "window",
+        "startSeconds": 238.2735,
+        "endSeconds": 238.4735
+      },
+      {
+        "word": "sill",
+        "startSeconds": 238.4735,
+        "endSeconds": 238.9735
       }
     ],
     "sentences": [
       {
         "sentenceIndex": 0,
-        "text": "You know that moment when the floor just ...",
+        "text": "My Uncle Ray had this chair.",
         "startSeconds": 0,
-        "endSeconds": 2.2,
+        "endSeconds": 1.7,
         "startFrame": 0,
-        "endFrame": 66,
+        "endFrame": 51,
         "clipIndex": 0,
         "tokenWordIndexes": [
           0,
@@ -2685,64 +3115,30 @@ export const inspireScripts: InspirationScript[] = [
           2,
           3,
           4,
-          5,
-          6,
-          7
+          5
         ]
       },
       {
         "sentenceIndex": 1,
-        "text": "disappears?",
-        "startSeconds": 2.2,
-        "endSeconds": 3.8,
-        "startFrame": 66,
-        "endFrame": 114,
+        "text": "A blue wingback, velvet worn down to the weave on the arms, a spring that poked you if you sat wrong.",
+        "startSeconds": 1.7,
+        "endSeconds": 10.2,
+        "startFrame": 51,
+        "endFrame": 306,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          8
-        ]
-      },
-      {
-        "sentenceIndex": 2,
-        "text": "Not the slow, creaking kind of warning.",
-        "startSeconds": 4.6,
-        "endSeconds": 8.1,
-        "startFrame": 138,
-        "endFrame": 243,
-        "clipIndex": 0,
-        "tokenWordIndexes": [
-          9,
+          6,
+          7,
+          8,
           10,
           11,
           12,
           13,
           14,
-          15
-        ]
-      },
-      {
-        "sentenceIndex": 3,
-        "text": "The instant kind.",
-        "startSeconds": 9,
-        "endSeconds": 10.6,
-        "startFrame": 270,
-        "endFrame": 318,
-        "clipIndex": 0,
-        "tokenWordIndexes": [
+          15,
           16,
           17,
-          18
-        ]
-      },
-      {
-        "sentenceIndex": 4,
-        "text": "One second you're standing on solid ground, the next you're in freefall.",
-        "startSeconds": 11.4,
-        "endSeconds": 16.5,
-        "startFrame": 342,
-        "endFrame": 495,
-        "clipIndex": 0,
-        "tokenWordIndexes": [
+          18,
           19,
           20,
           21,
@@ -2751,21 +3147,21 @@ export const inspireScripts: InspirationScript[] = [
           24,
           25,
           26,
-          27,
-          28,
-          29,
-          30
+          27
         ]
       },
       {
-        "sentenceIndex": 5,
-        "text": "I remember staring at an email that ended a decade of work in three sentences.",
-        "startSeconds": 16.5,
-        "endSeconds": 22.8,
-        "startFrame": 495,
-        "endFrame": 684,
-        "clipIndex": 1,
+        "sentenceIndex": 2,
+        "text": "He bought it in 1974, the year he opened his hardware store on Cedar Avenue.",
+        "startSeconds": 10.2,
+        "endSeconds": 17,
+        "startFrame": 306,
+        "endFrame": 510,
+        "clipIndex": 0,
         "tokenWordIndexes": [
+          28,
+          29,
+          30,
           31,
           32,
           33,
@@ -2777,76 +3173,64 @@ export const inspireScripts: InspirationScript[] = [
           39,
           40,
           41,
-          42,
-          43,
-          44,
-          45
+          42
         ]
       },
       {
-        "sentenceIndex": 6,
-        "text": "My hands went cold.",
-        "startSeconds": 22.8,
-        "endSeconds": 25.1,
-        "startFrame": 684,
-        "endFrame": 753,
-        "clipIndex": 1,
+        "sentenceIndex": 3,
+        "text": "(I still remember the smell of that place \u2014 sawdust and pipe tobacco.)",
+        "startSeconds": 17,
+        "endSeconds": 23.2,
+        "startFrame": 510,
+        "endFrame": 696,
+        "clipIndex": 0,
         "tokenWordIndexes": [
+          43,
+          44,
+          45,
           46,
           47,
           48,
-          49
-        ]
-      },
-      {
-        "sentenceIndex": 7,
-        "text": "The silence in the room got loud ... ...",
-        "startSeconds": 26.3,
-        "endSeconds": 28.4,
-        "startFrame": 789,
-        "endFrame": 852,
-        "clipIndex": 1,
-        "tokenWordIndexes": [
+          49,
           50,
           51,
           52,
           53,
-          54,
-          55,
-          56
+          54
         ]
       },
       {
-        "sentenceIndex": 8,
-        "text": "and in that silence, a single thought surfaced, sharp as glass.",
-        "startSeconds": 28.4,
-        "endSeconds": 34.7,
-        "startFrame": 852,
-        "endFrame": 1041,
+        "sentenceIndex": 4,
+        "text": "Ray was not a soft man.",
+        "startSeconds": 23.5,
+        "endSeconds": 25.3,
+        "startFrame": 705,
+        "endFrame": 759,
         "clipIndex": 1,
         "tokenWordIndexes": [
+          55,
+          56,
           57,
           58,
           59,
-          60,
-          61,
+          60
+        ]
+      },
+      {
+        "sentenceIndex": 5,
+        "text": "He'd lost half his thumb to a table saw in '82 and just wrapped it in a shop rag and finished the day.",
+        "startSeconds": 26,
+        "endSeconds": 33.3,
+        "startFrame": 780,
+        "endFrame": 999,
+        "clipIndex": 1,
+        "tokenWordIndexes": [
           62,
           63,
           64,
           65,
           66,
-          67
-        ]
-      },
-      {
-        "sentenceIndex": 9,
-        "text": "\"This is the part where I'm supposed to break.\"",
-        "startSeconds": 34.7,
-        "endSeconds": 38.7,
-        "startFrame": 1041,
-        "endFrame": 1161,
-        "clipIndex": 1,
-        "tokenWordIndexes": [
+          67,
           68,
           69,
           70,
@@ -2855,18 +3239,7 @@ export const inspireScripts: InspirationScript[] = [
           73,
           74,
           75,
-          76
-        ]
-      },
-      {
-        "sentenceIndex": 10,
-        "text": "But here's what nobody tells you about hitting the ground.",
-        "startSeconds": 39.8,
-        "endSeconds": 43,
-        "startFrame": 1194,
-        "endFrame": 1290,
-        "clipIndex": 2,
-        "tokenWordIndexes": [
+          76,
           77,
           78,
           79,
@@ -2874,77 +3247,67 @@ export const inspireScripts: InspirationScript[] = [
           81,
           82,
           83,
-          84,
-          85,
-          86
+          84
         ]
       },
       {
-        "sentenceIndex": 11,
-        "text": "The impact isn't the end of the story.",
-        "startSeconds": 43,
-        "endSeconds": 46.2,
-        "startFrame": 1290,
-        "endFrame": 1386,
+        "sentenceIndex": 6,
+        "text": "But that chair... ...",
+        "startSeconds": 33.3,
+        "endSeconds": 35.599999999999994,
+        "startFrame": 998,
+        "endFrame": 1068,
+        "clipIndex": 1,
+        "tokenWordIndexes": [
+          85,
+          86,
+          87
+        ]
+      },
+      {
+        "sentenceIndex": 7,
+        "text": "he'd sit in it every evening, same time, 6:15, with a cup of coffee that had gone cold an hour before.",
+        "startSeconds": 35.7,
+        "endSeconds": 43.8,
+        "startFrame": 1071,
+        "endFrame": 1314,
         "clipIndex": 2,
         "tokenWordIndexes": [
-          87,
           88,
           89,
           90,
           91,
           92,
           93,
-          94
-        ]
-      },
-      {
-        "sentenceIndex": 12,
-        "text": "It's the moment the story actually begins.",
-        "startSeconds": 46.2,
-        "endSeconds": 49.6,
-        "startFrame": 1386,
-        "endFrame": 1488,
-        "clipIndex": 2,
-        "tokenWordIndexes": [
+          94,
           95,
           96,
+          97,
           97,
           98,
           99,
           100,
-          101
-        ]
-      },
-      {
-        "sentenceIndex": 13,
-        "text": "We've been sold a lie about resilience, haven't we?",
-        "startSeconds": 49.6,
-        "endSeconds": 53.5,
-        "startFrame": 1488,
-        "endFrame": 1605,
-        "clipIndex": 3,
-        "tokenWordIndexes": [
+          101,
           102,
           103,
           104,
           105,
           106,
           107,
-          108,
-          109,
-          110
+          108
         ]
       },
       {
-        "sentenceIndex": 14,
-        "text": "We picture it as a triumphant bounce-back, a shiny before-and-after photo where the struggle is just a blurry middle chapter we skip past.",
-        "startSeconds": 53.5,
-        "endSeconds": 62.894375,
-        "startFrame": 1605,
-        "endFrame": 1887,
-        "clipIndex": 3,
+        "sentenceIndex": 8,
+        "text": "He'd stare out the window at the bird feeder he'd built from scrap pine.",
+        "startSeconds": 45,
+        "endSeconds": 48.9,
+        "startFrame": 1350,
+        "endFrame": 1467,
+        "clipIndex": 2,
         "tokenWordIndexes": [
+          109,
+          110,
           111,
           112,
           113,
@@ -2952,14 +3315,48 @@ export const inspireScripts: InspirationScript[] = [
           115,
           116,
           117,
+          118,
           119,
           120,
           121,
-          122,
+          122
+        ]
+      },
+      {
+        "sentenceIndex": 9,
+        "text": "Just sit.",
+        "startSeconds": 48.9,
+        "endSeconds": 49.9,
+        "startFrame": 1467,
+        "endFrame": 1497,
+        "clipIndex": 2,
+        "tokenWordIndexes": [
           123,
-          124,
+          124
+        ]
+      },
+      {
+        "sentenceIndex": 10,
+        "text": "Just stare.",
+        "startSeconds": 49.9,
+        "endSeconds": 51.2,
+        "startFrame": 1497,
+        "endFrame": 1536,
+        "clipIndex": 2,
+        "tokenWordIndexes": [
           125,
-          126,
+          126
+        ]
+      },
+      {
+        "sentenceIndex": 11,
+        "text": "I asked him once, I must have been twenty-two, what he was doing.",
+        "startSeconds": 51.2,
+        "endSeconds": 55.95725,
+        "startFrame": 1536,
+        "endFrame": 1679,
+        "clipIndex": 3,
+        "tokenWordIndexes": [
           127,
           128,
           129,
@@ -2967,95 +3364,118 @@ export const inspireScripts: InspirationScript[] = [
           131,
           132,
           133,
-          134
-        ]
-      },
-      {
-        "sentenceIndex": 15,
-        "text": "But real resilience ... ...",
-        "startSeconds": 63.694375,
-        "endSeconds": 65.794375,
-        "startFrame": 1910,
-        "endFrame": 1974,
-        "clipIndex": 4,
-        "tokenWordIndexes": [
+          134,
+          135,
+          136,
           137,
           138,
           139
         ]
       },
       {
-        "sentenceIndex": 16,
-        "text": "it's not a spring.",
-        "startSeconds": 65.794375,
-        "endSeconds": 67.794375,
-        "startFrame": 1973,
-        "endFrame": 2034,
-        "clipIndex": 4,
+        "sentenceIndex": 12,
+        "text": "\"Waiting,\" he said.",
+        "startSeconds": 55.95725,
+        "endSeconds": 58.25725,
+        "startFrame": 1678,
+        "endFrame": 1748,
+        "clipIndex": 3,
         "tokenWordIndexes": [
           140,
           141,
-          142,
-          143
+          142
         ]
       },
       {
-        "sentenceIndex": 17,
-        "text": "It's a forge.",
-        "startSeconds": 67.794375,
-        "endSeconds": 69.294375,
-        "startFrame": 2033,
-        "endFrame": 2079,
-        "clipIndex": 4,
+        "sentenceIndex": 13,
+        "text": "I thought he was being mysterious.",
+        "startSeconds": 58.25725,
+        "endSeconds": 60.15725,
+        "startFrame": 1747,
+        "endFrame": 1805,
+        "clipIndex": 3,
         "tokenWordIndexes": [
+          143,
           144,
           145,
-          146
+          146,
+          147,
+          148
         ]
       },
       {
-        "sentenceIndex": 18,
-        "text": "It's the place where you get heated until you're unrecognizable, beaten until you're reshaped, and cooled until you're something entirely new.",
-        "startSeconds": 69.294375,
-        "endSeconds": 80.294375,
-        "startFrame": 2078,
-        "endFrame": 2409,
-        "clipIndex": 4,
+        "sentenceIndex": 14,
+        "text": "I was young.",
+        "startSeconds": 60.15725,
+        "endSeconds": 61.557249999999996,
+        "startFrame": 1804,
+        "endFrame": 1847,
+        "clipIndex": 3,
         "tokenWordIndexes": [
-          147,
-          148,
           149,
           150,
-          151,
+          151
+        ]
+      },
+      {
+        "sentenceIndex": 15,
+        "text": "I wanted everything to be a lesson.",
+        "startSeconds": 61.557249999999996,
+        "endSeconds": 63.85725,
+        "startFrame": 1846,
+        "endFrame": 1916,
+        "clipIndex": 3,
+        "tokenWordIndexes": [
           152,
           153,
           154,
           155,
           156,
           157,
-          158,
+          158
+        ]
+      },
+      {
+        "sentenceIndex": 17,
+        "text": "Last October, Ray's store finally closed.",
+        "startSeconds": 63.85725,
+        "endSeconds": 67.85725,
+        "startFrame": 1915,
+        "endFrame": 2036,
+        "clipIndex": 4,
+        "tokenWordIndexes": [
           159,
           160,
           161,
           162,
           163,
-          164,
+          164
+        ]
+      },
+      {
+        "sentenceIndex": 18,
+        "text": "Forty-seven years.",
+        "startSeconds": 67.85725,
+        "endSeconds": 69.75725,
+        "startFrame": 2035,
+        "endFrame": 2093,
+        "clipIndex": 4,
+        "tokenWordIndexes": [
           165,
-          166,
-          167
+          166
         ]
       },
       {
         "sentenceIndex": 19,
-        "text": "Right now, somewhere in your life, you're avoiding that heat.",
-        "startSeconds": 80.294375,
-        "endSeconds": 84.294375,
-        "startFrame": 2408,
-        "endFrame": 2529,
-        "clipIndex": 5,
+        "text": "The big-box place out on Route 9 had been eating at him for a decade, and then the pandemic just...",
+        "startSeconds": 70.65725,
+        "endSeconds": 77.45725,
+        "startFrame": 2119,
+        "endFrame": 2324,
+        "clipIndex": 4,
         "tokenWordIndexes": [
+          167,
           168,
-          169,
           170,
           171,
           172,
@@ -3063,70 +3483,48 @@ export const inspireScripts: InspirationScript[] = [
           174,
           175,
           176,
-          177
-        ]
-      },
-      {
-        "sentenceIndex": 20,
-        "text": "We all do.",
-        "startSeconds": 84.294375,
-        "endSeconds": 85.794375,
-        "startFrame": 2528,
-        "endFrame": 2574,
-        "clipIndex": 5,
-        "tokenWordIndexes": [
+          177,
           178,
           179,
-          180
-        ]
-      },
-      {
-        "sentenceIndex": 21,
-        "text": "We cling to the comfortable shape of who we were, terrified of the hammer.",
-        "startSeconds": 85.794375,
-        "endSeconds": 91.49437499999999,
-        "startFrame": 2573,
-        "endFrame": 2745,
-        "clipIndex": 5,
-        "tokenWordIndexes": [
+          180,
           181,
           182,
           183,
           184,
           185,
           186,
-          187,
+          187
+        ]
+      },
+      {
+        "sentenceIndex": 20,
+        "text": "finished the job.",
+        "startSeconds": 77.85725,
+        "endSeconds": 78.65725,
+        "startFrame": 2335,
+        "endFrame": 2360,
+        "clipIndex": 4,
+        "tokenWordIndexes": [
           188,
           189,
-          190,
+          190
+        ]
+      },
+      {
+        "sentenceIndex": 21,
+        "text": "I drove up to help him clear out the inventory.",
+        "startSeconds": 78.65725,
+        "endSeconds": 81.55725,
+        "startFrame": 2359,
+        "endFrame": 2447,
+        "clipIndex": 5,
+        "tokenWordIndexes": [
           191,
           192,
           193,
-          194
-        ]
-      },
-      {
-        "sentenceIndex": 22,
-        "text": "But drift ... ...",
-        "startSeconds": 91.49437499999999,
-        "endSeconds": 92.49437499999999,
-        "startFrame": 2744,
-        "endFrame": 2775,
-        "clipIndex": 6,
-        "tokenWordIndexes": [
+          194,
           195,
-          196
-        ]
-      },
-      {
-        "sentenceIndex": 23,
-        "text": "that's the real enemy.",
-        "startSeconds": 92.49437499999999,
-        "endSeconds": 94.69437500000001,
-        "startFrame": 2774,
-        "endFrame": 2841,
-        "clipIndex": 6,
-        "tokenWordIndexes": [
+          196,
           197,
           198,
           199,
@@ -3134,52 +3532,52 @@ export const inspireScripts: InspirationScript[] = [
         ]
       },
       {
-        "sentenceIndex": 24,
-        "text": "The quiet, comfortable drift away from your own becoming.",
-        "startSeconds": 94.69437500000001,
-        "endSeconds": 98.69437500000001,
-        "startFrame": 2840,
-        "endFrame": 2961,
-        "clipIndex": 6,
+        "sentenceIndex": 22,
+        "text": "We didn't talk much.",
+        "startSeconds": 81.55725,
+        "endSeconds": 83.65725,
+        "startFrame": 2446,
+        "endFrame": 2510,
+        "clipIndex": 5,
         "tokenWordIndexes": [
           201,
           202,
           203,
-          204,
+          204
+        ]
+      },
+      {
+        "sentenceIndex": 23,
+        "text": "We sorted brass fittings into bins, labeled shelves for auction.",
+        "startSeconds": 83.65725,
+        "endSeconds": 88.85725,
+        "startFrame": 2509,
+        "endFrame": 2666,
+        "clipIndex": 5,
+        "tokenWordIndexes": [
           205,
           206,
           207,
           208,
-          209
-        ]
-      },
-      {
-        "sentenceIndex": 25,
-        "text": "The courage to stay in the fire?",
-        "startSeconds": 99.49437499999999,
-        "endSeconds": 101.294375,
-        "startFrame": 2984,
-        "endFrame": 3039,
-        "clipIndex": 6,
-        "tokenWordIndexes": [
+          209,
           210,
           211,
           212,
           213,
-          214,
-          215,
-          216
+          214
         ]
       },
       {
-        "sentenceIndex": 26,
-        "text": "That's the only path back to your own agency. ... ... ...",
-        "startSeconds": 102.19437500000001,
-        "endSeconds": 105.19437500000001,
-        "startFrame": 3065,
-        "endFrame": 3156,
-        "clipIndex": 6,
+        "sentenceIndex": 24,
+        "text": "At one point I looked over and he was just standing there, holding a box of three-penny nails, not moving.",
+        "startSeconds": 88.85725,
+        "endSeconds": 96.25725,
+        "startFrame": 2665,
+        "endFrame": 2888,
+        "clipIndex": 5,
         "tokenWordIndexes": [
+          215,
+          216,
           217,
           218,
           219,
@@ -3188,60 +3586,70 @@ export const inspireScripts: InspirationScript[] = [
           222,
           223,
           224,
-          225
-        ]
-      },
-      {
-        "sentenceIndex": 27,
-        "text": "The weight you've been carrying isn't a punishment.",
-        "startSeconds": 105.19437500000001,
-        "endSeconds": 108.594375,
-        "startFrame": 3155,
-        "endFrame": 3258,
-        "clipIndex": 7,
-        "tokenWordIndexes": [
+          225,
           226,
           227,
           228,
           229,
           230,
           231,
-          232,
-          233
+          233,
+          234,
+          235
+        ]
+      },
+      {
+        "sentenceIndex": 25,
+        "text": "\"Ray?\"",
+        "startSeconds": 97.05725000000001,
+        "endSeconds": 97.65725,
+        "startFrame": 2911,
+        "endFrame": 2930,
+        "clipIndex": 5,
+        "tokenWordIndexes": [
+          236
+        ]
+      },
+      {
+        "sentenceIndex": 26,
+        "text": "He set the box down.",
+        "startSeconds": 97.65725,
+        "endSeconds": 99.35725,
+        "startFrame": 2929,
+        "endFrame": 2981,
+        "clipIndex": 5,
+        "tokenWordIndexes": [
+          237,
+          238,
+          239,
+          240,
+          241
+        ]
+      },
+      {
+        "sentenceIndex": 27,
+        "text": "\"You know,\" he said,",
+        "startSeconds": 99.35725,
+        "endSeconds": 101.45725,
+        "startFrame": 2980,
+        "endFrame": 3044,
+        "clipIndex": 6,
+        "tokenWordIndexes": [
+          242,
+          243,
+          244,
+          245
         ]
       },
       {
         "sentenceIndex": 28,
-        "text": "It's the raw material.",
-        "startSeconds": 109.34470833333333,
-        "endSeconds": 111.11525,
-        "startFrame": 3280,
-        "endFrame": 3334,
-        "clipIndex": 7,
+        "text": "\"I've been sitting in that chair every night for forty-seven years, and I don't think I ever once fixed the spring.\"",
+        "startSeconds": 101.45725,
+        "endSeconds": 109.19783333333334,
+        "startFrame": 3043,
+        "endFrame": 3276,
+        "clipIndex": 6,
         "tokenWordIndexes": [
-          234,
-          235,
-          236,
-          237
-        ]
-      },
-      {
-        "sentenceIndex": 29,
-        "text": "Let me take you back to that empty room, the glow of the screen on my face.",
-        "startSeconds": 111.13333333333334,
-        "endSeconds": 115.73333333333333,
-        "startFrame": 3334,
-        "endFrame": 3472,
-        "clipIndex": 8,
-        "tokenWordIndexes": [
-          238,
-          239,
-          240,
-          241,
-          242,
-          243,
-          244,
-          245,
           246,
           247,
           248,
@@ -3250,18 +3658,7 @@ export const inspireScripts: InspirationScript[] = [
           251,
           252,
           253,
-          254
-        ]
-      },
-      {
-        "sentenceIndex": 30,
-        "text": "For weeks, I wore my failure like a second skin.",
-        "startSeconds": 115.73333333333333,
-        "endSeconds": 119.93333333333334,
-        "startFrame": 3472,
-        "endFrame": 3598,
-        "clipIndex": 8,
-        "tokenWordIndexes": [
+          254,
           255,
           256,
           257,
@@ -3271,39 +3668,40 @@ export const inspireScripts: InspirationScript[] = [
           261,
           262,
           263,
-          264
+          264,
+          265,
+          266
         ]
       },
       {
-        "sentenceIndex": 31,
-        "text": "I'd wake up and for a blissful half-second, I'd forget.",
-        "startSeconds": 119.93333333333334,
-        "endSeconds": 123.83333333333334,
-        "startFrame": 3598,
-        "endFrame": 3715,
-        "clipIndex": 8,
+        "sentenceIndex": 30,
+        "text": "I want to tell you what happened next.",
+        "startSeconds": 109.19783333333334,
+        "endSeconds": 111.29783333333334,
+        "startFrame": 3275,
+        "endFrame": 3339,
+        "clipIndex": 7,
         "tokenWordIndexes": [
-          265,
-          266,
           267,
           268,
           269,
           270,
           271,
           272,
-          274,
-          275
+          273,
+          274
         ]
       },
       {
-        "sentenceIndex": 32,
-        "text": "Then the weight would settle back on my chest, a familiar, crushing fog.",
-        "startSeconds": 123.83333333333334,
-        "endSeconds": 128.93333333333334,
-        "startFrame": 3715,
-        "endFrame": 3868,
-        "clipIndex": 8,
+        "sentenceIndex": 31,
+        "text": "But first I need to tell you about the bird feeder.",
+        "startSeconds": 111.29783333333334,
+        "endSeconds": 115.23525,
+        "startFrame": 3338,
+        "endFrame": 3458,
+        "clipIndex": 7,
         "tokenWordIndexes": [
+          275,
           276,
           277,
           278,
@@ -3313,21 +3711,21 @@ export const inspireScripts: InspirationScript[] = [
           282,
           283,
           284,
-          285,
-          286,
-          287,
-          288
+          285
         ]
       },
       {
-        "sentenceIndex": 33,
-        "text": "I was living in the wreckage, cataloging every splinter.",
-        "startSeconds": 128.93333333333334,
-        "endSeconds": 133.13333333333333,
-        "startFrame": 3868,
-        "endFrame": 3994,
-        "clipIndex": 9,
+        "sentenceIndex": 30,
+        "text": "That bird feeder \u2014 the one Ray built from scrap pine \u2014 was a mess.",
+        "startSeconds": 115.26666666666667,
+        "endSeconds": 120.66666666666667,
+        "startFrame": 3458,
+        "endFrame": 3620,
+        "clipIndex": 8,
         "tokenWordIndexes": [
+          286,
+          287,
+          288,
           289,
           290,
           291,
@@ -3336,37 +3734,37 @@ export const inspireScripts: InspirationScript[] = [
           294,
           295,
           296,
-          297
+          297,
+          298
         ]
       },
       {
-        "sentenceIndex": 34,
-        "text": "I told myself I was processing, but really ...",
-        "startSeconds": 133.13333333333333,
-        "endSeconds": 136.63333333333333,
-        "startFrame": 3994,
-        "endFrame": 4099,
-        "clipIndex": 9,
+        "sentenceIndex": 31,
+        "text": "Honestly.",
+        "startSeconds": 120.66666666666667,
+        "endSeconds": 121.66666666666667,
+        "startFrame": 3620,
+        "endFrame": 3650,
+        "clipIndex": 8,
         "tokenWordIndexes": [
-          298,
-          299,
+          299
+        ]
+      },
+      {
+        "sentenceIndex": 32,
+        "text": "The roof was crooked, the perch was too short, and the seed tray had a gap where the cheap stuff would spill out.",
+        "startSeconds": 121.66666666666667,
+        "endSeconds": 129.46666666666667,
+        "startFrame": 3650,
+        "endFrame": 3884,
+        "clipIndex": 8,
+        "tokenWordIndexes": [
           300,
           301,
           302,
           303,
           304,
-          305
-        ]
-      },
-      {
-        "sentenceIndex": 35,
-        "text": "I was just building a shrine to what was lost.",
-        "startSeconds": 136.63333333333333,
-        "endSeconds": 139.43333333333334,
-        "startFrame": 4099,
-        "endFrame": 4183,
-        "clipIndex": 9,
-        "tokenWordIndexes": [
+          305,
           306,
           307,
           308,
@@ -3376,151 +3774,128 @@ export const inspireScripts: InspirationScript[] = [
           312,
           313,
           314,
-          315
-        ]
-      },
-      {
-        "sentenceIndex": 36,
-        "text": "The voice in my head was relentless, a prosecutor listing every mistake.",
-        "startSeconds": 139.43333333333334,
-        "endSeconds": 144.83333333333334,
-        "startFrame": 4183,
-        "endFrame": 4346,
-        "clipIndex": 9,
-        "tokenWordIndexes": [
+          315,
           316,
           317,
           318,
           319,
           320,
           321,
-          322,
+          322
+        ]
+      },
+      {
+        "sentenceIndex": 33,
+        "text": "He'd built it in a hurry, the day after his wife, my Aunt Carol, died.",
+        "startSeconds": 129.46666666666667,
+        "endSeconds": 134.76666666666665,
+        "startFrame": 3884,
+        "endFrame": 4043,
+        "clipIndex": 8,
+        "tokenWordIndexes": [
           323,
           324,
           325,
           326,
-          327
-        ]
-      },
-      {
-        "sentenceIndex": 37,
-        "text": "And the worst part?",
-        "startSeconds": 145.73333333333335,
-        "endSeconds": 147.13333333333333,
-        "startFrame": 4372,
-        "endFrame": 4414,
-        "clipIndex": 9,
-        "tokenWordIndexes": [
+          327,
           328,
           329,
           330,
-          331
-        ]
-      },
-      {
-        "sentenceIndex": 38,
-        "text": "I believed it.",
-        "startSeconds": 148.13333333333333,
-        "endSeconds": 148.93333333333334,
-        "startFrame": 4444,
-        "endFrame": 4468,
-        "clipIndex": 9,
-        "tokenWordIndexes": [
+          331,
           332,
           333,
-          334
+          334,
+          335,
+          336,
+          337
         ]
       },
       {
-        "sentenceIndex": 39,
-        "text": "I had confused my comfort zone with my identity, and when it vanished, I thought I had vanished with it. ... ...",
-        "startSeconds": 148.93333333333334,
-        "endSeconds": 156.63333333333333,
-        "startFrame": 4468,
-        "endFrame": 4699,
-        "clipIndex": 9,
+        "sentenceIndex": 34,
+        "text": "That was March 3rd, 1998.",
+        "startSeconds": 134.76666666666665,
+        "endSeconds": 137.86666666666667,
+        "startFrame": 4043,
+        "endFrame": 4136,
+        "clipIndex": 8,
         "tokenWordIndexes": [
-          335,
-          336,
-          337,
           338,
           339,
           340,
           341,
-          342,
+          342
+        ]
+      },
+      {
+        "sentenceIndex": 35,
+        "text": "I remember the date because it was my mother's birthday, and she got the call during the cake.",
+        "startSeconds": 137.86666666666667,
+        "endSeconds": 144.16666666666666,
+        "startFrame": 4136,
+        "endFrame": 4325,
+        "clipIndex": 8,
+        "tokenWordIndexes": [
           343,
           344,
           345,
           346,
-          347,
           347,
           348,
           349,
           350,
           351,
           352,
-          353
-        ]
-      },
-      {
-        "sentenceIndex": 40,
-        "text": "But one morning, a different thought cut through the noise.",
-        "startSeconds": 156.73333333333335,
-        "endSeconds": 159.83333333333334,
-        "startFrame": 4702,
-        "endFrame": 4795,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          353,
           354,
           355,
           356,
           357,
           358,
           359,
-          360,
-          361,
-          362,
-          363
+          360
         ]
       },
       {
-        "sentenceIndex": 41,
-        "text": "Not a loud one.",
-        "startSeconds": 160.73333333333335,
-        "endSeconds": 162.33333333333334,
-        "startFrame": 4822,
-        "endFrame": 4870,
-        "clipIndex": 10,
+        "sentenceIndex": 36,
+        "text": "Ray never talked about Carol after the funeral.",
+        "startSeconds": 144.16666666666666,
+        "endSeconds": 147.76666666666665,
+        "startFrame": 4325,
+        "endFrame": 4433,
+        "clipIndex": 9,
         "tokenWordIndexes": [
+          361,
+          362,
+          363,
           364,
           365,
           366,
-          367
+          367,
+          368
         ]
       },
       {
-        "sentenceIndex": 42,
-        "text": "A whisper.",
-        "startSeconds": 163.33333333333334,
-        "endSeconds": 163.93333333333334,
-        "startFrame": 4900,
-        "endFrame": 4918,
-        "clipIndex": 10,
+        "sentenceIndex": 37,
+        "text": "Not once.",
+        "startSeconds": 147.76666666666665,
+        "endSeconds": 149.36666666666667,
+        "startFrame": 4433,
+        "endFrame": 4481,
+        "clipIndex": 9,
         "tokenWordIndexes": [
-          368,
-          369
+          369,
+          370
         ]
       },
       {
-        "sentenceIndex": 43,
-        "text": "\"The wall you keep hitting is not a cage.\"",
-        "startSeconds": 164.66591666666667,
-        "endSeconds": 167.76591666666667,
-        "startFrame": 4939,
-        "endFrame": 5033,
-        "clipIndex": 10,
+        "sentenceIndex": 38,
+        "text": "He just built that feeder and hung it outside the window where the blue chair faced.",
+        "startSeconds": 150.36666666666667,
+        "endSeconds": 155.66666666666666,
+        "startFrame": 4511,
+        "endFrame": 4670,
+        "clipIndex": 9,
         "tokenWordIndexes": [
-          370,
           371,
           372,
           373,
@@ -3528,18 +3903,7 @@ export const inspireScripts: InspirationScript[] = [
           375,
           376,
           377,
-          378
-        ]
-      },
-      {
-        "sentenceIndex": 44,
-        "text": "It was a reframe so simple it felt like a physical shift.",
-        "startSeconds": 167.76591666666667,
-        "endSeconds": 172.16591666666667,
-        "startFrame": 5032,
-        "endFrame": 5165,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          378,
           379,
           380,
           381,
@@ -3547,40 +3911,30 @@ export const inspireScripts: InspirationScript[] = [
           383,
           384,
           385,
-          386,
-          387,
-          388,
-          389,
-          390
+          386
         ]
       },
       {
-        "sentenceIndex": 45,
-        "text": "The wall wasn't there to stop me.",
-        "startSeconds": 172.16591666666667,
-        "endSeconds": 174.86591666666666,
-        "startFrame": 5164,
-        "endFrame": 5246,
-        "clipIndex": 10,
+        "sentenceIndex": 39,
+        "text": "And every evening at 6:15, he'd watch the chickadees and the finches and the occasional squirrel who'd figured out the baffle.",
+        "startSeconds": 155.66666666666666,
+        "endSeconds": 164.16666666666666,
+        "startFrame": 4670,
+        "endFrame": 4925,
+        "clipIndex": 9,
         "tokenWordIndexes": [
+          387,
+          388,
+          389,
+          390,
           391,
+          392,
           392,
           393,
           394,
           395,
           396,
-          397
-        ]
-      },
-      {
-        "sentenceIndex": 46,
-        "text": "It was there to show me what I was willing to do to get past it.",
-        "startSeconds": 174.86591666666666,
-        "endSeconds": 179.76591666666667,
-        "startFrame": 5245,
-        "endFrame": 5393,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          397,
           398,
           399,
           400,
@@ -3590,41 +3944,30 @@ export const inspireScripts: InspirationScript[] = [
           404,
           405,
           406,
-          407,
+          407
+        ]
+      },
+      {
+        "sentenceIndex": 41,
+        "text": "So after the store closed, I was at his house, and I finally asked him \u2014 about the chair, about the spring, about why he never fixed it.",
+        "startSeconds": 164.752625,
+        "endSeconds": 173.952625,
+        "startFrame": 4942,
+        "endFrame": 5219,
+        "clipIndex": 10,
+        "tokenWordIndexes": [
           408,
           409,
           410,
           411,
           412,
-          413
-        ]
-      },
-      {
-        "sentenceIndex": 47,
-        "text": "That's the turning point, isn't it?",
-        "startSeconds": 179.76591666666667,
-        "endSeconds": 181.76591666666667,
-        "startFrame": 5392,
-        "endFrame": 5453,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          413,
           414,
           415,
           416,
           417,
           418,
-          419
-        ]
-      },
-      {
-        "sentenceIndex": 48,
-        "text": "The moment you stop asking \"Why is this happening to me?\"",
-        "startSeconds": 183.16591666666667,
-        "endSeconds": 186.3659166666667,
-        "startFrame": 5494,
-        "endFrame": 5591,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          419,
           420,
           421,
           422,
@@ -3635,22 +3978,22 @@ export const inspireScripts: InspirationScript[] = [
           427,
           428,
           429,
-          430
-        ]
-      },
-      {
-        "sentenceIndex": 49,
-        "text": "and start asking \"What is this asking of me?\" ... ... ...",
-        "startSeconds": 186.3659166666667,
-        "endSeconds": 190.76591666666667,
-        "startFrame": 5590,
-        "endFrame": 5723,
-        "clipIndex": 10,
-        "tokenWordIndexes": [
+          430,
           431,
           432,
           433,
-          434,
+          434
+        ]
+      },
+      {
+        "sentenceIndex": 42,
+        "text": "We were on the porch.",
+        "startSeconds": 173.952625,
+        "endSeconds": 175.652625,
+        "startFrame": 5218,
+        "endFrame": 5270,
+        "clipIndex": 10,
+        "tokenWordIndexes": [
           435,
           436,
           437,
@@ -3659,34 +4002,34 @@ export const inspireScripts: InspirationScript[] = [
         ]
       },
       {
-        "sentenceIndex": 50,
-        "text": "See, resilience isn't about returning to who you were.",
-        "startSeconds": 190.76591666666667,
-        "endSeconds": 194.16591666666667,
-        "startFrame": 5722,
-        "endFrame": 5825,
-        "clipIndex": 11,
+        "sentenceIndex": 43,
+        "text": "It was cold.",
+        "startSeconds": 175.652625,
+        "endSeconds": 176.952625,
+        "startFrame": 5269,
+        "endFrame": 5309,
+        "clipIndex": 10,
         "tokenWordIndexes": [
           440,
           441,
-          442,
+          442
+        ]
+      },
+      {
+        "sentenceIndex": 44,
+        "text": "He had his hands in his jacket pockets, and he was looking at the feeder, which by then was basically held together by hope and old paint.",
+        "startSeconds": 176.952625,
+        "endSeconds": 186.05262499999998,
+        "startFrame": 5308,
+        "endFrame": 5582,
+        "clipIndex": 10,
+        "tokenWordIndexes": [
           443,
           444,
           445,
           446,
           447,
-          448
-        ]
-      },
-      {
-        "sentenceIndex": 51,
-        "text": "That person was built for a world that no longer exists.",
-        "startSeconds": 194.16591666666667,
-        "endSeconds": 198.06591666666668,
-        "startFrame": 5824,
-        "endFrame": 5942,
-        "clipIndex": 11,
-        "tokenWordIndexes": [
+          448,
           449,
           450,
           451,
@@ -3697,18 +4040,7 @@ export const inspireScripts: InspirationScript[] = [
           456,
           457,
           458,
-          459
-        ]
-      },
-      {
-        "sentenceIndex": 52,
-        "text": "Resilience is the courage to meet this new, sharper world and say,",
-        "startSeconds": 199.46591666666666,
-        "endSeconds": 203.76591666666667,
-        "startFrame": 5983,
-        "endFrame": 6113,
-        "clipIndex": 11,
-        "tokenWordIndexes": [
+          459,
           460,
           461,
           462,
@@ -3718,37 +4050,37 @@ export const inspireScripts: InspirationScript[] = [
           466,
           467,
           468,
-          469,
-          470,
-          471
+          469
         ]
       },
       {
-        "sentenceIndex": 53,
-        "text": "\"Then I will become sharper, too.\"",
-        "startSeconds": 203.76591666666667,
-        "endSeconds": 206.06591666666668,
-        "startFrame": 6112,
-        "endFrame": 6182,
+        "sentenceIndex": 45,
+        "text": "\"I didn't fix it,\" he said,",
+        "startSeconds": 186.752625,
+        "endSeconds": 188.952625,
+        "startFrame": 5602,
+        "endFrame": 5669,
         "clipIndex": 11,
         "tokenWordIndexes": [
+          470,
+          471,
           472,
           473,
           474,
-          475,
-          476,
-          477
+          475
         ]
       },
       {
-        "sentenceIndex": 54,
-        "text": "It's the honesty to admit you're afraid, and the clarity to act anyway.",
-        "startSeconds": 206.06591666666668,
-        "endSeconds": 211.66591666666667,
-        "startFrame": 6181,
-        "endFrame": 6350,
+        "sentenceIndex": 46,
+        "text": "\"because I needed one thing in the house that was as broken as I felt.\"",
+        "startSeconds": 188.952625,
+        "endSeconds": 193.55262499999998,
+        "startFrame": 5668,
+        "endFrame": 5807,
         "clipIndex": 11,
         "tokenWordIndexes": [
+          476,
+          477,
           478,
           479,
           480,
@@ -3765,16 +4097,27 @@ export const inspireScripts: InspirationScript[] = [
         ]
       },
       {
-        "sentenceIndex": 55,
-        "text": "It's moving from the paralysis of \"I can't\" to the purpose of \"I must.\" ... ... ...",
-        "startSeconds": 212.76591666666667,
-        "endSeconds": 219.25120833333335,
-        "startFrame": 6382,
-        "endFrame": 6578,
+        "sentenceIndex": 47,
+        "text": "He paused.",
+        "startSeconds": 193.55262499999998,
+        "endSeconds": 194.652625,
+        "startFrame": 5806,
+        "endFrame": 5840,
         "clipIndex": 11,
         "tokenWordIndexes": [
           491,
-          492,
+          492
+        ]
+      },
+      {
+        "sentenceIndex": 48,
+        "text": "\"And I needed to know it could still hold me.\"",
+        "startSeconds": 195.652625,
+        "endSeconds": 198.05262499999998,
+        "startFrame": 5869,
+        "endFrame": 5942,
+        "clipIndex": 11,
+        "tokenWordIndexes": [
           493,
           494,
           495,
@@ -3784,69 +4127,58 @@ export const inspireScripts: InspirationScript[] = [
           499,
           500,
           501,
-          502,
-          503,
-          504
+          502
         ]
       },
       {
-        "sentenceIndex": 56,
-        "text": "So, what's the wall in front of you right now?",
-        "startSeconds": 219.25120833333335,
-        "endSeconds": 221.45120833333334,
-        "startFrame": 6577,
-        "endFrame": 6644,
+        "sentenceIndex": 50,
+        "text": "We sat with that for a while.",
+        "startSeconds": 198.852625,
+        "endSeconds": 200.452625,
+        "startFrame": 5965,
+        "endFrame": 6014,
         "clipIndex": 12,
         "tokenWordIndexes": [
+          503,
+          504,
           505,
           506,
           507,
           508,
-          509,
+          509
+        ]
+      },
+      {
+        "sentenceIndex": 51,
+        "text": "The wind picked up.",
+        "startSeconds": 200.452625,
+        "endSeconds": 202.25262500000002,
+        "startFrame": 6013,
+        "endFrame": 6068,
+        "clipIndex": 12,
+        "tokenWordIndexes": [
           510,
           511,
           512,
-          513,
-          514
+          513
         ]
       },
       {
-        "sentenceIndex": 57,
-        "text": "Don't look away.",
-        "startSeconds": 222.65120833333333,
-        "endSeconds": 223.55120833333334,
-        "startFrame": 6679,
-        "endFrame": 6707,
+        "sentenceIndex": 52,
+        "text": "A chickadee landed on the crooked perch, wobbled, and flew off.",
+        "startSeconds": 202.25262500000002,
+        "endSeconds": 206.852625,
+        "startFrame": 6067,
+        "endFrame": 6206,
         "clipIndex": 12,
         "tokenWordIndexes": [
+          514,
           515,
           516,
-          517
-        ]
-      },
-      {
-        "sentenceIndex": 58,
-        "text": "Walk toward it.",
-        "startSeconds": 223.55120833333334,
-        "endSeconds": 225.35120833333332,
-        "startFrame": 6706,
-        "endFrame": 6761,
-        "clipIndex": 12,
-        "tokenWordIndexes": [
+          517,
           518,
           519,
-          520
-        ]
-      },
-      {
-        "sentenceIndex": 59,
-        "text": "The fog will lift.",
-        "startSeconds": 226.05120833333334,
-        "endSeconds": 227.15120833333333,
-        "startFrame": 6781,
-        "endFrame": 6815,
-        "clipIndex": 12,
-        "tokenWordIndexes": [
+          520,
           521,
           522,
           523,
@@ -3854,12 +4186,12 @@ export const inspireScripts: InspirationScript[] = [
         ]
       },
       {
-        "sentenceIndex": 60,
-        "text": "You will not break.",
-        "startSeconds": 227.15120833333333,
-        "endSeconds": 228.65120833333333,
-        "startFrame": 6814,
-        "endFrame": 6860,
+        "sentenceIndex": 53,
+        "text": "Ray watched it go.",
+        "startSeconds": 207.75262500000002,
+        "endSeconds": 209.25262500000002,
+        "startFrame": 6232,
+        "endFrame": 6278,
         "clipIndex": 12,
         "tokenWordIndexes": [
           525,
@@ -3869,52 +4201,214 @@ export const inspireScripts: InspirationScript[] = [
         ]
       },
       {
-        "sentenceIndex": 61,
-        "text": "You're being forged.",
-        "startSeconds": 228.65120833333333,
-        "endSeconds": 230.80858333333333,
-        "startFrame": 6859,
-        "endFrame": 6925,
-        "clipIndex": 12,
+        "sentenceIndex": 54,
+        "text": "\"I'm going to fix the spring now,\" he said.",
+        "startSeconds": 210.152625,
+        "endSeconds": 212.75262500000002,
+        "startFrame": 6304,
+        "endFrame": 6383,
+        "clipIndex": 13,
         "tokenWordIndexes": [
           529,
           530,
-          531
+          531,
+          532,
+          533,
+          534,
+          535,
+          536,
+          537
+        ]
+      },
+      {
+        "sentenceIndex": 55,
+        "text": "Not like a declaration.",
+        "startSeconds": 212.75262500000002,
+        "endSeconds": 214.55262499999998,
+        "startFrame": 6382,
+        "endFrame": 6437,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          538,
+          539,
+          540,
+          541
+        ]
+      },
+      {
+        "sentenceIndex": 56,
+        "text": "Like he was telling me he'd pick up milk on Tuesday.",
+        "startSeconds": 214.55262499999998,
+        "endSeconds": 217.952625,
+        "startFrame": 6436,
+        "endFrame": 6539,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          542,
+          543,
+          544,
+          545,
+          546,
+          547,
+          548,
+          549,
+          550,
+          551,
+          552
+        ]
+      },
+      {
+        "sentenceIndex": 57,
+        "text": "I think about that blue chair a lot now.",
+        "startSeconds": 218.8735,
+        "endSeconds": 221.07350000000002,
+        "startFrame": 6566,
+        "endFrame": 6633,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          553,
+          554,
+          555,
+          556,
+          557,
+          558,
+          559,
+          560,
+          561
+        ]
+      },
+      {
+        "sentenceIndex": 58,
+        "text": "Not the fixing \u2014 the waiting.",
+        "startSeconds": 221.07350000000002,
+        "endSeconds": 223.4735,
+        "startFrame": 6632,
+        "endFrame": 6705,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          562,
+          563,
+          564,
+          565,
+          566
+        ]
+      },
+      {
+        "sentenceIndex": 59,
+        "text": "The forty-seven years of sitting in something broken because it was the only thing that knew the shape of the weight. ...",
+        "startSeconds": 223.4735,
+        "endSeconds": 230.7735,
+        "startFrame": 6704,
+        "endFrame": 6924,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          567,
+          568,
+          569,
+          570,
+          571,
+          572,
+          573,
+          574,
+          575,
+          576,
+          577,
+          578,
+          579,
+          580,
+          581,
+          582,
+          583,
+          584,
+          585,
+          586,
+          587
+        ]
+      },
+      {
+        "sentenceIndex": 60,
+        "text": "I'm not going to tell you what to do with that.",
+        "startSeconds": 231.07350000000002,
+        "endSeconds": 232.9735,
+        "startFrame": 6932,
+        "endFrame": 6990,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          588,
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          595,
+          596,
+          597,
+          598
+        ]
+      },
+      {
+        "sentenceIndex": 61,
+        "text": "I'm just going to leave it here, between us, like a cold cup of coffee on a windowsill.",
+        "startSeconds": 232.9735,
+        "endSeconds": 239.42191666666668,
+        "startFrame": 6989,
+        "endFrame": 7183,
+        "clipIndex": 13,
+        "tokenWordIndexes": [
+          599,
+          600,
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          613,
+          614,
+          615,
+          616
         ]
       }
     ],
     "clips": [
       {
         "clipIndex": 0,
-        "query": "empty street dawn",
+        "query": "empty chair window light",
         "videoPath": "videos/inspire/resilience-seg-01/clip-0.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-63970/",
-        "loop": false,
-        "startFrame": 0,
-        "endFrame": 495,
-        "videoId": 63970,
-        "videoSource": "pixabay"
-      },
-      {
-        "clipIndex": 1,
-        "query": "person window light",
-        "videoPath": "videos/inspire/resilience-seg-01/clip-1.mp4",
         "sourceUrl": "https://pixabay.com/videos/id-11722/",
         "loop": false,
-        "startFrame": 495,
-        "endFrame": 1161,
+        "startFrame": 0,
+        "endFrame": 696,
         "videoId": 11722,
         "videoSource": "pixabay"
       },
       {
-        "clipIndex": 2,
-        "query": "mountain sunrise mist",
-        "videoPath": "videos/inspire/resilience-seg-01/clip-2.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-199379/",
+        "clipIndex": 1,
+        "query": "man silhouette workshop",
+        "videoPath": "videos/inspire/resilience-seg-01/clip-1.mp4",
+        "sourceUrl": "https://pixabay.com/videos/id-173028/",
         "loop": false,
-        "startFrame": 1194,
-        "endFrame": 1488,
-        "videoId": 199379,
+        "startFrame": 705,
+        "endFrame": 1068,
+        "videoId": 173028,
+        "videoSource": "pixabay"
+      },
+      {
+        "clipIndex": 2,
+        "query": "person window rain",
+        "videoPath": "videos/inspire/resilience-seg-01/clip-2.mp4",
+        "sourceUrl": "https://pixabay.com/videos/id-141606/",
+        "loop": false,
+        "startFrame": 1071,
+        "endFrame": 1536,
+        "videoId": 141606,
         "videoSource": "pixabay"
       },
       {
@@ -3923,113 +4417,124 @@ export const inspireScripts: InspirationScript[] = [
         "videoPath": "videos/inspire/resilience-seg-01/clip-3.mp4",
         "sourceUrl": "https://pixabay.com/videos/id-242824/",
         "loop": false,
-        "startFrame": 1488,
-        "endFrame": 1887,
+        "startFrame": 1536,
+        "endFrame": 1916,
         "videoId": 242824,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 4,
-        "query": "forge fire closeup",
+        "query": "empty street dawn",
         "videoPath": "videos/inspire/resilience-seg-01/clip-4.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-8625/",
+        "sourceUrl": "https://pixabay.com/videos/id-63970/",
         "loop": false,
-        "startFrame": 1910,
-        "endFrame": 2409,
-        "videoId": 8625,
+        "startFrame": 1915,
+        "endFrame": 2360,
+        "videoId": 63970,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 5,
-        "query": "fog rolling hills",
+        "query": "old hands sorting",
         "videoPath": "videos/inspire/resilience-seg-01/clip-5.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-27111/",
+        "sourceUrl": "https://pixabay.com/videos/id-34091/",
         "loop": false,
-        "startFrame": 2408,
-        "endFrame": 2745,
-        "videoId": 27111,
+        "startFrame": 2359,
+        "endFrame": 2981,
+        "videoId": 34091,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 6,
-        "query": "woman looking ocean",
+        "query": "man sitting alone",
         "videoPath": "videos/inspire/resilience-seg-01/clip-6.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-14869/",
+        "sourceUrl": "https://pixabay.com/videos/id-164788/",
         "loop": false,
-        "startFrame": 2744,
-        "endFrame": 3156,
-        "videoId": 14869,
+        "startFrame": 2980,
+        "endFrame": 3276,
+        "videoId": 164788,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 7,
-        "query": "sunset clouds golden",
+        "query": "bird feeder snow",
         "videoPath": "videos/inspire/resilience-seg-01/clip-7.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-204006/",
+        "sourceUrl": "https://pixabay.com/videos/id-107424/",
         "loop": false,
-        "startFrame": 3155,
-        "endFrame": 3334,
-        "videoId": 204006,
+        "startFrame": 3275,
+        "endFrame": 3458,
+        "videoId": 107424,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 8,
-        "query": "person window light",
+        "query": "rain drops leaves",
         "videoPath": "videos/inspire/resilience-seg-02/clip-0.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-11722/",
+        "sourceUrl": "https://pixabay.com/videos/id-122078/",
         "loop": false,
-        "startFrame": 3334,
-        "endFrame": 3868,
-        "videoId": 11722,
+        "startFrame": 3458,
+        "endFrame": 4325,
+        "videoId": 122078,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 9,
-        "query": "fog rolling hills",
+        "query": "person window light",
         "videoPath": "videos/inspire/resilience-seg-02/clip-1.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-27111/",
+        "sourceUrl": "https://pixabay.com/videos/id-11722/",
         "loop": false,
-        "startFrame": 3868,
-        "endFrame": 4699,
-        "videoId": 27111,
+        "startFrame": 4325,
+        "endFrame": 4925,
+        "videoId": 11722,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 10,
-        "query": "mountain sunrise mist",
+        "query": "empty street dawn",
         "videoPath": "videos/inspire/resilience-seg-02/clip-2.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-122406/",
+        "sourceUrl": "https://pixabay.com/videos/id-63970/",
         "loop": false,
-        "startFrame": 4702,
-        "endFrame": 5723,
-        "videoId": 122406,
+        "startFrame": 4942,
+        "endFrame": 5582,
+        "videoId": 63970,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 11,
         "query": "solitary figure sunset",
         "videoPath": "videos/inspire/resilience-seg-02/clip-3.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-3723/",
+        "sourceUrl": "https://pixabay.com/videos/id-242824/",
         "loop": false,
-        "startFrame": 5722,
-        "endFrame": 6578,
-        "videoId": 3723,
+        "startFrame": 5602,
+        "endFrame": 5942,
+        "videoId": 242824,
         "videoSource": "pixabay"
       },
       {
         "clipIndex": 12,
-        "query": "ocean waves calm",
+        "query": "fog rolling hills",
         "videoPath": "videos/inspire/resilience-seg-02/clip-4.mp4",
-        "sourceUrl": "https://pixabay.com/videos/id-21175/",
+        "sourceUrl": "https://pixabay.com/videos/id-27111/",
         "loop": false,
-        "startFrame": 6577,
-        "endFrame": 6925,
-        "videoId": 21175,
+        "startFrame": 5965,
+        "endFrame": 6278,
+        "videoId": 27111,
+        "videoSource": "pixabay"
+      },
+      {
+        "clipIndex": 13,
+        "query": "ocean waves calm",
+        "videoPath": "videos/inspire/resilience-seg-02/clip-5.mp4",
+        "sourceUrl": "https://pixabay.com/videos/id-62249/",
+        "loop": false,
+        "startFrame": 6304,
+        "endFrame": 7183,
+        "videoId": 62249,
         "videoSource": "pixabay"
       }
     ],
     "strategy": "multi",
-    "durationInFrames": 6925,
+    "durationInFrames": 7183,
     "fps": 30,
     "width": 1920,
     "height": 1080,
@@ -4039,32 +4544,32 @@ export const inspireScripts: InspirationScript[] = [
         {
           "clipIndex": 0,
           "kenBurns": "zoom-out",
-          "overlayMood": "dramatic"
-        },
-        {
-          "clipIndex": 1,
-          "kenBurns": "zoom-in",
           "overlayMood": "moody"
         },
         {
+          "clipIndex": 1,
+          "kenBurns": "pan-right",
+          "overlayMood": "dramatic"
+        },
+        {
           "clipIndex": 2,
+          "kenBurns": "zoom-in",
+          "overlayMood": "melancholic"
+        },
+        {
+          "clipIndex": 3,
           "kenBurns": "zoom-out",
           "overlayMood": "reflective"
         },
         {
-          "clipIndex": 3,
-          "kenBurns": "pan-right",
-          "overlayMood": "melancholic"
-        },
-        {
           "clipIndex": 4,
-          "kenBurns": "zoom-in",
-          "overlayMood": "dramatic"
+          "kenBurns": "pan-left",
+          "overlayMood": "cool"
         },
         {
           "clipIndex": 5,
-          "kenBurns": "pan-left",
-          "overlayMood": "moody"
+          "kenBurns": "zoom-in",
+          "overlayMood": "neutral"
         },
         {
           "clipIndex": 6,
@@ -4083,22 +4588,27 @@ export const inspireScripts: InspirationScript[] = [
         },
         {
           "clipIndex": 9,
-          "kenBurns": "pan-right",
+          "kenBurns": "pan-left",
           "overlayMood": "melancholic"
         },
         {
           "clipIndex": 10,
           "kenBurns": "zoom-in",
-          "overlayMood": "ethereal"
+          "overlayMood": "cool"
         },
         {
           "clipIndex": 11,
-          "kenBurns": "pan-left",
+          "kenBurns": "zoom-out",
           "overlayMood": "dramatic"
         },
         {
           "clipIndex": 12,
-          "kenBurns": "zoom-out",
+          "kenBurns": "pan-right",
+          "overlayMood": "reflective"
+        },
+        {
+          "clipIndex": 13,
+          "kenBurns": "zoom-in",
           "overlayMood": "warm"
         }
       ],
@@ -4108,32 +4618,33 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "hook",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            5,
-            7
+            3
           ]
         },
         {
           "sentenceIndex": 1,
-          "narrativeRole": "hook",
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            0
+            3,
+            15
           ]
         },
         {
           "sentenceIndex": 2,
-          "narrativeRole": "setup",
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            1
+            3
           ]
         },
         {
           "sentenceIndex": 3,
-          "narrativeRole": "setup",
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            1
+            7,
+            9
           ]
         },
         {
@@ -4141,7 +4652,7 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "tension",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            10
+            3
           ]
         },
         {
@@ -4149,20 +4660,11 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            5,
-            10
+            4
           ]
         },
         {
           "sentenceIndex": 6,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2
-          ]
-        },
-        {
-          "sentenceIndex": 7,
           "narrativeRole": "tension",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
@@ -4170,50 +4672,54 @@ export const inspireScripts: InspirationScript[] = [
           ]
         },
         {
-          "sentenceIndex": 8,
-          "narrativeRole": "reveal",
+          "sentenceIndex": 7,
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            6,
-            9
+            14
+          ]
+        },
+        {
+          "sentenceIndex": 8,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            8
           ]
         },
         {
           "sentenceIndex": 9,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            1
+          ]
+        },
+        {
+          "sentenceIndex": 10,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            1
+          ]
+        },
+        {
+          "sentenceIndex": 11,
+          "narrativeRole": "setup",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            7
+          ]
+        },
+        {
+          "sentenceIndex": 12,
           "narrativeRole": "hero-quote",
           "captionStyle": "hero-quote",
           "emphasisWordIndexes": []
         },
         {
-          "sentenceIndex": 10,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            0,
-            8
-          ]
-        },
-        {
-          "sentenceIndex": 11,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            1,
-            5
-          ]
-        },
-        {
-          "sentenceIndex": 12,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2,
-            5
-          ]
-        },
-        {
           "sentenceIndex": 13,
-          "narrativeRole": "tension",
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
             4
@@ -4224,33 +4730,23 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            8,
-            20
+            2
           ]
         },
         {
           "sentenceIndex": 15,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            0,
-            2
-          ]
-        },
-        {
-          "sentenceIndex": 16,
           "narrativeRole": "reveal",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            2
+            5
           ]
         },
         {
           "sentenceIndex": 17,
-          "narrativeRole": "reveal",
+          "narrativeRole": "setup",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            2
+            3
           ]
         },
         {
@@ -4258,8 +4754,7 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            8,
-            19
+            0
           ]
         },
         {
@@ -4272,155 +4767,6 @@ export const inspireScripts: InspirationScript[] = [
         },
         {
           "sentenceIndex": 20,
-          "narrativeRole": "transition",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": []
-        },
-        {
-          "sentenceIndex": 21,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            8,
-            12
-          ]
-        },
-        {
-          "sentenceIndex": 22,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            0
-          ]
-        },
-        {
-          "sentenceIndex": 23,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2
-          ]
-        },
-        {
-          "sentenceIndex": 24,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            1,
-            6
-          ]
-        },
-        {
-          "sentenceIndex": 25,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            1,
-            5
-          ]
-        },
-        {
-          "sentenceIndex": 26,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            3,
-            6
-          ]
-        },
-        {
-          "sentenceIndex": 27,
-          "narrativeRole": "payoff",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            4
-          ]
-        },
-        {
-          "sentenceIndex": 28,
-          "narrativeRole": "payoff",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2
-          ]
-        },
-        {
-          "sentenceIndex": 29,
-          "narrativeRole": "hook",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            4,
-            5
-          ]
-        },
-        {
-          "sentenceIndex": 30,
-          "narrativeRole": "setup",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            6
-          ]
-        },
-        {
-          "sentenceIndex": 31,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            7
-          ]
-        },
-        {
-          "sentenceIndex": 32,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            10
-          ]
-        },
-        {
-          "sentenceIndex": 33,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            6
-          ]
-        },
-        {
-          "sentenceIndex": 34,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            6
-          ]
-        },
-        {
-          "sentenceIndex": 35,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            5,
-            7
-          ]
-        },
-        {
-          "sentenceIndex": 36,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            7,
-            9
-          ]
-        },
-        {
-          "sentenceIndex": 37,
-          "narrativeRole": "tension",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2
-          ]
-        },
-        {
-          "sentenceIndex": 38,
           "narrativeRole": "payoff",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
@@ -4428,28 +4774,160 @@ export const inspireScripts: InspirationScript[] = [
           ]
         },
         {
-          "sentenceIndex": 39,
-          "narrativeRole": "reveal",
+          "sentenceIndex": 21,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 22,
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            8,
-            17
+            2
           ]
         },
         {
-          "sentenceIndex": 40,
+          "sentenceIndex": 23,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 24,
+          "narrativeRole": "tension",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            11,
+            16
+          ]
+        },
+        {
+          "sentenceIndex": 25,
+          "narrativeRole": "hero-quote",
+          "captionStyle": "hero-quote",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 26,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 27,
+          "narrativeRole": "hero-quote",
+          "captionStyle": "hero-quote",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 28,
+          "narrativeRole": "hero-quote",
+          "captionStyle": "hero-quote",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 30,
+          "narrativeRole": "transition",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 31,
+          "narrativeRole": "hook",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            1,
+            8
+          ]
+        },
+        {
+          "sentenceIndex": 30,
+          "narrativeRole": "hook",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            12
+          ]
+        },
+        {
+          "sentenceIndex": 31,
+          "narrativeRole": "hook",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            0
+          ]
+        },
+        {
+          "sentenceIndex": 32,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            3,
+            11
+          ]
+        },
+        {
+          "sentenceIndex": 33,
+          "narrativeRole": "tension",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            13
+          ]
+        },
+        {
+          "sentenceIndex": 34,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            3
+          ]
+        },
+        {
+          "sentenceIndex": 35,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            16
+          ]
+        },
+        {
+          "sentenceIndex": 36,
           "narrativeRole": "tension",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
             1,
-            5
+            6
           ]
         },
         {
-          "sentenceIndex": 41,
-          "narrativeRole": "transition",
+          "sentenceIndex": 37,
+          "narrativeRole": "tension",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            1
+          ]
+        },
+        {
+          "sentenceIndex": 38,
+          "narrativeRole": "body",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            10
+          ]
+        },
+        {
+          "sentenceIndex": 39,
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": []
+        },
+        {
+          "sentenceIndex": 41,
+          "narrativeRole": "setup",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            12
+          ]
         },
         {
           "sentenceIndex": 42,
@@ -4459,39 +4937,38 @@ export const inspireScripts: InspirationScript[] = [
         },
         {
           "sentenceIndex": 43,
-          "narrativeRole": "hero-quote",
-          "captionStyle": "hero-quote",
-          "emphasisWordIndexes": []
+          "narrativeRole": "transition",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            2
+          ]
         },
         {
           "sentenceIndex": 44,
           "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            7
+            22,
+            25
           ]
         },
         {
           "sentenceIndex": 45,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
+          "narrativeRole": "hero-quote",
+          "captionStyle": "hero-quote",
           "emphasisWordIndexes": []
         },
         {
           "sentenceIndex": 46,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            11
-          ]
+          "narrativeRole": "hero-quote",
+          "captionStyle": "hero-quote",
+          "emphasisWordIndexes": []
         },
         {
           "sentenceIndex": 47,
-          "narrativeRole": "tension",
+          "narrativeRole": "transition",
           "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2
-          ]
+          "emphasisWordIndexes": []
         },
         {
           "sentenceIndex": 48,
@@ -4500,83 +4977,80 @@ export const inspireScripts: InspirationScript[] = [
           "emphasisWordIndexes": []
         },
         {
-          "sentenceIndex": 49,
-          "narrativeRole": "hero-quote",
-          "captionStyle": "hero-quote",
+          "sentenceIndex": 50,
+          "narrativeRole": "transition",
+          "captionStyle": "word-by-word",
           "emphasisWordIndexes": []
         },
         {
-          "sentenceIndex": 50,
-          "narrativeRole": "reveal",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            2,
-            3
-          ]
-        },
-        {
           "sentenceIndex": 51,
-          "narrativeRole": "body",
+          "narrativeRole": "transition",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            7
+            2
           ]
         },
         {
           "sentenceIndex": 52,
-          "narrativeRole": "setup",
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            8
+            5,
+            7
           ]
         },
         {
           "sentenceIndex": 53,
-          "narrativeRole": "hero-quote",
-          "captionStyle": "hero-quote",
+          "narrativeRole": "transition",
+          "captionStyle": "word-by-word",
           "emphasisWordIndexes": []
         },
         {
           "sentenceIndex": 54,
-          "narrativeRole": "body",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": [
-            7,
-            11
-          ]
-        },
-        {
-          "sentenceIndex": 55,
           "narrativeRole": "hero-quote",
           "captionStyle": "hero-quote",
           "emphasisWordIndexes": []
         },
         {
-          "sentenceIndex": 56,
-          "narrativeRole": "tension",
+          "sentenceIndex": 55,
+          "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
             3
           ]
         },
         {
-          "sentenceIndex": 57,
-          "narrativeRole": "transition",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": []
-        },
-        {
-          "sentenceIndex": 58,
-          "narrativeRole": "transition",
-          "captionStyle": "word-by-word",
-          "emphasisWordIndexes": []
-        },
-        {
-          "sentenceIndex": 59,
+          "sentenceIndex": 56,
           "narrativeRole": "body",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            2
+            9
+          ]
+        },
+        {
+          "sentenceIndex": 57,
+          "narrativeRole": "reveal",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            5,
+            6
+          ]
+        },
+        {
+          "sentenceIndex": 58,
+          "narrativeRole": "reveal",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            3
+          ]
+        },
+        {
+          "sentenceIndex": 59,
+          "narrativeRole": "reveal",
+          "captionStyle": "word-by-word",
+          "emphasisWordIndexes": [
+            8,
+            19
           ]
         },
         {
@@ -4592,7 +5066,8 @@ export const inspireScripts: InspirationScript[] = [
           "narrativeRole": "payoff",
           "captionStyle": "word-by-word",
           "emphasisWordIndexes": [
-            2
+            10,
+            17
           ]
         }
       ]

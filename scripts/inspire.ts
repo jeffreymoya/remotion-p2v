@@ -2,15 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { topicToSlug } from "../src/lib/inspire/slug";
 import { runLongformPipeline } from "../src/lib/inspire/longform-pipeline";
-import type { InspirePhase } from "../src/lib/inspire/inspire-pipeline";
 
 process.loadEnvFile();
 
-const VALID_PHASES = ["narration", "tts", "videos", "artdirect", "compose"] as const;
+const VALID_PHASES = ["narration", "refine", "tts", "videos", "artdirect", "compose"] as const;
+type PipelinePhase = (typeof VALID_PHASES)[number];
 
-function parsePhase(value: string): InspirePhase | undefined {
-  return VALID_PHASES.includes(value as InspirePhase)
-    ? (value as InspirePhase)
+function parsePhase(value: string): PipelinePhase | undefined {
+  return VALID_PHASES.includes(value as PipelinePhase)
+    ? (value as PipelinePhase)
     : undefined;
 }
 
@@ -19,13 +19,15 @@ function printHelp(): void {
 Usage: tsx scripts/inspire.ts "<topic>" [options]
 
 Options:
-  --segments=N    Total segments to generate via DeepSeek (default: 5, each ~2–3 min)
-  --limit=N       Process only the first N segments (default: all; useful for testing)
-  --from=<phase>  Resume from a specific phase (uses cached artifacts for earlier phases)
-  --clean         Delete all cached artifacts for this topic before running
-  --verbose       Enable verbose logging
+  --segments=N        Total segments to generate via DeepSeek (default: 5, each ~2–3 min)
+  --limit=N           Process only the first N segments (default: all; useful for testing)
+  --from=<phase>      Resume from a specific phase (uses cached artifacts for earlier phases)
+  --max-revisions=N   Max gate-revision passes per chapter (default: 2)
+  --allow-words=w1,w2 Allow specific banned words for this topic
+  --clean             Delete all cached artifacts for this topic before running
+  --verbose           Enable verbose logging
 
-Phases: narration, tts, videos, artdirect, compose
+Phases: narration, refine, tts, videos, artdirect, compose
 
 Examples:
   tsx scripts/inspire.ts "the power of showing up every day"
@@ -98,18 +100,20 @@ async function main(): Promise<void> {
   }
 
   let topic: string | undefined;
-  let from: InspirePhase | undefined;
+  let from: PipelinePhase | undefined;
   let clean = false;
   let verbose = false;
   let segmentCount = 5;
   let limit: number | undefined;
+  let maxRevisions: number | undefined;
+  let allowWords: string[] | undefined;
 
   for (const arg of args) {
     if (arg.startsWith("--from=")) {
       const phase = parsePhase(arg.split("=")[1]);
       if (!phase) {
         console.error(
-          `Unknown phase: ${arg.split("=")[1]}. Use --from=narration|tts|videos|artdirect|compose`,
+          `Unknown phase: ${arg.split("=")[1]}. Use --from=narration|refine|tts|videos|artdirect|compose`,
         );
         process.exit(1);
       }
@@ -128,6 +132,15 @@ async function main(): Promise<void> {
         process.exit(1);
       }
       limit = n;
+    } else if (arg.startsWith("--max-revisions=")) {
+      const n = parseInt(arg.split("=")[1], 10);
+      if (isNaN(n) || n < 0 || n > 5) {
+        console.error("--max-revisions must be an integer between 0 and 5");
+        process.exit(1);
+      }
+      maxRevisions = n;
+    } else if (arg.startsWith("--allow-words=")) {
+      allowWords = arg.split("=")[1].split(",").map((w) => w.trim()).filter(Boolean);
     } else if (arg === "--clean") {
       clean = true;
     } else if (arg === "--verbose") {
@@ -159,7 +172,7 @@ async function main(): Promise<void> {
     limit = segmentCount;
   }
 
-  await runLongformPipeline({ topic, slug, segmentCount, limit, from, verbose });
+  await runLongformPipeline({ topic, slug, segmentCount, limit, from, verbose, maxRevisions, allowWords });
 }
 
 main().catch((err) => {

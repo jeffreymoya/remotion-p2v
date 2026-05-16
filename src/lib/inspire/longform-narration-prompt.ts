@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { deepseekChat } from "../deepseek";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
-import { NARRATION_GUIDELINES } from "./narration-guidelines";
+import { NARRATION_GUIDELINES, VOICE_SAMPLE } from "./narration-guidelines";
 
 const LongformSegmentSchema = z.object({
   title: z.string().min(1),
@@ -29,28 +29,29 @@ function buildSystemPrompt(segmentCount: number): string {
   const totalMinMin = Math.round((minWords * segmentCount) / 140);
   const totalMaxMin = Math.round((maxWords * segmentCount) / 140);
 
-  const developmentLine =
+  const buildLines =
     segmentCount > 4
-      ? `- Chapters 3 to ${segmentCount - 2}: Development — explore the tension, provide evidence, deepen the argument\n`
+      ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate — deepen the story, add texture, raise stakes through specifics\n`
       : "";
 
-  return `You are a professional scriptwriter for long-form inspirational YouTube videos (${totalMinMin}–${totalMaxMin} minutes total).
+  return `You are a storyteller writing long-form narration for inspirational YouTube videos (${totalMinMin}–${totalMaxMin} minutes total). You write in the voice of an older person telling stories to a friend over coffee — warm, self-deprecating, sometimes uncertain, always concrete.
 
 You will write a complete ${segmentCount}-chapter narration. Each chapter is 2–3 minutes when spoken aloud at ~140 words per minute (${minWords}–${maxWords} words per chapter).
 
 ## Narrative Arc (MANDATORY)
 The chapters must form one cohesive story with a clear arc:
-- Chapter 1: Hook — disrupt the viewer's assumptions, create an immediate question
-- Chapter 2: Setup — establish the problem or context in depth
-${developmentLine}- Chapter ${Math.max(2, segmentCount - 1)}: Turning Point / Reveal — the insight or reframe
-- Chapter ${segmentCount}: Payoff — landing lines, call to action, lasting impression
+- Chapter 1: Open — drop into a specific scene, introduce a controlling object, create curiosity
+- Chapter 2: Build — establish the problem through concrete detail and observation
+${buildLines}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the quiet reframe, earned through accumulated detail
+- Chapter ${segmentCount}: Land — bring back the controlling object, end on a small image not a big declaration
 
 ## Per-Chapter Rules
 1. Each chapter must end at a natural break — not mid-thought or mid-sentence.
-2. Each chapter uses graduated prosody pauses: \`...\` (short pause / hesitation), \`... ...\` (medium pause / pre-reveal suspense), \`... ... ...\` (long pause / major emotional beat or silence after climactic lines). Also \`—\` (abrupt shift), \`( )\` (aside), \`\\n\\n\` (section break). Use at least 3 pause marks per chapter with at least 2 different pause lengths.
-3. Each chapter must contain EXACTLY ONE standalone sentence wrapped in double quotes — the internal voice, a belief, or an aphorism. Length: 5–12 words. Placed at the emotional peak of that chapter.
-4. Conversational tone — write as if speaking to one person.
-5. Word count per chapter: ${minWords}–${maxWords} words.
+2. Use graduated prosody pauses: \`...\` (short), \`... ...\` (medium), \`... ... ...\` (long). Also \`—\` (abrupt shift), \`( )\` (aside), \`\\n\\n\` (section break). At least 3 pause marks per chapter, at least 2 different types.
+3. Conversational tone — write as if speaking to one person sitting across from you.
+4. Word count per chapter: ${minWords}–${maxWords} words.
+5. Each chapter needs ≥2 named entities (people, places, objects) and ≥1 dated moment.
+6. ≤30% of sentences should directly address the listener as "you". Most should be in-scene narration or narrator-aside.
 
 ${NARRATION_GUIDELINES}
 
@@ -60,8 +61,8 @@ Return ONLY a JSON object matching this shape exactly:
 {
   "segmentCount": ${segmentCount},
   "segments": [
-    { "title": "Chapter 1: The Hook", "narration": "..." },
-    { "title": "Chapter 2: The Setup", "narration": "..." }
+    { "title": "Chapter 1: ...", "narration": "..." },
+    { "title": "Chapter 2: ...", "narration": "..." }
   ]
 }
 \`\`\`
@@ -74,14 +75,17 @@ export async function generateLongformScript(
   segmentCount: number,
   options?: { verbose?: boolean },
 ): Promise<LongformScript> {
-  const userPrompt = `Write a ${segmentCount}-chapter long-form inspirational narration about: "${topic}"
+  const userPrompt = `Write a ${segmentCount}-chapter long-form narration about: "${topic}"
 
 Remember:
 - ${segmentCount} chapters, each ${280}–${420} words (2–3 min at 140 WPM)
-- One cohesive narrative arc across all chapters
-- Exactly ONE quoted sentence per chapter (5–12 words, at the emotional peak)
-- Use graduated pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter with varied lengths
-- Each chapter ends at a natural break
+- One cohesive narrative arc — commit to a controlling object in chapter 1
+- Wise-elder voice: warm, concrete, self-deprecating, story-driven
+- ≥2 named entities and ≥1 dated moment per chapter
+- ≤30% of sentences directly address "you" — most should be in-scene
+- No banned vocabulary (agency, forge, drift, paralysis, transformation, becoming, etc.)
+- Use prosody pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter
+- Each chapter ends at a natural break with an open loop to the next
 - Return ONLY the JSON`;
 
   const raw = await deepseekChat(

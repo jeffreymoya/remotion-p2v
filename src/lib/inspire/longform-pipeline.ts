@@ -17,14 +17,19 @@ import {
   pickNextTrack,
   recordTrackUse,
 } from "./music-registry";
+import { refineChapter } from "./refine/refine-chapter";
+import type { GateContext } from "./gates/gate-types";
+import { REFINE_MAX_REVISIONS } from "../config";
 
 export interface LongformPipelineOptions {
   topic: string;
   slug: string;
   segmentCount: number;
   limit?: number;
-  from?: InspirePhase;
+  from?: InspirePhase | "refine";
   verbose: boolean;
+  maxRevisions?: number;
+  allowWords?: string[];
 }
 
 // ── Path helpers ──────────────────────────────────────────────────────────
@@ -35,6 +40,22 @@ function longformJsonPath(slug: string): string {
 
 function segSlug(rootSlug: string, index: number): string {
   return `${rootSlug}-seg-${String(index + 1).padStart(2, "0")}`;
+}
+
+// ── Chapter role assignment ───────────────────────────────────────────────
+
+function assignChapterRoles(count: number): Array<GateContext["chapterRole"]> {
+  if (count === 1) return ["open"];
+  if (count === 2) return ["open", "land"];
+  // First = open, last = land, second-to-last = turn, rest = build/complicate
+  const roles: Array<GateContext["chapterRole"]> = new Array(count);
+  roles[0] = "open";
+  roles[count - 1] = "land";
+  roles[count - 2] = "turn";
+  for (let i = 1; i < count - 2; i++) {
+    roles[i] = i % 2 === 1 ? "build" : "complicate";
+  }
+  return roles;
 }
 
 function segNarrationPath(segSlug: string): string {
@@ -162,6 +183,10 @@ async function runLongformPipelineImpl(
   const limit = options.limit ?? segmentCount;
   const processCount = Math.min(limit, segmentCount);
   const forceRegenerate = options.from === "narration";
+  const maxRevisions = options.maxRevisions ?? REFINE_MAX_REVISIONS;
+  const skipRefine = options.from !== undefined
+    && options.from !== "narration"
+    && options.from !== "refine";
 
   // Fail fast before any network calls if sox is missing.
   checkSox();
@@ -169,7 +194,9 @@ async function runLongformPipelineImpl(
   // Segment pipelines always start from "tts" since narration is seeded externally.
   // If the user requests --from=videos or later, propagate that to each segment.
   const segFrom: InspirePhase =
-    !options.from || options.from === "narration" ? "tts" : options.from;
+    !options.from || options.from === "narration" || options.from === "refine"
+      ? "tts"
+      : options.from;
 
   console.log(
     `\n━━ Longform Pipeline: "${topic}" — ${segmentCount} segments, processing ${processCount} ━━\n`,
@@ -184,6 +211,49 @@ async function runLongformPipelineImpl(
     verbose,
   );
 
+  // Phase 0.5: Refine each chapter through deterministic gates
+  const chapterRoles: Array<GateContext["chapterRole"]> = assignChapterRoles(processCount);
+  const refinedNarrations: string[] = [];
+
+  if (!skipRefine) {
+    console.log(`\n── Refine: running deterministic gates (max ${maxRevisions} revisions) ──`);
+  }
+
+  for (let i = 0; i < processCount; i++) {
+    const seg = longformScript.segments[i];
+
+    if (skipRefine) {
+      refinedNarrations.push(seg.narration);
+      continue;
+    }
+
+    const ctx: GateContext = {
+      topic,
+      slug: segSlug(slug, i),
+      chapterIndex: i,
+      chapterCount: processCount,
+      chapterRole: chapterRoles[i],
+      priorChapters: refinedNarrations.slice(),
+      allowWords: options.allowWords,
+    };
+
+    const result = await refineChapter(ctx, seg.narration, {
+      maxRevisions,
+      verbose,
+      chapterTitle: seg.title,
+      chapterRole: chapterRoles[i],
+      chapterIntent: `Chapter ${i + 1} of ${processCount}`,
+      sceneSeed: seg.title,
+      topic,
+      slug: segSlug(slug, i),
+    });
+
+    refinedNarrations.push(result.final);
+    console.log(
+      `  [refine] chapter ${i + 1}: ${result.lastResult.pass ? "PASS" : "FAIL"} after ${result.revisions} revision(s)`,
+    );
+  }
+
   // Phases 1-5 per segment
   for (let i = 0; i < processCount; i++) {
     const seg = longformScript.segments[i];
@@ -193,7 +263,7 @@ async function runLongformPipelineImpl(
       `\n── Segment ${i + 1}/${processCount}: "${seg.title}" (${sSlug}) ──`,
     );
 
-    seedNarrationFile(sSlug, seg.narration);
+    seedNarrationFile(sSlug, refinedNarrations[i]);
 
     await runInspirePipeline({
       topic: seg.title,

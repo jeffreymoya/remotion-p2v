@@ -38,3 +38,13 @@ export const GOOGLE_TTS_VOICE_NAME = process.env.GOOGLE_TTS_VOICE_NAME ?? "en-US
 export const GOOGLE_TTS_LANGUAGE_CODE = "en-US" as const;
 export const GOOGLE_TTS_SAMPLE_RATE = 24000 as const;
 export const AUDIO_DIR = "public/audio" as const;
+
+// ── Narration gate thresholds ───────────────────────────────────────────
+export const REFINE_MAX_REVISIONS = 2;
+export const SIMPLICITY_FK_GRADE_MAX = 8.0;
+export const SIMPLICITY_UNCOMMON_WORD_PCT_MAX = 5.0;
+export const SERMON_RATIO_DIRECT_ADDRESS_MAX = 0.30;
+export const SPECIFICITY_MIN_NAMED_ENTITIES = 2;
+export const SPECIFICITY_MIN_DATED_MOMENTS = 1;
+export const PROSODY_MIN_MARKS = 3;
+export const PROSODY_MIN_DISTINCT_MARK_TYPES = 2;
