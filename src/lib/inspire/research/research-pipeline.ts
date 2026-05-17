@@ -9,6 +9,7 @@ import {
   RESEARCH_VERIFY_CONCURRENCY,
   RESEARCH_MAX_BRAINSTORM_ROUNDS,
   EXA_API_KEY,
+  SERPER_API_KEY,
 } from "../../config";
 import type { Anchor, RawCandidate, ResearchBundle } from "./research-schema";
 import { ResearchBundleSchema } from "./research-schema";
@@ -17,6 +18,8 @@ import { verifyAnchor } from "./anchor-verifier";
 import type { VerifyResult } from "./anchor-verifier";
 import type { SearchProvider, SearchHit, SearchOptions } from "./search-provider";
 import { makeExaProvider } from "./exa-client";
+import { makeSerperProvider } from "./serper-client";
+import { makeRoutedProvider } from "./routed-provider";
 import { planTopicalQueries } from "./topical-queries";
 import { buildCorpus } from "./corpus-builder";
 import type { ResearchCorpus } from "./corpus-schema";
@@ -28,12 +31,17 @@ import { enrichCurrentRun } from "../../tracing";
 const CACHE_DIR = "prompts/inspire/.cache";
 const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-function cacheKey(query: string): string {
-  return `exa-${crypto.createHash("sha256").update(query).digest("hex").slice(0, 16)}.json`;
+function searchCacheKey(prefix: string, query: string, opts?: SearchOptions): string {
+  const key = JSON.stringify({
+    query,
+    domains: opts?.includeDomains?.slice().sort(),
+    category: opts?.category,
+  });
+  return `${prefix}-${crypto.createHash("sha256").update(key).digest("hex").slice(0, 16)}.json`;
 }
 
-function readSearchCache(query: string): SearchHit[] | null {
-  const p = path.join(CACHE_DIR, cacheKey(query));
+function readCache<T>(file: string): T | null {
+  const p = path.join(CACHE_DIR, file);
   if (!fs.existsSync(p)) return null;
   try {
     const raw = JSON.parse(fs.readFileSync(p, "utf-8"));
@@ -41,33 +49,51 @@ function readSearchCache(query: string): SearchHit[] | null {
       fs.unlinkSync(p);
       return null;
     }
-    return raw.hits as SearchHit[];
+    return raw.value as T;
   } catch {
     return null;
   }
 }
 
-function writeSearchCache(query: string, hits: SearchHit[]): void {
+function writeCache(file: string, value: unknown): void {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
-  const p = path.join(CACHE_DIR, cacheKey(query));
-  fs.writeFileSync(p, JSON.stringify({ cachedAt: Date.now(), hits }, null, 2));
+  const p = path.join(CACHE_DIR, file);
+  fs.writeFileSync(p, JSON.stringify({ cachedAt: Date.now(), value }, null, 2));
 }
 
-function makeCachingProvider(inner: SearchProvider): SearchProvider {
+type CachingProviderPrefix = "exa" | "serper";
+
+function makeCachingProvider(inner: SearchProvider, prefix: CachingProviderPrefix): SearchProvider {
   return {
-    search: traceable(async function exaSearch(query: string, opts?: SearchOptions): Promise<SearchHit[]> {
-      const cached = readSearchCache(query);
+    search: traceable(async function cachedSearch(query: string, opts?: SearchOptions): Promise<SearchHit[]> {
+      const file = searchCacheKey(prefix, query, opts);
+      const cached = readCache<SearchHit[]>(file);
       if (cached) {
-        enrichCurrentRun({ provider: "exa", cacheHit: true });
+        enrichCurrentRun({ provider: prefix, cacheHit: true });
         return cached;
       }
-      enrichCurrentRun({ provider: "exa", cacheHit: false });
+      enrichCurrentRun({ provider: prefix, cacheHit: false });
       const hits = await inner.search(query, opts);
-      writeSearchCache(query, hits);
+      writeCache(file, hits);
       return hits;
-    }, { name: "exa.search", run_type: "retriever" }),
+    }, { name: `${prefix}.search`, run_type: "retriever" }),
     getContents: inner.getContents?.bind(inner),
   };
+}
+
+// ── Verification cache ──────────────────────────────────────────────────
+
+function verifyCacheKey(candidate: RawCandidate): string {
+  const key = `${candidate.kind}|${candidate.claim}|${candidate.quote ?? ""}`;
+  return `verify-${crypto.createHash("sha256").update(key).digest("hex").slice(0, 16)}.json`;
+}
+
+function readVerifyCache(candidate: RawCandidate): VerifyResult | null {
+  return readCache<VerifyResult>(verifyCacheKey(candidate));
+}
+
+function writeVerifyCache(candidate: RawCandidate, result: VerifyResult): void {
+  writeCache(verifyCacheKey(candidate), result);
 }
 
 // ── Concurrency limiter ─────────────────────────────────────────────────
@@ -104,7 +130,10 @@ function resolveProvider(custom?: SearchProvider): SearchProvider {
       "EXA_API_KEY is required for the research phase. Set it in .env or pass --skip-research.",
     );
   }
-  return makeCachingProvider(makeExaProvider(EXA_API_KEY));
+  const exa = makeCachingProvider(makeExaProvider(EXA_API_KEY), "exa");
+  if (!SERPER_API_KEY) return exa;
+  const serper = makeCachingProvider(makeSerperProvider(SERPER_API_KEY), "serper");
+  return makeRoutedProvider(exa, serper);
 }
 
 // ── Main pipeline ──────────────────────────────────────────────────────
@@ -166,7 +195,13 @@ async function runResearchPhaseImpl(
     const results = await mapConcurrent(
       candidates,
       RESEARCH_VERIFY_CONCURRENCY,
-      (c: RawCandidate) => verifyAnchor(c, provider, { verbose }),
+      async (c: RawCandidate): Promise<VerifyResult> => {
+        const cached = readVerifyCache(c);
+        if (cached) return cached;
+        const result = await verifyAnchor(c, provider, { verbose });
+        writeVerifyCache(c, result);
+        return result;
+      },
     );
 
     for (let i = 0; i < results.length; i++) {

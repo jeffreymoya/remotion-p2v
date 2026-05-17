@@ -10,7 +10,13 @@ const ResultSchema = z.object({
   arcScore: z.number().min(0).max(3),
   weakness: z.string().nullable().optional(),
   fix: z.string().nullable().optional(),
+  breakChapter: z.number().int().min(1).nullable().catch(null),
 });
+
+export interface ThroughLineGateResult {
+  overall: CrossChapterGateResult;
+  breakChapterIndex: number | null;
+}
 
 /**
  * LLM gate: checks that chapters form a connected arc, not disconnected essays.
@@ -18,7 +24,7 @@ const ResultSchema = z.object({
 export async function runThroughLineGate(
   chapters: readonly string[],
   opts?: { verbose?: boolean },
-): Promise<CrossChapterGateResult> {
+): Promise<ThroughLineGateResult> {
   const messages = buildThroughLinePrompt(chapters);
   const result = await deepseekChatJson(
     messages,
@@ -41,5 +47,12 @@ export async function runThroughLineGate(
     });
   }
 
-  return { gate: "through-line", pass, notes };
+  const breakChapterIndex = result.breakChapter != null
+    ? result.breakChapter - 1
+    : null;
+
+  return {
+    overall: { gate: "through-line", pass, notes },
+    breakChapterIndex,
+  };
 }

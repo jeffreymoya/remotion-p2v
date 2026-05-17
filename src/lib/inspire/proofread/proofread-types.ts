@@ -18,6 +18,8 @@ export interface ProofreadFindings {
   pass: boolean;
   perChapter: ChapterProofreadResult[];
   emotionalArc?: CrossChapterGateResult;
+  throughLine?: CrossChapterGateResult;
+  openerDiversity?: CrossChapterGateResult;
   redrafts: Array<{
     chapterIndex: number;
     notes: GateNote[];

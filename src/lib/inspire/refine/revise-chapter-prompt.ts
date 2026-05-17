@@ -16,6 +16,7 @@ export interface RevisionInput {
   targetFeeling?: TargetFeeling;
   recognitionMoment?: string;
   polarityArc?: PolarityArc;
+  priorChapters?: readonly string[];
 }
 
 function formatGateNotes(notes: GateNote[]): string {
@@ -67,7 +68,21 @@ function findStrongestMoment(notes: GateNote[]): string {
   return resonanceNote?.evidence ?? "No single sentence is landing strongly enough yet.";
 }
 
+function formatPriorChaptersContext(priorChapters?: readonly string[]): string {
+  if (!priorChapters || priorChapters.length === 0) return "";
+
+  const spans = priorChapters.map((c, i) => {
+    const opener = c.slice(0, 80);
+    const endpoint = c.slice(-300);
+    return `Chapter ${i + 1} opener: ${opener}\nChapter ${i + 1} endpoint: ...${endpoint}`;
+  });
+
+  return `\n\n## Context already established — do not repeat these opener patterns or author attributions\n${spans.join("\n\n")}`;
+}
+
 function buildRevisionPrompt(input: RevisionInput): string {
+  const priorContext = formatPriorChaptersContext(input.priorChapters);
+
   return `Your previous draft was reviewed. Rewrite toward the target emotion, not toward generic compliance.
 
 Target feeling: ${formatTargetFeeling(input.targetFeeling)}
@@ -84,7 +99,7 @@ Topic: "${input.topic}"
 Title: "${input.chapterTitle}"
 Role: ${input.chapterRole}
 Intent: ${input.chapterIntent}
-Scene seed: ${input.sceneSeed}
+Scene seed: ${input.sceneSeed}${priorContext}
 
 ## Previous draft
 ${input.previousDraft}
@@ -101,7 +116,7 @@ export async function reviseChapter(
   input: RevisionInput,
   options?: { verbose?: boolean },
 ): Promise<string> {
-  const systemPrompt = `You are a senior narration writer revising a chapter for a long-form inspirational video. You write as a warm but argumentative essayist building a case from canonical sources. Each chapter opens with a misconception worth overturning, deploys verified quotes with attribution as structural proof, and hands the reader a new lens. Emotion rides inside flowing analytical prose — long sentences with subordinate clauses, embedded reframes, and specific attributions. You are direct, intellectually generous, and occasionally self-implicating, but never preachy.`;
+  const systemPrompt = `You are a senior narration writer revising a chapter for a long-form inspirational video. You write as a warm but argumentative essayist building a case from canonical sources. Each chapter opens in a way that fits its role in the arc (the user prompt specifies the approach), deploys verified quotes with attribution as structural proof, and hands the reader a new lens. Emotion rides inside flowing analytical prose — long sentences with subordinate clauses, embedded reframes, and specific attributions. You are direct, intellectually generous, and occasionally self-implicating, but never preachy.`;
 
   const result = await deepseekChat(
     [

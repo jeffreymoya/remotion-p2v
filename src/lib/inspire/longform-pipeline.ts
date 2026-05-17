@@ -332,6 +332,7 @@ async function applyProofreaderRedrafts(
       polarityArc: chapterPlan?.polarityArc,
       slug: sSlug,
       additionalNotes: redraft.notes,
+      priorChapters: updated.filter((_, idx) => idx < i),
     });
 
     updated[i] = result.final;
@@ -534,6 +535,7 @@ async function runLongformPipelineImpl(
       recognitionMoment: chapterPlan?.recognitionMoment,
       polarityArc: chapterPlan?.polarityArc,
       slug: segSlug(slug, i),
+      priorChapters: refinedNarrations.slice(0, i),
     });
 
     refinedNarrations.push(result.final);
@@ -587,6 +589,8 @@ async function runLongformPipelineImpl(
         }
       } else if (findings.pass) {
         console.log(`  [proofread] PASS — all cross-chapter gates satisfied`);
+      } else {
+        console.warn(`  [proofread] FAIL — no redrafts returned; continuing with unresolved findings — review ${proofreadPath}`);
       }
     } else {
       console.log(`  [proofread] using cached: ${proofreadPath}`);

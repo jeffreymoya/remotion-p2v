@@ -15,7 +15,8 @@
     "test:gates": "tsx tests/inspire/gates/gate-tests.ts",
     "test:llm-gates": "tsx tests/inspire/gates/llm/llm-gate-tests.ts",
     "gates:capture-llm": "tsx --env-file=.env scripts/inspire-capture-llm-fixtures.ts",
-    "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts"
+    "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts",
+    "quotas": "tsx --env-file=.env scripts/check-quotas.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.457",

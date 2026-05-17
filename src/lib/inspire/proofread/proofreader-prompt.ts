@@ -92,18 +92,16 @@ PASS if every seed has paidOffInChapter != null.`,
  * Build prompt for the through-line cross-chapter gate.
  */
 export function buildThroughLinePrompt(chapters: readonly string[]): DeepSeekMessage[] {
-  // Extract titles and opening sentences
-  const summaries = chapters.map((ch, i) => {
-    const lines = ch.split("\n").filter((l) => l.trim().length > 0);
-    const opening = lines.slice(0, 3).join(" ");
-    return `Chapter ${i + 1}: ${opening}`;
-  }).join("\n");
+  const joined = chapters
+    .map((ch, i) => `[CHAPTER ${i + 1}]\n${ch}`)
+    .join("\n\n");
 
   return [
     {
       role: "system",
-      content: `Read the chapter titles and opening sentences. Decide whether they trace
-a single connected arc, or read as disconnected essays on the same theme.
+      content: `Read all chapters of one inspirational long-form video script.
+Decide whether they trace a single connected arc, or read as disconnected
+essays on the same theme.
 
 A connected arc has: a clear progression of stakes, a thread of recurring
 imagery, a single character or perspective that develops, or a narrative
@@ -117,12 +115,13 @@ OUTPUT (JSON only):
   "pass": true | false,
   "arcScore": 0-3,
   "weakness": "<one sentence if arcScore < 2>",
-  "fix": "<what would tighten the arc>"
+  "fix": "<what would tighten the arc>",
+  "breakChapter": <1-based index of the last chapter that could resolve the arc weakness by adding connecting tissue; null if the arc is strong>
 }
 
 PASS if arcScore >= 2.`,
     },
-    { role: "user", content: summaries },
+    { role: "user", content: joined },
   ];
 }
 

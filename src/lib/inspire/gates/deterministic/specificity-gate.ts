@@ -55,9 +55,8 @@ export const specificityGate: Gate = {
     const namedEntities = new Set<string>();
     const sentences = narration.split(/(?<=[.!?])\s+|\n\n+/).filter(Boolean);
     for (const sentence of sentences) {
-      // Get all capitalized words except the first word of the sentence
       const words = sentence.split(/\s+/);
-      for (let i = 1; i < words.length; i++) {
+      for (let i = 0; i < words.length; i++) {
         const cleaned = words[i].replace(/[^a-zA-Z'-]/g, "");
         if (
           cleaned.length > 1 &&

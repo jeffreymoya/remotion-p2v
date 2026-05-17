@@ -13,7 +13,6 @@ import { simplicityGate } from "../../../src/lib/inspire/gates/deterministic/sim
 import { prosodyMarksGate } from "../../../src/lib/inspire/gates/deterministic/prosody-marks-gate";
 import {
   ALL_DETERMINISTIC_GATES,
-  FINAL_LINT_GATES,
   runGates,
 } from "../../../src/lib/inspire/gates/run-gates";
 import type { GateContext } from "../../../src/lib/inspire/gates/gate-types";
@@ -103,17 +102,12 @@ async function main(): Promise<void> {
   assert(prosMaria.pass, "maria sample PASSES prosody-marks gate");
 
   // ── Aggregate: floor gates only ───────────────────────────────────
-  console.log("\nAggregate (quality floor):");
+  console.log("\nAggregate (deterministic — includes genre-tells + sermon-ratio):");
+  const floorRes = await runGates(resilienceSeg01, defaultCtx, ALL_DETERMINISTIC_GATES);
+  assert(!floorRes.pass, "resilience seg-01 FAILS deterministic aggregate (genre-tells/sermon-ratio now blocking)");
+
   const floorMaria = await runGates(mariaSample, defaultCtx, ALL_DETERMINISTIC_GATES);
-  assert(floorMaria.pass, "maria sample PASSES deterministic floor aggregate");
-
-  // ── Aggregate: final lint only ─────────────────────────────────────
-  console.log("\nAggregate (final lint):");
-  const lintRes = await runGates(resilienceSeg01, defaultCtx, FINAL_LINT_GATES);
-  assert(!lintRes.pass, "resilience seg-01 FAILS final lint aggregate");
-
-  const lintMaria = await runGates(mariaSample, defaultCtx, FINAL_LINT_GATES);
-  assert(lintMaria.pass, "maria sample PASSES final lint aggregate");
+  assert(floorMaria.pass, "maria sample PASSES deterministic aggregate");
 
   // ── Plan schema: anchor cap ────────────────────────────────────────
   console.log("\nPlan schema anchor cap:");

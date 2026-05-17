@@ -1,3 +1,24 @@
+export type SearchLens =
+  | "meta_analysis"
+  | "review_article"
+  | "primary_study"
+  | "critique_or_replication_failure"
+  | "definition_or_mechanism"
+  | "statistics_or_distribution"
+  | "framework_or_model"
+  | "canonical_book"
+  | "contrarian_essay"
+  | "historical_context";
+
+export type SearchKind =
+  | "primary_quote"
+  | "book_excerpt"
+  | "study"
+  | "meta_analysis"
+  | "case_study"
+  | "historical_event"
+  | "named_person_anecdote";
+
 export interface SearchOptions {
   numResults?: number;
   category?: "research paper" | "company" | "news" | "pdf" | "personal site";
@@ -7,6 +28,8 @@ export interface SearchOptions {
     text?: { maxCharacters?: number };
     highlights?: { maxCharacters?: number };
   };
+  lens?: SearchLens;
+  kind?: SearchKind;
 }
 
 export interface SearchHit {

@@ -74,6 +74,7 @@ async function buildCorpusImpl(
           text: { maxCharacters: TEXT_EXCERPT_MAX_CHARS },
           highlights: { maxCharacters: HIGHLIGHTS_MAX_CHARS },
         },
+        lens: tq.lens,
       });
     } catch (err) {
       if (opts?.verbose) {

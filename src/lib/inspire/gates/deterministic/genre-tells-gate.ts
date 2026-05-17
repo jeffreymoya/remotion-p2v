@@ -9,6 +9,7 @@ import { splitSentences } from "../../refine/text-metrics";
 import { detectStaccatoRuns, staccatoRunsToNotes } from "./staccato-runs";
 import { detectMetaNarration, metaNarrationToNotes } from "./meta-narration";
 import { detectContrastiveReveal, contrastiveRevealToNotes } from "./contrastive-reveal";
+import { detectLiteralnessAssertion, literalnessAssertionToNotes } from "./literalness-assertion";
 
 export const genreTellsGate: Gate = {
   name: "genre_tells",
@@ -115,6 +116,10 @@ export const genreTellsGate: Gate = {
     // 7. Two-part contrastive reveal
     const contrastiveViolations = detectContrastiveReveal(narration);
     notes.push(...contrastiveRevealToNotes(contrastiveViolations));
+
+    // 8. Literalness assertion
+    const literalnessViolations = detectLiteralnessAssertion(narration);
+    notes.push(...literalnessAssertionToNotes(literalnessViolations));
 
     return {
       gate: "genre_tells",

@@ -85,6 +85,7 @@ export const PROOFREAD_MAX_REDRAFTS_PER_CHAPTER = 1;
 
 // ── Research phase ──────────────────────────────────────────────────────
 export const EXA_API_KEY = process.env.EXA_API_KEY;
+export const SERPER_API_KEY = process.env.SERPER_API_KEY;
 export const SEARCH_TIMEOUT_MS = validateTimeout("SEARCH_TIMEOUT_MS", 20_000);
 export const RESEARCH_BRAINSTORM_TIMEOUT_MS = validateTimeout(
   "RESEARCH_BRAINSTORM_TIMEOUT_MS",

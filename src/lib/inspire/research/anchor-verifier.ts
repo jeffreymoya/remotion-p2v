@@ -111,6 +111,7 @@ async function verifyAnchorImpl(
         text: { maxCharacters: 5000 },
         highlights: { maxCharacters: 500 },
       },
+      kind: candidate.kind,
     });
   } catch (err) {
     if (opts?.verbose) {
@@ -131,6 +132,7 @@ async function verifyAnchorImpl(
           text: { maxCharacters: 5000 },
           highlights: { maxCharacters: 500 },
         },
+        kind: candidate.kind,
       });
     } catch {
       return { status: "rejected", reason: "no-results" };

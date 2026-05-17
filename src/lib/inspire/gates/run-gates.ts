@@ -10,17 +10,18 @@ import { sensoryPresenceGate } from "./llm/sensory-presence-gate";
 import { earnedWisdomGate } from "./llm/earned-wisdom-gate";
 import { cohesionGate } from "./llm/cohesion-gate";
 import { attentionCurveGate } from "./llm/attention-curve-gate";
+import { freshnessGate } from "./llm/freshness-gate";
 
 export const ALL_DETERMINISTIC_GATES: readonly Gate[] = [
   specificityGate,
   simplicityGate,
   prosodyMarksGate,
-] as const;
-
-export const FINAL_LINT_GATES: readonly Gate[] = [
   genreTellsGate,
   sermonRatioGate,
 ] as const;
+
+/** @deprecated Gates moved to ALL_DETERMINISTIC_GATES. Kept for forward compatibility. */
+export const FINAL_LINT_GATES: readonly Gate[] = [] as const;
 
 export const ALL_LLM_GATES: readonly Gate[] = [
   resonanceGate,
@@ -29,6 +30,7 @@ export const ALL_LLM_GATES: readonly Gate[] = [
   earnedWisdomGate,
   cohesionGate,
   attentionCurveGate,
+  freshnessGate,
 ] as const;
 
 export async function runGates(

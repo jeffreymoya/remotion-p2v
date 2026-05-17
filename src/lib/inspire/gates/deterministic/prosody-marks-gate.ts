@@ -12,7 +12,7 @@ function findProsodyMarks(narration: string): ProsodyMark[] {
   const marks: ProsodyMark[] = [];
 
   // Ellipsis variants (... / ... ... / ... ... ...)
-  const ellipsisPattern = /\.{3}/g;
+  const ellipsisPattern = /\.{3,}/g;
   let match: RegExpExecArray | null;
   while ((match = ellipsisPattern.exec(narration)) !== null) {
     marks.push({ type: "ellipsis", index: match.index });

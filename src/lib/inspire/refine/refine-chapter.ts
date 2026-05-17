@@ -31,6 +31,8 @@ export interface RefineChapterOptions {
   slug?: string;
   /** Extra notes injected before the first revision (e.g. from proofreader). Forces at least one revision. */
   additionalNotes?: GateNote[];
+  /** Prior chapter texts for continuity context in revisions */
+  priorChapters?: readonly string[];
 }
 
 export interface RefineResult {
@@ -105,6 +107,7 @@ export async function refineChapterImpl(
         targetFeeling: opts.targetFeeling,
         recognitionMoment: opts.recognitionMoment,
         polarityArc: opts.polarityArc,
+        priorChapters: opts.priorChapters,
       },
       { verbose: opts.verbose },
     );
@@ -186,6 +189,7 @@ export async function refineChapterImpl(
             targetFeeling: opts.targetFeeling,
             recognitionMoment: opts.recognitionMoment,
             polarityArc: opts.polarityArc,
+            priorChapters: opts.priorChapters,
           },
           { verbose: opts.verbose },
         );

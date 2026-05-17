@@ -6,6 +6,7 @@ import {
   NARRATION_REASONING,
 } from "../config";
 import { NARRATION_GUIDELINES, VOICE_SAMPLES } from "./narration-guidelines";
+import { BANNED_LEXICON, BANNED_PHRASES } from "./gates/banned-phrases";
 import type { Anchor, ResearchBundle } from "./research/research-schema";
 
 const LongformSegmentSchema = z.object({
@@ -99,6 +100,10 @@ ${buildLines}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the deeper ref
 5. Each chapter needs specific attributions (named authors, works, dates).
 6. ≤55% of sentences should directly address the listener as "you". Most should be analytical prose or embedded-citation.
 
+## Banned Vocabulary
+Banned words (never use): ${BANNED_LEXICON.join(", ")}
+Banned phrases (never use): ${BANNED_PHRASES.join("; ")}
+
 ${NARRATION_GUIDELINES}
 
 ## Output Format
@@ -116,14 +121,59 @@ Return ONLY a JSON object matching this shape exactly:
 No markdown outside the JSON, no explanations, no stage directions. The segments array must have exactly ${segmentCount} entries.`;
 }
 
+function roleOpenerInstruction(role: string): string {
+  switch (role) {
+    case "open":
+      return "Open with the central misconception or paradox — this is the entry point.";
+    case "build":
+    case "complicate":
+      return "Do NOT open with a misconception frame. Open by extending a thread from the prior chapter with a new citation or concrete example.";
+    case "turn":
+      return "Open with the tension earned through prior chapters, not a new misconception.";
+    case "land":
+      return "Open with a callback to the image or question from chapter 1.";
+    default:
+      return "Open in a way that fits this chapter's role in the arc.";
+  }
+}
+
+function buildPriorChapterContext(
+  priorChapters: readonly string[],
+  plan: LongformPlan,
+  research: ResearchBundle,
+): string {
+  if (priorChapters.length === 0) return "";
+
+  const spans = priorChapters.map((c, i) => {
+    const opener = c.slice(0, 200);
+    const endpoint = c.slice(-500);
+    const chapterPlan = plan.chapters[i];
+    const citedAuthors = (chapterPlan?.anchorIds ?? [])
+      .map((id) => research.anchors.find((a) => a.id === id))
+      .filter((a): a is Anchor => a != null && a.attribution.person != null)
+      .map((a) => a.attribution.person);
+    const authorLine =
+      citedAuthors.length > 0
+        ? `\nAuthors already cited: ${[...new Set(citedAuthors)].join(", ")}`
+        : "";
+    return `Chapter ${i + 1} opener: ${opener}\nChapter ${i + 1} endpoint: ...${endpoint}${authorLine}`;
+  });
+
+  return `\n\n## Prior Chapters (for continuity — do not repeat their opener patterns, content, or author attributions)\n${spans.join("\n\n")}\n\nDo not repeat the rhetorical opener structure (sentence pattern or opening phrase) used in any prior chapter. Authors already cited per chapter are listed above — treat same-author references across chapters as the same source line.`;
+}
+
 function buildChapterDraftSystemPrompt(): string {
   return `You are an essayist writing one chapter of a long-form narrated video that builds its argument from canonical sources.
 
-Write in a warm but argumentative voice: open with a misconception worth overturning, deploy verified quotes with attribution as structural proof, and hand the reader a new lens by chapter's end.
+Write in a warm but argumentative voice — open in a way that fits this chapter's role (the user prompt specifies the exact opener approach), deploy verified quotes with attribution as structural proof, and hand the reader a new lens by chapter's end.
 
-Each chapter must build its argument around its assigned anchors. Open with the paradigm claim, deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an assigned anchor genuinely cannot be made to fit, return it in droppedAnchorIds with a reason — but dropping is the exception, not the default.
+Each chapter must build its argument around its assigned anchors. Deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an assigned anchor genuinely cannot be made to fit, return it in droppedAnchorIds with a reason — but dropping is the exception, not the default.
 
 Keep the hard floor: 280-420 words, specific attributions and sources, at least one dated moment, and audible prosody marks.
+
+## Banned Vocabulary
+Banned words (never use): ${BANNED_LEXICON.join(", ")}
+Banned phrases (never use): ${BANNED_PHRASES.join("; ")}
 
 ${NARRATION_GUIDELINES}
 
@@ -145,7 +195,7 @@ Remember:
 - Essayist voice: warm, argumentative, flowing analytical prose with citations
 - Deploy verbatim quotes with attribution to named authors and works
 - ≤55% of sentences directly address "you" — most should be analytical prose
-- No banned vocabulary (agency, forge, drift, paralysis, becoming, etc.)
+- No banned vocabulary: ${BANNED_LEXICON.join(", ")}
 - No staccato runs, no meta-narration, no two-part contrastive reveals
 - Use prosody pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter
 - Each chapter ends at a natural break with an open question to the next
@@ -316,10 +366,7 @@ export async function generateChapterDraft(
     chapter.anchorIds.includes(a.id),
   );
 
-  const priorContext =
-    priorChapters.length > 0
-      ? `\n\n## Prior Chapters (for continuity — do not repeat their content)\n${priorChapters.map((c, i) => `Chapter ${i + 1}:\n${c.slice(0, 300)}...`).join("\n\n")}`
-      : "";
+  const priorContext = buildPriorChapterContext(priorChapters, plan, research);
 
   const anchorContext =
     assignedAnchors.length > 0
@@ -340,10 +387,12 @@ Chapter plan:
 - Polarity arc: ${chapter.polarityArc}
 ${anchorContext}${priorContext}
 
+Opener instruction for this chapter's role (${chapter.role}): ${roleOpenerInstruction(chapter.role)}
+
 Rules:
 - 280–420 words (2–3 min at 140 WPM)
 - Essayist voice: warm, argumentative, flowing analytical prose
-- Open with the misconception or paradigm claim
+- Follow the opener instruction above — do NOT default to a misconception frame unless specified
 - Deploy assigned anchors with verbatim quotes and attribution
 - ≤55% direct "you" address
 - Prosody pauses: at least 3 per chapter

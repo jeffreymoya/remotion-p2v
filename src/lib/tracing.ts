@@ -20,7 +20,8 @@ export interface SpanMeta {
     | "google-tts"
     | "pixabay"
     | "pexels"
-    | "exa";
+    | "exa"
+    | "serper";
   cacheHit?: boolean;
   revisionNumber?: number;
   fallbackUsed?: string;
