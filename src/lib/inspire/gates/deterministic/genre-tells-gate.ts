@@ -6,6 +6,9 @@ import {
   buildBannedLexiconPatterns,
 } from "../banned-phrases";
 import { splitSentences } from "../../refine/text-metrics";
+import { detectStaccatoRuns, staccatoRunsToNotes } from "./staccato-runs";
+import { detectMetaNarration, metaNarrationToNotes } from "./meta-narration";
+import { detectContrastiveReveal, contrastiveRevealToNotes } from "./contrastive-reveal";
 
 export const genreTellsGate: Gate = {
   name: "genre_tells",
@@ -100,6 +103,18 @@ export const genreTellsGate: Gate = {
         suggestion: "End with a quiet observation or open question, not stacked imperatives.",
       });
     }
+
+    // 5. Staccato sentence runs
+    const staccatoViolations = detectStaccatoRuns(narration);
+    notes.push(...staccatoRunsToNotes(staccatoViolations));
+
+    // 6. Meta-narration / stage direction
+    const metaViolations = detectMetaNarration(narration);
+    notes.push(...metaNarrationToNotes(metaViolations));
+
+    // 7. Two-part contrastive reveal
+    const contrastiveViolations = detectContrastiveReveal(narration);
+    notes.push(...contrastiveRevealToNotes(contrastiveViolations));
 
     return {
       gate: "genre_tells",

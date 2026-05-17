@@ -9,6 +9,7 @@ import {
 } from "./config";
 import { pcmToWav } from "./audio-wav";
 import type { WordTiming, TtsResult } from "./audio-wav";
+import { enrichCurrentRun } from "./tracing";
 export type { WordTiming, TtsResult } from "./audio-wav";
 
 const CHANNELS = 1;
@@ -176,6 +177,7 @@ async function generateSpeechImpl(
   text: string,
   options?: { voiceName?: string },
 ): Promise<TtsResult> {
+  enrichCurrentRun({ phase: "tts", provider: "google-tts" });
   const apiKey = process.env.GOOGLE_CLOUD_API_KEY;
   if (!apiKey) {
     throw new Error("GOOGLE_CLOUD_API_KEY environment variable is not set");

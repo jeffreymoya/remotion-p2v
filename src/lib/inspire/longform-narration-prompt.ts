@@ -1,13 +1,58 @@
 import { z } from "zod";
 import { deepseekChat, deepseekChatJson } from "../deepseek";
-import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
-import { NARRATION_GUIDELINES, VOICE_SAMPLE } from "./narration-guidelines";
+import {
+  CODE_GEN_TEMPERATURE,
+  MAX_ANCHORS_PER_CHAPTER,
+  NARRATION_REASONING,
+} from "../config";
+import { NARRATION_GUIDELINES, VOICE_SAMPLES } from "./narration-guidelines";
 import type { Anchor, ResearchBundle } from "./research/research-schema";
 
 const LongformSegmentSchema = z.object({
   title: z.string().min(1),
   narration: z.string().min(1),
 });
+
+const POLARITY_ARC_VALUES = [
+  "low-to-high",
+  "high-to-low",
+  "low-mid-high",
+  "high-mid-low",
+  "flat-deepening",
+] as const;
+
+function normalizePolarityArc(rawValue: string): (typeof POLARITY_ARC_VALUES)[number] {
+  const normalized = rawValue
+    .trim()
+    .toLowerCase()
+    .replace(/[\u2010-\u2015]/g, "-")
+    .replace(/[\s_]+/g, "-");
+
+  switch (normalized) {
+    case "low-to-high":
+    case "low-high":
+    case "rising":
+      return "low-to-high";
+    case "high-to-low":
+    case "high-low":
+    case "falling":
+      return "high-to-low";
+    case "low-mid-high":
+    case "low-to-mid-to-high":
+    case "crescendo":
+      return "low-mid-high";
+    case "high-mid-low":
+    case "high-to-mid-to-low":
+    case "decrescendo":
+      return "high-mid-low";
+    case "flat-deepening":
+    case "flat-to-deepening":
+    case "steady-deepening":
+      return "flat-deepening";
+    default:
+      throw new Error(`Unsupported polarityArc: ${rawValue}`);
+  }
+}
 
 export const LongformScriptSchema = z.object({
   segmentCount: z.number().int().min(1).max(8),
@@ -35,24 +80,24 @@ function buildSystemPrompt(segmentCount: number): string {
       ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate — deepen the story, add texture, raise stakes through specifics\n`
       : "";
 
-  return `You are a storyteller writing long-form narration for inspirational YouTube videos (${totalMinMin}–${totalMaxMin} minutes total). You write in the voice of an older person telling stories to a friend over coffee — warm, self-deprecating, sometimes uncertain, always concrete.
+  return `You are an essayist writing long-form narration for inspirational YouTube videos (${totalMinMin}–${totalMaxMin} minutes total). You write in a warm but argumentative voice: open with misconceptions worth overturning, deploy verified quotes with attribution, and hand the reader new lenses.
 
 You will write a complete ${segmentCount}-chapter narration. Each chapter is 2–3 minutes when spoken aloud at ~140 words per minute (${minWords}–${maxWords} words per chapter).
 
 ## Narrative Arc (MANDATORY)
-The chapters must form one cohesive story with a clear arc:
-- Chapter 1: Open — drop into a specific scene, introduce a controlling object, create curiosity
-- Chapter 2: Build — establish the problem through concrete detail and observation
-${buildLines}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the quiet reframe, earned through accumulated detail
-- Chapter ${segmentCount}: Land — bring back the controlling object, end on a small image not a big declaration
+The chapters must form one cohesive argument with a clear arc:
+- Chapter 1: Open — state the misconception, introduce the thesis
+- Chapter 2: Build — first proof point from canonical sources
+${buildLines}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the deeper reframe, earned through accumulated citations
+- Chapter ${segmentCount}: Land — synthesize the new lens, hand it to the reader
 
 ## Per-Chapter Rules
 1. Each chapter must end at a natural break — not mid-thought or mid-sentence.
 2. Use graduated prosody pauses: \`...\` (short), \`... ...\` (medium), \`... ... ...\` (long). Also \`—\` (abrupt shift), \`( )\` (aside), \`\\n\\n\` (section break). At least 3 pause marks per chapter, at least 2 different types.
-3. Conversational tone — write as if speaking to one person sitting across from you.
+3. Analytical but warm tone — write as an essayist speaking to one engaged reader.
 4. Word count per chapter: ${minWords}–${maxWords} words.
-5. Each chapter needs ≥2 named entities (people, places, objects) and ≥1 dated moment.
-6. ≤30% of sentences should directly address the listener as "you". Most should be in-scene narration or narrator-aside.
+5. Each chapter needs specific attributions (named authors, works, dates).
+6. ≤55% of sentences should directly address the listener as "you". Most should be analytical prose or embedded-citation.
 
 ${NARRATION_GUIDELINES}
 
@@ -71,6 +116,22 @@ Return ONLY a JSON object matching this shape exactly:
 No markdown outside the JSON, no explanations, no stage directions. The segments array must have exactly ${segmentCount} entries.`;
 }
 
+function buildChapterDraftSystemPrompt(): string {
+  return `You are an essayist writing one chapter of a long-form narrated video that builds its argument from canonical sources.
+
+Write in a warm but argumentative voice: open with a misconception worth overturning, deploy verified quotes with attribution as structural proof, and hand the reader a new lens by chapter's end.
+
+Each chapter must build its argument around its assigned anchors. Open with the paradigm claim, deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an assigned anchor genuinely cannot be made to fit, return it in droppedAnchorIds with a reason — but dropping is the exception, not the default.
+
+Keep the hard floor: 280-420 words, specific attributions and sources, at least one dated moment, and audible prosody marks.
+
+${NARRATION_GUIDELINES}
+
+Reference exemplars:
+
+${VOICE_SAMPLES.join("\n\n---\n\n")}`;
+}
+
 export async function generateLongformScript(
   topic: string,
   segmentCount: number,
@@ -80,13 +141,14 @@ export async function generateLongformScript(
 
 Remember:
 - ${segmentCount} chapters, each ${280}–${420} words (2–3 min at 140 WPM)
-- One cohesive narrative arc — commit to a controlling object in chapter 1
-- Wise-elder voice: warm, concrete, self-deprecating, story-driven
-- ≥2 named entities and ≥1 dated moment per chapter
-- ≤30% of sentences directly address "you" — most should be in-scene
-- No banned vocabulary (agency, forge, drift, paralysis, transformation, becoming, etc.)
+- One cohesive argument — state the misconception in chapter 1, build proof, land the new lens
+- Essayist voice: warm, argumentative, flowing analytical prose with citations
+- Deploy verbatim quotes with attribution to named authors and works
+- ≤55% of sentences directly address "you" — most should be analytical prose
+- No banned vocabulary (agency, forge, drift, paralysis, becoming, etc.)
+- No staccato runs, no meta-narration, no two-part contrastive reveals
 - Use prosody pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter
-- Each chapter ends at a natural break with an open loop to the next
+- Each chapter ends at a natural break with an open question to the next
 - Return ONLY the JSON`;
 
   const raw = await deepseekChat(
@@ -96,7 +158,7 @@ Remember:
     ],
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "longform/narration-draft" },
   );
 
   const cleaned = stripJsonFences(raw);
@@ -119,7 +181,14 @@ const LongformChapterPlanSchema = z.object({
   role: z.string().min(1),
   intent: z.string().min(1),
   sceneSeed: z.string().min(1),
-  anchorIds: z.array(z.string()),
+  targetFeeling: z.object({
+    dominant: z.string().min(1),
+    secondary: z.string().min(1).optional(),
+    intensity: z.coerce.number().int().min(1).max(3),
+  }),
+  recognitionMoment: z.string().min(1),
+  polarityArc: z.string().transform(normalizePolarityArc),
+  anchorIds: z.array(z.string()).max(MAX_ANCHORS_PER_CHAPTER),
 });
 
 export const LongformPlanSchema = z.object({
@@ -129,6 +198,19 @@ export const LongformPlanSchema = z.object({
 
 export type LongformPlan = z.infer<typeof LongformPlanSchema>;
 export type LongformChapterPlan = z.infer<typeof LongformChapterPlanSchema>;
+export type TargetFeeling = LongformChapterPlan["targetFeeling"];
+export type PolarityArc = LongformChapterPlan["polarityArc"];
+
+const LongformChapterDraftSchema = z.object({
+  narration: z.string().min(1),
+  droppedAnchorIds: z.array(z.string()),
+  dropReason: z
+    .union([z.string().min(1), z.literal("")])
+    .optional()
+    .transform((value) => (value && value.length > 0 ? value : undefined)),
+});
+
+export type LongformChapterDraft = z.infer<typeof LongformChapterDraftSchema>;
 
 function formatAnchorsForPrompt(anchors: readonly Anchor[]): string {
   return anchors
@@ -154,16 +236,16 @@ export async function generateLongformPlan(
 
   const systemPrompt = `You are a story architect planning a ${segmentCount}-chapter long-form narrated video about: "${topic}".
 
-You have ${usableAnchors.length} verified real-world anchors from research. Your job is to assign 1-3 anchors per chapter to ground the narration in reality. Not every chapter needs anchors — at most 1 chapter should be "anchor-heavy" (2-3 anchors). The rest should weave a single anchor into mostly scene-led prose, or have no anchors at all.
+You have ${usableAnchors.length} verified real-world anchors from research. Your job is to design the emotional arc first, then assign 2–4 anchors per chapter — anchors are the argumentative spine of each chapter, not optional decoration. Every chapter should have at least one anchor of sourceTier "seminal" where available.
 
 ## Available Anchors
 ${formatAnchorsForPrompt(usableAnchors)}
 
 ## Chapter Roles
-- Chapter 1: Open — drop into a specific scene
-- Chapter 2: Build — establish the problem through concrete detail
-${segmentCount > 4 ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate\n` : ""}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the quiet reframe
-- Chapter ${segmentCount}: Land — bring back the controlling object
+- Chapter 1: Open — state the misconception, introduce the thesis
+- Chapter 2: Build — first proof point from canonical sources
+${segmentCount > 4 ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate\n` : ""}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the deeper reframe, earned through accumulated citations
+- Chapter ${segmentCount}: Land — synthesize the new lens, hand it to the reader
 
 ## Output
 Return JSON:
@@ -174,17 +256,29 @@ Return JSON:
       "title": "Chapter 1: ...",
       "role": "open",
       "intent": "one sentence describing what this chapter accomplishes",
-      "sceneSeed": "the concrete scene or image that opens this chapter",
-      "anchorIds": ["anc-001"]
+      "sceneSeed": "the concrete misconception or paradigm claim that opens this chapter",
+      "targetFeeling": {
+        "dominant": "recognition",
+        "secondary": "hope",
+        "intensity": 2
+      },
+      "recognitionMoment": "one sentence describing the exact human moment the listener should recognize",
+      "polarityArc": "low-to-high",
+      "anchorIds": ["anc-001", "anc-002"]
     }
   ]
 }
 
 Rules:
-- Total anchor assignments across all chapters: aim for ${Math.min(usableAnchors.length, segmentCount + 2)}
-- At most 1 chapter with 3 anchors; prefer 0-1 per chapter
+- Allocate one dominant feeling, one recognition moment, and one polarity arc for every chapter before assigning anchors
+- targetFeeling.intensity must be an integer 1, 2, or 3
+- polarityArc must use one of these exact values: ${POLARITY_ARC_VALUES.join(", ")}
+- Design the chapter feelings so they read as a coherent emotional progression from chapter 1 through chapter ${segmentCount}
+- Assign 2–${MAX_ANCHORS_PER_CHAPTER} anchors per chapter — anchors are the spine, not optional support
+- At least one anchor per chapter should be of sourceTier "seminal" where available
+- Chapters with no emotionally fitting anchor may use [] but this should be rare
 - Use anchor IDs from the list above
-- Each chapter needs a specific sceneSeed — not a vague theme`;
+- Each chapter needs a specific sceneSeed — a misconception or paradigm claim, not a vague theme`;
 
   const plan = await deepseekChatJson(
     [
@@ -194,16 +288,20 @@ Rules:
     LongformPlanSchema,
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "longform/plan" },
   );
 
-  if (plan.chapters.length !== segmentCount) {
+  if (plan.chapters.length < segmentCount) {
     throw new Error(
       `Expected ${segmentCount} chapters in plan, got ${plan.chapters.length}`,
     );
   }
 
-  return plan;
+  return {
+    ...plan,
+    segmentCount,
+    chapters: plan.chapters.slice(0, segmentCount),
+  };
 }
 
 export async function generateChapterDraft(
@@ -212,7 +310,7 @@ export async function generateChapterDraft(
   research: ResearchBundle,
   priorChapters: readonly string[],
   options?: { verbose?: boolean },
-): Promise<string> {
+): Promise<LongformChapterDraft> {
   const chapter = plan.chapters[chapterIndex];
   const assignedAnchors = research.anchors.filter((a) =>
     chapter.anchorIds.includes(a.id),
@@ -225,10 +323,10 @@ export async function generateChapterDraft(
 
   const anchorContext =
     assignedAnchors.length > 0
-      ? `\n\n## Assigned Anchors (MUST incorporate — paraphrase, do not invent quotes)\n${formatAnchorsForPrompt(assignedAnchors)}\n\nIMPORTANT: Paraphrase these anchors naturally into the narration. Do NOT fabricate quotes. If an anchor has a verbatim quote with high confidence, you may use it — attributed correctly. Otherwise, paraphrase the claim in the narrator's voice.`
-      : "\n\n(No research anchors assigned to this chapter — rely on concrete scene-driven observation.)";
+      ? `\n\n## Assigned Anchors (the argumentative spine of this chapter — deploy all)\n${formatAnchorsForPrompt(assignedAnchors)}\n\nBuild the chapter's argument around these anchors. Open with the paradigm claim, deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an anchor genuinely cannot be made to fit, return it in droppedAnchorIds — but dropping is the exception.`
+      : "\n\n(No research anchors assigned to this chapter — build the argument from direct observation and concrete examples.)";
 
-  const systemPrompt = buildSystemPrompt(plan.segmentCount);
+  const systemPrompt = buildChapterDraftSystemPrompt();
 
   const userPrompt = `Write chapter ${chapterIndex + 1} of ${plan.segmentCount} about: "${research.topic}"
 
@@ -237,26 +335,34 @@ Chapter plan:
 - Role: ${chapter.role}
 - Intent: ${chapter.intent}
 - Scene seed: ${chapter.sceneSeed}
+- Target feeling: ${chapter.targetFeeling.dominant}${chapter.targetFeeling.secondary ? ` with ${chapter.targetFeeling.secondary}` : ""} at intensity ${chapter.targetFeeling.intensity}/3
+- Recognition moment: ${chapter.recognitionMoment}
+- Polarity arc: ${chapter.polarityArc}
 ${anchorContext}${priorContext}
 
 Rules:
 - 280–420 words (2–3 min at 140 WPM)
-- Wise-elder voice
-- ≥2 named entities and ≥1 dated moment
-- ≤30% direct "you" address
+- Essayist voice: warm, argumentative, flowing analytical prose
+- Open with the misconception or paradigm claim
+- Deploy assigned anchors with verbatim quotes and attribution
+- ≤55% direct "you" address
 - Prosody pauses: at least 3 per chapter
 - End at a natural break
-- Return ONLY the narration text — no JSON, no titles, no stage directions`;
+- Return ONLY JSON matching this shape exactly:
+{
+  "narration": "...",
+  "droppedAnchorIds": ["anc-001"],
+  "dropReason": "optional short reason when any anchors were dropped"
+}`;
 
-  const raw = await deepseekChat(
+  return deepseekChatJson(
     [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
+    LongformChapterDraftSchema,
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "longform/chapter-draft" },
   );
-
-  return raw.trim();
 }

@@ -33,6 +33,55 @@ const ClipSchema = z.object({
   videoSource: z.enum(["pixabay", "pexels"]).optional(),
 });
 
+const GateNoteSchema = z.object({
+  gate: z.string(),
+  severity: z.enum(["block", "warn"]),
+  evidence: z.string(),
+  message: z.string(),
+  suggestion: z.string(),
+});
+
+const TargetFeelingSchema = z.object({
+  dominant: z.string().min(1),
+  secondary: z.string().min(1).optional(),
+  intensity: z.coerce.number().int().min(1).max(3),
+});
+
+const QualityGateSummarySchema = z.object({
+  gate: z.string(),
+  pass: z.boolean(),
+  notes: z.array(GateNoteSchema),
+  metrics: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
+});
+
+const QualityChapterReportSchema = z.object({
+  chapterIndex: z.number().int().min(0),
+  slug: z.string().min(1),
+  targetFeeling: TargetFeelingSchema.optional(),
+  recognitionMoment: z.string().optional(),
+  polarityArc: z.enum([
+    "low-to-high",
+    "high-to-low",
+    "low-mid-high",
+    "high-mid-low",
+    "flat-deepening",
+  ]).optional(),
+  unresolved: z.array(GateNoteSchema),
+  finalLintWarnings: z.array(GateNoteSchema),
+  gates: z.array(QualityGateSummarySchema),
+});
+
+const QualityReportSchema = z.object({
+  chapters: z.array(QualityChapterReportSchema),
+  proofread: z.object({
+    emotionalArc: z.object({
+      gate: z.string(),
+      pass: z.boolean(),
+      notes: z.array(GateNoteSchema),
+    }).optional(),
+  }).optional(),
+});
+
 // ── Root schema ─────────────────────────────────────────────────────────
 export const InspirationScriptSchema = z
   .object({
@@ -51,6 +100,7 @@ export const InspirationScriptSchema = z
     width: z.literal(1920),
     height: z.literal(1080),
     artDirection: ArtDirectionSchema,
+    qualityReport: QualityReportSchema.optional(),
   })
   .refine(
     (s) => {

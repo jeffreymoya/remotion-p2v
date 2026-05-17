@@ -2,6 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { topicToSlug } from "../src/lib/inspire/slug";
 import { runLongformPipeline } from "../src/lib/inspire/longform-pipeline";
+import { LANGSMITH_TRACING_ENABLED } from "../src/lib/config";
+
+if (!LANGSMITH_TRACING_ENABLED) {
+  process.env.LANGCHAIN_TRACING_V2 = "false";
+}
 
 const VALID_PHASES = ["research", "plan", "narration", "refine", "proofread", "tts", "videos", "artdirect", "compose"] as const;
 type PipelinePhase = (typeof VALID_PHASES)[number];
@@ -24,6 +29,7 @@ Options:
   --allow-words=w1,w2 Allow specific banned words for this topic
   --skip-research     Skip the Exa research phase (use legacy narration path)
   --skip-proofread    Skip the cross-chapter proofreader
+  --narration-only    Stop after final narration text is prepared for each segment
   --clean             Delete all cached artifacts for this topic before running
   --verbose           Enable verbose logging
 
@@ -37,6 +43,7 @@ Examples:
   tsx scripts/inspire.ts "resilience" --from=tts
   tsx scripts/inspire.ts "resilience" --from=videos --limit=3
   tsx scripts/inspire.ts "resilience" --skip-research
+  tsx scripts/inspire.ts "resilience" --clean --narration-only
   tsx scripts/inspire.ts "resilience" --clean
 
 Note: --limit produces a shorter combined video (first N segments only) — useful
@@ -104,6 +111,7 @@ async function main(): Promise<void> {
   let topic: string | undefined;
   let from: PipelinePhase | undefined;
   let clean = false;
+  let narrationOnly = false;
   let verbose = false;
   let skipResearch = false;
   let skipProofread = false;
@@ -147,6 +155,8 @@ async function main(): Promise<void> {
       allowWords = arg.split("=")[1].split(",").map((w) => w.trim()).filter(Boolean);
     } else if (arg === "--clean") {
       clean = true;
+    } else if (arg === "--narration-only") {
+      narrationOnly = true;
     } else if (arg === "--skip-research") {
       skipResearch = true;
     } else if (arg === "--skip-proofread") {
@@ -169,6 +179,11 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  if (narrationOnly && from && ["tts", "videos", "artdirect", "compose"].includes(from)) {
+    console.error("Error: --narration-only cannot be combined with --from=tts|videos|artdirect|compose");
+    process.exit(1);
+  }
+
   if (clean) {
     cleanArtifacts(slug);
   }
@@ -180,7 +195,19 @@ async function main(): Promise<void> {
     limit = segmentCount;
   }
 
-  await runLongformPipeline({ topic, slug, segmentCount, limit, from, skipResearch, skipProofread, verbose, maxRevisions, allowWords });
+  await runLongformPipeline({
+    topic,
+    slug,
+    segmentCount,
+    limit,
+    from,
+    narrationOnly,
+    skipResearch,
+    skipProofread,
+    verbose,
+    maxRevisions,
+    allowWords,
+  });
 }
 
 main().catch((err) => {

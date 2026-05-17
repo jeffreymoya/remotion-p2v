@@ -23,6 +23,7 @@ import type { InspirationScript, Clip, Sentence } from "./inspire-schema";
 import { generateArtDirection } from "./art-direction-prompt";
 import { ArtDirectionSchema } from "./art-direction-schema";
 import type { ArtDirection } from "./art-direction-schema";
+import { enrichCurrentRun } from "../tracing";
 
 export type InspirePhase = "research" | "plan" | "narration" | "tts" | "videos" | "artdirect" | "compose";
 const ALL_PHASES: InspirePhase[] = [
@@ -94,17 +95,20 @@ function sanitizeNarration(raw: string): string {
     .replace(/[“”]/g, '"');
 }
 
-async function runNarrationPhase(
+async function runNarrationPhaseImpl(
   topic: string,
   slug: string,
   verbose: boolean,
 ): Promise<string> {
+  enrichCurrentRun({ slug, topic, phase: "narration" });
   const cached = narrationPath(slug);
   if (fs.existsSync(cached)) {
+    enrichCurrentRun({ cacheHit: true });
     console.log(`  [narration] cached: ${cached}`);
     return sanitizeNarration(fs.readFileSync(cached, "utf-8"));
   }
 
+  enrichCurrentRun({ cacheHit: false });
   console.log(`  [narration] Generating narration for "${topic}"...`);
   const narration = sanitizeNarration(await generateNarration(topic, { verbose }));
 
@@ -118,19 +122,23 @@ async function runNarrationPhase(
   return narration;
 }
 
-// ── Phase 2: TTS ────────────────────────────────────────────────────────
+const runNarrationPhase = traceable(runNarrationPhaseImpl, {
+  name: "runNarrationPhase",
+  run_type: "chain",
+}) as typeof runNarrationPhaseImpl;
+
+// ── Phase 2: TTS ──────────────────────────────────────────────────────
 interface TtsPhaseResult {
   wordTimings: WordTiming[];
   durationSeconds: number;
   provider?: string;
 }
 
-async function runTtsPhase(
+async function runTtsPhaseImpl(
   narration: string,
   slug: string,
   verbose: boolean,
-): Promise<TtsPhaseResult> {
-  const wavPath = audioPath(slug);
+): Promise<TtsPhaseResult> {  enrichCurrentRun({ slug, phase: "tts", provider: TTS_PROVIDER === "elevenlabs" ? "elevenlabs" : "google-tts" });  const wavPath = audioPath(slug);
   const timPath = timingsPath(slug);
 
   if (fs.existsSync(wavPath) && fs.existsSync(timPath)) {
@@ -142,11 +150,13 @@ async function runTtsPhase(
       fs.unlinkSync(wavPath);
       fs.unlinkSync(timPath);
     } else {
+      enrichCurrentRun({ cacheHit: true });
       console.log(`  [tts] cached: ${wavPath}`);
       return data;
     }
   }
 
+  enrichCurrentRun({ cacheHit: false });
   console.log(`  [tts] Generating speech via ${TTS_PROVIDER} (${narration.length} chars)...`);
   const result =
     TTS_PROVIDER === "elevenlabs"
@@ -172,14 +182,19 @@ async function runTtsPhase(
   return timingsData;
 }
 
-// ── Phase 3: Videos ─────────────────────────────────────────────────────
+const runTtsPhase = traceable(runTtsPhaseImpl, {
+  name: "runTtsPhase",
+  run_type: "tool",
+}) as typeof runTtsPhaseImpl;
+
+// ── Phase 3: Videos ─────────────────────────────────────────────────
 interface VideoPhaseResult {
   clipPlan: ClipPlan;
   clips: Clip[];
   sentences: Sentence[];
 }
 
-async function runVideoPhase(
+async function runVideoPhaseImpl(
   narration: string,
   slug: string,
   wordTimings: WordTiming[],
@@ -187,6 +202,7 @@ async function runVideoPhase(
   verbose: boolean,
   registryOptions?: { skipRecordSlug?: boolean },
 ): Promise<VideoPhaseResult> {
+  enrichCurrentRun({ slug, phase: "videos" });
   // Step 3a: Sentence segmentation
   console.log("  [videos] Segmenting sentences...");
   const { sentences: sentenceTimings, warnings } = segmentSentences(
@@ -413,7 +429,12 @@ async function runVideoPhase(
   return { clipPlan, clips, sentences };
 }
 
-// ── Phase 4: Art Direction ──────────────────────────────────────────────
+const runVideoPhase = traceable(runVideoPhaseImpl, {
+  name: "runVideoPhase",
+  run_type: "chain",
+}) as typeof runVideoPhaseImpl;
+
+// ── Phase 4: Art Direction ────────────────────────────────────────────
 interface ArtDirectPhaseInput {
   narration: string;
   slug: string;
@@ -422,9 +443,10 @@ interface ArtDirectPhaseInput {
   verbose: boolean;
 }
 
-async function runArtDirectPhase(
+async function runArtDirectPhaseImpl(
   input: ArtDirectPhaseInput,
 ): Promise<ArtDirection> {
+  enrichCurrentRun({ slug: input.slug, phase: "artdirect" });
   const cachePath = artDirectPath(input.slug);
 
   if (fs.existsSync(cachePath)) {
@@ -432,6 +454,7 @@ async function runArtDirectPhase(
       const parsed = ArtDirectionSchema.parse(
         JSON.parse(fs.readFileSync(cachePath, "utf-8")),
       );
+      enrichCurrentRun({ cacheHit: true });
       console.log(`  [artdirect] cached: ${cachePath}`);
       return parsed;
     } catch (err) {
@@ -441,6 +464,7 @@ async function runArtDirectPhase(
     }
   }
 
+  enrichCurrentRun({ cacheHit: false });
   console.log(`  [artdirect] Generating art direction...`);
   const ad = await generateArtDirection(
     {
@@ -460,6 +484,11 @@ async function runArtDirectPhase(
   console.log(`  [artdirect] saved: ${cachePath}`);
   return ad;
 }
+
+const runArtDirectPhase = traceable(runArtDirectPhaseImpl, {
+  name: "runArtDirectPhase",
+  run_type: "chain",
+}) as typeof runArtDirectPhaseImpl;
 
 function invalidateClipPlanCache(slug: string): void {
   const cachePath = clipPlanPath(slug);
@@ -487,7 +516,7 @@ function invalidateArtDirectCache(slug: string): void {
 }
 
 // ── Phase 5: Compose ────────────────────────────────────────────────────
-function runComposePhase(
+function runComposePhaseImpl(
   slug: string,
   topic: string,
   narration: string,
@@ -534,16 +563,19 @@ function runComposePhase(
   return script;
 }
 
+const runComposePhase = runComposePhaseImpl;
+
 export const runInspirePipeline = traceable(runInspirePipelineImpl, {
   name: "runInspirePipeline",
   run_type: "chain",
 });
 
-// ── Main pipeline ───────────────────────────────────────────────────────
+// ── Main pipeline ─────────────────────────────────────────────────────
 async function runInspirePipelineImpl(
   options: PipelineOptions,
 ): Promise<InspirationScript> {
   const { topic, slug, verbose } = options;
+  enrichCurrentRun({ slug, topic });
   const from = options.from ?? "narration";
 
   console.log(`\n━━ Inspire Pipeline: "${topic}" (slug: ${slug}) ━━`);

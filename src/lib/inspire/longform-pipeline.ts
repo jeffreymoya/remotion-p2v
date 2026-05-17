@@ -1,7 +1,12 @@
 import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
 import path from "node:path";
-import { generateLongformScript, generateLongformPlan, generateChapterDraft } from "./longform-narration-prompt";
+import {
+  generateLongformScript,
+  generateLongformPlan,
+  generateChapterDraft,
+  LongformPlanSchema,
+} from "./longform-narration-prompt";
 import type { LongformScript, LongformPlan } from "./longform-narration-prompt";
 import { runInspirePipeline } from "./inspire-pipeline";
 import type { InspirePhase } from "./inspire-pipeline";
@@ -19,7 +24,8 @@ import {
 } from "./music-registry";
 import { refineChapter } from "./refine/refine-chapter";
 import type { GateContext } from "./gates/gate-types";
-import { REFINE_MAX_REVISIONS, PROOFREAD_MAX_REDRAFTS_PER_CHAPTER, TTS_PROVIDER } from "../config";
+import { FINAL_LINT_GATES } from "./gates/run-gates";
+import { REFINE_MAX_REVISIONS, PROOFREAD_MAX_REDRAFTS_PER_CHAPTER, TTS_PROVIDER, RESEARCH_MIN_ANCHOR_COUNT } from "../config";
 import type { ResearchBundle } from "./research/research-schema";
 import {
   runResearchPhase,
@@ -29,6 +35,7 @@ import {
 } from "./research/research-pipeline";
 import { proofreadScript } from "./proofread/proofreader";
 import type { ProofreadFindings } from "./proofread/proofread-types";
+import { enrichCurrentRun } from "../tracing";
 
 export interface LongformPipelineOptions {
   topic: string;
@@ -36,6 +43,7 @@ export interface LongformPipelineOptions {
   segmentCount: number;
   limit?: number;
   from?: InspirePhase | "refine" | "proofread";
+  narrationOnly?: boolean;
   skipResearch?: boolean;
   skipProofread?: boolean;
   verbose: boolean;
@@ -169,7 +177,13 @@ function loadCachedPlan(slug: string, segmentCount: number): LongformPlan | null
       fs.unlinkSync(p);
       return null;
     }
-    const data = raw as LongformPlan;
+    const parsed = LongformPlanSchema.safeParse(raw);
+    if (!parsed.success) {
+      console.log(`  [plan] cached plan schema mismatch — regenerating`);
+      fs.unlinkSync(p);
+      return null;
+    }
+    const data = parsed.data;
     if (data.chapters.length !== segmentCount) {
       console.log(
         `  [plan] cached plan has ${data.chapters.length} chapters but ${segmentCount} requested — regenerating`,
@@ -233,6 +247,47 @@ interface ProofreaderRedraftOpts {
   allowWords?: string[];
 }
 
+interface ChapterQualityReport {
+  chapterIndex: number;
+  slug: string;
+  targetFeeling?: LongformPlan["chapters"][number]["targetFeeling"];
+  recognitionMoment?: string;
+  polarityArc?: LongformPlan["chapters"][number]["polarityArc"];
+  unresolved: GateContext extends never ? never : import("./gates/gate-types").GateNote[];
+  finalLintWarnings: import("./gates/gate-types").GateNote[];
+  gates: Array<{
+    gate: string;
+    pass: boolean;
+    notes: import("./gates/gate-types").GateNote[];
+    metrics?: Record<string, string | number | boolean>;
+  }>;
+}
+
+function buildChapterQualityReport(
+  chapterIndex: number,
+  slug: string,
+  chapterPlan: LongformPlan["chapters"][number] | undefined,
+  result: Awaited<ReturnType<typeof refineChapter>>,
+): ChapterQualityReport {
+  return {
+    chapterIndex,
+    slug,
+    targetFeeling: chapterPlan?.targetFeeling,
+    recognitionMoment: chapterPlan?.recognitionMoment,
+    polarityArc: chapterPlan?.polarityArc,
+    unresolved: result.lastResult.blockingNotes,
+    finalLintWarnings: result.lastResult.warnNotes.filter(
+      (note) => FINAL_LINT_GATES.some((gate) => gate.name === note.gate),
+    ),
+    gates: result.lastResult.results.map((gateResult) => ({
+      gate: gateResult.gate,
+      pass: gateResult.pass,
+      notes: gateResult.notes,
+      metrics: gateResult.metrics,
+    })),
+  };
+}
+
 async function applyProofreaderRedrafts(
   findings: ProofreadFindings,
   chapters: string[],
@@ -259,6 +314,9 @@ async function applyProofreaderRedrafts(
       chapterRole: chapterRoles[i] ?? "build",
       priorChapters: updated.filter((_, idx) => idx < i),
       allowWords: opts.allowWords,
+      targetFeeling: chapterPlan?.targetFeeling,
+      recognitionMoment: chapterPlan?.recognitionMoment,
+      polarityArc: chapterPlan?.polarityArc,
     };
 
     const result = await refineChapter(ctx, updated[i], {
@@ -269,6 +327,9 @@ async function applyProofreaderRedrafts(
       chapterIntent: chapterPlan?.intent ?? `Chapter ${i + 1}`,
       sceneSeed: chapterPlan?.sceneSeed ?? `Chapter ${i + 1}`,
       topic: opts.topic,
+      targetFeeling: chapterPlan?.targetFeeling,
+      recognitionMoment: chapterPlan?.recognitionMoment,
+      polarityArc: chapterPlan?.polarityArc,
       slug: sSlug,
       additionalNotes: redraft.notes,
     });
@@ -284,12 +345,14 @@ async function applyProofreaderRedrafts(
 
 async function runLongformPipelineImpl(
   options: LongformPipelineOptions,
-): Promise<InspirationScript> {
+): Promise<InspirationScript | null> {
   const { topic, slug, segmentCount, verbose } = options;
+  enrichCurrentRun({ slug, topic });
   const limit = options.limit ?? segmentCount;
   const processCount = Math.min(limit, segmentCount);
   const maxRevisions = options.maxRevisions ?? REFINE_MAX_REVISIONS;
   const skipResearch = options.skipResearch ?? false;
+  const narrationOnly = options.narrationOnly ?? false;
 
   const forceResearch = options.from === "research";
   const forcePlan = options.from === "plan" || forceResearch;
@@ -305,8 +368,10 @@ async function runLongformPipelineImpl(
   const skipProofread = options.skipProofread ?? false;
   const forceProofread = options.from === "proofread";
 
-  // Fail fast before any network calls if sox is missing.
-  checkSox();
+  // Narration-only runs stop before audio combine and do not require sox.
+  if (!narrationOnly) {
+    checkSox();
+  }
 
   // Segment pipelines always start from "tts" since narration is seeded externally.
   // If the user requests --from=videos or later, propagate that to each segment.
@@ -335,6 +400,26 @@ async function runLongformPipelineImpl(
         console.log(
           `  [research] loaded cached bundle: ${researchBundlePath(slug)} (${research.anchors.length} anchors)`,
         );
+      }
+    }
+
+    // Verify anchor density: require at least RESEARCH_MIN_ANCHOR_COUNT * 1.5 verified anchors
+    if (research) {
+      const verifiedCount = research.anchors.filter((a) => a.status === "verified").length;
+      const requiredCount = Math.ceil(RESEARCH_MIN_ANCHOR_COUNT * 1.5);
+      if (verifiedCount < requiredCount) {
+        console.warn(
+          `  [research] WARNING: only ${verifiedCount} verified anchors (need ${requiredCount}). ` +
+          `Chapters need denser citation pool. Consider re-running research.`,
+        );
+      }
+      // Log unverified/dropped anchors
+      const unverified = research.anchors.filter((a) => a.status !== "verified");
+      if (unverified.length > 0 && verbose) {
+        console.log(`  [research] ${unverified.length} anchor(s) not verified:`);
+        for (const a of unverified) {
+          console.log(`    - [${a.id}] ${a.claim.slice(0, 60)} (${a.status})`);
+        }
       }
     }
   }
@@ -381,8 +466,13 @@ async function runLongformPipelineImpl(
 
       console.log(`  [narration] chapter ${i + 1}: generating draft...`);
       const draft = await generateChapterDraft(plan, i, research, priorChapters, { verbose });
-      segments.push({ title: chapter.title, narration: draft });
-      priorChapters.push(draft);
+      if (verbose && draft.droppedAnchorIds.length > 0) {
+        console.log(
+          `  [narration] chapter ${i + 1}: dropped anchors ${draft.droppedAnchorIds.join(", ")}${draft.dropReason ? ` — ${draft.dropReason}` : ""}`,
+        );
+      }
+      segments.push({ title: chapter.title, narration: draft.narration });
+      priorChapters.push(draft.narration);
     }
 
     longformScript = { segmentCount, segments };
@@ -404,6 +494,7 @@ async function runLongformPipelineImpl(
   // Phase 0.5: Refine each chapter through deterministic gates
   const chapterRoles: Array<GateContext["chapterRole"]> = assignChapterRoles(processCount);
   const refinedNarrations: string[] = [];
+  let chapterQualityReports: ChapterQualityReport[] = [];
 
   if (!skipRefine) {
     console.log(`\n── Refine: running deterministic gates (max ${maxRevisions} revisions) ──`);
@@ -426,6 +517,9 @@ async function runLongformPipelineImpl(
       chapterRole: chapterRoles[i],
       priorChapters: refinedNarrations.slice(),
       allowWords: options.allowWords,
+      targetFeeling: chapterPlan?.targetFeeling,
+      recognitionMoment: chapterPlan?.recognitionMoment,
+      polarityArc: chapterPlan?.polarityArc,
     };
 
     const result = await refineChapter(ctx, seg.narration, {
@@ -436,10 +530,17 @@ async function runLongformPipelineImpl(
       chapterIntent: chapterPlan?.intent ?? `Chapter ${i + 1} of ${processCount}`,
       sceneSeed: chapterPlan?.sceneSeed ?? seg.title,
       topic,
+      targetFeeling: chapterPlan?.targetFeeling,
+      recognitionMoment: chapterPlan?.recognitionMoment,
+      polarityArc: chapterPlan?.polarityArc,
       slug: segSlug(slug, i),
     });
 
     refinedNarrations.push(result.final);
+    chapterQualityReports = [
+      ...chapterQualityReports,
+      buildChapterQualityReport(i, segSlug(slug, i), chapterPlan, result),
+    ];
     console.log(
       `  [refine] chapter ${i + 1}: ${result.lastResult.pass ? "PASS" : "FAIL"} after ${result.revisions} revision(s)`,
     );
@@ -490,6 +591,15 @@ async function runLongformPipelineImpl(
     } else {
       console.log(`  [proofread] using cached: ${proofreadPath}`);
     }
+  }
+
+  if (narrationOnly) {
+    for (let i = 0; i < processCount; i++) {
+      seedNarrationFile(segSlug(slug, i), refinedNarrations[i]);
+    }
+
+    console.log(`\n━━ Done. Narration files prepared for ${processCount} segment(s): ${slug} ━━\n`);
+    return null;
   }
 
   // Phases 1-5 per segment
@@ -572,8 +682,29 @@ async function runLongformPipelineImpl(
   }
 
   const finalScript: InspirationScript = backgroundMusicPath
-    ? { ...combined, backgroundMusicPath }
-    : combined;
+    ? {
+        ...combined,
+        backgroundMusicPath,
+        qualityReport: {
+          chapters: chapterQualityReports,
+          proofread: {
+            emotionalArc: research && plan && fs.existsSync(proofreadPath)
+              ? (JSON.parse(fs.readFileSync(proofreadPath, "utf-8")) as ProofreadFindings).emotionalArc
+              : undefined,
+          },
+        },
+      }
+    : {
+        ...combined,
+        qualityReport: {
+          chapters: chapterQualityReports,
+          proofread: {
+            emotionalArc: research && plan && fs.existsSync(proofreadPath)
+              ? (JSON.parse(fs.readFileSync(proofreadPath, "utf-8")) as ProofreadFindings).emotionalArc
+              : undefined,
+          },
+        },
+      };
   const { path: jsonPath } = writeInspireJson(finalScript);
 
   console.log(`  [combine] script: ${jsonPath}`);

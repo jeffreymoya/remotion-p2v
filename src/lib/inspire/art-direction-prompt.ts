@@ -110,7 +110,7 @@ function buildUserPrompt({ narration, sentences, clipPlan }: PromptInput): strin
   const clipSummary = clipPlan.clips
     .map(
       (c, i) =>
-        `[clip ${i}] query="${c.query}" sentences=[${c.sentenceIndexes.join(", ")}]`,
+        `[clip ${i}] queries="${c.queries.join(" | ")}" sentences=[${c.sentenceIndexes.join(", ")}]`,
     )
     .join("\n");
 
@@ -168,7 +168,7 @@ export async function generateArtDirection(
       ],
       CODE_GEN_TEMPERATURE,
       NARRATION_REASONING,
-      { verbose: options?.verbose },
+      { verbose: options?.verbose, runName: "art-direction" },
     );
   } catch (err) {
     console.warn(

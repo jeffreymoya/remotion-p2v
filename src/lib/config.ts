@@ -57,11 +57,15 @@ export const ELEVENLABS_TIMEOUT_MS = validateTimeout("ELEVENLABS_TIMEOUT_MS", 60
 export const ELEVENLABS_MODEL_ID =
   process.env.ELEVENLABS_MODEL_ID ?? "eleven_multilingual_v2";
 
+// ── LangSmith tracing ──────────────────────────────────────────────────
+export const LANGSMITH_TRACING_ENABLED =
+  process.env.LANGSMITH_TRACING !== "false";
+
 // ── Narration gate thresholds ───────────────────────────────────────────
 export const REFINE_MAX_REVISIONS = 2;
-export const SIMPLICITY_FK_GRADE_MAX = 8.0;
+export const SIMPLICITY_FK_GRADE_MAX = 11.0;
 export const SIMPLICITY_UNCOMMON_WORD_PCT_MAX = 5.0;
-export const SERMON_RATIO_DIRECT_ADDRESS_MAX = 0.30;
+export const SERMON_RATIO_DIRECT_ADDRESS_MAX = 0.55;
 export const SPECIFICITY_MIN_NAMED_ENTITIES = 2;
 export const SPECIFICITY_MIN_DATED_MOMENTS = 1;
 export const PROSODY_MIN_MARKS = 3;
@@ -69,8 +73,12 @@ export const PROSODY_MIN_DISTINCT_MARK_TYPES = 2;
 
 // ── LLM judge gates ─────────────────────────────────────────────────────
 export const REFINE_MAX_LLM_CALLS_PER_GATE = 2;
-export const FRESHNESS_GATE_SEVERITY: "warn" | "block" =
-  (process.env.FRESHNESS_GATE_SEVERITY as "warn" | "block") ?? "warn";
+// More positive-attractor gates means each chapter can spend more LLM budget.
+export const RESONANCE_MIN_INTENSITY = 2;
+export const RECOGNITION_REQUIRED = true;
+export const SENSORY_MIN_CHANNELS = 1;
+export const EARNED_WISDOM_REQUIRED = true;
+export const MAX_ANCHORS_PER_CHAPTER = 4;
 
 // ── Cross-chapter proofreader ───────────────────────────────────────────
 export const PROOFREAD_MAX_REDRAFTS_PER_CHAPTER = 1;
@@ -78,6 +86,10 @@ export const PROOFREAD_MAX_REDRAFTS_PER_CHAPTER = 1;
 // ── Research phase ──────────────────────────────────────────────────────
 export const EXA_API_KEY = process.env.EXA_API_KEY;
 export const SEARCH_TIMEOUT_MS = validateTimeout("SEARCH_TIMEOUT_MS", 20_000);
+export const RESEARCH_BRAINSTORM_TIMEOUT_MS = validateTimeout(
+  "RESEARCH_BRAINSTORM_TIMEOUT_MS",
+  600_000,
+);
 export const RESEARCH_TARGET_ANCHOR_COUNT = 16;
 export const RESEARCH_MIN_ANCHOR_COUNT = 8;
 export const RESEARCH_BRAINSTORM_OVERSAMPLE = 2.5;

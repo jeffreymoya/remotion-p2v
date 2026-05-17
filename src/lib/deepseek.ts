@@ -1,6 +1,7 @@
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import type { ZodType } from "zod";
 import { DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEEPSEEK_TIMEOUT_MS } from "./config";
+import { enrichCurrentRun } from "./tracing";
 
 export interface DeepSeekMessage {
   role: "system" | "user" | "assistant";
@@ -20,6 +21,9 @@ export interface DeepSeekOptions {
   verbose?: boolean;
   metadata?: Record<string, unknown>;
   maxTokens?: number;
+  timeoutMs?: number;
+  /** Custom run name shown in LangSmith trace waterfall (e.g. "narration", "proofread/escalation"). */
+  runName?: string;
 }
 
 export class DeepSeekError extends Error {
@@ -41,13 +45,14 @@ async function deepseekChatImpl(
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
+  const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
+  const runName = options?.runName;
   const startTime = Date.now();
 
-  if (metadata) {
-    const run = getCurrentRunTree(true);
-    if (run) {
-      run.metadata = { ...run.metadata, ...metadata };
-    }
+  const run = getCurrentRunTree(true);
+  if (run) {
+    if (runName) run.name = runName;
+    if (metadata) run.metadata = { ...run.metadata, ...metadata };
   }
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -62,23 +67,31 @@ async function deepseekChatImpl(
     );
   }
 
-  const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: DEEPSEEK_MODEL,
-      messages,
-      temperature,
-      ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
-      ...(reasoning.thinking.type === "enabled"
-        ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
-        : { thinking: { type: "disabled" } }),
-    }),
-    signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: DEEPSEEK_MODEL,
+        messages,
+        temperature,
+        ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
+        ...(reasoning.thinking.type === "enabled"
+          ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
+          : { thinking: { type: "disabled" } }),
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      throw new DeepSeekError(`DeepSeek request timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");
@@ -89,6 +102,20 @@ async function deepseekChatImpl(
   }
 
   const json: DeepSeekResponse = (await response.json()) as DeepSeekResponse;
+
+  // Extract token usage for LangSmith cost analytics
+  const usage = (json as DeepSeekResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
+  if (run && usage) {
+    run.extra = {
+      ...run.extra,
+      usage_metadata: {
+        input_tokens: usage.prompt_tokens,
+        output_tokens: usage.completion_tokens,
+        total_tokens: usage.total_tokens,
+      },
+    };
+  }
+  enrichCurrentRun({ provider: "deepseek" });
 
   const content = json.choices?.[0]?.message?.content;
   if (!content || content.trim().length === 0) {
@@ -129,13 +156,14 @@ async function deepseekChatJsonImpl<T>(
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
+  const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
+  const runName = options?.runName;
   const startTime = Date.now();
 
-  if (metadata) {
-    const run = getCurrentRunTree(true);
-    if (run) {
-      run.metadata = { ...run.metadata, ...metadata };
-    }
+  const run = getCurrentRunTree(true);
+  if (run) {
+    if (runName) run.name = runName;
+    if (metadata) run.metadata = { ...run.metadata, ...metadata };
   }
 
   const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -150,24 +178,32 @@ async function deepseekChatJsonImpl<T>(
     );
   }
 
-  const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: DEEPSEEK_MODEL,
-      messages,
-      temperature,
-      response_format: { type: "json_object" },
-      ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
-      ...(reasoning.thinking.type === "enabled"
-        ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
-        : { thinking: { type: "disabled" } }),
-    }),
-    signal: AbortSignal.timeout(DEEPSEEK_TIMEOUT_MS),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: DEEPSEEK_MODEL,
+        messages,
+        temperature,
+        response_format: { type: "json_object" },
+        ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
+        ...(reasoning.thinking.type === "enabled"
+          ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
+          : { thinking: { type: "disabled" } }),
+      }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      throw new DeepSeekError(`DeepSeek JSON request timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     const text = await response.text().catch(() => "");
@@ -178,6 +214,20 @@ async function deepseekChatJsonImpl<T>(
   }
 
   const json: DeepSeekResponse = (await response.json()) as DeepSeekResponse;
+
+  // Extract token usage for LangSmith cost analytics
+  const jsonUsage = (json as DeepSeekResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
+  if (run && jsonUsage) {
+    run.extra = {
+      ...run.extra,
+      usage_metadata: {
+        input_tokens: jsonUsage.prompt_tokens,
+        output_tokens: jsonUsage.completion_tokens,
+        total_tokens: jsonUsage.total_tokens,
+      },
+    };
+  }
+  enrichCurrentRun({ provider: "deepseek" });
 
   const content = json.choices?.[0]?.message?.content;
   if (!content || content.trim().length === 0) {

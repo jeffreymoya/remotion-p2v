@@ -25,7 +25,7 @@ export async function runThroughLineGate(
     ResultSchema,
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: opts?.verbose },
+    { verbose: opts?.verbose, runName: "proofread/through-line" },
   );
 
   const pass = result.arcScore >= 2;

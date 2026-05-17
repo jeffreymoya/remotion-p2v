@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { traceable } from "langsmith/traceable";
 import {
   RESEARCH_TARGET_ANCHOR_COUNT,
   RESEARCH_MIN_ANCHOR_COUNT,
@@ -14,8 +15,13 @@ import { ResearchBundleSchema } from "./research-schema";
 import { brainstormCandidates } from "./research-brainstorm";
 import { verifyAnchor } from "./anchor-verifier";
 import type { VerifyResult } from "./anchor-verifier";
-import type { SearchProvider, SearchHit } from "./search-provider";
+import type { SearchProvider, SearchHit, SearchOptions } from "./search-provider";
 import { makeExaProvider } from "./exa-client";
+import { planTopicalQueries } from "./topical-queries";
+import { buildCorpus } from "./corpus-builder";
+import type { ResearchCorpus } from "./corpus-schema";
+import { ResearchCorpusSchema } from "./corpus-schema";
+import { enrichCurrentRun } from "../../tracing";
 
 // ── Search cache ────────────────────────────────────────────────────────
 
@@ -49,13 +55,17 @@ function writeSearchCache(query: string, hits: SearchHit[]): void {
 
 function makeCachingProvider(inner: SearchProvider): SearchProvider {
   return {
-    async search(query, opts) {
+    search: traceable(async function exaSearch(query: string, opts?: SearchOptions): Promise<SearchHit[]> {
       const cached = readSearchCache(query);
-      if (cached) return cached;
+      if (cached) {
+        enrichCurrentRun({ provider: "exa", cacheHit: true });
+        return cached;
+      }
+      enrichCurrentRun({ provider: "exa", cacheHit: false });
       const hits = await inner.search(query, opts);
       writeSearchCache(query, hits);
       return hits;
-    },
+    }, { name: "exa.search", run_type: "retriever" }),
     getContents: inner.getContents?.bind(inner),
   };
 }
@@ -99,16 +109,33 @@ function resolveProvider(custom?: SearchProvider): SearchProvider {
 
 // ── Main pipeline ──────────────────────────────────────────────────────
 
-export async function runResearchPhase(
+async function runResearchPhaseImpl(
   topic: string,
   slug: string,
   segmentCount: number,
   opts?: { verbose?: boolean; provider?: SearchProvider },
 ): Promise<ResearchBundle> {
+  enrichCurrentRun({ slug, topic, phase: "research" });
   const verbose = opts?.verbose ?? false;
   const provider = resolveProvider(opts?.provider);
   const targetCount = RESEARCH_TARGET_ANCHOR_COUNT;
   const brainstormTarget = Math.ceil(targetCount * RESEARCH_BRAINSTORM_OVERSAMPLE);
+
+  // Phase A: topical corpus — broad literature scan before per-anchor verification
+  let corpus = loadCachedCorpus(slug);
+  if (!corpus) {
+    console.log(`  [corpus] planning topical queries...`);
+    const queries = await planTopicalQueries(topic, { verbose });
+    console.log(
+      `  [corpus] running ${queries.length} queries (lenses: ${queries.map((q) => q.lens).join(", ")})...`,
+    );
+    corpus = await buildCorpus(topic, slug, queries, provider, { verbose });
+    saveCorpus(corpus);
+  } else {
+    console.log(
+      `  [corpus] reusing cached: ${corpus.excerpts.length} excerpts across ${corpus.queries.length} queries`,
+    );
+  }
 
   const allVerified: Anchor[] = [];
   const allRejected: Array<{ candidate: string; reason: string }> = [];
@@ -127,6 +154,7 @@ export async function runResearchPhase(
         round > 1
           ? allRejected.map((r) => r.candidate)
           : undefined,
+      corpus,
     });
 
     totalCandidates += candidates.length;
@@ -190,6 +218,11 @@ export async function runResearchPhase(
   return bundle;
 }
 
+export const runResearchPhase = traceable(runResearchPhaseImpl, {
+  name: "runResearchPhase",
+  run_type: "chain",
+}) as typeof runResearchPhaseImpl;
+
 // ── Cache load/save helpers ───────────────────────────────────────────
 
 export function researchBundlePath(slug: string): string {
@@ -213,4 +246,31 @@ export function saveResearchBundle(bundle: ResearchBundle): void {
   fs.mkdirSync("prompts/inspire", { recursive: true });
   fs.writeFileSync(p, JSON.stringify(bundle, null, 2));
   console.log(`  [research] saved: ${p} (${bundle.anchors.length} anchors)`);
+}
+
+// ── Corpus cache load/save helpers ────────────────────────────────────
+
+export function researchCorpusPath(slug: string): string {
+  return `prompts/inspire/${slug}-corpus.json`;
+}
+
+export function loadCachedCorpus(slug: string): ResearchCorpus | null {
+  const p = researchCorpusPath(slug);
+  if (!fs.existsSync(p)) return null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(p, "utf-8"));
+    return ResearchCorpusSchema.parse(raw);
+  } catch {
+    console.log(`  [corpus] cached corpus corrupt — will regenerate`);
+    return null;
+  }
+}
+
+export function saveCorpus(corpus: ResearchCorpus): void {
+  const p = researchCorpusPath(corpus.slug);
+  fs.mkdirSync("prompts/inspire", { recursive: true });
+  fs.writeFileSync(p, JSON.stringify(corpus, null, 2));
+  console.log(
+    `  [corpus] saved: ${p} (${corpus.excerpts.length} excerpts, ${corpus.queries.length} queries)`,
+  );
 }

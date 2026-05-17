@@ -61,7 +61,7 @@ export function createAttentionCurveGate(options?: LlmGateRunnerOptions): Gate {
         SYSTEM_PROMPT,
         narration,
         AttentionCurveResponseSchema,
-        options,
+        { ...options, gateName: "attention-curve" },
       );
 
       const pass = response.endPullScore >= response.midPullScore && response.endPullScore >= 2;

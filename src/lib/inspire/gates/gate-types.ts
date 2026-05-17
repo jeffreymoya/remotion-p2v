@@ -1,3 +1,5 @@
+import type { PolarityArc, TargetFeeling } from "../longform-narration-prompt";
+
 export interface GateContext {
   topic: string;
   slug: string;
@@ -6,6 +8,9 @@ export interface GateContext {
   chapterRole: "open" | "build" | "complicate" | "turn" | "land";
   priorChapters: string[];
   allowWords?: string[];
+  targetFeeling?: TargetFeeling;
+  recognitionMoment?: string;
+  polarityArc?: PolarityArc;
 }
 
 export interface GateNote {
@@ -20,7 +25,7 @@ export interface GateResult {
   gate: string;
   pass: boolean;
   notes: GateNote[];
-  metrics?: Record<string, number | string>;
+  metrics?: Record<string, number | string | boolean>;
 }
 
 export interface Gate {

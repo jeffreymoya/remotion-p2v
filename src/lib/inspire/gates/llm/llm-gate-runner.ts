@@ -1,5 +1,5 @@
 import type { ZodType } from "zod";
-import type { DeepSeekMessage } from "../../../deepseek";
+import type { DeepSeekMessage, DeepSeekOptions } from "../../../deepseek";
 import { deepseekChatJson } from "../../../deepseek";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING, REFINE_MAX_LLM_CALLS_PER_GATE } from "../../../config";
 
@@ -8,6 +8,7 @@ export type ChatFn = <T>(
   schema: ZodType<T>,
   temperature: number,
   reasoning: typeof NARRATION_REASONING,
+  options?: DeepSeekOptions,
 ) => Promise<T>;
 
 /** Default chat function wrapping the real DeepSeek JSON client. */
@@ -16,7 +17,8 @@ const defaultChatFn: ChatFn = <T>(
   schema: ZodType<T>,
   temperature: number,
   reasoning: typeof NARRATION_REASONING,
-): Promise<T> => deepseekChatJson(messages, schema, temperature, reasoning);
+  options?: DeepSeekOptions,
+): Promise<T> => deepseekChatJson(messages, schema, temperature, reasoning, options);
 
 /**
  * Per-(chapter, gate) call budget tracker.
@@ -46,6 +48,8 @@ export class LlmBudgetTracker {
 export interface LlmGateRunnerOptions {
   chatFn?: ChatFn;
   verbose?: boolean;
+  /** Gate name used as LangSmith run label (e.g. "freshness", "cohesion"). */
+  gateName?: string;
 }
 
 /**
@@ -71,5 +75,6 @@ export async function runLlmGateCall<T>(
     );
   }
 
-  return chat(messages, schema, CODE_GEN_TEMPERATURE, NARRATION_REASONING);
+  return chat(messages, schema, CODE_GEN_TEMPERATURE, NARRATION_REASONING,
+    options?.gateName ? { runName: `gate/${options.gateName}` } : undefined);
 }

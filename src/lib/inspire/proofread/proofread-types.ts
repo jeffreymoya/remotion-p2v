@@ -11,13 +11,13 @@ export interface ChapterProofreadResult {
   citationFidelity: CrossChapterGateResult;
   internalConsistency: CrossChapterGateResult;
   seedPayoff: CrossChapterGateResult;
-  throughLine: CrossChapterGateResult;
-  escalation: CrossChapterGateResult;
+  emotionalArc: CrossChapterGateResult;
 }
 
 export interface ProofreadFindings {
   pass: boolean;
   perChapter: ChapterProofreadResult[];
+  emotionalArc?: CrossChapterGateResult;
   redrafts: Array<{
     chapterIndex: number;
     notes: GateNote[];

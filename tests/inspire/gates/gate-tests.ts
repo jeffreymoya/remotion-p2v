@@ -11,8 +11,13 @@ import { sermonRatioGate } from "../../../src/lib/inspire/gates/deterministic/se
 import { specificityGate } from "../../../src/lib/inspire/gates/deterministic/specificity-gate";
 import { simplicityGate } from "../../../src/lib/inspire/gates/deterministic/simplicity-gate";
 import { prosodyMarksGate } from "../../../src/lib/inspire/gates/deterministic/prosody-marks-gate";
-import { runGates } from "../../../src/lib/inspire/gates/run-gates";
+import {
+  ALL_DETERMINISTIC_GATES,
+  FINAL_LINT_GATES,
+  runGates,
+} from "../../../src/lib/inspire/gates/run-gates";
 import type { GateContext } from "../../../src/lib/inspire/gates/gate-types";
+import { LongformPlanSchema } from "../../../src/lib/inspire/longform-narration-prompt";
 
 const FIXTURES_DIR = path.join(__dirname, "__fixtures__");
 
@@ -97,13 +102,54 @@ async function main(): Promise<void> {
   const prosMaria = await prosodyMarksGate.run(mariaSample, defaultCtx);
   assert(prosMaria.pass, "maria sample PASSES prosody-marks gate");
 
-  // ── Aggregate: run all gates ──────────────────────────────────────
-  console.log("\nAggregate (all gates):");
-  const aggRes = await runGates(resilienceSeg01, defaultCtx);
-  assert(!aggRes.pass, "resilience seg-01 FAILS aggregate");
+  // ── Aggregate: floor gates only ───────────────────────────────────
+  console.log("\nAggregate (quality floor):");
+  const floorMaria = await runGates(mariaSample, defaultCtx, ALL_DETERMINISTIC_GATES);
+  assert(floorMaria.pass, "maria sample PASSES deterministic floor aggregate");
 
-  const aggMaria = await runGates(mariaSample, defaultCtx);
-  assert(aggMaria.pass, "maria sample PASSES aggregate");
+  // ── Aggregate: final lint only ─────────────────────────────────────
+  console.log("\nAggregate (final lint):");
+  const lintRes = await runGates(resilienceSeg01, defaultCtx, FINAL_LINT_GATES);
+  assert(!lintRes.pass, "resilience seg-01 FAILS final lint aggregate");
+
+  const lintMaria = await runGates(mariaSample, defaultCtx, FINAL_LINT_GATES);
+  assert(lintMaria.pass, "maria sample PASSES final lint aggregate");
+
+  // ── Plan schema: anchor cap ────────────────────────────────────────
+  console.log("\nPlan schema anchor cap:");
+  const validPlan = LongformPlanSchema.safeParse({
+    segmentCount: 1,
+    chapters: [
+      {
+        title: "Chapter 1",
+        role: "open",
+        intent: "Open on one scene",
+        sceneSeed: "A kitchen before dawn",
+        targetFeeling: { dominant: "recognition", intensity: 2 },
+        recognitionMoment: "The mug going cold in her hands",
+        polarityArc: "low-to-high",
+        anchorIds: ["anchor-1"],
+      },
+    ],
+  });
+  assert(validPlan.success, "plan schema accepts one anchor per chapter");
+
+  const invalidPlan = LongformPlanSchema.safeParse({
+    segmentCount: 1,
+    chapters: [
+      {
+        title: "Chapter 1",
+        role: "open",
+        intent: "Open on one scene",
+        sceneSeed: "A kitchen before dawn",
+        targetFeeling: { dominant: "recognition", intensity: 2 },
+        recognitionMoment: "The mug going cold in her hands",
+        polarityArc: "low-to-high",
+        anchorIds: ["anchor-1", "anchor-2"],
+      },
+    ],
+  });
+  assert(!invalidPlan.success, "plan schema rejects more than one anchor per chapter");
 
   // ── Summary ──────────────────────────────────────────────────────
   console.log(`\n━━ Results: ${passed} passed, ${failed} failed ━━\n`);

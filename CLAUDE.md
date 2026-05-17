@@ -76,6 +76,9 @@ Depending on phase, the pipeline may require:
 - `GOOGLE_CLOUD_API_KEY`
 - `PIXABAY_API_KEY`
 - `PEXELS_API_KEY`
+- `LANGSMITH_API_KEY` — LangSmith API key for trace ingestion
+- `LANGSMITH_PROJECT` — LangSmith project name (default: `remotion-p2v`)
+- `LANGSMITH_TRACING` — set to `false` to disable tracing (enabled by default)
 
 `sox` must also be available for the longform audio combine/postprocess path.
 

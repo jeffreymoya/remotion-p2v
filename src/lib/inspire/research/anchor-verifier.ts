@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceable } from "langsmith/traceable";
 import { deepseekChatJson } from "../../deepseek";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import type { Anchor, RawCandidate } from "./research-schema";
@@ -8,6 +9,7 @@ import {
   trustCategoryForKind,
   isTrustedUrl,
 } from "./trusted-domains";
+import { enrichCurrentRun } from "../../tracing";
 
 // ── Verification judgment schema ──────────────────────────────────────────
 
@@ -87,11 +89,12 @@ export type VerifyResult =
   | Anchor
   | { status: "rejected"; reason: string };
 
-export async function verifyAnchor(
+async function verifyAnchorImpl(
   candidate: RawCandidate,
   provider: SearchProvider,
   opts?: { verbose?: boolean },
 ): Promise<VerifyResult> {
+  enrichCurrentRun({ phase: "research", provider: "exa" });
   const category = trustCategoryForKind(candidate.kind);
   const domains = [...TRUSTED_DOMAINS[category]];
 
@@ -177,7 +180,7 @@ Judge which hit (if any) supports this claim. Return:
       VerificationJudgmentSchema,
       0.1,
       NARRATION_REASONING,
-      { verbose: opts?.verbose },
+      { verbose: opts?.verbose, runName: "research/anchor-verify" },
     );
   } catch (err) {
     if (opts?.verbose) {
@@ -204,7 +207,7 @@ Judge which hit (if any) supports this claim. Return:
   switch (candidate.kind) {
     case "primary_quote": {
       if (candidate.quote && matchedHit.text) {
-        const overlap = hasSubstringOverlap(candidate.quote, matchedHit.text, 10);
+        const overlap = hasSubstringOverlap(candidate.quote, matchedHit.text, 15);
         if (!overlap || !onTrustedDomain) {
           confidence = confidence === "high" ? "medium" : confidence;
         }
@@ -248,15 +251,36 @@ Judge which hit (if any) supports this claim. Return:
       publisher: candidate.attributionGuess.publisher,
     },
     quote: candidate.quote,
+    sourceTier: inferSourceTier(candidate),
     citation: {
       url: matchedHit.url,
       title: matchedHit.title,
       accessedAt: new Date().toISOString(),
       verifierConfidence: confidence,
       verifierNotes: judgment.notes,
+      quoteVerbatimVerified: candidate.quote
+        ? hasSubstringOverlap(candidate.quote, matchedHit.text ?? "", 15)
+        : undefined,
     },
     status,
   };
 
   return anchor;
 }
+
+function inferSourceTier(candidate: RawCandidate): "seminal" | "supporting" | "secondary" {
+  // Seminal: primary quotes and book excerpts from known canonical works
+  if (candidate.kind === "primary_quote" || candidate.kind === "book_excerpt") {
+    return "seminal";
+  }
+  // Studies and meta-analyses are supporting evidence
+  if (candidate.kind === "study" || candidate.kind === "meta_analysis") {
+    return "supporting";
+  }
+  return "secondary";
+}
+
+export const verifyAnchor = traceable(verifyAnchorImpl, {
+  name: "verifyAnchor",
+  run_type: "chain",
+}) as typeof verifyAnchorImpl;

@@ -1,8 +1,16 @@
 import type { Gate, GateContext, AggregateGateResult, GateNote } from "../gates/gate-types";
-import { runGates, ALL_DETERMINISTIC_GATES, ALL_LLM_GATES } from "../gates/run-gates";
+import {
+  runGates,
+  ALL_DETERMINISTIC_GATES,
+  ALL_LLM_GATES,
+  FINAL_LINT_GATES,
+} from "../gates/run-gates";
 import { LlmBudgetTracker } from "../gates/llm/llm-gate-runner";
 import { reviseChapter } from "./revise-chapter-prompt";
+import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
+import type { PolarityArc, TargetFeeling } from "../longform-narration-prompt";
+import { enrichCurrentRun } from "../../tracing";
 
 export interface RefineChapterOptions {
   maxRevisions: number;
@@ -16,6 +24,9 @@ export interface RefineChapterOptions {
   sceneSeed: string;
   topic: string;
   wordBudget?: { min: number; max: number };
+  targetFeeling?: TargetFeeling;
+  recognitionMoment?: string;
+  polarityArc?: PolarityArc;
   /** Slug for writing refine-log artifacts */
   slug?: string;
   /** Extra notes injected before the first revision (e.g. from proofreader). Forces at least one revision. */
@@ -28,11 +39,12 @@ export interface RefineResult {
   lastResult: AggregateGateResult;
 }
 
-export async function refineChapter(
+export async function refineChapterImpl(
   ctx: GateContext,
   initialDraft: string,
   opts: RefineChapterOptions,
 ): Promise<RefineResult> {
+  enrichCurrentRun({ slug: ctx.slug, topic: opts.topic, phase: "refine", chapterRole: ctx.chapterRole });
   const detGates = opts.gates ?? ALL_DETERMINISTIC_GATES;
   const llmGates = opts.llmGates ?? ALL_LLM_GATES;
   const wordBudget = opts.wordBudget ?? { min: 280, max: 420 };
@@ -90,6 +102,9 @@ export async function refineChapter(
         previousDraft: draft,
         gateNotes: allNotes,
         wordBudget,
+        targetFeeling: opts.targetFeeling,
+        recognitionMoment: opts.recognitionMoment,
+        polarityArc: opts.polarityArc,
       },
       { verbose: opts.verbose },
     );
@@ -168,6 +183,9 @@ export async function refineChapter(
             previousDraft: draft,
             gateNotes: allNotes,
             wordBudget,
+            targetFeeling: opts.targetFeeling,
+            recognitionMoment: opts.recognitionMoment,
+            polarityArc: opts.polarityArc,
           },
           { verbose: opts.verbose },
         );
@@ -205,7 +223,7 @@ export async function refineChapter(
 
       // Downgrade remaining blockers to warn if budget exhausted
       if (!llmResult.pass) {
-        console.log(`  [refine] llm gate budget exhausted — downgrading remaining blockers to warn`);
+        console.log(`  [refine] llm gate budget exhausted — downgrading non-resonance blockers to warn`);
         lastResult = downgradeBlockingToWarn(llmResult, detResult);
       } else {
         lastResult = mergeResults(detResult, llmResult);
@@ -213,13 +231,40 @@ export async function refineChapter(
     }
   }
 
+  if (detResult.pass && FINAL_LINT_GATES.length > 0) {
+    const lintResult = await runGates(draft, ctx, FINAL_LINT_GATES);
+    const advisoryLint = downgradeAggregateToWarn(lintResult);
+
+    if (opts.verbose) {
+      logGateResult(revision, advisoryLint, "final-lint");
+    }
+
+    revisionLog.push({
+      revision,
+      phase: "final-lint",
+      blocking: 0,
+      warn: advisoryLint.warnNotes.length,
+    });
+
+    lastResult = mergeResults(lastResult, advisoryLint);
+  }
+
   // Write refine-log artifact
   if (opts.slug) {
     const logPath = `prompts/inspire/${opts.slug}-refine-log.json`;
     fs.mkdirSync("prompts/inspire", { recursive: true });
+    const unresolved = lastResult.blockingNotes.filter((note) => note.gate === "resonance");
+    const finalLintWarnings = lastResult.warnNotes.filter(
+      (note) => FINAL_LINT_GATES.some((gate) => gate.name === note.gate),
+    );
     fs.writeFileSync(
       logPath,
-      JSON.stringify({ revisionLog, finalPass: lastResult.pass }, null, 2),
+      JSON.stringify({
+        revisionLog,
+        finalPass: lastResult.pass,
+        unresolved,
+        finalLintWarnings,
+      }, null, 2),
     );
   }
 
@@ -235,16 +280,43 @@ function downgradeBlockingToWarn(
   llmResult: AggregateGateResult,
   detResult: AggregateGateResult,
 ): AggregateGateResult {
-  const downgradedNotes: GateNote[] = llmResult.blockingNotes.map((n) => ({
+  const unresolvedBlocking = llmResult.blockingNotes.filter((note) => note.gate === "resonance");
+  const downgradedNotes: GateNote[] = llmResult.blockingNotes
+    .filter((note) => note.gate !== "resonance")
+    .map((n) => ({
     ...n,
     severity: "warn" as const,
-  }));
+    }));
+
+  return {
+    pass: unresolvedBlocking.length === 0,
+    results: [...detResult.results, ...llmResult.results],
+    blockingNotes: [...detResult.blockingNotes, ...unresolvedBlocking],
+    warnNotes: [...detResult.warnNotes, ...llmResult.warnNotes, ...downgradedNotes],
+  };
+}
+
+function downgradeAggregateToWarn(result: AggregateGateResult): AggregateGateResult {
+  const warnNotes = [
+    ...result.warnNotes,
+    ...result.blockingNotes.map((note) => ({
+      ...note,
+      severity: "warn" as const,
+    })),
+  ];
 
   return {
     pass: true,
-    results: [...detResult.results, ...llmResult.results],
+    results: result.results.map((gateResult) => ({
+      ...gateResult,
+      pass: true,
+      notes: gateResult.notes.map((note) => ({
+        ...note,
+        severity: "warn" as const,
+      })),
+    })),
     blockingNotes: [],
-    warnNotes: [...detResult.warnNotes, ...llmResult.warnNotes, ...downgradedNotes],
+    warnNotes,
   };
 }
 
@@ -272,3 +344,8 @@ function logGateResult(revision: number, result: AggregateGateResult, phase?: st
     console.log(`    ${r.pass ? "✓" : "✗"} ${r.gate}${metrics}`);
   }
 }
+
+export const refineChapter = traceable(refineChapterImpl, {
+  name: "refineChapter",
+  run_type: "chain",
+}) as typeof refineChapterImpl;

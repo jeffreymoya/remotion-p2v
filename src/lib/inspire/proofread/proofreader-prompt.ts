@@ -1,4 +1,5 @@
 import type { DeepSeekMessage } from "../../deepseek";
+import type { LongformPlan } from "../longform-narration-prompt";
 
 /**
  * Build prompt for the internal-consistency cross-chapter gate.
@@ -156,5 +157,47 @@ OUTPUT (JSON only):
 PASS if the curve is non-decreasing AND ends >= 2.`,
     },
     { role: "user", content: joined },
+  ];
+}
+
+export function buildEmotionalArcPrompt(
+  chapters: readonly string[],
+  plan: LongformPlan,
+): DeepSeekMessage[] {
+  const planSummary = plan.chapters
+    .map(
+      (chapter, index) => `Chapter ${index + 1}: target=${chapter.targetFeeling.dominant} intensity=${chapter.targetFeeling.intensity} arc=${chapter.polarityArc}`,
+    )
+    .join("\n");
+
+  const joined = chapters
+    .map((ch, i) => `[CHAPTER ${i + 1}]\n${ch}`)
+    .join("\n\n");
+
+  return [
+    {
+      role: "system",
+      content: `You are reading all chapters of one inspirational long-form video script.
+
+For each chapter, judge the dominant achieved emotion and intensity (0-3). Compare the achieved arc to the designed arc.
+
+The script passes if the achieved intensity stays within 1 point of the planned intensity for each chapter and the final chapter lands at intensity >= 2.
+
+Identify the single chapter where the emotional arc most clearly breaks down, if any.
+
+Return JSON only in this shape:
+{
+  "achieved": [
+    { "chapter": 1, "emotion": "recognition", "intensity": 2 }
+  ],
+  "breakChapter": 2,
+  "weakness": "<short explanation or null>",
+  "fix": "<short fix or null>"
+}`, 
+    },
+    {
+      role: "user",
+      content: `Planned emotional arc:\n${planSummary}\n\nChapters:\n${joined}`,
+    },
   ];
 }

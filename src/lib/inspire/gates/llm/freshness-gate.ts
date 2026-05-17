@@ -2,7 +2,8 @@ import { z } from "zod";
 import type { Gate, GateContext, GateResult, GateNote } from "../gate-types";
 import { runLlmGateCall, type LlmGateRunnerOptions } from "./llm-gate-runner";
 import { CANONICAL_WISDOM } from "./canonical-wisdom-corpus";
-import { FRESHNESS_GATE_SEVERITY } from "../../../config";
+
+const DEFAULT_FRESHNESS_GATE_SEVERITY = "warn" as const;
 
 function buildSystemPrompt(): string {
   const sourceList = CANONICAL_WISDOM.map(
@@ -65,7 +66,7 @@ function toGateNotes(response: FreshnessResponse, severity: "warn" | "block"): G
 }
 
 export function createFreshnessGate(options?: LlmGateRunnerOptions & { severity?: "warn" | "block" }): Gate {
-  const severity = options?.severity ?? FRESHNESS_GATE_SEVERITY;
+  const severity = options?.severity ?? DEFAULT_FRESHNESS_GATE_SEVERITY;
 
   return {
     name: "freshness",
@@ -75,7 +76,7 @@ export function createFreshnessGate(options?: LlmGateRunnerOptions & { severity?
         buildSystemPrompt(),
         narration,
         FreshnessResponseSchema,
-        options,
+        { ...options, gateName: "freshness" },
       );
 
       const notes = toGateNotes(response, severity);

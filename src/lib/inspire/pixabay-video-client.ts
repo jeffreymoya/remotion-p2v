@@ -4,6 +4,7 @@ import { traceable } from "langsmith/traceable";
 import { PIXABAY_VIDEOS_BASE_URL, PIXABAY_TIMEOUT_MS, PIXABAY_VIDEO_PER_PAGE } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
 import { screenThumbnails } from "./vision-screener";
+import { enrichCurrentRun } from "../tracing";
 
 export type { VideoDownloadResult } from "./video-source";
 
@@ -88,6 +89,7 @@ async function searchAndDownloadVideoImpl(
   minDurationSeconds: number,
   options?: VideoSearchOptions,
 ): Promise<VideoDownloadResult> {
+  enrichCurrentRun({ phase: "videos", provider: "pixabay" });
   const apiKey = process.env.PIXABAY_API_KEY;
   if (!apiKey) {
     return { ok: false, loop: false, error: "PIXABAY_API_KEY is not set" };

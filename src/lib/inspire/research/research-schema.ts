@@ -22,14 +22,17 @@ export const AnchorSchema = z.object({
     work: z.string().optional(),
     year: z.number().int().optional(),
     publisher: z.string().optional(),
+    locator: z.string().optional(),
   }),
   quote: z.string().optional(),
+  sourceTier: z.enum(["seminal", "supporting", "secondary"]).optional(),
   citation: z.object({
     url: z.string().url(),
     title: z.string(),
     accessedAt: z.string(),
     verifierConfidence: z.enum(["high", "medium", "low"]),
     verifierNotes: z.string(),
+    quoteVerbatimVerified: z.boolean().optional(),
   }),
   status: z.enum(["verified", "rejected", "needs_review"]),
 });

@@ -55,7 +55,7 @@ Remember:
     ],
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "narration" },
   );
 
   return result.trim();

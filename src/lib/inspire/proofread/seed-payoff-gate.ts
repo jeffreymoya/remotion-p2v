@@ -28,7 +28,7 @@ export async function runSeedPayoffGate(
     ResultSchema,
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: opts?.verbose },
+    { verbose: opts?.verbose, runName: "proofread/seed-payoff" },
   );
 
   // Convert to per-chapter results

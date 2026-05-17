@@ -11,8 +11,6 @@ export const BANNED_LEXICON: readonly string[] = [
   "forging",
   "drift",
   "paralysis",
-  "transformation",
-  "transformed",
   "rebirth",
   "awakening",
   "true self",

@@ -25,7 +25,7 @@ export async function runEscalationGate(
     ResultSchema,
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: opts?.verbose },
+    { verbose: opts?.verbose, runName: "proofread/escalation" },
   );
 
   const curve = result.curve;

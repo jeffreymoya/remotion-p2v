@@ -3,6 +3,8 @@ import path from "node:path";
 import { traceable } from "langsmith/traceable";
 import { PEXELS_VIDEOS_BASE_URL, PEXELS_VIDEO_PER_PAGE, PIXABAY_TIMEOUT_MS } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
+import { screenThumbnails } from "./vision-screener";
+import { enrichCurrentRun } from "../tracing";
 
 const USER_AGENT = "Mozilla/5.0 (compatible; remotion-p2v-inspire/1.0)";
 
@@ -14,11 +16,19 @@ interface PexelsVideoFile {
   link: string;
 }
 
+interface PexelsVideoPicture {
+  id: number;
+  nr: number;
+  picture: string;
+}
+
 interface PexelsVideoHit {
   id: number;
   duration: number;
   url: string;
+  image?: string;
   video_files: PexelsVideoFile[];
+  video_pictures?: PexelsVideoPicture[];
 }
 
 interface PexelsVideoResponse {
@@ -42,6 +52,7 @@ async function searchAndDownloadVideoImpl(
   minDurationSeconds: number,
   options?: VideoSearchOptions,
 ): Promise<VideoDownloadResult> {
+  enrichCurrentRun({ phase: "videos", provider: "pexels" });
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) {
     return { ok: false, loop: false, error: "PEXELS_API_KEY is not set" };
@@ -70,10 +81,26 @@ async function searchAndDownloadVideoImpl(
   }
 
   const body = (await res.json()) as PexelsVideoResponse;
-  const hits = body.videos ?? [];
+  const rawHits = body.videos ?? [];
+
+  if (rawHits.length === 0) {
+    return { ok: false, loop: false, error: `no Pexels video results for "${query}"` };
+  }
+
+  const thumbnailItems = rawHits.map((hit) => ({
+    id: hit.id,
+    thumbnailUrl: hit.video_pictures?.[0]?.picture ?? hit.image ?? "",
+  })).filter((item) => item.thumbnailUrl !== "");
+
+  const passingIds = await screenThumbnails(thumbnailItems);
+  const hits = rawHits.filter((hit) => passingIds.has(hit.id));
 
   if (hits.length === 0) {
-    return { ok: false, loop: false, error: `no Pexels video results for "${query}"` };
+    return {
+      ok: false,
+      loop: false,
+      error: `all ${rawHits.length} Pexels results for "${query}" were rejected by visual screen`,
+    };
   }
 
   // Tiered selection with dedup awareness

@@ -160,7 +160,7 @@ Choose a video strategy and Pixabay search queries. Return ONLY the JSON.`;
     ],
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "video-query" },
   );
 
   const cleaned = stripJsonFences(raw);

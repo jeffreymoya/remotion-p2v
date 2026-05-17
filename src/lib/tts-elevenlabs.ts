@@ -6,6 +6,7 @@ import {
   ELEVENLABS_TIMEOUT_MS,
   ELEVENLABS_MODEL_ID,
 } from "./config";
+import { enrichCurrentRun } from "./tracing";
 
 export type { WordTiming, TtsResult };
 
@@ -57,6 +58,7 @@ function charsToWordTimings(alignment: ElevenLabsAlignment): WordTiming[] {
 const SAMPLE_RATE = 24000;
 
 async function generateSpeechImpl(text: string): Promise<TtsResult> {
+  enrichCurrentRun({ phase: "tts", provider: "elevenlabs" });
   const apiKey = process.env.ELEVENLABS_API_KEY;
   const voiceId = process.env.ELEVENLABS_VOICE_ID;
   if (!apiKey) throw new Error("ELEVENLABS_API_KEY is not set");

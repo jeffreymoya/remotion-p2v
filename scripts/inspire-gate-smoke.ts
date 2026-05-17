@@ -5,7 +5,11 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { runGates } from "../src/lib/inspire/gates/run-gates";
+import {
+  ALL_DETERMINISTIC_GATES,
+  FINAL_LINT_GATES,
+  runGates,
+} from "../src/lib/inspire/gates/run-gates";
 import type { GateContext } from "../src/lib/inspire/gates/gate-types";
 
 const PROMPTS_DIR = "prompts/inspire";
@@ -43,10 +47,11 @@ async function main(): Promise<void> {
       priorChapters: [],
     };
 
-    const result = await runGates(narration, ctx);
+    const floorResult = await runGates(narration, ctx, ALL_DETERMINISTIC_GATES);
+    const lintResult = await runGates(narration, ctx, FINAL_LINT_GATES);
 
-    console.log(`${result.pass ? "PASS" : "FAIL"} — ${file}`);
-    for (const r of result.results) {
+    console.log(`${floorResult.pass ? "PASS" : "FAIL"} floor — ${file}`);
+    for (const r of floorResult.results) {
       const metrics = r.metrics
         ? ` (${Object.entries(r.metrics).map(([k, v]) => `${k}=${v}`).join(", ")})`
         : "";
@@ -55,6 +60,20 @@ async function main(): Promise<void> {
         console.log(`    [${note.severity}] ${note.message}`);
       }
     }
+
+    if (lintResult.results.length > 0) {
+      console.log(`${lintResult.pass ? "PASS" : "FAIL"} final-lint — ${file}`);
+      for (const r of lintResult.results) {
+        const metrics = r.metrics
+          ? ` (${Object.entries(r.metrics).map(([k, v]) => `${k}=${v}`).join(", ")})`
+          : "";
+        console.log(`  ${r.pass ? "✓" : "✗"} ${r.gate}${metrics}`);
+        for (const note of r.notes) {
+          console.log(`    [${note.severity}] ${note.message}`);
+        }
+      }
+    }
+
     console.log();
   }
 }

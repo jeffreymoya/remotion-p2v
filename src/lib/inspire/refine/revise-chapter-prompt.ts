@@ -2,6 +2,7 @@ import type { GateNote } from "../gates/gate-types";
 import { deepseekChat } from "../../deepseek";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import { BANNED_LEXICON, BANNED_PHRASES } from "../gates/banned-phrases";
+import type { PolarityArc, TargetFeeling } from "../longform-narration-prompt";
 
 export interface RevisionInput {
   chapterTitle: string;
@@ -12,6 +13,9 @@ export interface RevisionInput {
   previousDraft: string;
   gateNotes: GateNote[];
   wordBudget: { min: number; max: number };
+  targetFeeling?: TargetFeeling;
+  recognitionMoment?: string;
+  polarityArc?: PolarityArc;
 }
 
 function formatGateNotes(notes: GateNote[]): string {
@@ -24,33 +28,56 @@ function formatGateNotes(notes: GateNote[]): string {
   const lines: string[] = [];
   for (const [gate, gateNotes] of grouped) {
     for (const note of gateNotes) {
-      lines.push(`[${gate.toUpperCase()}] "${note.evidence}" — ${note.message}. Fix: ${note.suggestion}`);
+      let prefix = `[${gate.toUpperCase()}]`;
+
+      // Surface specific pattern-detector guidance for the three banned patterns
+      if (gate === "genre_tells" && note.message.includes("Staccato run")) {
+        prefix = `[STACCATO RUN]`;
+        lines.push(`${prefix} "${note.evidence}" — ${note.message}. Fix: Combine the short sentences into flowing clauses with subordinate structure. Never march through clips of ≤8 words.`);
+        continue;
+      }
+      if (gate === "genre_tells" && note.message.includes("Meta-narration")) {
+        prefix = `[META-NARRATION]`;
+        lines.push(`${prefix} "${note.evidence}" — ${note.message}. Fix: Remove the stage direction entirely. Let the argument land through evidence, not announcements.`);
+        continue;
+      }
+      if (gate === "genre_tells" && note.message.includes("contrastive reveal")) {
+        prefix = `[CONTRASTIVE REVEAL]`;
+        lines.push(`${prefix} "${note.evidence}" — ${note.message}. Fix: Avoid the AI-tic contrastive reveal — don't write "X is not Y. X is Z." as two sentences. Fold the reframe into a single flowing sentence with an embedded clause.`);
+        continue;
+      }
+
+      lines.push(`${prefix} "${note.evidence}" — ${note.message}. Fix: ${note.suggestion}`);
     }
   }
   return lines.join("\n");
 }
 
+function formatTargetFeeling(targetFeeling?: TargetFeeling): string {
+  if (!targetFeeling) {
+    return "a clearer, more emotionally legible dominant feeling";
+  }
+
+  const secondary = targetFeeling.secondary ? ` with ${targetFeeling.secondary}` : "";
+  return `${targetFeeling.dominant}${secondary} at intensity ${targetFeeling.intensity}/3`;
+}
+
+function findStrongestMoment(notes: GateNote[]): string {
+  const resonanceNote = notes.find((note) => note.gate === "resonance");
+  return resonanceNote?.evidence ?? "No single sentence is landing strongly enough yet.";
+}
+
 function buildRevisionPrompt(input: RevisionInput): string {
-  return `Your previous draft was reviewed. Address each issue below.
+  return `Your previous draft was reviewed. Rewrite toward the target emotion, not toward generic compliance.
+
+Target feeling: ${formatTargetFeeling(input.targetFeeling)}
+Recognition moment to create: ${input.recognitionMoment ?? "a quotable human recognition beat"}
+Planned polarity arc: ${input.polarityArc ?? "not specified"}
+Strongest current moment: ${findStrongestMoment(input.gateNotes)}
+
+The chapter currently falls short in these ways:
 
 ${formatGateNotes(input.gateNotes)}
-
-## Constraints
-- Banned words (never use): ${BANNED_LEXICON.join(", ")}
-- Banned phrases (never use): ${BANNED_PHRASES.join("; ")}
-- Word budget: ${input.wordBudget.min}–${input.wordBudget.max} words
-- Flesch-Kincaid grade ≤ 8 (short sentences, common words)
-- ≤ 30% of sentences may address the listener as "you"
-- ≥ 2 named entities (people, places, specific objects)
-- ≥ 1 dated moment (day, month, year, time expression)
-- Use prosody marks: ... (pause), — (shift), ( ) (aside), paragraph breaks
-
-## Do not
-- Introduce new metaphors not in the original draft
-- Abandon the controlling object or through-line from the original
-- Exceed the word budget
-- Add affirmation stacks at the end
-- Use universalizing openers ("We've all been there", "Imagine", "Picture this")
 
 ## Chapter context
 Topic: "${input.topic}"
@@ -63,14 +90,18 @@ Scene seed: ${input.sceneSeed}
 ${input.previousDraft}
 
 ## Instructions
-Rewrite the chapter addressing all issues above. Return ONLY the revised narration text — no JSON, no markdown fences, no explanations.`;
+Rewrite the chapter so the recognition moment is felt in-scene and the target feeling becomes legible.
+
+Hard constraints: word budget ${input.wordBudget.min}–${input.wordBudget.max}; banned words ${BANNED_LEXICON.join(", ")}; banned phrases ${BANNED_PHRASES.join("; ")}; keep Flesch-Kincaid grade <= 11; keep direct "you" address <= 55%; deploy assigned anchors with verbatim quotes and attribution; use prosody marks ... / — / ( ) / paragraph breaks; no staccato runs (≤1 sentence of ≤8 words per 4-sentence window); no meta-narration; no two-part contrastive reveals.
+
+Return ONLY the revised narration text — no JSON, no markdown fences, no explanations.`;
 }
 
 export async function reviseChapter(
   input: RevisionInput,
   options?: { verbose?: boolean },
 ): Promise<string> {
-  const systemPrompt = `You are a senior narration writer revising a chapter for a long-form inspirational video. You write in the voice of an older person of accumulated experience telling stories to a friend over coffee. Inspiration arrives by accumulation, not by exhortation. You are warm, often self-deprecating, sometimes uncertain, and address the listener as a peer rather than a student. You prefer concrete observation over abstract claim.`;
+  const systemPrompt = `You are a senior narration writer revising a chapter for a long-form inspirational video. You write as a warm but argumentative essayist building a case from canonical sources. Each chapter opens with a misconception worth overturning, deploys verified quotes with attribution as structural proof, and hands the reader a new lens. Emotion rides inside flowing analytical prose — long sentences with subordinate clauses, embedded reframes, and specific attributions. You are direct, intellectually generous, and occasionally self-implicating, but never preachy.`;
 
   const result = await deepseekChat(
     [
@@ -79,7 +110,7 @@ export async function reviseChapter(
     ],
     CODE_GEN_TEMPERATURE,
     NARRATION_REASONING,
-    { verbose: options?.verbose },
+    { verbose: options?.verbose, runName: "refine/revise-chapter" },
   );
 
   return result.trim();
