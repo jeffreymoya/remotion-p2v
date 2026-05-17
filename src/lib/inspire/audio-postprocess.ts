@@ -47,3 +47,33 @@ export function dreamyVoice(wavBuffer: Buffer, slug: string): Buffer {
     if (fs.existsSync(tmpOut)) fs.unlinkSync(tmpOut);
   }
 }
+
+// Lighter postprocess for voices that are already aged (e.g. ElevenLabs old man).
+// Only normalizes and adds subtle reverb — no pitch shift or EQ.
+const SOX_REVERB_ONLY = [
+  "norm", "-2",
+  "reverb", "6", "75", "20", "40", "5", "-8",
+];
+
+export function reverbOnlyVoice(wavBuffer: Buffer, slug: string): Buffer {
+  const tmpIn = path.join(os.tmpdir(), `${slug}-sox-in.wav`);
+  const tmpOut = path.join(os.tmpdir(), `${slug}-sox-out.wav`);
+
+  try {
+    fs.writeFileSync(tmpIn, wavBuffer);
+
+    const result = spawnSync("sox", [tmpIn, tmpOut, ...SOX_REVERB_ONLY], {
+      encoding: "utf-8",
+    });
+
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(`SoX failed (exit ${result.status}): ${result.stderr}`);
+    }
+
+    return fs.readFileSync(tmpOut);
+  } finally {
+    if (fs.existsSync(tmpIn)) fs.unlinkSync(tmpIn);
+    if (fs.existsSync(tmpOut)) fs.unlinkSync(tmpOut);
+  }
+}

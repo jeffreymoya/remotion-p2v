@@ -2,8 +2,10 @@ import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
 import path from "node:path";
 import { generateNarration } from "./narration-prompt";
-import { generateSpeech } from "../tts-google";
-import type { WordTiming } from "../tts-google";
+import { generateSpeech as generateSpeechGoogle } from "../tts-google";
+import { generateSpeech as generateSpeechElevenLabs } from "../tts-elevenlabs";
+import type { WordTiming } from "../audio-wav";
+import { TTS_PROVIDER } from "../config";
 import { segmentSentences } from "./sentence-segmenter";
 import type { SentenceTiming } from "./sentence-segmenter";
 import { generateClipPlan, ClipPlanSchema } from "./video-query-prompt";
@@ -120,6 +122,7 @@ async function runNarrationPhase(
 interface TtsPhaseResult {
   wordTimings: WordTiming[];
   durationSeconds: number;
+  provider?: string;
 }
 
 async function runTtsPhase(
@@ -131,35 +134,42 @@ async function runTtsPhase(
   const timPath = timingsPath(slug);
 
   if (fs.existsSync(wavPath) && fs.existsSync(timPath)) {
-    console.log(`  [tts] cached: ${wavPath}`);
     const data = JSON.parse(fs.readFileSync(timPath, "utf-8")) as TtsPhaseResult;
-    return data;
+    if (data.provider && data.provider !== TTS_PROVIDER) {
+      console.log(
+        `  [tts] provider mismatch (cached=${data.provider}, current=${TTS_PROVIDER}) — invalidating`,
+      );
+      fs.unlinkSync(wavPath);
+      fs.unlinkSync(timPath);
+    } else {
+      console.log(`  [tts] cached: ${wavPath}`);
+      return data;
+    }
   }
 
-  console.log(`  [tts] Generating speech (${narration.length} chars)...`);
-  const result = await generateSpeech(narration);
+  console.log(`  [tts] Generating speech via ${TTS_PROVIDER} (${narration.length} chars)...`);
+  const result =
+    TTS_PROVIDER === "elevenlabs"
+      ? await generateSpeechElevenLabs(narration)
+      : await generateSpeechGoogle(narration);
 
   fs.mkdirSync(path.dirname(wavPath), { recursive: true });
   fs.writeFileSync(wavPath, result.audioBuffer);
 
+  const timingsData: TtsPhaseResult = {
+    wordTimings: result.wordTimings,
+    durationSeconds: result.durationSeconds,
+    provider: TTS_PROVIDER,
+  };
+
   fs.mkdirSync(path.dirname(timPath), { recursive: true });
-  fs.writeFileSync(
-    timPath,
-    JSON.stringify(
-      { wordTimings: result.wordTimings, durationSeconds: result.durationSeconds },
-      null,
-      2,
-    ),
-  );
+  fs.writeFileSync(timPath, JSON.stringify(timingsData, null, 2));
 
   console.log(
     `  [tts] saved: ${wavPath} (${result.durationSeconds.toFixed(1)}s, ${result.wordTimings.length} words)`,
   );
 
-  return {
-    wordTimings: result.wordTimings,
-    durationSeconds: result.durationSeconds,
-  };
+  return timingsData;
 }
 
 // ── Phase 3: Videos ─────────────────────────────────────────────────────

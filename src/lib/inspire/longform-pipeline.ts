@@ -9,7 +9,7 @@ import { combineSegments, concatWavBuffers } from "./combine-segments";
 import { writeInspireJson } from "./write-inspire-script";
 import { InspirationScriptSchema } from "./inspire-schema";
 import type { InspirationScript } from "./inspire-schema";
-import { checkSox, dreamyVoice } from "./audio-postprocess";
+import { checkSox, dreamyVoice, reverbOnlyVoice } from "./audio-postprocess";
 import { loadRegistry, saveRegistry, recordSlug } from "./video-registry";
 import {
   loadMusicRegistry,
@@ -19,7 +19,7 @@ import {
 } from "./music-registry";
 import { refineChapter } from "./refine/refine-chapter";
 import type { GateContext } from "./gates/gate-types";
-import { REFINE_MAX_REVISIONS, PROOFREAD_MAX_REDRAFTS_PER_CHAPTER } from "../config";
+import { REFINE_MAX_REVISIONS, PROOFREAD_MAX_REDRAFTS_PER_CHAPTER, TTS_PROVIDER } from "../config";
 import type { ResearchBundle } from "./research/research-schema";
 import {
   runResearchPhase,
@@ -533,12 +533,14 @@ async function runLongformPipelineImpl(
   });
 
   const rawWav = concatWavBuffers(wavBuffers);
-  const combinedWav = dreamyVoice(rawWav, slug);
+  const postprocess = TTS_PROVIDER === "elevenlabs" ? reverbOnlyVoice : dreamyVoice;
+  const combinedWav = postprocess(rawWav, slug);
+  const postLabel = TTS_PROVIDER === "elevenlabs" ? "reverb-only" : "dreamy";
   const outAudioPath = combinedAudioPath(slug);
   fs.mkdirSync(path.dirname(outAudioPath), { recursive: true });
   fs.writeFileSync(outAudioPath, combinedWav);
   console.log(
-    `  [combine] audio: ${outAudioPath} (${(combinedWav.length / 1_048_576).toFixed(1)} MB) [dreamy]`,
+    `  [combine] audio: ${outAudioPath} (${(combinedWav.length / 1_048_576).toFixed(1)} MB) [${postLabel}]`,
   );
 
   const combined = combineSegments(slug, topic, segmentScripts);

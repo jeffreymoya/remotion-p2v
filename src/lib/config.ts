@@ -42,6 +42,21 @@ export const GOOGLE_TTS_LANGUAGE_CODE = "en-US" as const;
 export const GOOGLE_TTS_SAMPLE_RATE = 24000 as const;
 export const AUDIO_DIR = "public/audio" as const;
 
+// ── TTS provider selection ──────────────────────────────────────────────
+export type TtsProvider = "google" | "elevenlabs";
+const rawProvider = process.env.TTS_PROVIDER ?? "google";
+if (rawProvider !== "google" && rawProvider !== "elevenlabs") {
+  console.error(`TTS_PROVIDER must be "google" or "elevenlabs", got: "${rawProvider}"`);
+  process.exit(1);
+}
+export const TTS_PROVIDER: TtsProvider = rawProvider as TtsProvider;
+
+// ── ElevenLabs ──────────────────────────────────────────────────────────
+export const ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1" as const;
+export const ELEVENLABS_TIMEOUT_MS = validateTimeout("ELEVENLABS_TIMEOUT_MS", 60_000);
+export const ELEVENLABS_MODEL_ID =
+  process.env.ELEVENLABS_MODEL_ID ?? "eleven_multilingual_v2";
+
 // ── Narration gate thresholds ───────────────────────────────────────────
 export const REFINE_MAX_REVISIONS = 2;
 export const SIMPLICITY_FK_GRADE_MAX = 8.0;

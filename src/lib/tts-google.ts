@@ -7,6 +7,9 @@ import {
   GOOGLE_TTS_SAMPLE_RATE,
   GOOGLE_TTS_TIMEOUT_MS,
 } from "./config";
+import { pcmToWav } from "./audio-wav";
+import type { WordTiming, TtsResult } from "./audio-wav";
+export type { WordTiming, TtsResult } from "./audio-wav";
 
 const CHANNELS = 1;
 const BITS = 16;
@@ -19,37 +22,6 @@ const STT_MAX_CHUNK_SECONDS = 55;
 const STT_MIN_CHUNK_SECONDS = 30;
 const SILENCE_AMPLITUDE_THRESHOLD = 500; // int16; TTS pauses sit near 0
 const SILENCE_MIN_DURATION_MS = 80;
-
-export interface WordTiming {
-  word: string;
-  startSeconds: number;
-  endSeconds: number;
-}
-
-export interface TtsResult {
-  audioBuffer: Buffer;
-  wordTimings: WordTiming[];
-  durationSeconds: number;
-}
-
-function pcmToWav(pcm: Buffer): Buffer {
-  const dataSize = pcm.length;
-  const header = Buffer.alloc(44);
-  header.write("RIFF", 0);
-  header.writeUInt32LE(36 + dataSize, 4);
-  header.write("WAVE", 8);
-  header.write("fmt ", 12);
-  header.writeUInt32LE(16, 16);
-  header.writeUInt16LE(1, 20);
-  header.writeUInt16LE(CHANNELS, 22);
-  header.writeUInt32LE(GOOGLE_TTS_SAMPLE_RATE, 24);
-  header.writeUInt32LE(GOOGLE_TTS_SAMPLE_RATE * CHANNELS * (BITS / 8), 28);
-  header.writeUInt16LE(CHANNELS * (BITS / 8), 32);
-  header.writeUInt16LE(BITS, 34);
-  header.write("data", 36);
-  header.writeUInt32LE(dataSize, 40);
-  return Buffer.concat([header, pcm]);
-}
 
 function parseDuration(s: string): number {
   return parseFloat(s.replace("s", ""));
@@ -246,7 +218,7 @@ async function generateSpeechImpl(
     audioContent: string;
   };
   const pcm = Buffer.from(audioContent, "base64");
-  const audioBuffer = pcmToWav(pcm);
+  const audioBuffer = pcmToWav(pcm, GOOGLE_TTS_SAMPLE_RATE);
   const durationSeconds =
     pcm.length / (GOOGLE_TTS_SAMPLE_RATE * CHANNELS * (BITS / 8));
 
