@@ -10,12 +10,14 @@
     "inspire": "tsx --env-file=.env scripts/inspire.ts",
     "inspire:quick": "tsx --env-file=.env scripts/inspire.ts --segments=2 --limit=2 --clean",
     "inspire:narration": "tsx --env-file=.env scripts/inspire.ts --clean --narration-only",
+    "inspire:combine-narrations": "tsx scripts/combine-inspire-narrations.ts",
     "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts",
     "smoke:inspire-gates": "tsx scripts/inspire-gate-smoke.ts",
     "test:gates": "tsx tests/inspire/gates/gate-tests.ts",
     "test:llm-gates": "tsx tests/inspire/gates/llm/llm-gate-tests.ts",
     "gates:capture-llm": "tsx --env-file=.env scripts/inspire-capture-llm-fixtures.ts",
     "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts",
+    "test:pause-injector": "tsx tests/inspire/tts-pause-injector.test.ts",
     "quotas": "tsx --env-file=.env scripts/check-quotas.ts"
   },
   "dependencies": {

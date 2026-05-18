@@ -8,6 +8,7 @@ import {
   GOOGLE_TTS_TIMEOUT_MS,
 } from "./config";
 import { pcmToWav } from "./audio-wav";
+import { injectPausesForGoogle } from "./inspire/tts-pause-injector";
 import type { WordTiming, TtsResult } from "./audio-wav";
 import { enrichCurrentRun } from "./tracing";
 export type { WordTiming, TtsResult } from "./audio-wav";
@@ -185,11 +186,9 @@ async function generateSpeechImpl(
 
   const voiceName = options?.voiceName ?? GOOGLE_TTS_VOICE_NAME;
 
-  // Google TTS plain-text input ignores newlines. Replace \n\n with
-  // em-dash to force a dramatic pause that Chirp 3 HD voices honor;
-  // single \n is collapsed to a space. The narration source is kept
-  // unchanged (sentence segmenter still uses \n\n for paragraph splits).
-  const ttsText = text.replace(/\n\n+/g, " — ").replace(/\n/g, " ");
+  // Inject generous pause signals for Chirp 3 HD. The narration source is
+  // kept unchanged (sentence segmenter still uses \n\n for paragraph splits).
+  const ttsText = injectPausesForGoogle(text);
 
   const ttsRes = await fetch(
     `${GOOGLE_TTS_BASE_URL}/text:synthesize?key=${apiKey}`,
