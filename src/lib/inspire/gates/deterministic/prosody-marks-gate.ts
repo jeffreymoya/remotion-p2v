@@ -1,5 +1,9 @@
 import type { Gate, GateContext, GateResult, GateNote } from "../gate-types";
-import { PROSODY_MIN_MARKS, PROSODY_MIN_DISTINCT_MARK_TYPES } from "../../../config";
+import {
+  PROSODY_MIN_MARKS,
+  PROSODY_MIN_DISTINCT_MARK_TYPES,
+  PROSODY_MIN_LONG_PAUSES,
+} from "../../../config";
 
 type ProsodyMarkType = "ellipsis" | "dash" | "parenthetical" | "paragraph-break";
 
@@ -39,6 +43,10 @@ function findProsodyMarks(narration: string): ProsodyMark[] {
   return marks;
 }
 
+function countLongPauses(narration: string): number {
+  return (narration.match(/\.{3}\s+\.{3}\s+\.{3}/g) ?? []).length;
+}
+
 export const prosodyMarksGate: Gate = {
   name: "prosody_marks",
   kind: "deterministic",
@@ -46,6 +54,7 @@ export const prosodyMarksGate: Gate = {
     const notes: GateNote[] = [];
     const marks = findProsodyMarks(narration);
     const distinctTypes = new Set(marks.map((m) => m.type));
+    const longPauseCount = countLongPauses(narration);
 
     if (marks.length < PROSODY_MIN_MARKS) {
       notes.push({
@@ -67,6 +76,16 @@ export const prosodyMarksGate: Gate = {
       });
     }
 
+    if (longPauseCount < PROSODY_MIN_LONG_PAUSES) {
+      notes.push({
+        gate: "prosody_marks",
+        severity: "block",
+        evidence: `Found ${longPauseCount} long-pause marks (need ≥${PROSODY_MIN_LONG_PAUSES})`,
+        message: `No "... ... ..." long-pause mark found. At least one required per chapter for reflection beats.`,
+        suggestion: `Add one "... ... ..." long pause before a major citation or inflection point, followed by a concrete question about the protagonist.`,
+      });
+    }
+
     return {
       gate: "prosody_marks",
       pass: notes.filter((n) => n.severity === "block").length === 0,
@@ -75,6 +94,7 @@ export const prosodyMarksGate: Gate = {
         totalMarks: marks.length,
         distinctTypes: distinctTypes.size,
         types: [...distinctTypes].join(", "),
+        longPauseCount,
       },
     };
   },

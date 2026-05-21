@@ -7,6 +7,14 @@ import {
 } from "../config";
 import { NARRATION_GUIDELINES, VOICE_SAMPLES } from "./narration-guidelines";
 import { BANNED_LEXICON, BANNED_PHRASES } from "./gates/banned-phrases";
+import {
+  ARCHETYPES,
+  ARCHETYPES_FOR_PROMPT,
+  ARCHETYPE_KEYS,
+  DEFAULT_ARCHETYPE,
+  getRoleGuidance,
+} from "./narration-archetypes";
+import type { NarrationArchetype } from "./narration-archetypes";
 import type { Anchor, ResearchBundle } from "./research/research-schema";
 
 const LongformSegmentSchema = z.object({
@@ -98,7 +106,7 @@ ${buildLines}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the deeper ref
 3. Analytical but warm tone — write as an essayist speaking to one engaged reader.
 4. Word count per chapter: ${minWords}–${maxWords} words.
 5. Each chapter needs specific attributions (named authors, works, dates).
-6. ≤55% of sentences should directly address the listener as "you". Most should be analytical prose or embedded-citation.
+6. ≤35% of sentences should directly address the listener as "you". Most should be analytical prose, scene, or embedded-citation.
 
 ## Banned Vocabulary
 Banned words (never use): ${BANNED_LEXICON.join(", ")}
@@ -121,20 +129,10 @@ Return ONLY a JSON object matching this shape exactly:
 No markdown outside the JSON, no explanations, no stage directions. The segments array must have exactly ${segmentCount} entries.`;
 }
 
-function roleOpenerInstruction(role: string): string {
-  switch (role) {
-    case "open":
-      return "Open with the central misconception or paradox — this is the entry point.";
-    case "build":
-    case "complicate":
-      return "Do NOT open with a misconception frame. Open by extending a thread from the prior chapter with a new citation or concrete example.";
-    case "turn":
-      return "Open with the tension earned through prior chapters, not a new misconception.";
-    case "land":
-      return "Open with a callback to the image or question from chapter 1.";
-    default:
-      return "Open in a way that fits this chapter's role in the arc.";
-  }
+function roleOpenerInstruction(role: string, archetype: NarrationArchetype): string {
+  const archetypeGuidance = getRoleGuidance(archetype, role);
+  if (archetypeGuidance) return archetypeGuidance;
+  return "Open in a way that fits this chapter's role in the arc.";
 }
 
 function buildPriorChapterContext(
@@ -162,14 +160,44 @@ function buildPriorChapterContext(
   return `\n\n## Prior Chapters (for continuity — do not repeat their opener patterns, content, or author attributions)\n${spans.join("\n\n")}\n\nDo not repeat the rhetorical opener structure (sentence pattern or opening phrase) used in any prior chapter. Authors already cited per chapter are listed above — treat same-author references across chapters as the same source line.`;
 }
 
-function buildChapterDraftSystemPrompt(): string {
+function buildChapterDraftSystemPrompt(archetype: NarrationArchetype): string {
+  const arche = ARCHETYPES[archetype];
+  const archetypeBlock = `## Archetype for this script: ${archetype}
+${arche.description}
+Narrative arc: ${arche.narrativeArc}
+Hook preference: ${arche.hookPreference}
+Close preference: ${arche.closePreference}
+The user prompt below specifies the exact opener approach for this chapter's role under this archetype — follow it precisely.`;
+
   return `You are an essayist writing one chapter of a long-form narrated video that builds its argument from canonical sources.
+
+${archetypeBlock}
 
 Write in a warm but argumentative voice — open in a way that fits this chapter's role (the user prompt specifies the exact opener approach), deploy verified quotes with attribution as structural proof, and hand the reader a new lens by chapter's end.
 
 Each chapter must build its argument around its assigned anchors. Deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an assigned anchor genuinely cannot be made to fit, return it in droppedAnchorIds with a reason — but dropping is the exception, not the default.
 
 Keep the hard floor: 280-420 words, specific attributions and sources, at least one dated moment, and audible prosody marks.
+
+REQUIRED VOICE MOVES (per chapter):
+- Load-bearing analogy: when you reach a genuinely complex mechanism, scaffold it once with a concrete everyday analogy from domestic or physical experience and sustain it through the explanation. One analogy per concept; never swap mid-explanation.
+- Mid-chapter reflective pause: exactly once, at a natural inflection point (before a major citation or the pivot from problem to mechanism), use a "... ... ..." long pause followed by a concrete question about the protagonist's situation — never addressed to the viewer. The listener answers implicitly.
+
+BANNED OPENER TECHNIQUES:
+- Paradigm-challenge opener: opening with a collective-address claim ("most people / we / many of us")
+  that something commonly believed is wrong — before placing a named person in a concrete scene.
+  Why banned: viewers recognize this pattern in the first 3 seconds and disengage.
+- Collective-direct-address opener: first sentence addressed to "we / us / you" before
+  establishing who, where, and when. Scene must precede address.
+
+BANNED CLOSING TECHNIQUES:
+- Abstract pivot question: closing with a contrastive rhetorical question
+  ("X vs Y", "not whether X but whether Y") that replaces a concrete image with abstraction.
+- Affirmation stack: closing with a run of short imperative or hopeful sentences
+  that feel like a sermon benediction rather than a scene or decision.
+
+Close with: a specific image, a dateable action the protagonist takes,
+or a single unanswered concrete question — not an abstraction.
 
 ## Banned Vocabulary
 Banned words (never use): ${BANNED_LEXICON.join(", ")}
@@ -194,7 +222,7 @@ Remember:
 - One cohesive argument — state the misconception in chapter 1, build proof, land the new lens
 - Essayist voice: warm, argumentative, flowing analytical prose with citations
 - Deploy verbatim quotes with attribution to named authors and works
-- ≤55% of sentences directly address "you" — most should be analytical prose
+- ≤35% of sentences directly address "you" — most should be analytical prose
 - No banned vocabulary: ${BANNED_LEXICON.join(", ")}
 - No staccato runs, no meta-narration, no two-part contrastive reveals
 - Use prosody pauses: ... (short), ... ... (medium), ... ... ... (long) — at least 3 per chapter
@@ -231,6 +259,7 @@ const LongformChapterPlanSchema = z.object({
   role: z.string().min(1),
   intent: z.string().min(1),
   sceneSeed: z.string().min(1),
+  controllingObject: z.string().min(1),
   targetFeeling: z.object({
     dominant: z.string().min(1),
     secondary: z.string().min(1).optional(),
@@ -241,13 +270,31 @@ const LongformChapterPlanSchema = z.object({
   anchorIds: z.array(z.string()).max(MAX_ANCHORS_PER_CHAPTER),
 });
 
+const ProtagonistSchema = z.object({
+  name: z.string().min(1),
+  situation: z.string().min(1),
+  controllingImage: z.string().min(1),
+  transformationBefore: z.string().min(1),
+  transformationAfter: z.string().min(1),
+});
+
 export const LongformPlanSchema = z.object({
   segmentCount: z.number().int().min(1).max(8),
+  archetype: z
+    .enum([
+      "essayist-with-sources",
+      "storytelling-arc",
+      "analytical-argument",
+      "personal-meditation",
+    ])
+    .default(DEFAULT_ARCHETYPE),
+  protagonist: ProtagonistSchema,
   chapters: z.array(LongformChapterPlanSchema).min(1).max(8),
 });
 
 export type LongformPlan = z.infer<typeof LongformPlanSchema>;
 export type LongformChapterPlan = z.infer<typeof LongformChapterPlanSchema>;
+export type Protagonist = z.infer<typeof ProtagonistSchema>;
 export type TargetFeeling = LongformChapterPlan["targetFeeling"];
 export type PolarityArc = LongformChapterPlan["polarityArc"];
 
@@ -286,27 +333,52 @@ export async function generateLongformPlan(
 
   const systemPrompt = `You are a story architect planning a ${segmentCount}-chapter long-form narrated video about: "${topic}".
 
-You have ${usableAnchors.length} verified real-world anchors from research. Your job is to design the emotional arc first, then assign 2–4 anchors per chapter — anchors are the argumentative spine of each chapter, not optional decoration. Every chapter should have at least one anchor of sourceTier "seminal" where available.
+You have ${usableAnchors.length} verified real-world anchors from research. Your job is to:
+1. Establish a single named protagonist who persists across all chapters.
+2. Design the emotional arc.
+3. Assign 2–4 anchors per chapter — anchors are the argumentative spine of each chapter.
+
+## Protagonist Requirement
+Before planning chapters, establish one protagonist:
+- Must be a real, named person (from narrative or named_person_anecdote anchors) or a clearly composite character (named, dated, situated).
+- The protagonist's transformation arc spans all chapters — they are the human thread.
+- Choose a controlling image (a recurring object/setting) that represents the protagonist's journey.
 
 ## Available Anchors
 ${formatAnchorsForPrompt(usableAnchors)}
 
+## Archetype Selection (MANDATORY — select one before planning chapters)
+Based on the topic, choose the archetype whose description and topicSignals best fit:
+${JSON.stringify(ARCHETYPES_FOR_PROMPT, null, 2)}
+
+Include "archetype": "<selected-key>" in the output JSON. Valid keys: ${ARCHETYPE_KEYS.map((k) => `"${k}"`).join(", ")}.
+The archetype determines how chapters open, develop, and close — pick the one whose narrative arc matches the topic, not the default.
+
 ## Chapter Roles
-- Chapter 1: Open — state the misconception, introduce the thesis
-- Chapter 2: Build — first proof point from canonical sources
+- Chapter 1: Open — state the misconception, introduce the thesis, place protagonist in scene
+- Chapter 2: Build — first proof point from canonical sources, protagonist's situation deepens
 ${segmentCount > 4 ? `- Chapters 3 to ${segmentCount - 2}: Build / Complicate\n` : ""}- Chapter ${Math.max(2, segmentCount - 1)}: Turn — the deeper reframe, earned through accumulated citations
-- Chapter ${segmentCount}: Land — synthesize the new lens, hand it to the reader
+- Chapter ${segmentCount}: Land — synthesize the new lens, protagonist's transformation complete
 
 ## Output
 Return JSON:
 {
   "segmentCount": ${segmentCount},
+  "archetype": "essayist-with-sources",
+  "protagonist": {
+    "name": "Hannah Reyes",
+    "situation": "a 34-year-old project manager who has not finished a personal project in three years",
+    "controllingImage": "the open laptop on her kitchen table at 5:40am",
+    "transformationBefore": "believes consistency requires willpower she doesn't have",
+    "transformationAfter": "treats showing up as identity maintenance, not performance"
+  },
   "chapters": [
     {
       "title": "Chapter 1: ...",
       "role": "open",
       "intent": "one sentence describing what this chapter accomplishes",
       "sceneSeed": "the concrete misconception or paradigm claim that opens this chapter",
+      "controllingObject": "the specific object/setting anchoring this chapter",
       "targetFeeling": {
         "dominant": "recognition",
         "secondary": "hope",
@@ -320,6 +392,10 @@ Return JSON:
 }
 
 Rules:
+- Select the archetype FIRST based on topic — do not default to "essayist-with-sources" unless it actually fits the topic
+- Establish protagonist FIRST from narrative/named_person_anecdote anchors — if none available, create a named composite
+- Each chapter must have a controllingObject — a specific object/setting that anchors the scene
+- The protagonist's controllingImage should recur or evolve across chapters
 - Allocate one dominant feeling, one recognition moment, and one polarity arc for every chapter before assigning anchors
 - targetFeeling.intensity must be an integer 1, 2, or 3
 - polarityArc must use one of these exact values: ${POLARITY_ARC_VALUES.join(", ")}
@@ -373,28 +449,44 @@ export async function generateChapterDraft(
       ? `\n\n## Assigned Anchors (the argumentative spine of this chapter — deploy all)\n${formatAnchorsForPrompt(assignedAnchors)}\n\nBuild the chapter's argument around these anchors. Open with the paradigm claim, deploy each verified quote with explicit attribution to its author and work, then extend the implication. Never paraphrase a quote when the verbatim text is available. If an anchor genuinely cannot be made to fit, return it in droppedAnchorIds — but dropping is the exception.`
       : "\n\n(No research anchors assigned to this chapter — build the argument from direct observation and concrete examples.)";
 
-  const systemPrompt = buildChapterDraftSystemPrompt();
+  const systemPrompt = buildChapterDraftSystemPrompt(plan.archetype);
 
   const userPrompt = `Write chapter ${chapterIndex + 1} of ${plan.segmentCount} about: "${research.topic}"
+
+PROTAGONIST (persists across all chapters):
+Name: ${plan.protagonist.name}
+Situation: ${plan.protagonist.situation}
+Controlling image: ${plan.protagonist.controllingImage}
+Transformation: ${plan.protagonist.transformationBefore} → ${plan.protagonist.transformationAfter}
+
+THIS CHAPTER:
+Controlling object: ${chapter.controllingObject}
+Scene anchor: Open in a specific moment of ${plan.protagonist.name}'s experience.
+             Every research citation must explain or deepen what is happening to them.
 
 Chapter plan:
 - Title: ${chapter.title}
 - Role: ${chapter.role}
 - Intent: ${chapter.intent}
 - Scene seed: ${chapter.sceneSeed}
+- Controlling object: ${chapter.controllingObject}
 - Target feeling: ${chapter.targetFeeling.dominant}${chapter.targetFeeling.secondary ? ` with ${chapter.targetFeeling.secondary}` : ""} at intensity ${chapter.targetFeeling.intensity}/3
 - Recognition moment: ${chapter.recognitionMoment}
 - Polarity arc: ${chapter.polarityArc}
 ${anchorContext}${priorContext}
 
-Opener instruction for this chapter's role (${chapter.role}): ${roleOpenerInstruction(chapter.role)}
+Archetype: ${plan.archetype} — ${ARCHETYPES[plan.archetype].narrativeArc}
+Opener instruction for this chapter's role (${chapter.role}) under archetype "${plan.archetype}": ${roleOpenerInstruction(chapter.role, plan.archetype)}
+
+The controlling object (${chapter.controllingObject}) must appear in the opening scene and recur at least once more in this chapter.
 
 Rules:
 - 280–420 words (2–3 min at 140 WPM)
 - Essayist voice: warm, argumentative, flowing analytical prose
 - Follow the opener instruction above — do NOT default to a misconception frame unless specified
+- Open in scene with ${plan.protagonist.name} — place them in a specific moment before any direct address
 - Deploy assigned anchors with verbatim quotes and attribution
-- ≤55% direct "you" address
+- ≤35% direct "you" address — most sentences should be analytical prose or scene
 - Prosody pauses: at least 3 per chapter
 - End at a natural break
 - Return ONLY JSON matching this shape exactly:

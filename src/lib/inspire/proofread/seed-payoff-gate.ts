@@ -41,18 +41,19 @@ export async function runSeedPayoffGate(
   for (const seed of result.seeds) {
     if (seed.paidOffInChapter !== null) continue; // Paid off — no issue
 
-    // Flag the chapter where the seed was planted
-    const plantedIdx = seed.plantedInChapter - 1;
-    if (plantedIdx >= 0 && plantedIdx < perChapter.length) {
-      perChapter[plantedIdx].pass = false;
-      perChapter[plantedIdx].notes.push({
-        gate: "seed-payoff",
-        severity: "block",
-        evidence: `Seed: "${seed.seed}" planted in chapter ${seed.plantedInChapter}`,
-        message: `Unpaid seed — "${seed.seed}" is never referenced again`,
-        suggestion: seed.fix ?? "Pay off this seed in a later chapter or remove the forward reference",
-      });
-    }
+    // Final-chapter closing questions are intentional — not unpaid seeds
+    if (seed.plantedInChapter >= chapters.length) continue;
+
+    // Route to last chapter (has most latitude to pay off)
+    const targetIdx = chapters.length - 1;
+    perChapter[targetIdx].pass = false;
+    perChapter[targetIdx].notes.push({
+      gate: "seed-payoff",
+      severity: "block",
+      evidence: `Seed: "${seed.seed}" planted in chapter ${seed.plantedInChapter}`,
+      message: `Unpaid seed — "${seed.seed}" is never referenced again`,
+      suggestion: seed.fix ?? `Chapter ${chapters.length} should pay off this seed from chapter ${seed.plantedInChapter}`,
+    });
   }
 
   return perChapter;

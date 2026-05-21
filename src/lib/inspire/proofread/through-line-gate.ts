@@ -4,6 +4,7 @@ import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import type { GateNote } from "../gates/gate-types";
 import type { CrossChapterGateResult } from "./proofread-types";
 import { buildThroughLinePrompt } from "./proofreader-prompt";
+import type { Protagonist } from "../longform-narration-prompt";
 
 const ResultSchema = z.object({
   pass: z.boolean(),
@@ -23,9 +24,9 @@ export interface ThroughLineGateResult {
  */
 export async function runThroughLineGate(
   chapters: readonly string[],
-  opts?: { verbose?: boolean },
+  opts?: { verbose?: boolean; protagonist?: Protagonist },
 ): Promise<ThroughLineGateResult> {
-  const messages = buildThroughLinePrompt(chapters);
+  const messages = buildThroughLinePrompt(chapters, opts?.protagonist);
   const result = await deepseekChatJson(
     messages,
     ResultSchema,

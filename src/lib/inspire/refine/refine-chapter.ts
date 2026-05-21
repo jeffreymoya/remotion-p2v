@@ -9,7 +9,8 @@ import { LlmBudgetTracker } from "../gates/llm/llm-gate-runner";
 import { reviseChapter } from "./revise-chapter-prompt";
 import { traceable } from "langsmith/traceable";
 import fs from "node:fs";
-import type { PolarityArc, TargetFeeling } from "../longform-narration-prompt";
+import type { PolarityArc, TargetFeeling, Protagonist } from "../longform-narration-prompt";
+import type { NarrationArchetype } from "../narration-archetypes";
 import { enrichCurrentRun } from "../../tracing";
 
 export interface RefineChapterOptions {
@@ -33,6 +34,12 @@ export interface RefineChapterOptions {
   additionalNotes?: GateNote[];
   /** Prior chapter texts for continuity context in revisions */
   priorChapters?: readonly string[];
+  /** Protagonist for scene-first revision guidance */
+  protagonist?: Protagonist;
+  /** Chapter-specific controlling object */
+  controllingObject?: string;
+  /** Selected narrative archetype (drives revision opener/tone) */
+  archetype?: NarrationArchetype;
 }
 
 export interface RefineResult {
@@ -108,6 +115,9 @@ export async function refineChapterImpl(
         recognitionMoment: opts.recognitionMoment,
         polarityArc: opts.polarityArc,
         priorChapters: opts.priorChapters,
+        protagonist: opts.protagonist,
+        controllingObject: opts.controllingObject,
+        archetype: opts.archetype,
       },
       { verbose: opts.verbose },
     );
@@ -190,6 +200,8 @@ export async function refineChapterImpl(
             recognitionMoment: opts.recognitionMoment,
             polarityArc: opts.polarityArc,
             priorChapters: opts.priorChapters,
+            protagonist: opts.protagonist,
+            controllingObject: opts.controllingObject,
           },
           { verbose: opts.verbose },
         );

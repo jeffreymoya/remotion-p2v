@@ -34,9 +34,9 @@ export const VOICE_SAMPLE_HARDSHIP = `Viktor Frankl arrived at Auschwitz in 1944
 
 What he wrote afterward in Man's Search for Meaning is not, despite how it is often quoted, a claim that suffering is good or that attitude conquers circumstance — it is the more modest and more devastating observation that "between stimulus and response there is a space," and that even in the most compressed circumstances a person retains the capacity to choose how they relate to what is happening to them, which is not the same as choosing what happens.
 
-... ...
+... ... ...
 
-The reason that distinction matters — the space between "you can choose your attitude" and "you can choose your outcome" — is that conflating them produces the toxic positivity that tells people their suffering is their fault, while separating them produces something more honest: the recognition that agency is real but partial, that you are not omnipotent but you are not helpless either, and that the gap between those two is where most of adult life actually happens.`;
+Did Frankl, in the hours after the coat was taken, actually believe his life's work could be reconstructed — or did he simply refuse to let the alternative be true? The reason that distinction matters — the space between "you can choose your attitude" and "you can choose your outcome" — is that conflating them produces the toxic positivity that tells people their suffering is their fault, while separating them produces something more honest: the recognition that agency is real but partial, that you are not omnipotent but you are not helpless either, and that the gap between those two is where most of adult life actually happens.`;
 
 export const VOICE_SAMPLES = [
   VOICE_SAMPLE,
@@ -75,6 +75,21 @@ reader the new lens.
   apply to their own situation.
 - Direct address that implicates the narrator ("most of us", "if we're being
   honest") rather than lecturing from above.
+- Load-bearing analogy for comprehension: when a chapter reaches a mechanism
+  that is genuinely complex, scaffold it once with a concrete everyday analogy
+  from domestic or physical experience and sustain it through the explanation
+  — one analogy per concept, never swapped mid-explanation. Purpose is
+  comprehension, not literary decoration.
+- Wry-domestic scene register: the opening scene may carry warm amusement at
+  the protagonist's situation — wry observation of something small and
+  slightly absurd they are doing because the real problem feels too large to
+  face directly. Wry is not jokey; it is quiet recognition of something human.
+- Mid-chapter reflective pause: once per chapter, at a natural inflection
+  point (before a major citation or the pivot from problem to mechanism), use
+  a \`... ... ...\` long pause followed by a concrete question about the
+  protagonist's situation — never addressed to the viewer. The listener
+  answers implicitly. Example: "Did Hannah actually want to finish the book —
+  or did she just want to be the kind of person who had?"
 
 ## Patterns banned (CRITICAL — hard enforcement)
 
@@ -98,6 +113,34 @@ Additional bans:
 - Hero-quote captions as the chapter's emotional peak.
 - Big metaphor swaps mid-chapter.
 
+## Banned opener techniques (CRITICAL — hard enforcement)
+
+- **Paradigm-challenge opener:** opening with a collective-address claim
+  ("most people / we / many of us") that something commonly believed is wrong
+  — before placing a named person in a concrete scene.
+  Why banned: viewers recognize this pattern in the first 3 seconds and disengage.
+- **Collective-direct-address opener:** first sentence addressed to "we / us / you"
+  before establishing who, where, and when. Scene must precede address.
+
+## Banned closing techniques (CRITICAL — hard enforcement)
+
+- **Abstract pivot question:** closing with a contrastive rhetorical question
+  ("X vs Y", "not whether X but whether Y") that replaces a concrete image
+  with abstraction.
+- **Affirmation stack:** closing with a run of short imperative or hopeful
+  sentences that feel like a sermon benediction rather than a scene or decision.
+
+Close with: a specific image, a dateable action the protagonist takes,
+or a single unanswered concrete question — not an abstraction.
+
+## Protagonist requirement (Cross-Chapter)
+
+Every narration must have a named protagonist who persists across all chapters.
+Open each chapter in scene — the protagonist in a specific moment — before any
+direct address or analytical prose. Every research citation must explain or
+deepen what is happening to the protagonist. The controlling object must appear
+in the opening scene and recur at least once more in each chapter.
+
 ## Banned vocabulary (never use these words)
 
 ${BANNED_LEXICON.join(", ")}
@@ -114,8 +157,8 @@ Failing any blocking gate triggers an automatic revision (up to 2 revisions).
 1. **Genre-tells gate.** No banned vocabulary, banned phrases, banned openers,
    banned closing patterns, staccato runs, meta-narration, or contrastive
    reveals.
-2. **Sermon-ratio gate.** <= 55% of sentences may be direct-address ("you/your").
-   Most sentences should be analytical prose or embedded-citation.
+2. **Sermon-ratio gate.** <= 35% of sentences may be direct-address ("you/your").
+   Most sentences should be analytical prose, scene, or embedded-citation.
 3. **Specificity gate.** >= 2 named entities (people, places, specific objects)
    and >= 1 dated moment (day, month, year, time expression) per chapter.
 4. **Simplicity gate.** Flesch-Kincaid grade <= 11. Flowing but accessible.
@@ -131,8 +174,10 @@ Use graduated pauses for dramatic pacing:
 \`... ... ...\` (long pause — major emotional beat, scene transition, or
 after a climactic line that needs silence to breathe).
 Also use \`—\` (abrupt shift / urgency), \`( )\` (aside, voice naturally
-lowers), \`\\n\\n\` (section reset). Requirements: at least THREE pause marks
-per chapter, using at least two different pause lengths.
+lowers), \`\\n\\n\` (section reset). Minimum requirements: at least THREE
+pause marks per chapter, at least two distinct types, and at least ONE
+\`... ... ...\` long-pause mark per chapter (paired with a reflective
+question about the protagonist's situation at a natural inflection point).
 
 ## One-Story Model (Cross-Chapter)
 

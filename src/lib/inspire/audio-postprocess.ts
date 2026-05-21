@@ -8,7 +8,7 @@ import path from "node:path";
 // reverb args: reverberance HF-damping room-scale stereo-depth pre-delay wet-gain
 const SOX_EFFECTS = [
   "norm", "-2",
-  "pitch", "-100",          // ~1 semitone down; subtle depth without formant smear
+  "pitch", "-50",          // ~1 semitone down; subtle depth without formant smear
   "bass", "+4", "200",      // chest weight at 200 Hz
   "equalizer", "350", "1.0q", "+3",   // low-mid body / chest resonance
   "equalizer", "3500", "1.0q", "-3",  // tame nasal/harsh band

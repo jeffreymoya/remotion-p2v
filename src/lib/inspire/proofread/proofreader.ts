@@ -44,7 +44,7 @@ async function proofreadScriptImpl(
       runInternalConsistencyGate(chapters, { verbose }),
       runSeedPayoffGate(chapters, { verbose }),
       runEmotionalArcGate(chapters, plan, { verbose }),
-      runThroughLineGate(chapters, { verbose }),
+      runThroughLineGate(chapters, { verbose, protagonist: plan.protagonist }),
     ]);
 
   // Assemble per-chapter results

@@ -13,13 +13,14 @@ import type { ClipPlan } from "./video-query-prompt";
 import { searchAndDownloadVideo } from "./pixabay-video-client";
 import { searchAndDownloadVideoFromPexels } from "./pexels-video-client";
 import type { VideoDownloadResult } from "./video-source";
+import { searchAndDownloadImage } from "./pexels-image-client";
 import {
   loadRegistry, saveRegistry, getCooldownIds, getLruSortedIds,
   registerVideo, recordSlug,
 } from "./video-registry";
-import { PIXABAY_COOLDOWN_RUNS } from "../config";
+import { PIXABAY_COOLDOWN_RUNS, SHOT_MIN_SECONDS, SHOT_TARGET_SECONDS } from "../config";
 import { writeInspireJson } from "./write-inspire-script";
-import type { InspirationScript, Clip, Sentence } from "./inspire-schema";
+import type { InspirationScript, Clip, Sentence, Shot } from "./inspire-schema";
 import { generateArtDirection } from "./art-direction-prompt";
 import { ArtDirectionSchema } from "./art-direction-schema";
 import type { ArtDirection } from "./art-direction-schema";
@@ -73,12 +74,58 @@ function videoDir(slug: string): string {
   return `public/videos/inspire/${slug}`;
 }
 
+function imageDir(slug: string): string {
+  return `public/images/inspire/${slug}`;
+}
+
 function artDirectPath(slug: string): string {
   return `prompts/inspire/${slug}-artdirection.json`;
 }
 
 function clipVideoPath(slug: string, index: number): string {
   return path.join(videoDir(slug), `clip-${index}.mp4`);
+}
+
+function clipImagePath(slug: string, index: number): string {
+  return path.join(imageDir(slug), `clip-${index}.jpg`);
+}
+
+function shotVideoPath(slug: string, clipIndex: number, shotIndex: number): string {
+  return path.join(videoDir(slug), `clip-${clipIndex}-shot-${shotIndex}.mp4`);
+}
+
+function shotImagePath(slug: string, clipIndex: number, shotIndex: number): string {
+  return path.join(imageDir(slug), `clip-${clipIndex}-shot-${shotIndex}.jpg`);
+}
+
+// ── Shot timing computation ─────────────────────────────────────────────
+function computeShotFrames(
+  totalStartFrame: number,
+  totalEndFrame: number,
+  shotCount: number,
+): Array<{ startFrame: number; endFrame: number }> {
+  const totalFrames = totalEndFrame - totalStartFrame;
+  const shotSize = Math.floor(totalFrames / shotCount);
+  return Array.from({ length: shotCount }, (_, i) => ({
+    startFrame: totalStartFrame + i * shotSize,
+    endFrame: i === shotCount - 1 ? totalEndFrame : totalStartFrame + (i + 1) * shotSize,
+  }));
+}
+
+function sweepOrphanClipFiles(slug: string): void {
+  const vDir = videoDir(slug);
+  const iDir = imageDir(slug);
+  for (const dir of [vDir, iDir]) {
+    if (!fs.existsSync(dir)) continue;
+    for (const entry of fs.readdirSync(dir)) {
+      // Match old clip-X.mp4 / clip-X.jpg (no "-shot-" in name)
+      if (/^clip-\d+\.(mp4|jpg)$/.test(entry)) {
+        const p = path.join(dir, entry);
+        fs.unlinkSync(p);
+        console.log(`  [videos] orphan swept: ${p}`);
+      }
+    }
+  }
 }
 
 // ── Phase 1: Narration ──────────────────────────────────────────────────
@@ -247,7 +294,10 @@ async function runVideoPhaseImpl(
     );
   }
 
-  // Step 3c: Download videos with registry-based deduplication
+  // Step 3c: Sweep orphans from old clip-based naming
+  sweepOrphanClipFiles(slug);
+
+  // Step 3d: Per-clip shot planning + download
   // Load existing script for videoId recovery on cache hits
   let existingScript: InspirationScript | null = null;
   const existingScriptPath = `prompts/inspire/${slug}.json`;
@@ -260,14 +310,11 @@ async function runVideoPhaseImpl(
   const pexelsCooldownIds = getCooldownIds(registry, "pexels", PIXABAY_COOLDOWN_RUNS);
   const pixabayLruIds = getLruSortedIds(registry, "pixabay");
   const pexelsLruIds = getLruSortedIds(registry, "pexels");
-  const pixabayExcludeIds = new Set<number>();
-  const pexelsExcludeIds = new Set<number>();
 
   const clips: Clip[] = [];
 
-  for (let i = 0; i < clipPlan.clips.length; i++) {
-    const planClip = clipPlan.clips[i];
-    const destPath = clipVideoPath(slug, i);
+  for (let ci = 0; ci < clipPlan.clips.length; ci++) {
+    const planClip = clipPlan.clips[ci];
 
     // Compute clip span from sentence timings
     const clipSentences = sentenceTimings.filter((s) =>
@@ -279,128 +326,202 @@ async function runVideoPhaseImpl(
       (sum, s) => sum + (s.endSeconds - s.startSeconds),
       0,
     ) + 1; // +1s tail
+    const fps = 30;
 
-    if (fs.existsSync(destPath) && fs.statSync(destPath).size > 0) {
-      console.log(`  [videos] clip ${i} cached: ${destPath}`);
+    // Compute target shot count and clamp
+    const targetShotCount = Math.max(
+      1,
+      Math.ceil(clipSpanSeconds / SHOT_TARGET_SECONDS),
+    );
+    const actualShotCount = Math.min(
+      targetShotCount,
+      Math.floor(
+        (clipEndFrame - clipStartFrame) / (SHOT_MIN_SECONDS * fps),
+      ),
+    );
+    const shotCount = Math.max(1, actualShotCount);
 
-      const existingClip = existingScript?.clips[i];
-      let cachedVideoId: number | undefined;
-      let cachedSource: "pixabay" | "pexels" | undefined = existingClip?.videoSource;
+    // Compute per-shot frame ranges
+    const shotTimings = computeShotFrames(clipStartFrame, clipEndFrame, shotCount);
 
-      if (existingClip?.videoId) {
-        cachedVideoId = existingClip.videoId;
-      } else if (existingClip?.sourceUrl) {
-        const m = existingClip.sourceUrl.match(/\/id-(\d+)\//);
-        if (m) { cachedVideoId = Number(m[1]); cachedSource = cachedSource ?? "pixabay"; }
+    // Per-clip excludeIds
+    const pixabayExcludeIds = new Set<number>();
+    const pexelsExcludeIds = new Set<number>();
+
+    const expandedShots: Shot[] = [];
+
+    for (let si = 0; si < planClip.shots.length; si++) {
+      const planShot = planClip.shots[si];
+      const shotFrames = shotTimings[si % shotTimings.length];
+      const shotSpanSeconds = (shotFrames.endFrame - shotFrames.startFrame) / fps + 0.5;
+      const mediaType = planShot.mediaType ?? "video";
+
+      if (mediaType === "image") {
+        const imgDest = shotImagePath(slug, ci, si);
+
+        if (fs.existsSync(imgDest) && fs.statSync(imgDest).size > 0) {
+          console.log(`  [images] clip ${ci} shot ${si} cached: ${imgDest}`);
+          const existingClip = existingScript?.clips[ci];
+          const existingShot = existingClip?.shots?.[si];
+          expandedShots.push({
+            shotIndex: si,
+            query: planShot.query,
+            imagePath: path.relative("public", imgDest),
+            mediaType: "image",
+            sourceUrl: existingShot?.sourceUrl ?? "",
+            loop: false,
+            startFrame: shotFrames.startFrame,
+            endFrame: shotFrames.endFrame,
+          });
+          continue;
+        }
+
+        console.log(`  [images] Downloading clip ${ci} shot ${si}: "${planShot.query}"...`);
+        const result = await searchAndDownloadImage(planShot.query, imgDest);
+
+        if (!result.ok) {
+          throw new Error(
+            `Failed to download image clip ${ci} shot ${si} ("${planShot.query}"): ${result.error}`,
+          );
+        }
+
+        expandedShots.push({
+          shotIndex: si,
+          query: planShot.query,
+          imagePath: path.relative("public", imgDest),
+          mediaType: "image",
+          sourceUrl: result.sourceUrl ?? "",
+          loop: false,
+          startFrame: shotFrames.startFrame,
+          endFrame: shotFrames.endFrame,
+        });
+
+        console.log(`  [images] clip ${ci} shot ${si} saved: ${imgDest}`);
+        continue;
       }
 
-      if (cachedVideoId !== undefined && cachedSource) {
-        (cachedSource === "pixabay" ? pixabayExcludeIds : pexelsExcludeIds).add(cachedVideoId);
+      // ── Video branch ────────────────────────────────────────────────
+      const destPath = shotVideoPath(slug, ci, si);
+
+      if (fs.existsSync(destPath) && fs.statSync(destPath).size > 0) {
+        console.log(`  [videos] clip ${ci} shot ${si} cached: ${destPath}`);
+
+        const existingClip = existingScript?.clips[ci];
+        const existingShot = existingClip?.shots?.[si];
+        let cachedVideoId: number | undefined;
+        let cachedSource: "pixabay" | "pexels" | undefined = existingShot?.videoSource;
+
+        if (existingShot?.videoId) {
+          cachedVideoId = existingShot.videoId;
+        } else if (existingShot?.sourceUrl) {
+          const m = existingShot.sourceUrl.match(/\/id-(\d+)\//);
+          if (m) { cachedVideoId = Number(m[1]); cachedSource = cachedSource ?? "pixabay"; }
+        }
+
+        if (cachedVideoId !== undefined && cachedSource) {
+          (cachedSource === "pixabay" ? pixabayExcludeIds : pexelsExcludeIds).add(cachedVideoId);
+        }
+
+        expandedShots.push({
+          shotIndex: si,
+          query: planShot.query,
+          videoPath: path.relative("public", destPath),
+          mediaType: "video",
+          sourceUrl: existingShot?.sourceUrl ?? "",
+          loop: existingShot?.loop ?? false,
+          startFrame: shotFrames.startFrame,
+          endFrame: shotFrames.endFrame,
+          videoId: cachedVideoId,
+          videoSource: cachedSource,
+        });
+        continue;
       }
 
-      clips.push({
-        clipIndex: i,
-        query: planClip.queries[0],
-        videoPath: path.relative("public", destPath),
-        sourceUrl: existingClip?.sourceUrl ?? "",
-        loop: existingClip?.loop ?? false,
-        startFrame: clipStartFrame,
-        endFrame: clipEndFrame,
-        videoId: cachedVideoId,
-        videoSource: cachedSource,
-      });
-      continue;
-    }
+      // Download: try Pixabay first, then Pexels
+      const FRESH_TIERS = new Set(["fresh", "fresh-loop"]);
+      let chosenResult: VideoDownloadResult | null = null;
+      let chosenSource: "pixabay" | "pexels" = "pixabay";
 
-    // Multi-query download: try each query in order, break on fresh tier
-    const FRESH_TIERS = new Set(["fresh", "fresh-loop"]);
-    let chosenResult: VideoDownloadResult | null = null;
-    let chosenSource: "pixabay" | "pexels" = "pixabay";
-    let usedQuery = planClip.queries[0];
-
-    for (const query of planClip.queries) {
-      usedQuery = query;
-      console.log(`  [videos] Downloading clip ${i}: "${query}"...`);
+      console.log(`  [videos] Downloading clip ${ci} shot ${si}: "${planShot.query}"...`);
 
       const pixabayResult = await searchAndDownloadVideo(
-        query, destPath, clipSpanSeconds,
+        planShot.query, destPath, shotSpanSeconds,
         { excludeIds: pixabayExcludeIds, cooldownIds: pixabayCooldownIds, lruSortedIds: pixabayLruIds },
       );
 
       if (pixabayResult.ok && FRESH_TIERS.has(pixabayResult.tier ?? "last-resort")) {
         chosenResult = pixabayResult;
         chosenSource = "pixabay";
-        break;
-      }
+      } else {
+        const pexelsTmpPath = destPath.replace(/\.mp4$/, "-pexels.mp4");
+        const pexelsResult = await searchAndDownloadVideoFromPexels(
+          planShot.query, pexelsTmpPath, shotSpanSeconds,
+          { excludeIds: pexelsExcludeIds, cooldownIds: pexelsCooldownIds, lruSortedIds: pexelsLruIds },
+        );
 
-      const pexelsTmpPath = destPath.replace(/\.mp4$/, "-pexels.mp4");
-      const pexelsResult = await searchAndDownloadVideoFromPexels(
-        query, pexelsTmpPath, clipSpanSeconds,
-        { excludeIds: pexelsExcludeIds, cooldownIds: pexelsCooldownIds, lruSortedIds: pexelsLruIds },
-      );
-
-      if (pexelsResult.ok && FRESH_TIERS.has(pexelsResult.tier ?? "last-resort")) {
-        // Pexels fresh — remove partial pixabay file, rename pexels → dest
-        if (pixabayResult.ok && pixabayResult.path && fs.existsSync(pixabayResult.path)) {
-          fs.unlinkSync(pixabayResult.path);
-        }
-        fs.renameSync(pexelsTmpPath, destPath);
-        chosenResult = { ...pexelsResult, path: destPath };
-        chosenSource = "pexels";
-        break;
-      }
-
-      // Neither source fresh for this query — track best candidate so far
-      if (!chosenResult) {
-        // Keep pixabay result as fallback candidate if it succeeded
-        if (pixabayResult.ok) {
-          chosenResult = pixabayResult;
-          chosenSource = "pixabay";
+        if (pexelsResult.ok && FRESH_TIERS.has(pexelsResult.tier ?? "last-resort")) {
+          if (pixabayResult.ok && pixabayResult.path && fs.existsSync(pixabayResult.path)) {
+            fs.unlinkSync(pixabayResult.path);
+          }
+          fs.renameSync(pexelsTmpPath, destPath);
+          chosenResult = { ...pexelsResult, path: destPath };
+          chosenSource = "pexels";
         } else if (pexelsResult.ok) {
           fs.renameSync(pexelsTmpPath, destPath);
           chosenResult = { ...pexelsResult, path: destPath };
           chosenSource = "pexels";
+        } else if (pixabayResult.ok) {
+          chosenResult = pixabayResult;
+          chosenSource = "pixabay";
         }
+
+        if (fs.existsSync(pexelsTmpPath)) fs.unlinkSync(pexelsTmpPath);
       }
 
-      // Clean up pexels tmp if not used
-      if (fs.existsSync(pexelsTmpPath)) fs.unlinkSync(pexelsTmpPath);
-    }
+      if (!chosenResult || !chosenResult.ok) {
+        throw new Error(
+          `Failed to download video clip ${ci} shot ${si} ("${planShot.query}"): ${chosenResult?.error ?? "no results"}`,
+        );
+      }
 
-    if (!chosenResult || !chosenResult.ok) {
-      throw new Error(
-        `Failed to download video clip ${i} ("${usedQuery}"): ${chosenResult?.error ?? "no results"}`,
+      if (chosenResult.videoId !== undefined) {
+        const excludeSet = chosenSource === "pixabay" ? pixabayExcludeIds : pexelsExcludeIds;
+        excludeSet.add(chosenResult.videoId);
+        registerVideo(registry, chosenSource, chosenResult.videoId, {
+          pageURL: chosenResult.sourceUrl ?? "",
+          duration: shotSpanSeconds,
+          slug,
+          clipIndex: ci,
+          query: planShot.query,
+        });
+      }
+
+      expandedShots.push({
+        shotIndex: si,
+        query: planShot.query,
+        videoPath: path.relative("public", destPath),
+        mediaType: "video",
+        sourceUrl: chosenResult.sourceUrl ?? "",
+        loop: chosenResult.loop,
+        startFrame: shotFrames.startFrame,
+        endFrame: shotFrames.endFrame,
+        videoId: chosenResult.videoId,
+        videoSource: chosenSource,
+      });
+
+      console.log(
+        `  [videos] clip ${ci} shot ${si} (${chosenSource}) saved: ${destPath}${chosenResult.loop ? " (will loop)" : ""} [tier: ${chosenResult.tier}]`,
       );
     }
 
-    // Update registry
-    if (chosenResult.videoId !== undefined) {
-      const excludeSet = chosenSource === "pixabay" ? pixabayExcludeIds : pexelsExcludeIds;
-      excludeSet.add(chosenResult.videoId);
-      registerVideo(registry, chosenSource, chosenResult.videoId, {
-        pageURL: chosenResult.sourceUrl ?? "",
-        duration: clipSpanSeconds,
-        slug,
-        clipIndex: i,
-        query: usedQuery,
-      });
-    }
-
+    // Build Clip with shots
     clips.push({
-      clipIndex: i,
-      query: usedQuery,
-      videoPath: path.relative("public", destPath),
-      sourceUrl: chosenResult.sourceUrl ?? "",
-      loop: chosenResult.loop,
+      clipIndex: ci,
+      query: planClip.shots[0]?.query ?? "landscape",
       startFrame: clipStartFrame,
       endFrame: clipEndFrame,
-      videoId: chosenResult.videoId,
-      videoSource: chosenSource,
+      shots: expandedShots,
     });
-
-    console.log(
-      `  [videos] clip ${i} (${chosenSource}) saved: ${destPath}${chosenResult.loop ? " (will loop)" : ""} [tier: ${chosenResult.tier}]`,
-    );
   }
 
   // Save registry
@@ -529,18 +650,26 @@ function runComposePhaseImpl(
 ): InspirationScript {
   const durationInFrames = Math.ceil(durationSeconds * 30);
 
-  // Ensure last clip endFrame matches total duration
+  // Ensure last clip endFrame and last shot endFrame match total duration
   if (clips.length > 0) {
-    const lastClip = clips[clips.length - 1];
-    clips = clips.map((c, i) =>
-      i === clips.length - 1
-        ? { ...c, endFrame: durationInFrames }
-        : c,
-    );
+    clips = clips.map((c, i) => {
+      if (i === clips.length - 1) {
+        return {
+          ...c,
+          endFrame: durationInFrames,
+          shots: c.shots.map((s, si) =>
+            si === c.shots.length - 1
+              ? { ...s, endFrame: durationInFrames }
+              : s,
+          ),
+        };
+      }
+      return c;
+    });
   }
 
   const script: InspirationScript = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug,
     topic,
     narration,
@@ -665,12 +794,16 @@ async function runInspirePipelineImpl(
 
   // Phase 4: Art Direction
   const reconstructedClipPlan: ClipPlan = {
+    schemaVersion: 2,
     strategy,
     clips: clips.map((c) => ({
-      queries: [c.query],
       sentenceIndexes: sentences
         .filter((s) => s.clipIndex === c.clipIndex)
         .map((s) => s.sentenceIndex),
+      shots: c.shots.map((shot) => ({
+        query: shot.query,
+        mediaType: (shot.mediaType ?? "video") as "video" | "image",
+      })),
     })),
   };
 

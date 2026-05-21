@@ -8,6 +8,7 @@ export const AnchorKindSchema = z.enum([
   "case_study",
   "historical_event",
   "named_person_anecdote",
+  "narrative",
 ]);
 
 export type AnchorKind = z.infer<typeof AnchorKindSchema>;
@@ -51,6 +52,7 @@ export const RawCandidateSchema = z.object({
   }),
   quote: z.string().nullish().transform(v => v ?? undefined),
   queryHint: z.string().nullish().transform(v => v ?? undefined),
+  sceneMoment: z.string().nullish().transform(v => v ?? undefined),
 });
 
 export type RawCandidate = z.infer<typeof RawCandidateSchema>;

@@ -26,6 +26,7 @@ const BrainstormCandidateSchema = z.object({
   }),
   quote: z.string().nullish(),
   queryHint: z.string().nullish(),
+  sceneMoment: z.string().nullish(),
 });
 
 const BrainstormResponseSchema = z.object({
@@ -69,6 +70,12 @@ function normalizeKind(rawKind: string): AnchorKind {
     case "biographical_anecdote":
     case "person_story":
       return "named_person_anecdote";
+    case "narrative":
+    case "narrative_case_study":
+    case "protagonist_arc":
+    case "character_arc":
+    case "transformation_story":
+      return "narrative";
     default:
       throw new Error(`Unsupported brainstorm candidate kind: ${rawKind}`);
   }
@@ -132,6 +139,7 @@ For each candidate, provide:
 - attributionGuess: { person?, work?, year?, publisher? }
 - quote: verbatim quote text (only for primary_quote or book_excerpt kinds)
 - queryHint: a web search query likely to surface a credible source for this claim
+- sceneMoment: (only for narrative kind) a specific dateable moment in the person's story that could open or anchor a chapter scene
 ${canonicalWarning}${corpusClause}${rejectionClause}
 
 Return JSON: { "candidates": [ ... ] }`;

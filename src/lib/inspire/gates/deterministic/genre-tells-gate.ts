@@ -10,6 +10,8 @@ import { detectStaccatoRuns, staccatoRunsToNotes } from "./staccato-runs";
 import { detectMetaNarration, metaNarrationToNotes } from "./meta-narration";
 import { detectContrastiveReveal, contrastiveRevealToNotes } from "./contrastive-reveal";
 import { detectLiteralnessAssertion, literalnessAssertionToNotes } from "./literalness-assertion";
+import { detectParadigmChallengeOpener } from "./paradigm-challenge-opener";
+import { detectAbstractPivotCloser } from "./abstract-pivot-closer";
 
 export const genreTellsGate: Gate = {
   name: "genre_tells",
@@ -120,6 +122,14 @@ export const genreTellsGate: Gate = {
     // 8. Literalness assertion
     const literalnessViolations = detectLiteralnessAssertion(narration);
     notes.push(...literalnessAssertionToNotes(literalnessViolations));
+
+    // 9. Paradigm-challenge opener (collective address + correction before scene)
+    const paradigmOpenerNotes = detectParadigmChallengeOpener(narration);
+    notes.push(...paradigmOpenerNotes);
+
+    // 10. Abstract pivot closer (contrastive question or abstract noun chain)
+    const abstractCloserNotes = detectAbstractPivotCloser(narration);
+    notes.push(...abstractCloserNotes);
 
     return {
       gate: "genre_tells",

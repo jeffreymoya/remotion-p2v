@@ -8,6 +8,7 @@ import { isQuoteSentence } from "../lib/inspire/art-direction-schema";
 import type { CaptionStyle } from "../lib/inspire/art-direction-schema";
 import { WORD_VARIANTS } from "./captions";
 import type { WordVariant } from "./captions";
+import { type DisplayGroup, chunkDisplayGroup } from "./captions/chunk-display-group";
 
 const { fontFamily } = loadFont();
 
@@ -33,18 +34,6 @@ function cleanDisplayText(text: string): string {
     .replace(/—/g, " ")
     .replace(/\s{2,}/g, " ")
     .trim();
-}
-
-interface DisplayGroup {
-  text: string;
-  sentenceIndexes: number[];
-  primarySentenceIndex: number;
-  startSeconds: number;
-  endSeconds: number;
-  startFrame: number;
-  endFrame: number;
-  tokenWordIndexes: number[];
-  isQuote: boolean;
 }
 
 function buildDisplayGroups(sentences: Sentence[]): DisplayGroup[] {
@@ -100,8 +89,11 @@ export const KineticCaption: React.FC<KineticCaptionProps> = ({
   const t = frame / fps;
 
   const displayGroups = React.useMemo(
-    () => buildDisplayGroups(sentences),
-    [sentences],
+    () =>
+      buildDisplayGroups(sentences).flatMap((g) =>
+        chunkDisplayGroup(g, wordTimings, fps),
+      ),
+    [sentences, wordTimings, fps],
   );
 
   const currentGroup =

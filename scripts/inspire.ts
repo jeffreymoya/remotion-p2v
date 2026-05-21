@@ -21,6 +21,9 @@ function printHelp(): void {
   console.log(`
 Usage: tsx scripts/inspire.ts "<topic>" [options]
 
+  Topics are required unless using --tts-only or --from=tts|videos|artdirect|compose
+  with existing artifacts (auto-detected from prompts/inspire/*-longform.json).
+
 Options:
   --segments=N        Total segments to generate via DeepSeek (default: 5, each ~2–3 min)
   --limit=N           Process only the first N segments (default: all; useful for testing)
@@ -30,6 +33,7 @@ Options:
   --skip-research     Skip the Exa research phase (use legacy narration path)
   --skip-proofread    Skip the cross-chapter proofreader
   --narration-only    Stop after final narration text is prepared for each segment
+  --tts-only          Stop after TTS audio is generated for each segment
   --clean             Delete all cached artifacts for this topic before running
   --verbose           Enable verbose logging
 
@@ -45,10 +49,37 @@ Examples:
   tsx scripts/inspire.ts "resilience" --skip-research
   tsx scripts/inspire.ts "resilience" --clean --narration-only
   tsx scripts/inspire.ts "resilience" --clean
+  tsx scripts/inspire.ts --tts-only
 
 Note: --limit produces a shorter combined video (first N segments only) — useful
 for testing the pipeline end-to-end without downloading all video clips.
 `);
+}
+
+function detectExistingTopic(): { slug: string; topic: string; segmentCount: number } | null {
+  const PROMPTS_DIR = "prompts/inspire";
+  if (!fs.existsSync(PROMPTS_DIR)) return null;
+
+  const entries = fs.readdirSync(PROMPTS_DIR)
+    .filter((e) => e.endsWith("-longform.json"))
+    .map((e) => ({
+      file: e,
+      mtime: fs.statSync(path.join(PROMPTS_DIR, e)).mtimeMs,
+    }))
+    .sort((a, b) => b.mtime - a.mtime);
+
+  if (entries.length === 0) return null;
+
+  const latest = entries[0].file;
+  const slug = latest.replace(/-longform\.json$/, "");
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join(PROMPTS_DIR, latest), "utf-8"));
+    const topic = data.segments?.[0]?.title || slug;
+    const segmentCount = data.segmentCount || data.segments?.length || 5;
+    return { slug, topic, segmentCount };
+  } catch {
+    return { slug, topic: slug, segmentCount: 5 };
+  }
 }
 
 function cleanArtifacts(slug: string): void {
@@ -112,6 +143,7 @@ async function main(): Promise<void> {
   let from: PipelinePhase | undefined;
   let clean = false;
   let narrationOnly = false;
+  let ttsOnly = false;
   let verbose = false;
   let skipResearch = false;
   let skipProofread = false;
@@ -157,6 +189,8 @@ async function main(): Promise<void> {
       clean = true;
     } else if (arg === "--narration-only") {
       narrationOnly = true;
+    } else if (arg === "--tts-only") {
+      ttsOnly = true;
     } else if (arg === "--skip-research") {
       skipResearch = true;
     } else if (arg === "--skip-proofread") {
@@ -168,19 +202,46 @@ async function main(): Promise<void> {
     }
   }
 
+  const canAutoDetect = ttsOnly || from === "tts" || from === "videos" || from === "artdirect" || from === "compose";
+
+  let slug: string | undefined;
+
   if (!topic) {
-    console.error('Error: topic is required. Usage: tsx scripts/inspire.ts "<topic>"');
-    process.exit(1);
+    if (canAutoDetect) {
+      const detected = detectExistingTopic();
+      if (detected) {
+        topic = detected.topic;
+        slug = detected.slug;
+        segmentCount = detected.segmentCount;
+        console.log(`[auto] detected topic: "${topic}" (slug: ${slug}, segments: ${segmentCount})`);
+      }
+    }
+    if (!topic) {
+      console.error('Error: topic is required. Usage: tsx scripts/inspire.ts "<topic>"');
+      process.exit(1);
+    }
   }
 
-  const slug = topicToSlug(topic);
   if (!slug) {
-    console.error("Error: topic produced an empty slug");
-    process.exit(1);
+    slug = topicToSlug(topic);
+    if (!slug) {
+      console.error("Error: topic produced an empty slug");
+      process.exit(1);
+    }
   }
 
   if (narrationOnly && from && ["tts", "videos", "artdirect", "compose"].includes(from)) {
     console.error("Error: --narration-only cannot be combined with --from=tts|videos|artdirect|compose");
+    process.exit(1);
+  }
+
+  if (narrationOnly && ttsOnly) {
+    console.error("Error: --narration-only and --tts-only cannot be combined");
+    process.exit(1);
+  }
+
+  if (ttsOnly && from && ["videos", "artdirect", "compose"].includes(from)) {
+    console.error("Error: --tts-only cannot be combined with --from=videos|artdirect|compose");
     process.exit(1);
   }
 
@@ -202,6 +263,7 @@ async function main(): Promise<void> {
     limit,
     from,
     narrationOnly,
+    ttsOnly,
     skipResearch,
     skipProofread,
     verbose,

@@ -53,6 +53,7 @@ export const specificityGate: Gate = {
 
     // Count named entities: capitalized words not at sentence start and not in common list
     const namedEntities = new Set<string>();
+    const personEntities = new Set<string>();
     const sentences = narration.split(/(?<=[.!?])\s+|\n\n+/).filter(Boolean);
     for (const sentence of sentences) {
       const words = sentence.split(/\s+/);
@@ -66,6 +67,36 @@ export const specificityGate: Gate = {
           !/'/.test(cleaned)
         ) {
           namedEntities.add(cleaned);
+
+          // Person heuristic A: two consecutive capitalized words (first+last name)
+          if (i + 1 < words.length) {
+            const next = words[i + 1].replace(/[^a-zA-Z'-]/g, "");
+            if (
+              next.length > 1 &&
+              /^[A-Z]/.test(next) &&
+              !COMMON_INITIAL.has(next.toLowerCase()) &&
+              !/'/.test(next)
+            ) {
+              personEntities.add(`${cleaned} ${next}`);
+            }
+          }
+
+          // Person heuristic B: single name preceded by attribution pattern
+          // e.g. "call her Maria", "named Maria", "known as Maria"
+          if (i >= 2) {
+            const twoBack = words.slice(Math.max(0, i - 3), i).join(" ").toLowerCase();
+            if (/\b(call(?:ed)?\s+(?:her|him)|named|known as|let's call)\b/.test(twoBack)) {
+              personEntities.add(cleaned);
+            }
+          }
+
+          // Person heuristic C: name followed by a possessive or verb indicating personhood
+          if (i + 1 < words.length) {
+            const nextRaw = words[i + 1];
+            if (/^(said|wrote|told|asked|explained|argued|noted|claimed|suggested|showed|found|spent|discovered|published)\b/i.test(nextRaw)) {
+              personEntities.add(cleaned);
+            }
+          }
         }
       }
     }
@@ -98,6 +129,16 @@ export const specificityGate: Gate = {
       });
     }
 
+    if (personEntities.size < 1) {
+      notes.push({
+        gate: "specificity",
+        severity: "block",
+        evidence: `Found ${personEntities.size} person names (need ≥1). Named entities: [${[...namedEntities].join(", ")}]`,
+        message: `No person name found — at least one named person (first + last name) required per chapter.`,
+        suggestion: `Add at least one named person with first and last name. E.g. "Angela Duckworth", "Viktor Frankl", "Hannah Reyes".`,
+      });
+    }
+
     if (datedCount < SPECIFICITY_MIN_DATED_MOMENTS) {
       notes.push({
         gate: "specificity",
@@ -114,9 +155,11 @@ export const specificityGate: Gate = {
       notes,
       metrics: {
         namedEntities: entityCount,
+        personEntities: personEntities.size,
         datedMoments: datedCount,
         measuredQuantities: measuredQuantities.size,
         entityNames: [...namedEntities].join(", "),
+        personNames: [...personEntities].join(", "),
       },
     };
   },

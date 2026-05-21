@@ -18,6 +18,8 @@
     "gates:capture-llm": "tsx --env-file=.env scripts/inspire-capture-llm-fixtures.ts",
     "test:research": "tsx tests/inspire/research/anchor-verifier.test.ts",
     "test:pause-injector": "tsx tests/inspire/tts-pause-injector.test.ts",
+    "test:caption-chunk": "tsx tests/caption/chunk-display-group.test.ts",
+    "test:tts-chunking": "tsx tests/tts/tts-google-chunking.test.ts",
     "quotas": "tsx --env-file=.env scripts/check-quotas.ts"
   },
   "dependencies": {

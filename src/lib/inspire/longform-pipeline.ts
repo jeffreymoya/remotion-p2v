@@ -44,6 +44,7 @@ export interface LongformPipelineOptions {
   limit?: number;
   from?: InspirePhase | "refine" | "proofread";
   narrationOnly?: boolean;
+  ttsOnly?: boolean;
   skipResearch?: boolean;
   skipProofread?: boolean;
   verbose: boolean;
@@ -333,6 +334,9 @@ async function applyProofreaderRedrafts(
       slug: sSlug,
       additionalNotes: redraft.notes,
       priorChapters: updated.filter((_, idx) => idx < i),
+      protagonist: plan.protagonist,
+      controllingObject: chapterPlan?.controllingObject,
+      archetype: plan.archetype,
     });
 
     updated[i] = result.final;
@@ -354,6 +358,7 @@ async function runLongformPipelineImpl(
   const maxRevisions = options.maxRevisions ?? REFINE_MAX_REVISIONS;
   const skipResearch = options.skipResearch ?? false;
   const narrationOnly = options.narrationOnly ?? false;
+  const ttsOnly = options.ttsOnly ?? false;
 
   const forceResearch = options.from === "research";
   const forcePlan = options.from === "plan" || forceResearch;
@@ -370,6 +375,7 @@ async function runLongformPipelineImpl(
   const forceProofread = options.from === "proofread";
 
   // Narration-only runs stop before audio combine and do not require sox.
+  // TTS-only runs need sox for audio post-processing.
   if (!narrationOnly) {
     checkSox();
   }
@@ -536,6 +542,9 @@ async function runLongformPipelineImpl(
       polarityArc: chapterPlan?.polarityArc,
       slug: segSlug(slug, i),
       priorChapters: refinedNarrations.slice(0, i),
+      protagonist: plan?.protagonist,
+      controllingObject: chapterPlan?.controllingObject,
+      archetype: plan?.archetype,
     });
 
     refinedNarrations.push(result.final);
@@ -626,10 +635,24 @@ async function runLongformPipelineImpl(
     });
   }
 
-  // Record root slug once for the whole longform composition
-  const registry = loadRegistry();
-  recordSlug(registry, slug);
-  saveRegistry(registry);
+  if (ttsOnly) {
+    const postprocess = TTS_PROVIDER === "elevenlabs" ? reverbOnlyVoice : dreamyVoice;
+    const postLabel = TTS_PROVIDER === "elevenlabs" ? "reverb-only" : "dreamy";
+
+    for (let i = 0; i < processCount; i++) {
+      const sSlug = segSlug(slug, i);
+      const wavPath = segAudioPath(sSlug);
+      const rawWav = fs.readFileSync(wavPath);
+      const processed = postprocess(rawWav, sSlug);
+      fs.writeFileSync(wavPath, processed);
+      console.log(
+        `  [post] segment ${i + 1}/${processCount}: ${wavPath} [${postLabel}]`,
+      );
+    }
+
+    console.log(`\n━━ Done. TTS audio generated for ${processCount} segment(s): ${slug} ━━\n`);
+    return null;
+  }
 
   // Phase 6: Combine
   console.log(`\n── Combine: merging ${processCount} segments ──`);

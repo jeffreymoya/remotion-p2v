@@ -82,6 +82,11 @@ export function combineSegments(
         clipIndex: c.clipIndex + clipOffset,
         startFrame: c.startFrame + frameOffset,
         endFrame: c.endFrame + frameOffset,
+        shots: c.shots.map((s) => ({
+          ...s,
+          startFrame: s.startFrame + frameOffset,
+          endFrame: s.endFrame + frameOffset,
+        })),
       });
     }
 
@@ -113,7 +118,7 @@ export function combineSegments(
   };
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     slug: rootSlug,
     topic: rootTopic,
     narration: segments.map((s) => s.narration).join("\n\n"),

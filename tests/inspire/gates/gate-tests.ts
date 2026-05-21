@@ -70,7 +70,7 @@ async function main(): Promise<void> {
   // ── Sermon-ratio gate ──────────────────────────────────────────────
   console.log("\nSermon-ratio gate:");
   const sermonRes = await sermonRatioGate.run(resilienceSeg01, defaultCtx);
-  assert(!sermonRes.pass, "resilience seg-01 FAILS sermon-ratio gate");
+  assert(sermonRes.pass, "resilience seg-01 PASSES sermon-ratio gate (ratio below 35% threshold)");
   const ratio = Number(sermonRes.metrics?.ratio ?? 0);
   assert(ratio > 30, `resilience seg-01 direct-address ratio >30% (got ${ratio}%)`);
 
@@ -104,7 +104,7 @@ async function main(): Promise<void> {
   // ── Aggregate: floor gates only ───────────────────────────────────
   console.log("\nAggregate (deterministic — includes genre-tells + sermon-ratio):");
   const floorRes = await runGates(resilienceSeg01, defaultCtx, ALL_DETERMINISTIC_GATES);
-  assert(!floorRes.pass, "resilience seg-01 FAILS deterministic aggregate (genre-tells/sermon-ratio now blocking)");
+  assert(!floorRes.pass, "resilience seg-01 FAILS deterministic aggregate (genre-tells blocking)");
 
   const floorMaria = await runGates(mariaSample, defaultCtx, ALL_DETERMINISTIC_GATES);
   assert(floorMaria.pass, "maria sample PASSES deterministic aggregate");
@@ -113,12 +113,20 @@ async function main(): Promise<void> {
   console.log("\nPlan schema anchor cap:");
   const validPlan = LongformPlanSchema.safeParse({
     segmentCount: 1,
+    protagonist: {
+      name: "Maria Santos",
+      situation: "a project manager who lost her job",
+      controllingImage: "the pothos plant on her desk",
+      transformationBefore: "believes consistency requires willpower",
+      transformationAfter: "treats showing up as identity maintenance",
+    },
     chapters: [
       {
         title: "Chapter 1",
         role: "open",
         intent: "Open on one scene",
         sceneSeed: "A kitchen before dawn",
+        controllingObject: "the pothos on the windowsill",
         targetFeeling: { dominant: "recognition", intensity: 2 },
         recognitionMoment: "The mug going cold in her hands",
         polarityArc: "low-to-high",
@@ -130,20 +138,67 @@ async function main(): Promise<void> {
 
   const invalidPlan = LongformPlanSchema.safeParse({
     segmentCount: 1,
+    protagonist: {
+      name: "Maria Santos",
+      situation: "a project manager who lost her job",
+      controllingImage: "the pothos plant on her desk",
+      transformationBefore: "believes consistency requires willpower",
+      transformationAfter: "treats showing up as identity maintenance",
+    },
     chapters: [
       {
         title: "Chapter 1",
         role: "open",
         intent: "Open on one scene",
         sceneSeed: "A kitchen before dawn",
+        controllingObject: "the pothos on the windowsill",
         targetFeeling: { dominant: "recognition", intensity: 2 },
         recognitionMoment: "The mug going cold in her hands",
         polarityArc: "low-to-high",
-        anchorIds: ["anchor-1", "anchor-2"],
+        anchorIds: ["anchor-1", "anchor-2", "anchor-3", "anchor-4", "anchor-5"],
       },
     ],
   });
-  assert(!invalidPlan.success, "plan schema rejects more than one anchor per chapter");
+  assert(!invalidPlan.success, "plan schema rejects more than MAX_ANCHORS_PER_CHAPTER anchors per chapter");
+
+  // ── Abstract-pivot-closer gate ──────────────────────────────────────
+  console.log("\nAbstract-pivot-closer gate:");
+  const pivotCtx1 = {
+    ...defaultCtx,
+    slug: "pivot-test-01",
+    chapterIndex: 4,
+    chapterCount: 5,
+    chapterRole: "close",
+  };
+  const pivotFail1 = await genreTellsGate.run(
+    "She walked to the window and looked out. Not whether she would write tomorrow — she would — but what else might grow from this same quiet ground.",
+    pivotCtx1,
+  );
+  assert(
+    !pivotFail1.pass,
+    "blocks one-sided 'not whether … but' contrastive question",
+  );
+
+  const pivotFail2 = await genreTellsGate.run(
+    "She considered the options carefully. The question is not whether you start but when.",
+    pivotCtx1,
+  );
+  assert(
+    !pivotFail2.pass,
+    "blocks 'The question is not … but' contrastive question",
+  );
+
+  const pivotPass1 = await genreTellsGate.run(
+    "She closed the laptop and left it on the table. The coffee had gone cold hours ago.",
+    pivotCtx1,
+  );
+  assert(pivotPass1.pass, "allows concrete-image closer");
+
+  const pivotPass2 = await genreTellsGate.run(
+    "He set down the pen. The notebook stayed open.",
+    pivotCtx1,
+  );
+  assert(pivotPass2.pass, "allows quiet observation closer");
 
   // ── Summary ──────────────────────────────────────────────────────
   console.log(`\n━━ Results: ${passed} passed, ${failed} failed ━━\n`);

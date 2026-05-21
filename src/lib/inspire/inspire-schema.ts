@@ -20,17 +20,33 @@ const SentenceSchema = z.object({
   tokenWordIndexes: z.array(z.number().int().min(0)),
 });
 
-// ── Clip ────────────────────────────────────────────────────────────────
-const ClipSchema = z.object({
-  clipIndex: z.number().int().min(0),
+// ── Media type ──────────────────────────────────────────────────────────
+export const MediaTypeSchema = z.enum(["image", "video"]);
+export type MediaType = z.infer<typeof MediaTypeSchema>;
+
+// ── Shot ─────────────────────────────────────────────────────────────────
+const ShotSchema = z.object({
+  shotIndex: z.number().int().min(0),
   query: z.string().min(1),
-  videoPath: z.string().min(1),
+  videoPath: z.string().min(1).optional(),
+  imagePath: z.string().min(1).optional(),
+  mediaType: MediaTypeSchema.optional(),
   sourceUrl: z.string(),
   loop: z.boolean(),
   startFrame: z.number().int().min(0),
   endFrame: z.number().int().min(0),
   videoId: z.number().int().positive().optional(),
   videoSource: z.enum(["pixabay", "pexels"]).optional(),
+});
+export type Shot = z.infer<typeof ShotSchema>;
+
+// ── Clip ────────────────────────────────────────────────────────────────
+const ClipSchema = z.object({
+  clipIndex: z.number().int().min(0),
+  query: z.string().min(1),
+  startFrame: z.number().int().min(0),
+  endFrame: z.number().int().min(0),
+  shots: z.array(ShotSchema).min(1),
 });
 
 const GateNoteSchema = z.object({
@@ -85,7 +101,7 @@ const QualityReportSchema = z.object({
 // ── Root schema ─────────────────────────────────────────────────────────
 export const InspirationScriptSchema = z
   .object({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     topic: z.string().min(1),
     narration: z.string().min(1),

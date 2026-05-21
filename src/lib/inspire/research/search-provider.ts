@@ -8,7 +8,9 @@ export type SearchLens =
   | "framework_or_model"
   | "canonical_book"
   | "contrarian_essay"
-  | "historical_context";
+  | "historical_context"
+  | "narrative_case_study"
+  | "protagonist_arc";
 
 export type SearchKind =
   | "primary_quote"
@@ -17,7 +19,8 @@ export type SearchKind =
   | "meta_analysis"
   | "case_study"
   | "historical_event"
-  | "named_person_anecdote";
+  | "named_person_anecdote"
+  | "narrative";
 
 export interface SearchOptions {
   numResults?: number;

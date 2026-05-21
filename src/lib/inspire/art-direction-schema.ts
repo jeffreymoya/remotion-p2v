@@ -42,6 +42,7 @@ export const ClipDirectiveSchema = z.object({
   clipIndex: z.number().int().min(0),
   kenBurns: KenBurnsDirectionSchema,
   overlayMood: OverlayMoodSchema,
+  mediaType: z.enum(["image", "video"]).optional(),
 });
 
 export const ArtDirectionSchema = z.object({

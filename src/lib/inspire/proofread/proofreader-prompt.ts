@@ -1,5 +1,5 @@
 import type { DeepSeekMessage } from "../../deepseek";
-import type { LongformPlan } from "../longform-narration-prompt";
+import type { LongformPlan, Protagonist } from "../longform-narration-prompt";
 
 /**
  * Build prompt for the internal-consistency cross-chapter gate.
@@ -91,10 +91,20 @@ PASS if every seed has paidOffInChapter != null.`,
 /**
  * Build prompt for the through-line cross-chapter gate.
  */
-export function buildThroughLinePrompt(chapters: readonly string[]): DeepSeekMessage[] {
+export function buildThroughLinePrompt(chapters: readonly string[], protagonist?: Protagonist): DeepSeekMessage[] {
   const joined = chapters
     .map((ch, i) => `[CHAPTER ${i + 1}]\n${ch}`)
     .join("\n\n");
+
+  const protagonistClause = protagonist
+    ? `\n\nThe script's intended protagonist is:
+- Name: ${protagonist.name}
+- Situation: ${protagonist.situation}
+- Controlling image: ${protagonist.controllingImage}
+- Transformation: ${protagonist.transformationBefore} → ${protagonist.transformationAfter}
+
+Evaluate whether the protagonist's arc is fulfilled across chapters — does the controlling image recur, does the transformation progress, and is the protagonist present in every chapter?`
+    : "";
 
   return [
     {
@@ -109,6 +119,7 @@ question that opens in chapter 1 and resolves by the end.
 
 Disconnected essays: each chapter introduces a fresh angle on the topic
 with no connecting tissue to what came before.
+${protagonistClause}
 
 OUTPUT (JSON only):
 {

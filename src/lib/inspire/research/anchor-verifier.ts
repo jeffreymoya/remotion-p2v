@@ -5,7 +5,6 @@ import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import type { Anchor, RawCandidate } from "./research-schema";
 import type { SearchProvider, SearchHit } from "./search-provider";
 import {
-  TRUSTED_DOMAINS,
   trustCategoryForKind,
   isTrustedUrl,
 } from "./trusted-domains";
@@ -96,9 +95,7 @@ async function verifyAnchorImpl(
 ): Promise<VerifyResult> {
   enrichCurrentRun({ phase: "research", provider: "exa" });
   const category = trustCategoryForKind(candidate.kind);
-  const domains = [...TRUSTED_DOMAINS[category]];
 
-  // Search with trusted domains first
   const query = candidate.queryHint || candidate.claim;
   let hits: SearchHit[];
 
@@ -106,7 +103,6 @@ async function verifyAnchorImpl(
     hits = await provider.search(query, {
       numResults: 5,
       category: searchCategory(candidate.kind),
-      includeDomains: domains.length > 0 ? domains : undefined,
       contents: {
         text: { maxCharacters: 5000 },
         highlights: { maxCharacters: 500 },
@@ -120,23 +116,6 @@ async function verifyAnchorImpl(
       );
     }
     return { status: "rejected", reason: `search-error: ${err}` };
-  }
-
-  // If no hits on trusted domains, try a broader search
-  if (hits.length === 0) {
-    try {
-      hits = await provider.search(query, {
-        numResults: 5,
-        category: searchCategory(candidate.kind),
-        contents: {
-          text: { maxCharacters: 5000 },
-          highlights: { maxCharacters: 500 },
-        },
-        kind: candidate.kind,
-      });
-    } catch {
-      return { status: "rejected", reason: "no-results" };
-    }
   }
 
   if (hits.length === 0) {

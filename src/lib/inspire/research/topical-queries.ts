@@ -15,6 +15,8 @@ export const TopicalLensSchema = z.enum([
   "canonical_book",
   "contrarian_essay",
   "historical_context",
+  "narrative_case_study",
+  "protagonist_arc",
 ]);
 export type TopicalLens = z.infer<typeof TopicalLensSchema>;
 
@@ -49,6 +51,8 @@ Available lenses (use each at most twice, cover at least 6 different ones):
 - canonical_book: foundational books (use sparingly — at most 2)
 - contrarian_essay: serious essays that argue against the dominant view
 - historical_context: long-arc historical pattern, not a single anecdote
+- narrative_case_study: real named person who has gone through the topic's transformation — dateable, quotable, verifiable
+- protagonist_arc: how practitioners/documentarians structure this topic as a character journey — controlling objects/settings used
 
 Each query should be 4–10 words, written as if typed into a search engine. Avoid quoting a celebrity author's name unless that's the only way to find a specific contrarian piece.
 

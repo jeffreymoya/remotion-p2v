@@ -2,6 +2,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
+  Img,
   Loop,
   OffthreadVideo,
   staticFile,
@@ -18,6 +19,7 @@ import type {
   OverlayMood,
 } from "../lib/inspire/art-direction-schema";
 import { KineticCaption } from "./KineticCaption";
+import type { Shot } from "../lib/inspire/inspire-schema";
 
 const DEFAULT_CYCLE: KenBurnsDirection[] = [
   "zoom-in",
@@ -181,9 +183,65 @@ const KenBurnsClip: React.FC<{
   );
 };
 
+const KenBurnsImage: React.FC<{
+  src: string;
+  durationFrames: number;
+  direction: KenBurnsDirection;
+  colorGrade?: string;
+}> = ({ src, durationFrames, direction, colorGrade }) => {
+  const frame = useCurrentFrame();
+
+  const baseScale =
+    direction === "zoom-out" ? 1.1 : direction === "zoom-in" ? 1.0 : 1.1;
+  const endScale =
+    direction === "zoom-out" ? 1.0 : direction === "zoom-in" ? 1.06 : 1.1;
+
+  const scale = interpolate(frame, [0, durationFrames], [baseScale, endScale], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const translateX =
+    direction === "pan-left"
+      ? interpolate(frame, [0, durationFrames], [0, -3], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        })
+      : direction === "pan-right"
+        ? interpolate(frame, [0, durationFrames], [0, 3], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          })
+        : 0;
+
+  return (
+    <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          transform: `scale(${scale}) translateX(${translateX}%)`,
+          transformOrigin: "center center",
+          filter: colorGrade && colorGrade !== "none" ? colorGrade : undefined,
+        }}
+      >
+        <Img
+          src={src}
+          style={{ objectFit: "cover", width: "100%", height: "100%" }}
+        />
+      </div>
+    </div>
+  );
+};
+
 const TRANSITION_FRAMES = 15;
 
 const BG_MUSIC_VOLUME = 0.15;
+
+interface FlatShot extends Shot {
+  clipIndex: number;
+  clipShotIndex: number;
+}
 
 export const InspirationComposition: React.FC<InspirationScript> = (props) => {
   const frame = useCurrentFrame();
@@ -203,11 +261,26 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
       clipIndex,
       kenBurns: directionForClip(clipIndex),
       overlayMood: "neutral",
+      mediaType: "video",
     };
 
-  const currentClipIndex =
-    clips.find((c) => frame >= c.startFrame && frame < c.endFrame)?.clipIndex ??
-    0;
+  // Flatten shots from all clips
+  const allShots: FlatShot[] = clips.flatMap((clip) =>
+    clip.shots.map((shot, si) => ({
+      ...shot,
+      clipIndex: clip.clipIndex,
+      clipShotIndex: si,
+    })),
+  );
+
+  const clipKenBurnsDirective = (clipIndex: number): KenBurnsDirection =>
+    artDirection.clips.find((c) => c.clipIndex === clipIndex)?.kenBurns
+    ?? directionForClip(clipIndex);
+
+  const currentShot = allShots.find(
+    (s) => frame >= s.startFrame && frame < s.endFrame,
+  );
+  const currentClipIndex = currentShot?.clipIndex ?? 0;
   const currentMood = clipDirective(currentClipIndex).overlayMood;
 
   const captionStyleBySentence = Object.fromEntries(
@@ -219,50 +292,54 @@ export const InspirationComposition: React.FC<InspirationScript> = (props) => {
 
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      {/* Video layer */}
-      {clips.length === 1 ? (
-        <KenBurnsClip
-          src={staticFile(clips[0].videoPath)}
-          durationFrames={durationInFrames}
-          loop={clips[0].loop}
-          direction={clipDirective(clips[0].clipIndex).kenBurns}
-          colorGrade={COLOR_GRADES[clipDirective(clips[0].clipIndex).overlayMood].filter}
-        />
-      ) : (
-        <TransitionSeries>
-          {clips.flatMap((clip, i) => {
-            const duration = clip.endFrame - clip.startFrame;
-            const directive = clipDirective(clip.clipIndex);
-            const seq = (
-              <TransitionSeries.Sequence
-                key={`clip-${i}`}
-                durationInFrames={duration}
-              >
-                <KenBurnsClip
-                  src={staticFile(clip.videoPath)}
-                  durationFrames={duration}
-                  loop={clip.loop}
-                  direction={directive.kenBurns}
-                  colorGrade={COLOR_GRADES[directive.overlayMood].filter}
-                />
-              </TransitionSeries.Sequence>
+      {/* Media layer — all shots via TransitionSeries */}
+      <TransitionSeries>
+        {allShots.flatMap((shot, i) => {
+          const duration = shot.endFrame - shot.startFrame;
+          const directive = clipDirective(shot.clipIndex);
+          const kenBurns =
+            shot.clipShotIndex === 0
+              ? clipKenBurnsDirective(shot.clipIndex)
+              : DEFAULT_CYCLE[shot.clipShotIndex % DEFAULT_CYCLE.length];
+
+          const mediaElement =
+            (shot.mediaType ?? "video") === "image" && shot.imagePath ? (
+              <KenBurnsImage
+                src={staticFile(shot.imagePath)}
+                durationFrames={duration}
+                direction={kenBurns}
+                colorGrade={COLOR_GRADES[directive.overlayMood].filter}
+              />
+            ) : (
+              <KenBurnsClip
+                src={staticFile(shot.videoPath!)}
+                durationFrames={duration}
+                loop={shot.loop}
+                direction={kenBurns}
+                colorGrade={COLOR_GRADES[directive.overlayMood].filter}
+              />
             );
 
-            if (i === clips.length - 1) return [seq];
+          const seq = (
+            <TransitionSeries.Sequence key={`shot-${i}`} durationInFrames={duration}>
+              {mediaElement}
+            </TransitionSeries.Sequence>
+          );
 
-            return [
-              seq,
-              <TransitionSeries.Transition
-                key={`tx-${i}`}
-                presentation={fade()}
-                timing={linearTiming({
-                  durationInFrames: TRANSITION_FRAMES,
-                })}
-              />,
-            ];
-          })}
-        </TransitionSeries>
-      )}
+          if (i === allShots.length - 1) return [seq];
+
+          return [
+            seq,
+            <TransitionSeries.Transition
+              key={`tx-${i}`}
+              presentation={fade()}
+              timing={linearTiming({
+                durationInFrames: TRANSITION_FRAMES,
+              })}
+            />,
+          ];
+        })}
+      </TransitionSeries>
 
       {/* Mood overlay — driven by current clip's directive */}
       <MoodOverlay mood={currentMood} />

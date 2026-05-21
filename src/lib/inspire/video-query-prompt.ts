@@ -1,77 +1,108 @@
 import { z } from "zod";
 import { deepseekChat } from "../deepseek";
-import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../config";
+import { CODE_GEN_TEMPERATURE, NARRATION_REASONING, SHOT_TARGET_SECONDS } from "../config";
 import type { SentenceTiming } from "./sentence-segmenter";
 
-// ── Clip plan schema ────────────────────────────────────────────────────
+// ── Clip plan schema (v2 — shot-based) ──────────────────────────────────
+const ShotPlanItemSchema = z.object({
+  query: z.string().min(1),
+  mediaType: z.enum(["image", "video"]).default("video"),
+});
+
 const ClipPlanItemSchema = z.object({
-  queries: z.array(z.string().min(1)).min(1).max(3),
   sentenceIndexes: z.array(z.number().int().min(0)).min(1),
+  shots: z.array(ShotPlanItemSchema).min(1),
 });
 
 export const ClipPlanSchema = z.object({
+  schemaVersion: z.literal(2),
   strategy: z.enum(["single", "multi"]),
   clips: z.array(ClipPlanItemSchema).min(1),
 });
 
 export type ClipPlanItem = z.infer<typeof ClipPlanItemSchema>;
 export type ClipPlan = z.infer<typeof ClipPlanSchema>;
+export type ShotPlanItem = z.infer<typeof ShotPlanItemSchema>;
 
 const SYSTEM_PROMPT = `You are a video director choosing stock video clips for an inspirational narration video.
 
-Given a narration and its sentence-level timings, decide how many background video clips to use and what Pixabay search queries to use for each.
+Given a narration and its sentence-level timings, decide how many background clips (narrative scenes) to use and what shots (2-5 second visual beats) belong to each clip.
 
 ## Strategy
-- "single": One video clip for the entire narration. Use when the narration has a single cohesive theme or visual mood.
+- "single": One clip for the entire narration. Use when the narration has a single cohesive theme or visual mood.
 - "multi": Multiple clips, each covering a group of thematically related sentences. Use when the narration shifts topics or visual moods.
 
 ## Rules
 1. Every sentence must be covered by exactly one clip (no gaps, no overlaps).
 2. Sentence indexes must be contiguous within each clip group.
-3. Approved visual categories — mix them across clips for variety:
-   - Nature / landscape (emotionally evocative): "mountain sunrise mist", "ocean waves calm", "forest light morning",
-     "rain drops leaves", "sunset clouds golden", "river flowing forest", "fog rolling hills"
-   - Moody cityscapes (cinematic, atmospheric): "city rain night", "neon reflections rain", "empty street dawn",
-     "city skyline dusk", "bridge fog morning"
-   - Human subject (contemplative): a single person in a reflective, introspective, or emotional state.
-     Prefer everyday, non-glamour contexts with clear clothing and no beachwear or sensual posing.
-     Examples: "person window light", "person train window reflection", "man silhouette mountain",
-     "figure hill overlook", "person rain street", "walker empty road dawn"
 
-   For motivational or introspective narrations, include at least one clip from the
-   "Human subject (contemplative)" category and at least one from "Nature / landscape".
-   Aim for emotional resonance in every clip selection.
-4. Prefer horizontal/landscape orientation footage.
-5. Use 2-4 word queries for best Pixabay results.
-6. For "single" strategy, clips array must have exactly 1 entry with ALL sentence indexes.
+## SHOT PLANNING
 
-## Narrative Specificity — Ordered Query List
+For each clip (narrative scene), plan exactly the number of shots computed by the formula below.
 
-For each clip group, produce a \`queries\` array (1–3 items), ordered from MOST SPECIFIC to MOST GENERIC:
+**targetShotCount formula:**
+  targetShotCount = ceil(totalSentenceSeconds / ${SHOT_TARGET_SECONDS})
 
-### When to use a specific query first:
-If the covered sentences describe a concrete, visualizable scene — a specific activity, setting, or person doing something identifiable — lead with a content-matched query:
+Where totalSentenceSeconds = sum of (endSeconds - startSeconds) across all sentences in the clip.
+Clamp: minimum 1 shot per clip.
+
+Each shot must have:
+1. query — a visually specific keyword phrase extracted from the covered sentence content:
+   - Pull the most concrete noun phrase, named entity, or visual concept from the sentence
+   - "Jerry Seinfeld sat at a small desk in 1976" → "vintage desk small room 1970s"
+   - "A meta-analysis in Perspectives on Psychological Science" → "research papers academic journal"
+   - "The Beatles played marathon sets in Hamburg" → "band performing nightclub stage"
+   - "Most of us carry a notebook somewhere" → "blank notebook open pages pen"
+   - Abstract sentences with no concrete visual → "contemplative person window light" (fallback)
+
+2. mediaType — "image" or "video" using these rules:
+   - "video" for reflective, emotional, nature, motion-adds-depth moments
+   - "image" for factual, action-narrative, keyword-specific b-roll
+   - Default to "video"
+   - Aim for roughly 20-40% image shots for visual variety
+
+## SHOT QUERY RULES
+- Each shot within a clip MUST be visually DISTINCT from the others
+- If a sentence has no unique sub-concept for a shot, vary the angle/context:
+  "busy city street morning" → shot 2: "pedestrian crossing commute" → shot 3: "office building entrance"
+- Never repeat the same query within a clip
+- All forbidden content rules apply to each shot query
+- Last shot in each clip MUST have a generic fallback quality query (still keyword-specific but safe)
+
+## Approved visual categories — mix them across clips for variety:
+- Nature / landscape (emotionally evocative): "mountain sunrise mist", "ocean waves calm", "forest light morning",
+  "rain drops leaves", "sunset clouds golden", "river flowing forest", "fog rolling hills"
+- Moody cityscapes (cinematic, atmospheric): "city rain night", "neon reflections rain", "empty street dawn",
+  "city skyline dusk", "bridge fog morning"
+- Human subject (contemplative): a single person in a reflective, introspective, or emotional state.
+  Prefer everyday, non-glamour contexts with clear clothing and no beachwear or sensual posing.
+  Examples: "person window light", "person train window reflection", "man silhouette mountain",
+  "figure hill overlook", "person rain street", "walker empty road dawn"
+
+For motivational or introspective narrations, include at least one clip from the
+"Human subject (contemplative)" category and at least one from "Nature / landscape".
+Aim for emotional resonance in every shot selection.
+
+## Narrative Specificity
+
+When the covered sentences describe a concrete, visualizable scene — a specific activity, setting, or person doing something identifiable — lead with content-matched shot queries:
 - "man walking empty road" (not "person silhouette")
 - "hands writing journal candlelight" (not "person reflection window")
 - "elderly man porch rocking chair" (not "solitary figure sunset")
 - "child running field sunset" (not "nature landscape golden")
 
-### When to use only generic queries:
-If the sentences are abstract or thematic (discipline, resilience, purpose, growth) with no concrete visual anchor, skip specific queries and use 1–2 generic emotion/landscape queries from the approved categories.
+If the sentences are abstract or thematic (discipline, resilience, purpose, growth) with no concrete visual anchor, use generic emotion/landscape/human queries from the approved categories.
 
-### Always end with a generic fallback:
-The LAST item in \`queries\` must always be a generic emotion/landscape or contemplative human query from the approved categories. This is the fallback if no specific clip is found.
+All queries must still obey the FORBIDDEN content rules.
 
-### All queries must still obey the FORBIDDEN content rules.
-
-## REQUIRED CONTENT — every clip MUST be one of these
-Every video clip must clearly depict one of the following subjects:
+## REQUIRED CONTENT — every shot MUST be one of these
+Every shot must clearly depict one of the following subjects:
 - A REAL LANDSCAPE or NATURAL SCENERY (mountains, oceans, forests, deserts, rivers, skies, fields)
 - A REAL CITYSCAPE or URBAN SCENE (skylines, streets, bridges, architecture at dawn/dusk/night)
 - A REAL HUMAN in a contemplative, reflective, or emotional state (silhouette, walking alone, looking out)
 - WEATHER or ATMOSPHERIC phenomena in context (rain on a city, fog over hills, storm over ocean, sunrise)
 
-The video must feel cinematic, emotionally evocative, and appropriate for a motivational/inspirational narration.
+The shots must feel cinematic, emotionally evocative, and appropriate for a motivational/inspirational narration.
 
 ## FORBIDDEN content — NEVER use queries that could return any of these
 Content that is off-topic, distracting, or tonally wrong for inspirational videos:
@@ -108,20 +139,26 @@ Content that is off-topic, distracting, or tonally wrong for inspirational video
 - No beachwear or shirtless/body-display footage unless the subject is incidental in a wide scenic landscape
 
 ### KEY PRINCIPLE
-Every clip must show a RECOGNIZABLE CINEMATIC SCENE — a real place, a real person in reflection, or real weather/nature at scale — that evokes deep emotion suitable for a 10-15 minute motivational narration. If a query could plausibly return animals, toys, holiday items, or random objects, DO NOT use it.
+Every shot must show a RECOGNIZABLE CINEMATIC SCENE — a real place, a real person in reflection, or real weather/nature at scale — that evokes deep emotion suitable for a 10-15 minute motivational narration. If a query could plausibly return animals, toys, holiday items, or random objects, DO NOT use it.
 
 ## Output
 Return a JSON object matching this shape:
 \`\`\`json
 {
+  "schemaVersion": 2,
   "strategy": "single" | "multi",
   "clips": [
-    { "queries": ["man sitting porch reflection", "person window reflection", "figure hill overlook"], "sentenceIndexes": [0, 1, 2] }
+    {
+      "sentenceIndexes": [0, 1, 2],
+      "shots": [
+        { "query": "vintage desk small room 1970s", "mediaType": "image" },
+        { "query": "stand-up comedian notebook writing", "mediaType": "video" },
+        { "query": "new notebook blank pages pen", "mediaType": "image" }
+      ]
+    }
   ]
 }
-\`\`\`
-
-Each clip's \`queries\` array is ordered specific-to-generic. The last entry must be a safe generic fallback.`;
+\`\`\``;
 
 function stripJsonFences(raw: string): string {
   return raw
@@ -138,7 +175,7 @@ export async function generateClipPlan(
   const sentenceSummary = sentences
     .map(
       (s) =>
-        `[${s.sentenceIndex}] ${s.startSeconds.toFixed(1)}s–${s.endSeconds.toFixed(1)}s: "${s.text}"`,
+        `[${s.sentenceIndex}] ${s.startSeconds.toFixed(1)}s–${s.endSeconds.toFixed(1)}s (${((s.endSeconds - s.startSeconds)).toFixed(1)}s): "${s.text}"`,
     )
     .join("\n");
 
@@ -148,10 +185,11 @@ export async function generateClipPlan(
 ${narration}
 """
 
-Sentence timings:
+Sentence timings (with durations for shot count calculation):
 ${sentenceSummary}
 
-Choose a video strategy and Pixabay search queries. Return ONLY the JSON.`;
+Choose a video strategy and plan shots per clip using the targetShotCount formula.
+Return ONLY the JSON.`;
 
   const raw = await deepseekChat(
     [
