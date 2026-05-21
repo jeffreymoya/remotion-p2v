@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { deepseekChat } from "../deepseek";
-import { CODE_GEN_TEMPERATURE, NARRATION_REASONING, SHOT_TARGET_SECONDS } from "../config";
+import { CODE_GEN_TEMPERATURE, NARRATION_REASONING, IMAGE_SHOT_TARGET_SECONDS, VIDEO_SHOT_TARGET_SECONDS } from "../config";
 import type { SentenceTiming } from "./sentence-segmenter";
 
 // ── Clip plan schema (v2 — shot-based) ──────────────────────────────────
@@ -38,13 +38,15 @@ Given a narration and its sentence-level timings, decide how many background cli
 
 ## SHOT PLANNING
 
-For each clip (narrative scene), plan exactly the number of shots computed by the formula below.
+Plan shots for each clip using these per-type targets:
 
-**targetShotCount formula:**
-  targetShotCount = ceil(totalSentenceSeconds / ${SHOT_TARGET_SECONDS})
+- **Video shots** (motion, cinematic, emotional): ~1 shot per ${VIDEO_SHOT_TARGET_SECONDS}s
+  → targetVideoCount = max(1, ceil(totalSentenceSeconds / ${VIDEO_SHOT_TARGET_SECONDS}))
+- **Image shots** (bloomberg rapid-cut, editorial montage): ~1 shot per ${IMAGE_SHOT_TARGET_SECONDS}s
+  → targetImageCount = max(0, ceil(totalSentenceSeconds * 0.3 / ${IMAGE_SHOT_TARGET_SECONDS}))
 
-Where totalSentenceSeconds = sum of (endSeconds - startSeconds) across all sentences in the clip.
-Clamp: minimum 1 shot per clip.
+Aim for ~70% video shots, ~30% image shots per clip.
+Total shots per clip ≈ targetVideoCount + targetImageCount (minimum 1).
 
 Each shot must have:
 1. query — a visually specific keyword phrase extracted from the covered sentence content:

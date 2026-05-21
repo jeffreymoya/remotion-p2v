@@ -168,7 +168,6 @@ export async function brainstormCandidatesImpl(
     NARRATION_REASONING,
     {
       verbose: opts?.verbose,
-      maxTokens: 16384,
       timeoutMs: RESEARCH_BRAINSTORM_TIMEOUT_MS,
       runName: "research/brainstorm",
     },

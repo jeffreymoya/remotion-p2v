@@ -398,6 +398,10 @@ async function runLongformPipelineImpl(
 
   if (!skipResearch) {
     if (forceResearch || !fs.existsSync(researchBundlePath(slug))) {
+      if (!forceResearch) {
+        console.log(`  [research] no cached bundle at ${researchBundlePath(slug)} — running research phase`);
+        console.log(`  [research] tip: add --skip-research to bypass when resuming from --from=narration`);
+      }
       console.log(`\n── Research: brainstorm + verify anchors ──`);
       research = await runResearchPhase(topic, slug, segmentCount, { verbose });
       saveResearchBundle(research);

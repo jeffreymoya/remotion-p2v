@@ -16,6 +16,24 @@ and gates on user confirmation at three checkpoints.
 
 ---
 
+## On Invocation — Begin Immediately
+
+**DO NOT show a welcome message. DO NOT ask what the user is working on.**
+
+### Command shortcut — skip to Phase 2
+
+If `$ARGUMENTS` contains an `npm run inspire` command (i.e. the invocation
+looks like `/inspire-watch npm run inspire -- "topic" [flags]`), **skip Phase 0
+and Phase 1 entirely**. The command is already decided — no diff analysis or
+confirmation gate is needed. Extract the command verbatim from the arguments
+and proceed directly to Phase 2 (Launch and Dual Monitor).
+
+If no command is in `$ARGUMENTS`, start executing Phase 0 right now by running
+the two git commands below. Proceed through Phase 0 mechanically, then present
+the Phase 1 gate — all without waiting for additional user input.
+
+---
+
 ## Phase 0 — Diff Analysis
 
 **No questions during Phase 0.** Apply all heuristics mechanically and proceed
@@ -107,6 +125,8 @@ Run the command in the background and attach a Monitor in the same response:
 ```
 Bash(command="npm run inspire -- \"<topic>\" <params>", run_in_background=true)
 ```
+
+**NEVER set a `timeout` parameter on this Bash call.** `npm run inspire` is a long-running pipeline that routinely takes 20–60+ minutes end-to-end. Any `timeout` value will kill the process prematurely. `run_in_background=true` is sufficient — do not add a timeout.
 
 Then immediately attach a Monitor to stream stdout/stderr as it arrives.
 

@@ -92,6 +92,9 @@ function cleanArtifacts(slug: string): void {
     for (const entry of fs.readdirSync(PROMPTS_DIR)) {
       if (!entry.endsWith(".json") && !entry.endsWith(".txt")) continue;
       if (entry === `${slug}.json` || entry.startsWith(`${slug}-`)) {
+        // Preserve the research bundle — it's expensive to regenerate and
+        // unrelated to narration/TTS/video artifacts. Use --from=research to force a refresh.
+        if (entry === `${slug}-research.json`) continue;
         const p = path.join(PROMPTS_DIR, entry);
         fs.unlinkSync(p);
         console.log(`  [clean] removed: ${p}`);

@@ -13,6 +13,8 @@
     "inspire:combine-narrations": "tsx scripts/combine-inspire-narrations.ts",
     "smoke:inspire-segmenter": "tsx scripts/inspire-segmenter-smoke.ts",
     "smoke:inspire-gates": "tsx scripts/inspire-gate-smoke.ts",
+    "smoke:deepseek": "tsx --env-file=.env scripts/deepseek-smoke.ts",
+    "smoke:deepseek-brainstorm": "tsx --env-file=.env scripts/deepseek-brainstorm-smoke.ts",
     "test:gates": "tsx tests/inspire/gates/gate-tests.ts",
     "test:llm-gates": "tsx tests/inspire/gates/llm/llm-gate-tests.ts",
     "gates:capture-llm": "tsx --env-file=.env scripts/inspire-capture-llm-fixtures.ts",

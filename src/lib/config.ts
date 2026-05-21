@@ -8,7 +8,7 @@ export const NARRATION_REASONING = {
 };
 
 // ── Network timeouts (ms) ──────────────────────────────────────────────
-export const DEEPSEEK_TIMEOUT_MS = validateTimeout("DEEPSEEK_TIMEOUT_MS", 300_000);
+export const DEEPSEEK_TIMEOUT_MS = validateTimeout("DEEPSEEK_TIMEOUT_MS", 600_000);
 export const PIXABAY_TIMEOUT_MS = validateTimeout("PIXABAY_TIMEOUT_MS", 30_000);
 export const GOOGLE_TTS_TIMEOUT_MS = validateTimeout("GOOGLE_TTS_TIMEOUT_MS", 120_000);
 
@@ -101,6 +101,8 @@ export const RESEARCH_VERIFY_CONCURRENCY = 5;
 export const RESEARCH_MAX_BRAINSTORM_ROUNDS = 2;
 
 // ── Shot layer timing ──────────────────────────────────────────────────
-export const SHOT_TARGET_SECONDS = 3;
+export const IMAGE_SHOT_TARGET_SECONDS = 3; // bloomberg rapid cut — images only
+export const VIDEO_SHOT_TARGET_SECONDS = 8; // cinematic hold — video clips
+export const SHOT_TARGET_SECONDS = IMAGE_SHOT_TARGET_SECONDS; // backwards compat
 export const SHOT_MAX_SECONDS = 5;
 export const SHOT_MIN_SECONDS = 2;

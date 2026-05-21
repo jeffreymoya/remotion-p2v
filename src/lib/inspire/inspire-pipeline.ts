@@ -18,7 +18,7 @@ import {
   loadRegistry, saveRegistry, getCooldownIds, getLruSortedIds,
   registerVideo, recordSlug,
 } from "./video-registry";
-import { PIXABAY_COOLDOWN_RUNS, SHOT_MIN_SECONDS, SHOT_TARGET_SECONDS } from "../config";
+import { PIXABAY_COOLDOWN_RUNS, IMAGE_SHOT_TARGET_SECONDS, VIDEO_SHOT_TARGET_SECONDS } from "../config";
 import { writeInspireJson } from "./write-inspire-script";
 import type { InspirationScript, Clip, Sentence, Shot } from "./inspire-schema";
 import { generateArtDirection } from "./art-direction-prompt";
@@ -99,17 +99,30 @@ function shotImagePath(slug: string, clipIndex: number, shotIndex: number): stri
 }
 
 // ── Shot timing computation ─────────────────────────────────────────────
-function computeShotFrames(
-  totalStartFrame: number,
-  totalEndFrame: number,
-  shotCount: number,
+function computeTypedShotFrames(
+  clipStartFrame: number,
+  clipEndFrame: number,
+  shots: Array<{ mediaType?: string }>,
+  imageSecs: number,
+  videoSecs: number,
 ): Array<{ startFrame: number; endFrame: number }> {
-  const totalFrames = totalEndFrame - totalStartFrame;
-  const shotSize = Math.floor(totalFrames / shotCount);
-  return Array.from({ length: shotCount }, (_, i) => ({
-    startFrame: totalStartFrame + i * shotSize,
-    endFrame: i === shotCount - 1 ? totalEndFrame : totalStartFrame + (i + 1) * shotSize,
-  }));
+  const nFrames = clipEndFrame - clipStartFrame;
+  const totalWeight = shots.reduce(
+    (sum, s) => sum + ((s.mediaType ?? "video") === "image" ? imageSecs : videoSecs),
+    0,
+  );
+  const result: Array<{ startFrame: number; endFrame: number }> = [];
+  let cursor = clipStartFrame;
+  for (let i = 0; i < shots.length; i++) {
+    const weight = (shots[i].mediaType ?? "video") === "image" ? imageSecs : videoSecs;
+    const shotFrames =
+      i === shots.length - 1
+        ? clipEndFrame - cursor
+        : Math.round(nFrames * (weight / totalWeight));
+    result.push({ startFrame: cursor, endFrame: cursor + shotFrames });
+    cursor += shotFrames;
+  }
+  return result;
 }
 
 function sweepOrphanClipFiles(slug: string): void {
@@ -328,21 +341,12 @@ async function runVideoPhaseImpl(
     ) + 1; // +1s tail
     const fps = 30;
 
-    // Compute target shot count and clamp
-    const targetShotCount = Math.max(
-      1,
-      Math.ceil(clipSpanSeconds / SHOT_TARGET_SECONDS),
+    // Compute per-shot frame ranges — each plan shot gets proportional time by media type
+    const shotTimings = computeTypedShotFrames(
+      clipStartFrame, clipEndFrame,
+      planClip.shots as Array<{ mediaType?: string }>,
+      IMAGE_SHOT_TARGET_SECONDS, VIDEO_SHOT_TARGET_SECONDS,
     );
-    const actualShotCount = Math.min(
-      targetShotCount,
-      Math.floor(
-        (clipEndFrame - clipStartFrame) / (SHOT_MIN_SECONDS * fps),
-      ),
-    );
-    const shotCount = Math.max(1, actualShotCount);
-
-    // Compute per-shot frame ranges
-    const shotTimings = computeShotFrames(clipStartFrame, clipEndFrame, shotCount);
 
     // Per-clip excludeIds
     const pixabayExcludeIds = new Set<number>();
