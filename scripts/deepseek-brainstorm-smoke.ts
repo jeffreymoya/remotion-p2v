@@ -9,7 +9,7 @@
  * Target:  < 60s wall time for 5 candidates
  */
 
-import { brainstormCandidatesImpl } from "../src/lib/inspire/research/research-brainstorm";
+import { brainstormCandidatesImpl } from "../src/lib/shared/research/research-brainstorm";
 
 const TOPIC = "adapting before you are forced to";
 const TARGET_COUNT = 5;

@@ -40,6 +40,10 @@ export const GOOGLE_VISION_BASE_URL = "https://vision.googleapis.com/v1" as cons
 export const GOOGLE_VISION_TIMEOUT_MS = validateTimeout("GOOGLE_VISION_TIMEOUT_MS", 15_000);
 export const GOOGLE_VISION_BATCH_SIZE = 16 as const; // Vision API max per batch request
 export const GOOGLE_TTS_VOICE_NAME = process.env.GOOGLE_TTS_VOICE_NAME ?? "en-US-Chirp3-HD-Algieba" as const;
+
+// ── Documentary TTS ────────────────────────────────────────────────────────
+export const DOCU_TTS_VOICE = process.env.DOCU_TTS_VOICE ?? "en-US-Chirp3-HD-Charon";
+export const DOCU_TTS_SPEAKING_RATE = 1.0;
 export const GOOGLE_TTS_LANGUAGE_CODE = "en-US" as const;
 export const GOOGLE_TTS_SAMPLE_RATE = 24000 as const;
 export const AUDIO_DIR = "public/audio" as const;

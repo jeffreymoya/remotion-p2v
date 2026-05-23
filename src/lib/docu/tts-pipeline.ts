@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { generateSpeech as generateSpeechGoogle } from "../tts-google";
-import { commandingVoice } from "../inspire/audio-postprocess";
+import { commandingVoice } from "../shared/audio-postprocess";
 import { pcmToWav } from "../audio-wav";
 import { GOOGLE_TTS_SAMPLE_RATE } from "../config";
 import { DOCU_TTS_VOICE, DOCU_TTS_SPEAKING_RATE } from "../config";

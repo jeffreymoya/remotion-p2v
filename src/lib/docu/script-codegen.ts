@@ -153,6 +153,7 @@ export const docuScripts: DocuScript[] = [
     overlays: [
       ${overlaysCode},
     ],
+    articleCards: ${JSON.stringify(script.articleCards ?? [], null, 2)},
   },
 ];
 `);

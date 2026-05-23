@@ -1,6 +1,7 @@
 import type { OverlaySpec } from "../overlay-resolver";
 import type { SentenceDef } from "../tts-pipeline";
 import type { ImageQuery } from "../image-pipeline";
+import type { ArticleCardSpec } from "../article-pipeline";
 
 export const TOPIC = "How the Federal Reserve Controls Your Money";
 export const SLUG = "how-the-fed-controls-your-money";
@@ -127,3 +128,5 @@ export const IMAGE_QUERIES: ImageQuery[] = [
   { slot: 58, query: "financial planning couple home desk", fallback: "financial planning home" },
   { slot: 59, query: "money future investment growth concept", fallback: "future investment growth" },
 ];
+
+export const ARTICLE_CARDS: ArticleCardSpec[] = [];

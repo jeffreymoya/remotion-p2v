@@ -8,7 +8,7 @@ import {
   GOOGLE_TTS_TIMEOUT_MS,
 } from "./config";
 import { pcmToWav } from "./audio-wav";
-import { injectPausesForGoogle } from "./inspire/tts-pause-injector";
+import { injectPausesForGoogle } from "./shared/tts-pause-injector";
 import type { WordTiming, TtsResult } from "./audio-wav";
 import { enrichCurrentRun } from "./tracing";
 export type { WordTiming, TtsResult } from "./audio-wav";
@@ -243,7 +243,7 @@ async function recognizePcm(
 
 async function generateSpeechImpl(
   text: string,
-  options?: { voiceName?: string },
+  options?: { voiceName?: string; speakingRate?: number },
 ): Promise<TtsResult> {
   enrichCurrentRun({ phase: "tts", provider: "google-tts" });
   const apiKey = process.env.GOOGLE_CLOUD_API_KEY;
@@ -252,6 +252,7 @@ async function generateSpeechImpl(
   }
 
   const voiceName = options?.voiceName ?? GOOGLE_TTS_VOICE_NAME;
+  const speakingRate = options?.speakingRate ?? 0.85;
   const textChunks = splitTextIntoTtsChunks(text);
 
   const silenceBytes =
@@ -272,7 +273,7 @@ async function generateSpeechImpl(
           audioConfig: {
             audioEncoding: "LINEAR16",
             sampleRateHertz: GOOGLE_TTS_SAMPLE_RATE,
-            speakingRate: 0.85,
+            speakingRate,
           },
         }),
         signal: AbortSignal.timeout(GOOGLE_TTS_TIMEOUT_MS),

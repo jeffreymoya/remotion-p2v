@@ -7,7 +7,7 @@ import {
   _splitTextIntoTtsChunks as splitTextIntoTtsChunks,
   _INTER_CHUNK_SILENCE_SECONDS,
 } from "../../src/lib/tts-google";
-import { injectPausesForGoogle } from "../../src/lib/inspire/tts-pause-injector";
+import { injectPausesForGoogle } from "../../src/lib/shared/tts-pause-injector";
 
 let passed = 0;
 let failed = 0;
