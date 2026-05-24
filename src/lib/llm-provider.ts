@@ -1,9 +1,14 @@
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import type { ZodType } from "zod";
-import { DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEEPSEEK_TIMEOUT_MS } from "./config";
+import {
+  DEEPSEEK_TIMEOUT_MS,
+  resolveProvider,
+  LLM_DEFAULT_PROVIDER,
+  type LlmProviderId,
+} from "./config";
 import { enrichCurrentRun } from "./tracing";
 
-export interface DeepSeekMessage {
+export interface LlmMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
@@ -13,22 +18,26 @@ interface ReasoningConfig {
   thinking: { type: "enabled" | "disabled" };
 }
 
-interface DeepSeekChoice {
+interface LlmChoice {
   message: { content: string };
   finish_reason?: string;
 }
 
-interface DeepSeekResponse {
-  choices: Array<DeepSeekChoice>;
+interface LlmResponse {
+  choices: Array<LlmChoice>;
 }
 
-export interface DeepSeekOptions {
+export interface LlmOptions {
   verbose?: boolean;
   metadata?: Record<string, unknown>;
   maxTokens?: number;
   timeoutMs?: number;
   /** Custom run name shown in LangSmith trace waterfall (e.g. "narration", "proofread/escalation"). */
   runName?: string;
+  /** Per-call model override (defaults to the provider's defaultModel). */
+  model?: string;
+  /** Which LLM provider to use (defaults to LLM_DEFAULT_PROVIDER). */
+  provider?: LlmProviderId;
 }
 
 const LANGSMITH_MAX_FIELD_CHARS = 100_000;
@@ -52,27 +61,30 @@ function truncateKV(kv: Readonly<Record<string, unknown>>): Record<string, unkno
   return truncateForTrace(kv) as Record<string, unknown>;
 }
 
-export class DeepSeekError extends Error {
+export class LlmError extends Error {
   constructor(
     message: string,
     public readonly status?: number,
   ) {
     super(message);
-    this.name = "DeepSeekError";
+    this.name = "LlmError";
   }
 }
 
-async function deepseekChatImpl(
-  messages: DeepSeekMessage[],
+async function llmChatImpl(
+  messages: LlmMessage[],
   temperature: number,
   reasoning: ReasoningConfig,
-  options?: DeepSeekOptions,
+  options?: LlmOptions,
 ): Promise<string> {
+  const providerId = options?.provider ?? LLM_DEFAULT_PROVIDER;
+  const provider = resolveProvider(providerId);
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
   const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
   const runName = options?.runName;
+  const model = options?.model ?? provider.defaultModel;
   const startTime = Date.now();
 
   const run = getCurrentRunTree(true);
@@ -81,32 +93,32 @@ async function deepseekChatImpl(
     if (metadata) run.metadata = { ...run.metadata, ...metadata };
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env[provider.apiKeyEnv];
   if (!apiKey) {
-    throw new DeepSeekError("DEEPSEEK_API_KEY environment variable is not set");
+    throw new LlmError(`${provider.apiKeyEnv} environment variable is not set`);
   }
 
   if (verbose) {
     const totalChars = messages.reduce((sum, m) => sum + m.content.length, 0);
     process.stderr.write(
-      `[deepseek] model=${DEEPSEEK_MODEL} temp=${temperature} reasoning_effort=${reasoning.effort} thinking=${reasoning.thinking.type} msgs=${messages.length} chars=${totalChars}\n`,
+      `[llm] provider=${providerId} model=${model} temp=${temperature} reasoning_effort=${reasoning.effort} thinking=${reasoning.thinking.type} msgs=${messages.length} chars=${totalChars}\n`,
     );
   }
 
   const controller = new AbortController();
   const timer = setTimeout(
-    () => controller.abort(new DOMException(`DeepSeek request timed out after ${timeoutMs}ms`, "TimeoutError")),
+    () => controller.abort(new DOMException(`LLM request timed out after ${timeoutMs}ms`, "TimeoutError")),
     timeoutMs,
   );
   try {
-    const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: DEEPSEEK_MODEL,
+        model,
         messages,
         temperature,
         ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
@@ -119,16 +131,16 @@ async function deepseekChatImpl(
 
     if (!response.ok) {
       const text = await response.text().catch(() => "");
-      throw new DeepSeekError(
-        `DeepSeek API error (${response.status}): ${text.slice(0, 500)}`,
+      throw new LlmError(
+        `LLM API error (${response.status}): ${text.slice(0, 500)}`,
         response.status,
       );
     }
 
-    const json: DeepSeekResponse = (await response.json()) as DeepSeekResponse;
+    const json: LlmResponse = (await response.json()) as LlmResponse;
 
     // Extract token usage for LangSmith cost analytics
-    const usage = (json as DeepSeekResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
+    const usage = (json as LlmResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
     if (run && usage) {
       run.extra = {
         ...run.extra,
@@ -139,31 +151,31 @@ async function deepseekChatImpl(
         },
       };
     }
-    enrichCurrentRun({ provider: "deepseek" });
+    enrichCurrentRun({ provider: providerId });
 
     const finishReason = json.choices?.[0]?.finish_reason;
     if (finishReason === "length") {
-      throw new DeepSeekError(
-        `DeepSeek response truncated by max_tokens limit (finish_reason=length). Increase maxTokens or reduce prompt size.`,
+      throw new LlmError(
+        `LLM response truncated by max_tokens limit (finish_reason=length). Increase maxTokens or reduce prompt size.`,
       );
     }
 
     const content = json.choices?.[0]?.message?.content;
     if (!content || content.trim().length === 0) {
-      throw new DeepSeekError("DeepSeek returned an empty response");
+      throw new LlmError("LLM returned an empty response");
     }
 
     if (verbose) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       process.stderr.write(
-        `[deepseek] done (${content.length} chars, ${elapsed}s)\n`,
+        `[llm] done (${content.length} chars, ${elapsed}s)\n`,
       );
     }
 
     return content;
   } catch (error) {
     if (error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError")) {
-      throw new DeepSeekError(`DeepSeek request timed out after ${timeoutMs}ms`);
+      throw new LlmError(`LLM request timed out after ${timeoutMs}ms`);
     }
     throw error;
   } finally {
@@ -171,8 +183,8 @@ async function deepseekChatImpl(
   }
 }
 
-export const deepseekChat = traceable(deepseekChatImpl, {
-  name: "deepseekChat",
+export const llmChat = traceable(llmChatImpl, {
+  name: "llmChat",
   run_type: "llm",
   processInputs: truncateKV,
   processOutputs: truncateKV,
@@ -187,18 +199,21 @@ function stripJsonFences(raw: string): string {
     .trim();
 }
 
-async function deepseekChatJsonImpl<T>(
-  messages: DeepSeekMessage[],
+async function llmChatJsonImpl<T>(
+  messages: LlmMessage[],
   schema: ZodType<T>,
   temperature: number,
   reasoning: ReasoningConfig,
-  options?: DeepSeekOptions,
+  options?: LlmOptions,
 ): Promise<T> {
+  const providerId = options?.provider ?? LLM_DEFAULT_PROVIDER;
+  const provider = resolveProvider(providerId);
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
   const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
   const runName = options?.runName;
+  const model = options?.model ?? provider.defaultModel;
   const startTime = Date.now();
 
   const run = getCurrentRunTree(true);
@@ -207,32 +222,32 @@ async function deepseekChatJsonImpl<T>(
     if (metadata) run.metadata = { ...run.metadata, ...metadata };
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env[provider.apiKeyEnv];
   if (!apiKey) {
-    throw new DeepSeekError("DEEPSEEK_API_KEY environment variable is not set");
+    throw new LlmError(`${provider.apiKeyEnv} environment variable is not set`);
   }
 
   if (verbose) {
     const totalChars = messages.reduce((sum, m) => sum + m.content.length, 0);
     process.stderr.write(
-      `[deepseek/json] model=${DEEPSEEK_MODEL} temp=${temperature} msgs=${messages.length} chars=${totalChars}\n`,
+      `[llm/json] provider=${providerId} model=${model} temp=${temperature} msgs=${messages.length} chars=${totalChars}\n`,
     );
   }
 
   const controller = new AbortController();
   const timer = setTimeout(
-    () => controller.abort(new DOMException(`DeepSeek JSON request timed out after ${timeoutMs}ms`, "TimeoutError")),
+    () => controller.abort(new DOMException(`LLM JSON request timed out after ${timeoutMs}ms`, "TimeoutError")),
     timeoutMs,
   );
   try {
-    const response = await fetch(`${DEEPSEEK_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: DEEPSEEK_MODEL,
+        model,
         messages,
         temperature,
         response_format: { type: "json_object" },
@@ -246,16 +261,16 @@ async function deepseekChatJsonImpl<T>(
 
     if (!response.ok) {
       const text = await response.text().catch(() => "");
-      throw new DeepSeekError(
-        `DeepSeek API error (${response.status}): ${text.slice(0, 500)}`,
+      throw new LlmError(
+        `LLM API error (${response.status}): ${text.slice(0, 500)}`,
         response.status,
       );
     }
 
-    const json: DeepSeekResponse = (await response.json()) as DeepSeekResponse;
+    const json: LlmResponse = (await response.json()) as LlmResponse;
 
     // Extract token usage for LangSmith cost analytics
-    const jsonUsage = (json as DeepSeekResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
+    const jsonUsage = (json as LlmResponse & { usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }).usage;
     if (run && jsonUsage) {
       run.extra = {
         ...run.extra,
@@ -266,24 +281,24 @@ async function deepseekChatJsonImpl<T>(
         },
       };
     }
-    enrichCurrentRun({ provider: "deepseek" });
+    enrichCurrentRun({ provider: providerId });
 
     const jsonFinishReason = json.choices?.[0]?.finish_reason;
     if (jsonFinishReason === "length") {
-      throw new DeepSeekError(
-        `DeepSeek JSON response truncated by max_tokens limit (finish_reason=length). Increase maxTokens or reduce prompt size.`,
+      throw new LlmError(
+        `LLM JSON response truncated by max_tokens limit (finish_reason=length). Increase maxTokens or reduce prompt size.`,
       );
     }
 
     const content = json.choices?.[0]?.message?.content;
     if (!content || content.trim().length === 0) {
-      throw new DeepSeekError("DeepSeek returned an empty JSON response");
+      throw new LlmError("LLM returned an empty JSON response");
     }
 
     if (verbose) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       process.stderr.write(
-        `[deepseek/json] done (${content.length} chars, ${elapsed}s)\n`,
+        `[llm/json] done (${content.length} chars, ${elapsed}s)\n`,
       );
     }
 
@@ -292,7 +307,7 @@ async function deepseekChatJsonImpl<T>(
     return schema.parse(parsed);
   } catch (error) {
     if (error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError")) {
-      throw new DeepSeekError(`DeepSeek JSON request timed out after ${timeoutMs}ms`);
+      throw new LlmError(`LLM JSON request timed out after ${timeoutMs}ms`);
     }
     throw error;
   } finally {
@@ -300,11 +315,11 @@ async function deepseekChatJsonImpl<T>(
   }
 }
 
-const deepseekChatJsonTraceable = traceable(deepseekChatJsonImpl, {
-  name: "deepseekChatJson",
+const llmChatJsonTraceable = traceable(llmChatJsonImpl, {
+  name: "llmChatJson",
   run_type: "llm",
   processInputs: truncateKV,
   processOutputs: truncateKV,
 });
 
-export const deepseekChatJson = deepseekChatJsonTraceable as typeof deepseekChatJsonImpl;
+export const llmChatJson = llmChatJsonTraceable as typeof llmChatJsonImpl;

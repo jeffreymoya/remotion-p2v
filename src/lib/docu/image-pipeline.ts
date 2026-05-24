@@ -16,6 +16,7 @@ export interface ImageQuery {
 export interface ImagePipelineResult {
   manifestPath: string;
   downloadedCount: number;
+  downloadedSlots: number[];
 }
 
 export async function runImagePipeline(
@@ -56,5 +57,5 @@ export async function runImagePipeline(
   console.log(`\nDownloaded ${manifest.length}/${queries.length} images`);
   console.log(`Manifest written to ${manifestPath}`);
 
-  return { manifestPath, downloadedCount: manifest.length };
+  return { manifestPath, downloadedCount: manifest.length, downloadedSlots: manifest.map((m) => m.index) };
 }

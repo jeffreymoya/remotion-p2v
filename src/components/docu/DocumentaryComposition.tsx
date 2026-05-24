@@ -12,10 +12,12 @@ import {
 } from "remotion";
 import type { DocuPalette } from "./docu-tokens";
 import { PALETTE_MAP } from "./docu-tokens";
-import { KineticNumber } from "./KineticNumber";
-import { HeadlineCard } from "./HeadlineCard";
-import { ArticleCard } from "./ArticleCard";
-import type { DocuArticleCard } from "../../lib/docu/article-pipeline";
+import { DocuKenBurns } from "./DocuKenBurns";
+import { DocuTitleCard } from "./DocuTitleCard";
+import type { DocuOverlay } from "../../lib/docu/overlays/registry";
+import { OVERLAY_REGISTRY } from "../../lib/docu/overlays/registry";
+import type { DocuSegmentMeta } from "../../lib/docu/segment-types";
+import { RENDER_REGISTRY, type OverlayRenderCtx } from "./overlays/render-registry";
 
 export interface DocuShot {
   videoPath?: string;
@@ -32,17 +34,6 @@ export interface DocuClip {
   startFrame: number;
   endFrame: number;
   shots: DocuShot[];
-}
-
-export interface DocuOverlay {
-  type: "headline-card" | "kinetic-number";
-  text: string;
-  value?: number;
-  unit?: "$" | "%" | "x" | "T" | "B";
-  source?: string;
-  palette: DocuPalette;
-  startFrame: number;
-  endFrame: number;
 }
 
 export interface DocuSentence {
@@ -70,12 +61,29 @@ export interface DocuScript {
   sentences: DocuSentence[];
   clips: DocuClip[];
   overlays: DocuOverlay[];
-  articleCards?: DocuArticleCard[];
+  segments?: DocuSegmentMeta[];
   durationInFrames: number;
   fps: 30;
   width: 1920;
   height: 1080;
 }
+
+const TITLE_CARD_FRAMES = 90;
+
+const TitleCardFade: React.FC<{ topic: string }> = ({ topic }) => {
+  const frame = useCurrentFrame();
+  const opacity = interpolate(
+    frame,
+    [0, 10, TITLE_CARD_FRAMES - 15, TITLE_CARD_FRAMES],
+    [0, 1, 1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  return (
+    <AbsoluteFill style={{ opacity }}>
+      <DocuTitleCard title={topic} subtitle="" durationInFrames={TITLE_CARD_FRAMES} />
+    </AbsoluteFill>
+  );
+};
 
 export const DocumentaryComposition = (props: DocuScript) => {
   const frame = useCurrentFrame();
@@ -91,6 +99,7 @@ export const DocumentaryComposition = (props: DocuScript) => {
   );
 
   const blurProgress = overlays.reduce((acc, o) => {
+    if (OVERLAY_REGISTRY[o.type].surface !== "overlay") return acc;
     const local = frame - o.startFrame;
     const dur = o.endFrame - o.startFrame;
     if (local < 0 || local >= dur) return acc;
@@ -149,7 +158,11 @@ export const DocumentaryComposition = (props: DocuScript) => {
                 height: "100%",
               }}
             >
-              {shot.loop ? (
+              {shot.mediaType === "image" ? (
+                <DocuKenBurns durationInFrames={shotDuration} shotIndex={i}>
+                  {mediaElement}
+                </DocuKenBurns>
+              ) : shot.loop ? (
                 <Loop durationInFrames={shotDuration}>
                   {mediaElement}
                 </Loop>
@@ -191,6 +204,15 @@ export const DocumentaryComposition = (props: DocuScript) => {
       {/* Overlays */}
       {overlays.map((o, i) => {
         const overlayDuration = o.endFrame - o.startFrame;
+        const activeShot = allShots.find(
+          (s) => o.startFrame >= s.startFrame && o.startFrame < s.endFrame,
+        );
+        const ctx: OverlayRenderCtx = {
+          durationInFrames: props.durationInFrames,
+          activeShot,
+          allShots,
+          palette: currentPalette,
+        };
 
         return (
           <Sequence
@@ -198,47 +220,15 @@ export const DocumentaryComposition = (props: DocuScript) => {
             from={o.startFrame}
             durationInFrames={overlayDuration}
           >
-            {o.type === "headline-card" ? (
-              <HeadlineCard
-                text={o.text}
-                source={o.source}
-                palette={o.palette}
-                durationInFrames={overlayDuration}
-              />
-            ) : (
-              <KineticNumber
-                label={o.text}
-                value={o.value!}
-                unit={o.unit!}
-                durationFrames={overlayDuration}
-                palette={o.palette}
-              />
-            )}
+            {RENDER_REGISTRY[o.type](o, ctx)}
           </Sequence>
         );
       })}
 
-      {/* Article Cards */}
-      {props.articleCards?.map((card) => {
-        const activeShot = allShots.find(
-          (s) => card.startFrame >= s.startFrame && card.startFrame < s.endFrame,
-        );
-        const bgImageFile = activeShot?.imagePath ?? clips[0]?.shots[0]?.imagePath ?? "";
-        if (!bgImageFile) return null;
-        return (
-          <Sequence
-            key={`article-card-${card.id}`}
-            from={card.startFrame}
-            durationInFrames={card.durationInFrames}
-          >
-            <ArticleCard
-              article={card.article}
-              bgImageFile={bgImageFile}
-              durationInFrames={card.durationInFrames}
-            />
-          </Sequence>
-        );
-      })}
+      {/* Title card — 3-second opener over first shot */}
+      <Sequence from={0} durationInFrames={TITLE_CARD_FRAMES}>
+        <TitleCardFade topic={props.topic} />
+      </Sequence>
 
     </AbsoluteFill>
   );

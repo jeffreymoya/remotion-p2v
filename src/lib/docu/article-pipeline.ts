@@ -11,28 +11,3 @@ export interface ArticleData {
   tz: string;
   source: string;
 }
-
-export interface ArticleCardSpec extends ArticleData {
-  id: string;
-  startFrame: number;
-  durationInFrames: number;
-}
-
-export interface DocuArticleCard {
-  article: ArticleData;
-  id: string;
-  startFrame: number;
-  durationInFrames: number;
-}
-
-export function runArticleCardPipeline(
-  _slug: string,
-  specs: ArticleCardSpec[],
-): DocuArticleCard[] {
-  return specs.map(({ id, startFrame, durationInFrames, ...article }) => ({
-    article,
-    id,
-    startFrame,
-    durationInFrames,
-  }));
-}

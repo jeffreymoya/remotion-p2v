@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { traceable } from "langsmith/traceable";
-import { deepseekChatJson } from "../../deepseek";
+import { llmChatJson } from "../../llm-provider";
+import { LLM_BRAINSTORM_PROMPT } from "../../prompts";
 import {
   CODE_GEN_TEMPERATURE,
   NARRATION_REASONING,
@@ -155,12 +156,12 @@ export async function brainstormCandidatesImpl(
     corpus?: ResearchCorpus;
   },
 ): Promise<RawCandidate[]> {
-  enrichCurrentRun({ topic, phase: "research", provider: "deepseek" });
+  enrichCurrentRun({ topic, phase: "research", provider: "llm" });
   const prompt = buildBrainstormPrompt(topic, targetCount, opts);
 
-  const result = await deepseekChatJson(
+  const result = await llmChatJson(
     [
-      { role: "system", content: "You are a meticulous research assistant. Return only valid JSON." },
+      { role: "system", content: LLM_BRAINSTORM_PROMPT },
       { role: "user", content: prompt },
     ],
     BrainstormResponseSchema,

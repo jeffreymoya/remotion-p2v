@@ -10,6 +10,7 @@ import {
   TRACKING,
   docuEasing,
 } from "./docu-tokens";
+import type { OverlayUnit } from "../../lib/docu/overlays/types";
 
 loadInter();
 loadBarlowCondensed();
@@ -17,13 +18,13 @@ loadBarlowCondensed();
 interface KineticNumberProps {
   label: string;
   value: number;
-  unit: "$" | "%" | "x" | "T" | "B";
+  unit: OverlayUnit;
   durationFrames: number;
   palette: DocuPalette;
   kineticStyle?: Partial<KineticNumberStyle>;
 }
 
-function formatValue(value: number, unit: "$" | "%" | "x" | "T" | "B"): string {
+function formatValue(value: number, unit: OverlayUnit): string {
   switch (unit) {
     case "$":
       return `$${Math.round(value).toLocaleString()}`;

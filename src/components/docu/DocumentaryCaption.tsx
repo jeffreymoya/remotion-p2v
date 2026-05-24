@@ -3,20 +3,9 @@ import { interpolate } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import type { DocuPalette } from "./docu-tokens";
 import { PALETTE_MAP } from "./docu-tokens";
+import type { DocuSentence } from "./DocumentaryComposition";
 
 const { fontFamily } = loadFont();
-
-interface DocuSentence {
-  sentenceIndex: number;
-  text: string;
-  startSeconds: number;
-  endSeconds: number;
-  startFrame: number;
-  endFrame: number;
-  clipIndex: number;
-  tokenWordIndexes: number[];
-  emphasisWordIndexes?: number[];
-}
 
 interface DocumentaryCaptionProps {
   frame: number;

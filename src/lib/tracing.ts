@@ -16,6 +16,9 @@ export interface SpanMeta {
     | "proofread";
   provider?:
     | "deepseek"
+    | "openrouter"
+    | "grok"
+    | "llm"
     | "elevenlabs"
     | "google-tts"
     | "pixabay"

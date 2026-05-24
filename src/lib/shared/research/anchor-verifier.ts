@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { traceable } from "langsmith/traceable";
-import { deepseekChatJson } from "../../deepseek";
+import { llmChatJson } from "../../llm-provider";
+import { LLM_VERIFIER_PROMPT } from "../../prompts";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import type { Anchor, RawCandidate } from "./research-schema";
 import type { SearchProvider, SearchHit } from "./search-provider";
@@ -134,12 +135,11 @@ async function verifyAnchorImpl(
 
   let judgment: VerificationJudgment;
   try {
-    judgment = await deepseekChatJson(
+    judgment = await llmChatJson(
       [
         {
           role: "system",
-          content:
-            "You are a fact-checking assistant. Given a candidate claim and web search results, determine which hit (if any) supports the claim. Return JSON.",
+          content: LLM_VERIFIER_PROMPT,
         },
         {
           role: "user",

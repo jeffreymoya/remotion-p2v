@@ -5,6 +5,7 @@ import { zColor } from "@remotion/zod-types";
 import { KineticNumber } from "./KineticNumber";
 import { HeadlineCard } from "./HeadlineCard";
 import { BLOOMBERG_ORANGE, BLOOMBERG_YELLOW } from "./docu-tokens";
+import { OVERLAY_UNITS } from "../../lib/docu/overlays/types";
 
 const fontWeightEnum = z.enum([
   "100",
@@ -18,7 +19,7 @@ const fontWeightEnum = z.enum([
   "900",
 ]);
 
-const unitEnum = z.enum(["$", "%", "x", "T", "B"]);
+const unitEnum = z.enum(OVERLAY_UNITS);
 
 export const kineticPlaygroundSchema = z.object({
   componentType: z.enum(["kinetic-number", "headline-card"]).default("kinetic-number"),

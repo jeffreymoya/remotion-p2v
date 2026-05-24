@@ -7,6 +7,99 @@ export const NARRATION_REASONING = {
   thinking: { type: "disabled" as const },
 };
 
+// ── LLM provider registry ─────────────────────────────────────────────
+export type LlmProviderId = "deepseek" | "openrouter" | "grok";
+
+export interface LlmProviderConfig {
+  baseUrl: string;
+  apiKeyEnv: string;
+  defaultModel: string;
+}
+
+export const LLM_PROVIDERS: Record<LlmProviderId, LlmProviderConfig> = {
+  deepseek: {
+    baseUrl: "https://api.deepseek.com/v1",
+    apiKeyEnv: "DEEPSEEK_API_KEY",
+    defaultModel: "deepseek-v4-pro",
+  },
+  openrouter: {
+    baseUrl: "https://openrouter.ai/api/v1",
+    apiKeyEnv: "OPENROUTER_API_KEY",
+    defaultModel: "openai/gpt-4o",
+  },
+  grok: {
+    baseUrl: "https://api.x.ai/v1",
+    apiKeyEnv: "GROK_API_KEY",
+    defaultModel: "grok-3-beta",
+  },
+};
+
+export const LLM_DEFAULT_PROVIDER: LlmProviderId = "deepseek";
+
+/** Resolve a provider config, falling back to the default. */
+export function resolveProvider(providerId?: LlmProviderId): LlmProviderConfig {
+  return LLM_PROVIDERS[providerId ?? LLM_DEFAULT_PROVIDER];
+}
+
+// ── DeepSeek per-call config ──────────────────────────────────────────
+export interface LlmCallConfig {
+  provider?: LlmProviderId;
+  temperature?: number;
+  model?: string;
+  reasoning?: {
+    effort?: "low" | "medium" | "high";
+    thinking?: "enabled" | "disabled";
+  };
+  maxTokens?: number;
+  maxRetries?: number;
+}
+
+/** Default (current behaviour) — low-temp deterministic, thinking disabled */
+export const LLM_DEFAULT: LlmCallConfig = {
+  temperature: 0.3,
+  reasoning: { effort: "high", thinking: "disabled" },
+};
+
+/** Narration: moderate creativity, thinking disabled (fast) */
+export const LLM_NARRATION: LlmCallConfig = {
+  temperature: 0.7,
+  reasoning: { effort: "medium", thinking: "disabled" },
+};
+
+/** Overlay placement: low-temp, deterministic */
+export const LLM_OVERLAY: LlmCallConfig = {
+  temperature: 0.3,
+  reasoning: { effort: "medium", thinking: "disabled" },
+};
+
+/** Metric extraction: very low-temp, no creativity */
+export const LLM_METRIC: LlmCallConfig = {
+  temperature: 0.1,
+  model: "deepseek-v4-flash",
+  reasoning: { effort: "low", thinking: "disabled" },
+};
+
+/** Image query generation: moderate, fast */
+export const LLM_IMAGE_QUERY: LlmCallConfig = {
+  temperature: 0.5,
+  model: "deepseek-v4-flash",
+  reasoning: { effort: "low", thinking: "disabled" },
+};
+
+/** Segment plan: moderate, structured output */
+export const LLM_SEGMENT_PLAN: LlmCallConfig = {
+  temperature: 0.4,
+  reasoning: { effort: "medium", thinking: "disabled" },
+};
+
+// ── Shared pipeline constants ─────────────────────────────────────────
+export const FPS = 30 as const;                         // canonical frame rate
+export const SENTENCES_PER_MINUTE = 5 as const;        // narration pacing
+export const NARRATION_BATCH_SIZE = 10 as const;       // sentences per LLM batch
+export const LLM_DEFAULT_MAX_RETRIES = 2 as const;     // callStructured() default
+export const SEGMENT_IMAGE_QUERY_CONCURRENCY = 3 as const; // parallel segment queries
+export const INTER_SENTENCE_GAP_SECONDS = 0.3 as const;
+
 // ── Network timeouts (ms) ──────────────────────────────────────────────
 export const DEEPSEEK_TIMEOUT_MS = validateTimeout("DEEPSEEK_TIMEOUT_MS", 600_000);
 export const PIXABAY_TIMEOUT_MS = validateTimeout("PIXABAY_TIMEOUT_MS", 30_000);

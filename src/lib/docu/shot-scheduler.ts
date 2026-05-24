@@ -1,4 +1,5 @@
 import type { DocuPalette } from "../../components/docu/docu-tokens";
+import { FPS } from "../config";
 
 export interface SentenceScheduleInput {
   startFrame: number;
@@ -13,7 +14,6 @@ export interface ScheduledShot {
 }
 
 const TARGET_SHOT_SECONDS = 2.5;
-const FPS = 30;
 
 /**
  * Algorithm A — sentence-bounded uniform shot scheduling.

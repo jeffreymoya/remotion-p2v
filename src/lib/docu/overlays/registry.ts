@@ -1,0 +1,98 @@
+import { z } from "zod";
+import type { ZodType } from "zod";
+import { headlineCardDef } from "./headline-card";
+import { kineticNumberDef } from "./kinetic-number";
+import { splitCardDef } from "./split-card";
+import { contextBarDef } from "./context-bar";
+import { titleCardOverlayDef } from "./title-card-overlay";
+import { articleCardDef } from "./article-card";
+import { chartDef } from "./chart";
+import type { AnchorStrategy, DataItemKind, DataItem, OverlayCategory } from "./types";
+
+// Note: "overlay" in OverlaySpec/OverlayDef covers both composited overlays
+// (surface: "overlay") and full-frame scene cards (surface: "scene").
+
+export interface SelectionInput {
+  type: string;
+  anchorPhrase: string;
+  holdSec: number;
+  leadSec?: number;
+  palette: string;
+  text?: string;
+  source?: string;
+}
+
+export type PopulatorFn = (dataItem: DataItem, selection: SelectionInput) => Record<string, unknown>;
+
+export type OverlayDef = {
+  id: string;
+  schema: ZodType;
+  anchorStrategy: AnchorStrategy;
+  promptRule: string;
+  promotable: boolean;
+  promptExample: string;
+  mixWeight: number;
+  placementHint?: string;
+  surface: "overlay" | "scene";
+  placement: "llm" | "manual";
+  category: OverlayCategory;
+  consumes: DataItemKind | "anchor";
+  consumesKinds?: ReadonlyArray<DataItemKind>;
+  populate?: PopulatorFn;
+};
+
+export const OVERLAY_REGISTRY = {
+  "headline-card": headlineCardDef,
+  "kinetic-number": kineticNumberDef,
+  "split-card": splitCardDef,
+  "context-bar": contextBarDef,
+  "title-card": titleCardOverlayDef,
+  "article-card": articleCardDef,
+  "chart": chartDef,
+} as const satisfies Record<string, OverlayDef>;
+
+export type OverlayTypeId = keyof typeof OVERLAY_REGISTRY;
+
+export const OverlaySpecSchema = z.discriminatedUnion("type", [
+  headlineCardDef.schema,
+  kineticNumberDef.schema,
+  splitCardDef.schema,
+  contextBarDef.schema,
+  titleCardOverlayDef.schema,
+  articleCardDef.schema,
+  chartDef.schema,
+]);
+
+export type OverlaySpec = z.infer<typeof OverlaySpecSchema>;
+
+export const PROMPTABLE_REGISTRY = Object.fromEntries(
+  Object.entries(OVERLAY_REGISTRY).filter(([, def]) => def.promotable),
+) as Record<string, OverlayDef>;
+
+// Note: chart is excluded from the old-style output schema because charts
+// require DataItems from the metric-extraction pipeline. The old generateOverlays()
+// path has no DataItems available, so emitting charts there would bypass the
+// metric-fidelity gate. Charts only flow through the selection path.
+export const OverlayOutputSchema = z.object({
+  overlays: z.array(
+    z.discriminatedUnion("type", [
+      headlineCardDef.schema,
+      kineticNumberDef.schema,
+    ]),
+  ),
+});
+
+export type OverlayOutput = z.infer<typeof OverlayOutputSchema>;
+
+export type DocuOverlay =
+  | (Omit<z.infer<typeof headlineCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof kineticNumberDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof splitCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof contextBarDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof titleCardOverlayDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof articleCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
+  | (Omit<z.infer<typeof chartDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number });
+
+export function getAnchorStrategy(type: OverlayTypeId): AnchorStrategy {
+  return OVERLAY_REGISTRY[type].anchorStrategy;
+}

@@ -13,7 +13,7 @@ const Root: React.FC = () => {
         <Composition
           key={`docu-${s.slug}`}
           id={`docu-${s.slug}`}
-          component={DocumentaryComposition as any}
+          component={DocumentaryComposition as any /* Remotion expects Record<string, unknown> but DocuScript has required fields */}
           defaultProps={s}
           durationInFrames={s.durationInFrames}
           fps={s.fps}

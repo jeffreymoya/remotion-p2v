@@ -9,7 +9,7 @@ import path from "node:path";
 import { generateSpeech as generateSpeechGoogle } from "../tts-google";
 import { commandingVoice } from "../shared/audio-postprocess";
 import { pcmToWav } from "../audio-wav";
-import { GOOGLE_TTS_SAMPLE_RATE } from "../config";
+import { GOOGLE_TTS_SAMPLE_RATE, FPS, INTER_SENTENCE_GAP_SECONDS } from "../config";
 import { DOCU_TTS_VOICE, DOCU_TTS_SPEAKING_RATE } from "../config";
 import type { WordTiming } from "../audio-wav";
 import type { DocuPalette } from "../../components/docu/docu-tokens";
@@ -22,8 +22,6 @@ export interface SentenceDef {
 
 const AUDIO_DIR = "public/audio/docu";
 const PROMPTS_DIR = "prompts/docu";
-const FPS = 30;
-const INTER_SENTENCE_GAP_SECONDS = 0.3;
 const BYTES_PER_SAMPLE = 2; // 16-bit mono
 
 const AUDITION_VOICES = [
