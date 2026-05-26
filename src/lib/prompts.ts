@@ -62,8 +62,15 @@ ${menu}
 6. holdSec: 3.0–4.5 seconds.
 7. palette: "cool-tech" for institutional/data/financial content, "warm-real" for human-impact content.
 
-## Output
-Return JSON only, no markdown fences.`;
+## Output schema
+{
+  "selections": [
+    { "type": "kinetic-number", "dataItemId": "scalar-01", "anchorPhrase": "9.1 percent", "holdSec": 3.5, "palette": "cool-tech" },
+    { "type": "headline-card", "anchorPhrase": "The Federal Reserve", "holdSec": 4.0, "palette": "cool-tech", "text": "Headline text here", "source": "Source name" }
+  ]
+}
+
+Return JSON only, no markdown fences. All fields shown are required where applicable.`;
 }
 
 // ── Overlay (legacy — headline-card + kinetic-number only) ─────────────────
@@ -83,7 +90,9 @@ export function llmOverlayLegacyPrompt(rules: string, examples: string): string 
 9. Available overlay types and their rules:\n${rules}
 10. Example shapes:\n${examples}
 
-## Output
+## Output format
+{ "overlays": [ {...}, {...} ] }
+
 Return JSON only, no markdown fences.`;
 }
 
@@ -111,13 +120,15 @@ ${intent}
 8. Available overlay types and their rules:\n${rules}
 9. Example shapes:\n${examples}
 
-## Output
+## Output format
+{ "overlays": [ {...}, {...} ] }
+
 Return JSON only, no markdown fences.`;
 }
 
 // ── Metric extraction ─────────────────────────────────────────────────────
 
-export const LLM_METRIC_EXTRACTION_PROMPT = `You are a financial-data extraction engine. Given verified research anchors with numeric claims, extract structured data items. Each item must be traceable to a specific anchor via sourceAnchorId.
+export const LLM_METRIC_EXTRACTION_PROMPT = `You are a financial-data extraction engine. Given verified research anchors with numeric claims, extract structured data items as JSON. Each item must be traceable to a specific anchor via sourceAnchorId.
 
 ## Extraction Rules
 1. Only extract numbers that appear explicitly in the anchor's claim, detail, or quote fields. Never fabricate or interpolate.
@@ -128,7 +139,25 @@ export const LLM_METRIC_EXTRACTION_PROMPT = `You are a financial-data extraction
 6. sourceAnchorId MUST be the exact anchor id (e.g. "anc-1") from the anchors list.
 7. sourceUrl MUST be copied from the anchor's citation URL.
 8. For timeseries/comparison/composition, label describes the dataset. For scalar, label is the metric name.
-9. Unit: "$" for dollars, "%" for percentages, "x" for multiples, "T" for trillions, "B" for billions.`;
+9. Unit choices: "$" dollars, "%" percentages or basis points, "x" multiples, "T" trillions, "B" billions, "M" millions, "K" thousands/counts.
+   - Basis points (bp/bps): use "%" — keep the raw value (e.g. 25 bp → value: 25, unit: "%") and note "basis points" in the label.
+   - Counts (meetings/year, members, subscribers): use "K" if ≥1,000 or just the raw integer with unit "K".
+
+## Output format
+Return a JSON object (NOT an array) with this exact structure:
+
+{
+  "dataItems": [
+    { "kind": "scalar", "value": 94, "unit": "B", "label": "US Cloud Market Size", "sourceAnchorId": "anc-1", "sourceUrl": "https://..." },
+    { "kind": "timeseries", "points": [{"x": "2020", "y": 50}, {"x": "2021", "y": 75}], "unit": "B", "label": "Cloud Market Growth", "sourceAnchorId": "anc-2", "sourceUrl": "https://..." },
+    { "kind": "scalar", "value": 25, "unit": "%", "label": "Rate Hike (basis points)", "sourceAnchorId": "anc-3", "sourceUrl": "https://..." },
+    { "kind": "scalar", "value": 1.2, "unit": "M", "label": "Monthly Active Users", "sourceAnchorId": "anc-4", "sourceUrl": "https://..." }
+  ]
+}
+
+Do NOT include an "id" field — it will be assigned automatically. Points arrays must have at least 2 entries for timeseries/comparison/composition.
+
+Return JSON only, no markdown fences.`;
 
 // ── Image query ───────────────────────────────────────────────────────────
 
@@ -164,19 +193,33 @@ export function llmSegmentPlanPrompt(
   segmentCount: number,
   usesDefaultRoles: boolean,
 ): string {
+  const roles = ["hook", "context", "data", "consequence", "cta", "build", "turn"] as const;
   return `You are a documentary segment planner. Given a topic, target video length, and verified research anchors, plan ${segmentCount} segments that form a compelling narrative arc.
 
 ## Rules
-1. Distribute research anchors across segments so no single segment hogs all anchors. Each anchor carries a unique anchorId. Assign each anchor to exactly one segment.
+1. Distribute research anchors across segments so no single segment hogs all anchors. Each anchor carries a unique anchorId. Assign each anchor to exactly one segment using its id (e.g. "anchor-1").
 2. ${usesDefaultRoles
     ? "Use this arc: hook → context → data → consequence → cta."
-    : "Assign arc roles per segment from: hook, context, data, consequence, cta, build, turn. You determine the best arc flow."
+    : "Assign arc roles per segment from: " + roles.join(", ") + ". You determine the best arc flow."
   }
 3. Each segment gets a short title (3-6 words) and a one-sentence intent describing what it achieves in the narrative.
-4. Sentence counts per segment will be provided — do not change them.
+4. The sentence count per segment is shown in the user message as "targetSentenceCount". Copy this exact number into each segment.
 
-## Output
-Return JSON only, no markdown fences.`;
+## Output schema
+{
+  "segments": [
+    {
+      "index": 0,
+      "title": "string",
+      "role": "${roles.join("\" | \"")}",
+      "intent": "string",
+      "targetSentenceCount": 10,
+      "assignedAnchorIds": ["anchor-1", "anchor-2"]
+    }
+  ]
+}
+
+Return JSON only, no markdown fences. All fields are required.`;
 }
 
 // ── Research ──────────────────────────────────────────────────────────────
@@ -188,25 +231,30 @@ export const LLM_VERIFIER_PROMPT =
   "You are a fact-checking assistant. Given a candidate claim and web search results, determine which hit (if any) supports the claim. Return JSON.";
 
 export function llmTopicalQueriesPrompt(topic: string): string {
-  return `You are designing a literature scan for a long-form essay video about: "${topic}".
+  return `You are designing an investigative research scan for a Bloomberg-style documentary video about: "${topic}".
 
-Produce 6–10 Exa search queries that, *together*, map the empirical and intellectual landscape of this topic. The queries must cover different lenses — do NOT propose 8 variants of "famous author writes about X". A good scan finds meta-analyses, replication failures, contrarian essays, and definitional papers — not just bestsellers.
+Produce 6–10 search queries that, *together*, map the full institutional, empirical, and human landscape of this topic. Cover diverse lenses — a good scan finds data releases, regulatory actions, expert testimony, academic studies, and on-the-record statements from named authorities. Avoid queries that would only surface opinion columns or generic explainer blog posts.
 
 Available lenses (use each at most twice, cover at least 6 different ones):
 - meta_analysis: aggregated effect sizes across studies
 - review_article: narrative or systematic reviews of the field
 - primary_study: a specific empirical paper with a memorable finding
 - critique_or_replication_failure: papers that complicate or overturn a popular claim
-- definition_or_mechanism: what is this thing, how does it work — encyclopedia/SEP style
-- statistics_or_distribution: large datasets, base rates, prevalence
+- definition_or_mechanism: what is this thing, how does it work
+- statistics_or_distribution: large datasets, base rates, prevalence from government/institutional sources — target queries that surface specific dollar amounts, percentages, growth rates, year-over-year changes, and time-series data suitable for financial charts
 - framework_or_model: named conceptual models with citations
-- canonical_book: foundational books (use sparingly — at most 2)
+- canonical_book: foundational books in the field (use sparingly — at most 2)
 - contrarian_essay: serious essays that argue against the dominant view
-- historical_context: long-arc historical pattern, not a single anecdote
-- narrative_case_study: real named person who has gone through the topic's transformation — dateable, quotable, verifiable
-- protagonist_arc: how practitioners/documentarians structure this topic as a character journey — controlling objects/settings used
+- historical_context: long-arc historical pattern with specific dates and named actors
+- narrative_case_study: a real named individual or institution whose story illustrates the topic — dateable, quotable, verifiable
+- institutional_report: government/regulatory reports, hearing transcripts, enforcement actions, official data releases
+- expert_testimony: on-the-record statements from named subject matter experts — congressional testimony, speeches by officials, interviews with credible authorities
 
-Each query should be 4–10 words, written as if typed into a search engine. Avoid quoting a celebrity author's name unless that's the only way to find a specific contrarian piece.
+When the topic involves named authorities (central bankers, regulators, industry leaders, government officials, academic experts), include at least 2 queries that target those individuals directly by name — these surface interview footage and on-the-record statements essential for documentary B-roll.
+
+At least 2 queries MUST target extractable quantitative data — dollar amounts, percentages, growth rates, year-over-year comparisons, time-series figures, market sizes, or distribution breakdowns. These feed the financial charts and kinetic number overlays in the documentary. Queries that only surface qualitative commentary are lower value.
+
+Each query should be 4–10 words, written as if typed into a search engine.
 
 Return JSON: { "queries": [{ "lens": "...", "query": "...", "rationale": "..." }] }`;
 }

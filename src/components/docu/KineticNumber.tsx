@@ -36,6 +36,10 @@ function formatValue(value: number, unit: OverlayUnit): string {
       return `$${(value / 1000).toFixed(1)}T`;
     case "B":
       return `$${(value / 1000).toFixed(1)}B`;
+    case "M":
+      return `${value.toFixed(1)}M`;
+    case "K":
+      return `${Math.round(value).toLocaleString()}K`;
   }
 }
 

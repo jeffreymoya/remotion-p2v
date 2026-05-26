@@ -20,15 +20,14 @@ function anchorText(anchor: Anchor): string {
   return parts.join(" ").toLowerCase();
 }
 
+/** Strip commas from a number string so "250,000" and "250000" both match. */
+function normalizeNumericText(text: string): string {
+  return text.replace(/(\d),(\d)/g, "$1$2");
+}
+
 function valueInAnchorText(item: DataItem, text: string): boolean {
-  const unitSymbols: Record<string, string> = {
-    "$": "\\$",
-    "%": "%",
-    "x": "x",
-    "T": "trillion",
-    "B": "billion",
-  };
-  const unitStr = unitSymbols[item.unit] ?? item.unit;
+  // Normalize comma-formatted numbers in anchor text (e.g. "250,000" → "250000")
+  const normalizedText = normalizeNumericText(text);
 
   if (item.kind === "scalar") {
     const valStr = String(item.value);
@@ -40,27 +39,28 @@ function valueInAnchorText(item: DataItem, text: string): boolean {
     if (item.unit === "%") {
       valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}[%]`));
       valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*percent`));
+      // basis points — accept bp/bps in anchor text when unit is %
+      valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*b(?:asis\\s+points?|ps?)`));
     }
     if (item.unit === "$") {
       valPatterns.push(new RegExp(`\\$${escapeRegex(valStr)}\\b`));
       valPatterns.push(new RegExp(`\\$${escapeRegex(valInt)}\\b`));
       valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*dollars`));
     }
-    return valPatterns.some((re) => re.test(text));
+    return valPatterns.some((re) => re.test(normalizedText));
   }
 
   const points = item.points as Array<{ x: string | number; y: number }>;
   if (points.length === 0) return false;
 
   const allYStr = points.map((p) => String(p.y));
-  const allXStr = points.map((p) => String(p.x).toLowerCase());
 
   let matches = 0;
   for (const yStr of allYStr) {
     const yInt = String(Math.trunc(Number(yStr)));
     if (
-      new RegExp(`\\b${escapeRegex(yStr)}\\b`).test(text) ||
-      new RegExp(`\\b${escapeRegex(yInt)}\\b`).test(text)
+      new RegExp(`\\b${escapeRegex(yStr)}\\b`).test(normalizedText) ||
+      new RegExp(`\\b${escapeRegex(yInt)}\\b`).test(normalizedText)
     ) {
       matches++;
     }
@@ -71,7 +71,7 @@ function valueInAnchorText(item: DataItem, text: string): boolean {
   const labelLower = item.label.toLowerCase();
   if (labelLower.length > 0) {
     const labelWords = labelLower.split(/\s+/).filter((w) => w.length > 2);
-    labelFound = labelWords.some((w) => new RegExp(`\\b${escapeRegex(w)}\\b`).test(text));
+    labelFound = labelWords.some((w) => new RegExp(`\\b${escapeRegex(w)}\\b`).test(normalizedText));
   }
 
   return matches >= Math.min(2, allYStr.length) || (matches >= 1 && labelFound);
