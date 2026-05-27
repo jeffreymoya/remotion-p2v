@@ -1,0 +1,123 @@
+import { z } from "zod";
+import { callStructured } from "./llm-client";
+import { LLM_METRIC } from "../config";
+import type { Anchor } from "../shared/research/research-schema";
+import type { SentenceDef } from "./tts-pipeline";
+
+const MAX_RETRIES = 2;
+
+const FidelityResponseSchema = z.object({
+  results: z.array(z.object({
+    sentenceIndex: z.number().int().min(0),
+    supported: z.boolean(),
+    reason: z.string().optional(),
+    correctedText: z.string().optional(),
+  })),
+});
+
+function buildVerifierSystemPrompt(): string {
+  return `You are a citation-fidelity auditor for a Bloomberg-style documentary. Your job is to verify that every narration sentence is factually supported by at least one verified research anchor. Return JSON only, no markdown fences.
+
+## Rules
+1. For each sentence, determine if its factual claims (numbers, dates, institution names, causal claims, attributions) can be traced to at least one anchor in the provided list.
+2. Paraphrased claims are acceptable — the sentence doesn't need to repeat the anchor verbatim, but the core factual assertion must match.
+3. Sentences that introduce entirely new factual claims not present in any anchor are UNSUPPORTED.
+4. Narrative transitions, rhetorical questions, hooks, and purely descriptive language that makes no factual claim are SUPPORTED by default.
+5. For each unsupported sentence, provide a "reason" explaining which claim cannot be traced.
+6. For each unsupported sentence, provide a "correctedText" that keeps the sentence's narrative role but grounds its factual content in the available anchors. Do not introduce new facts — only rephrase to stay within what the anchors attest.
+
+## Output Format
+{ "results": [{ "sentenceIndex": 0, "supported": true }, { "sentenceIndex": 3, "supported": false, "reason": "Claims QE reduced unemployment by 2.1% but no anchor contains this statistic", "correctedText": "QE reduced unemployment — though the exact magnitude remains debated among economists" }] }`;
+}
+
+function anchorListing(anchors: readonly Anchor[]): string {
+  return anchors
+    .filter((a) => a.status === "verified")
+    .map((a) =>
+      `[${a.id}] ${a.claim} / ${a.detail}` +
+      (a.attribution.year ? ` / ${a.attribution.year}` : "") +
+      (a.attribution.person ? ` / ${a.attribution.person}` : "")
+    )
+    .join("\n");
+}
+
+function sentenceListing(sentences: SentenceDef[]): string {
+  return sentences.map((s, i) => `[${i}] ${s.text}`).join("\n");
+}
+
+export async function gateNarrationFidelity(
+  sentences: SentenceDef[],
+  verifiedAnchors: readonly Anchor[],
+  opts?: { verbose?: boolean },
+): Promise<SentenceDef[]> {
+  if (verifiedAnchors.length === 0) {
+    if (opts?.verbose) {
+      console.warn("[narration-fidelity] No verified anchors — skipping fidelity gate");
+    }
+    return sentences;
+  }
+
+  let current = [...sentences];
+  let previousFlaggedCount = Infinity;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const userPrompt = `## Verified Research Anchors
+${anchorListing(verifiedAnchors)}
+
+## Narration Sentences
+${sentenceListing(current)}
+
+Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 through ${current.length - 1}).`;
+
+    const result = await callStructured({
+      schema: FidelityResponseSchema,
+      system: buildVerifierSystemPrompt(),
+      prompt: userPrompt,
+      runName: `docu/narration-fidelity-gate/attempt-${attempt}`,
+      verbose: opts?.verbose,
+      llm: LLM_METRIC,
+    });
+
+    const resultMap = new Map(result.results.map((r) => [r.sentenceIndex, r]));
+    const flagged: Array<{ index: number; reason: string; corrected: string }> = [];
+
+    for (const r of result.results) {
+      if (!r.supported && r.correctedText) {
+        flagged.push({ index: r.sentenceIndex, reason: r.reason ?? "unsupported", corrected: r.correctedText });
+      }
+    }
+
+    if (flagged.length === 0) {
+      if (opts?.verbose) {
+        console.log(`[narration-fidelity] All ${current.length} sentences verified — 0 flagged`);
+      }
+      return current;
+    }
+
+    if (opts?.verbose) {
+      console.log(
+        `[narration-fidelity] Attempt ${attempt}/${MAX_RETRIES}: ${flagged.length} sentences flagged` +
+        flagged.map((f) => `\n  [${f.index}] ${f.reason}`).join("")
+      );
+    }
+
+    if (flagged.length >= previousFlaggedCount && attempt > 1) {
+      if (opts?.verbose) {
+        console.warn(`[narration-fidelity] No improvement — keeping ${flagged.length} flagged sentences as-is`);
+      }
+      return current;
+    }
+    previousFlaggedCount = flagged.length;
+
+    const next = [...current];
+    for (const f of flagged) {
+      next[f.index] = { ...next[f.index], text: f.corrected };
+    }
+    current = next;
+  }
+
+  if (opts?.verbose) {
+    console.warn(`[narration-fidelity] Retries exhausted — proceeding with ${current.length} sentences`);
+  }
+  return current;
+}

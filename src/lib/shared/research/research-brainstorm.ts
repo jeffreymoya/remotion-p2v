@@ -22,7 +22,17 @@ const BrainstormCandidateSchema = z.object({
   attributionGuess: z.object({
     person: z.string().nullish(),
     work: z.string().nullish(),
-    year: z.number().int().nullish(),
+    year: z.preprocess(
+      (v) => {
+        if (v == null) return undefined;
+        if (typeof v === "string") {
+          const parsed = parseInt(v, 10);
+          return isNaN(parsed) ? undefined : parsed;
+        }
+        return v;
+      },
+      z.number().int().nullish().transform(v => v ?? undefined),
+    ),
     publisher: z.string().nullish(),
   }),
   quote: z.string().nullish(),
@@ -108,7 +118,7 @@ function buildBrainstormPrompt(
     ? `\n\nDo NOT propose any of these previously rejected claims (or minor rephrasings of them):\n${opts.priorRejections.map((r) => `- ${r}`).join("\n")}`
     : "";
 
-  const canonicalWarning = `\nPrefer the most-cited canonical works on the topic. For each topic, identify the 5–10 seminal texts (popular books, foundational studies, major essays) most commonly referenced when this topic is discussed, and source verbatim excerpts from them. Lesser-known sources are acceptable only when they materially extend or challenge a canonical position. Canonical authors (Viktor Frankl, Angela Duckworth, Carol Dweck, Brené Brown, James Clear, Rick Hanson, etc.) are strongly preferred when they have relevant published passages.`;
+  const canonicalWarning = `\nPrioritize primary sources with institutional credibility: Federal Reserve publications, SEC filings, congressional testimony transcripts, BLS/BEA data releases, central bank working papers, NBER studies, Supreme Court opinions, CFPB enforcement actions, FTC rulings, GAO reports, and peer-reviewed economics journals. When citing subject matter experts, prefer named individuals with verifiable institutional roles (Fed chairs, Treasury officials, SEC commissioners, academic economists, industry analysts whose statements appear in regulatory proceedings or major financial media). For each topic, identify the 5–10 authoritative sources most commonly cited in serious financial journalism and source verbatim excerpts. Self-help authors, motivational speakers, and pop-business influencers are NOT authoritative for this format — do not cite them as evidence.`;
 
   const corpusClause =
     opts?.corpus && opts.corpus.excerpts.length > 0
@@ -136,11 +146,13 @@ Ensure diversity: at least one candidate of each available kind.
 For each candidate, provide:
 - kind: one of [${kindList}] using those exact enum strings only
 - claim: a one-sentence factual summary
-- detail: 2-5 sentences of usable specifics (dates, names, numbers)
+- detail: 2-5 sentences of usable specifics (dates, names, numbers). This is the most important field — every anchor MUST include specific figures where available (dollar amounts, percentages, growth rates, year-over-year changes, time-series values, market shares, distribution breakdowns). Anchors without quantifiable data are low-value for this format.
 - attributionGuess: { person?, work?, year?, publisher? }
 - quote: verbatim quote text (only for primary_quote or book_excerpt kinds)
 - queryHint: a web search query likely to surface a credible source for this claim
 - sceneMoment: (only for narrative kind) a specific dateable moment in the person's story that could open or anchor a chapter scene
+
+At least 40% of candidates must contain extractable quantitative data — specific numbers, amounts, or rates that can be rendered as financial chart overlays or kinetic number cards. The documentary format relies on data-driven visuals; candidates with only qualitative claims are insufficient.
 ${canonicalWarning}${corpusClause}${rejectionClause}
 
 Return JSON: { "candidates": [ ... ] }`;

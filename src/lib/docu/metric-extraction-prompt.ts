@@ -21,33 +21,42 @@ function anchorText(anchor: Anchor): string {
 }
 
 /** Strip commas from a number string so "250,000" and "250000" both match. */
-function normalizeNumericText(text: string): string {
+export function normalizeNumericText(text: string): string {
   return text.replace(/(\d),(\d)/g, "$1$2");
 }
 
+/**
+ * Check if a numeric value (with unit) appears in the given text.
+ * Handles comma formatting, dollar signs, percent symbols/basis points.
+ * Used by both the metric-fidelity gate (anchor text) and the
+ * number-agreement gate (sentence text).
+ */
+export function numberMatchesText(value: number, unit: string, text: string): boolean {
+  const normalizedText = normalizeNumericText(text);
+  const valStr = String(value);
+  const valInt = String(Math.trunc(value));
+  const patterns = [
+    new RegExp(`\\b${escapeRegex(valStr)}\\b`),
+    new RegExp(`\\b${escapeRegex(valInt)}\\b`),
+  ];
+  if (unit === "%") {
+    patterns.push(new RegExp(`\\b${escapeRegex(valStr)}[%]`));
+    patterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*percent`));
+    patterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*b(?:asis\\s+points?|ps?)`));
+  }
+  if (unit === "$") {
+    patterns.push(new RegExp(`\\$${escapeRegex(valStr)}\\b`));
+    patterns.push(new RegExp(`\\$${escapeRegex(valInt)}\\b`));
+    patterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*dollars`));
+  }
+  return patterns.some((re) => re.test(normalizedText));
+}
+
 function valueInAnchorText(item: DataItem, text: string): boolean {
-  // Normalize comma-formatted numbers in anchor text (e.g. "250,000" → "250000")
   const normalizedText = normalizeNumericText(text);
 
   if (item.kind === "scalar") {
-    const valStr = String(item.value);
-    const valInt = String(Math.trunc(item.value));
-    const valPatterns = [
-      new RegExp(`\\b${escapeRegex(valStr)}\\b`),
-      new RegExp(`\\b${escapeRegex(valInt)}\\b`),
-    ];
-    if (item.unit === "%") {
-      valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}[%]`));
-      valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*percent`));
-      // basis points — accept bp/bps in anchor text when unit is %
-      valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*b(?:asis\\s+points?|ps?)`));
-    }
-    if (item.unit === "$") {
-      valPatterns.push(new RegExp(`\\$${escapeRegex(valStr)}\\b`));
-      valPatterns.push(new RegExp(`\\$${escapeRegex(valInt)}\\b`));
-      valPatterns.push(new RegExp(`\\b${escapeRegex(valStr)}\\s*dollars`));
-    }
-    return valPatterns.some((re) => re.test(normalizedText));
+    return numberMatchesText(item.value, item.unit, text);
   }
 
   const points = item.points as Array<{ x: string | number; y: number }>;

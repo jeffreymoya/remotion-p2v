@@ -11,13 +11,16 @@ import {
   useCurrentFrame,
 } from "remotion";
 import type { DocuPalette } from "./docu-tokens";
-import { PALETTE_MAP } from "./docu-tokens";
+import { HATTAB_LUT_ID, PALETTE_MAP } from "./docu-tokens";
+import { HaTTabLutDefs } from "./HaTTabLut";
 import { DocuKenBurns } from "./DocuKenBurns";
 import { DocuTitleCard } from "./DocuTitleCard";
 import type { DocuOverlay } from "../../lib/docu/overlays/registry";
 import { OVERLAY_REGISTRY } from "../../lib/docu/overlays/registry";
 import type { DocuSegmentMeta } from "../../lib/docu/segment-types";
 import { RENDER_REGISTRY, type OverlayRenderCtx } from "./overlays/render-registry";
+import { YouTubeInterviewCaptions } from "./YouTubeInterviewCaptions";
+import type { InterviewCaptionWord } from "../../lib/docu/youtube-pipeline";
 
 export interface DocuShot {
   videoPath?: string;
@@ -27,6 +30,8 @@ export interface DocuShot {
   startFrame: number;
   endFrame: number;
   palette: DocuPalette;
+  isInterviewClip?: boolean;
+  captionWords?: InterviewCaptionWord[];
 }
 
 export interface DocuClip {
@@ -110,6 +115,32 @@ export const DocumentaryComposition = (props: DocuScript) => {
   }, 0);
   const blurPx = blurProgress * 10;
 
+  const currentShot = useMemo(() => {
+    return allShots.find((s) => frame >= s.startFrame && frame < s.endFrame);
+  }, [allShots, frame]);
+
+  const isInterviewActive = useMemo(() => {
+    for (const shot of allShots) {
+      if (shot.isInterviewClip && frame >= shot.startFrame && frame < shot.endFrame) {
+        const localFrame = frame - shot.startFrame;
+        const dur = shot.endFrame - shot.startFrame;
+        const RAMP = 6;
+        return {
+          active: true,
+          progress: Math.min(
+            interpolate(localFrame, [0, RAMP], [0, 1], { extrapolateRight: "clamp" }),
+            interpolate(localFrame, [dur - RAMP, dur], [1, 0], { extrapolateLeft: "clamp" }),
+          ),
+        };
+      }
+    }
+    return { active: false, progress: 0 };
+  }, [frame, allShots]);
+
+  const narrationVolume = isInterviewActive.active
+    ? interpolate(isInterviewActive.progress, [0, 1], [1, 0.15])
+    : 1;
+
   const currentPalette: DocuPalette = useMemo(() => {
     const shot = allShots.find((s) => frame >= s.startFrame && frame < s.endFrame);
     return shot?.palette ?? "cool-tech";
@@ -119,6 +150,9 @@ export const DocumentaryComposition = (props: DocuScript) => {
 
   return (
     <AbsoluteFill style={{ background: "#000" }}>
+      {/* HaTTab cinematic LUT — must be rendered before any url(#hattab-cinematic-lut) reference */}
+      <HaTTabLutDefs />
+
       {/* Media layer */}
       {allShots.map((shot, i) => {
         const shotDuration = shot.endFrame - shot.startFrame;
@@ -135,7 +169,7 @@ export const DocumentaryComposition = (props: DocuScript) => {
           shot.mediaType === "video" && shot.videoPath ? (
             <OffthreadVideo
               src={mediaSrc}
-              volume={0}
+              volume={shot.isInterviewClip ? 1 : 0}
               style={{ objectFit: "cover", width: "100%", height: "100%" }}
             />
           ) : (
@@ -153,7 +187,11 @@ export const DocumentaryComposition = (props: DocuScript) => {
           >
             <div
               style={{
-                filter: `${PALETTE_MAP[shot.palette].filter}${blurPx > 0 ? ` blur(${blurPx}px)` : ""}`,
+                filter: `${
+                  PALETTE_MAP[shot.palette].filter
+                } url(#${HATTAB_LUT_ID})${
+                  blurPx > 0 && !currentShot?.isInterviewClip ? ` blur(${blurPx}px)` : ""
+                }`,
                 width: "100%",
                 height: "100%",
               }}
@@ -174,10 +212,7 @@ export const DocumentaryComposition = (props: DocuScript) => {
         );
       })}
 
-      {/* Palette overlay — vignette + tint */}
-      <AbsoluteFill
-        style={{ background: palette.vignette, pointerEvents: "none" }}
-      />
+      {/* Palette tint — per-shot cool/warm color cast at frame top */}
       <AbsoluteFill
         style={{ background: palette.tint, pointerEvents: "none" }}
       />
@@ -198,7 +233,7 @@ export const DocumentaryComposition = (props: DocuScript) => {
 
       {/* Narration audio */}
       {props.audioPath && (
-        <Audio src={staticFile(props.audioPath)} />
+        <Audio src={staticFile(props.audioPath)} volume={narrationVolume} />
       )}
 
       {/* Overlays */}
@@ -229,6 +264,24 @@ export const DocumentaryComposition = (props: DocuScript) => {
       <Sequence from={0} durationInFrames={TITLE_CARD_FRAMES}>
         <TitleCardFade topic={props.topic} />
       </Sequence>
+
+      {/* Interview captions — word-by-word stagger reveal */}
+      {allShots.map((shot, i) => {
+        if (!shot.isInterviewClip || !shot.captionWords || shot.captionWords.length === 0) return null;
+        const shotDuration = shot.endFrame - shot.startFrame;
+        return (
+          <Sequence
+            key={`interview-captions-${i}`}
+            from={shot.startFrame}
+            durationInFrames={shotDuration}
+          >
+            <YouTubeInterviewCaptions
+              words={shot.captionWords}
+              fps={props.fps}
+            />
+          </Sequence>
+        );
+      })}
 
     </AbsoluteFill>
   );

@@ -4,6 +4,8 @@ import {
   CODE_GEN_TEMPERATURE,
   NARRATION_REASONING,
   LLM_DEFAULT_MAX_RETRIES,
+  LLM_DEFAULT_PROVIDER,
+  resolveEffectiveModel,
   type LlmCallConfig,
 } from "../config";
 
@@ -26,6 +28,8 @@ export async function callStructured<T>(args: {
     : NARRATION_REASONING;
 
   let lastError: unknown;
+  const providerId = args.llm?.provider ?? LLM_DEFAULT_PROVIDER;
+  const effectiveModel = resolveEffectiveModel(args.llm, providerId);
   for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
     try {
       return await llmChatJson(
@@ -40,8 +44,8 @@ export async function callStructured<T>(args: {
           runName: args.runName,
           verbose: args.verbose,
           maxTokens: args.llm?.maxTokens,
-          model: args.llm?.model,
-          provider: args.llm?.provider,
+          model: effectiveModel,
+          provider: providerId,
         },
       );
     } catch (err) {

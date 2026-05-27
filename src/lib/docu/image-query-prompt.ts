@@ -5,6 +5,85 @@ import { llmSegmentImageQueryPrompt } from "../prompts";
 import type { ImageQuery } from "./image-pipeline";
 import type { DocuSegmentPlan } from "./segment-types";
 
+// ── Image-query style gate (deterministic) ────────────────────────────
+
+export const MOTION_VERB_RE =
+  /\b(running|walking|flying|jumping|moving|spinning|rotating|dancing|driving|swimming|climbing|rushing|streaming|flowing)\b/i;
+
+export interface ImageQueryViolation {
+  slot: number;
+  query: string;
+  reason: "word-count" | "motion-verb" | "query-equals-fallback";
+}
+
+export function validateImageQueryStyle(queries: ImageQuery[]): ImageQueryViolation[] {
+  const violations: ImageQueryViolation[] = [];
+
+  for (const q of queries) {
+    const wordCount = q.query.split(/\s+/).filter(Boolean).length;
+
+    if (wordCount < 2 || wordCount > 4) {
+      violations.push({ slot: q.slot, query: q.query, reason: "word-count" });
+    }
+
+    if (MOTION_VERB_RE.test(q.query)) {
+      violations.push({ slot: q.slot, query: q.query, reason: "motion-verb" });
+    }
+
+    if (q.query === q.fallback) {
+      violations.push({ slot: q.slot, query: q.query, reason: "query-equals-fallback" });
+    }
+  }
+
+  return violations;
+}
+
+export function applyImageQueryFallbacks(
+  queries: ImageQuery[],
+  violations: ImageQueryViolation[],
+  runName: string,
+): ImageQuery[] {
+  const replaceSlots = new Set<number>();
+  for (const v of violations) {
+    if (v.reason !== "query-equals-fallback") {
+      replaceSlots.add(v.slot);
+    }
+  }
+
+  const result = queries.map((q) => {
+    if (!replaceSlots.has(q.slot)) return q;
+
+    process.stderr.write(
+      `[${runName}] slot ${q.slot}: query "${q.query}" violates — replacing with fallback "${q.fallback}"\n`
+    );
+
+    return { ...q, query: q.fallback };
+  });
+
+  // Re-validate fallback word count (safety net — prevent edge-case 1-token fallback)
+  for (const q of result) {
+    if (replaceSlots.has(q.slot)) {
+      const wc = q.query.split(/\s+/).filter(Boolean).length;
+      if (wc < 2) {
+        console.warn(
+          `[${runName}] slot ${q.slot}: fallback "${q.query}" has ${wc} word(s) — accepting anyway (no further replacement to avoid loop)`
+        );
+      }
+    }
+  }
+
+  // Log query-equals-fallback warnings (no mutation)
+  for (const v of violations) {
+    if (v.reason === "query-equals-fallback") {
+      process.stderr.write(
+        `[${runName}] slot ${v.slot}: query equals fallback "${v.query}" — consider manual review\n`
+      );
+    }
+  }
+
+  return result;
+}
+
 export interface ShotContext {
   shotIndex: number;
   palette: "cool-tech" | "warm-real";
@@ -87,9 +166,14 @@ async function generateImageQueriesImpl(
       llm: LLM_IMAGE_QUERY,
     });
 
-    return result.shots
+    const sorted: ImageQuery[] = result.shots
       .sort((a, b) => a.shotIndex - b.shotIndex)
       .map((s) => ({ slot: s.shotIndex, query: s.query, fallback: s.fallback }));
+
+    const violations = validateImageQueryStyle(sorted);
+    return violations.length > 0
+      ? applyImageQueryFallbacks(sorted, violations, runName)
+      : sorted;
   } catch (err) {
     console.warn(
       `[${runName}] LLM call failed after retries (${err instanceof Error ? err.message : String(err)}); using palette-aware fallback queries`,

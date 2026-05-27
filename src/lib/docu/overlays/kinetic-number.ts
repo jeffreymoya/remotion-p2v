@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
 import type { DataItem } from "./types";
+import { UnitSchema } from "./types";
 import type { SelectionInput } from "./registry";
 
 function populateKineticNumber(dataItem: DataItem, selection: SelectionInput): Record<string, unknown> {
@@ -26,7 +27,7 @@ export const kineticNumberDef = {
     type: z.literal("kinetic-number"),
     text: z.string().min(1),
     value: z.number(),
-    unit: z.enum(["$", "%", "x", "T", "B"]),
+    unit: UnitSchema,
     source: z.string().optional(),
     palette: z.enum(["cool-tech", "warm-real"]),
     anchorPhrase: z.string().min(1),

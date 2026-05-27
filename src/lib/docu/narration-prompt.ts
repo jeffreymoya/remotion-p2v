@@ -6,6 +6,85 @@ import type { Anchor } from "../shared/research/research-schema";
 import type { SentenceDef } from "./tts-pipeline";
 import type { DocuSegmentPlan } from "./segment-types";
 import type { DocuPalette } from "../../components/docu/docu-tokens";
+import { normalizeToken } from "./overlays/anchor-strategies";
+
+// ── Narration style gate (deterministic lint) ─────────────────────────
+
+export const SPELLED_OUT_NUMBER_WORDS_RE =
+  /\b(eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|million|billion|trillion)\b/i;
+
+export const FORBIDDEN_PUNCTUATION_RE = /\.{3}|[()]/;
+
+export const DISALLOWED_DASH_RE = /--|–/;
+
+export interface StyleViolation {
+  index: number;
+  text: string;
+  rules: string[];
+}
+
+export function validateNarrationStyle(sentences: SentenceDef[]): StyleViolation[] {
+  const violations: StyleViolation[] = [];
+
+  for (let i = 0; i < sentences.length; i++) {
+    const sent = sentences[i];
+    const rules: string[] = [];
+
+    // word-count: must be in [6, 15]
+    const wordCount = sent.text.split(/\s+/).filter(Boolean).length;
+    if (wordCount < 6 || wordCount > 15) {
+      rules.push("word-count");
+    }
+
+    // spelled-number: spelled-out number with no digit in text
+    if (SPELLED_OUT_NUMBER_WORDS_RE.test(sent.text) && !/\d/.test(sent.text)) {
+      rules.push("spelled-number");
+    }
+
+    // forbidden-punctuation: ellipsis or parens
+    if (FORBIDDEN_PUNCTUATION_RE.test(sent.text)) {
+      rules.push("forbidden-punctuation");
+    }
+
+    // disallowed-dash: double-hyphen or en-dash
+    if (DISALLOWED_DASH_RE.test(sent.text)) {
+      rules.push("disallowed-dash");
+    }
+
+    // emphasis-not-found: each emphasis item must match the sentence text
+    const normalizedText = sent.text.split(/\s+/).map(normalizeToken).filter(Boolean);
+    for (const emp of sent.emphasis) {
+      const empTokens = emp.split(/\s+/).map(normalizeToken).filter(Boolean);
+      if (empTokens.length === 0) {
+        rules.push("emphasis-not-found");
+        continue;
+      }
+      let found = false;
+      for (let ti = 0; ti <= normalizedText.length - empTokens.length; ti++) {
+        let matched = true;
+        for (let ej = 0; ej < empTokens.length; ej++) {
+          if (normalizedText[ti + ej] !== empTokens[ej]) {
+            matched = false;
+            break;
+          }
+        }
+        if (matched) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        rules.push("emphasis-not-found");
+      }
+    }
+
+    if (rules.length > 0) {
+      violations.push({ index: i, text: sent.text, rules });
+    }
+  }
+
+  return violations;
+}
 
 const SENTENCE_SCHEMA = z.object({
   text: z.string().min(1),

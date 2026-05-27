@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
+import { UnitSchema } from "./types";
 import type { DataItem } from "./types";
 import type { SelectionInput } from "./registry";
 
@@ -33,22 +34,40 @@ function populateChart(dataItem: DataItem, selection: SelectionInput): Record<st
   };
 }
 
+const ChartKindEnum = z.enum([
+  "timeseries",
+  "comparison",
+  "composition",
+  "horizontal-bar",
+  "stacked-bar",
+  "area",
+  "bubble",
+  "radial",
+]);
+
 export const chartDef = {
   id: "chart" as const,
   schema: z.object({
     type: z.literal("chart"),
-    chartKind: z.enum(["timeseries", "comparison", "composition"]),
+    chartKind: ChartKindEnum,
     label: z.string().min(1),
-    points: z.array(z.object({ x: z.union([z.string(), z.number()]), y: z.number() })).min(2),
-    unit: z.enum(["$", "%", "x", "T", "B"]),
+    points: z.array(z.object({ x: z.union([z.string(), z.number()]), y: z.number() })).optional().default([]),
+    unit: UnitSchema,
     source: z.string().optional(),
     palette: z.enum(["cool-tech", "warm-real"]),
     anchorPhrase: z.string().min(1),
     holdSec: z.number().positive(),
     leadSec: z.number().optional(),
+    forecastFromIndex: z.number().int().nonnegative().optional(),
+    // PIPELINE TODO: series and bubblePoints fields not yet in schema — stacked-bar/bubble fixture-only
+  }).superRefine((val, ctx) => {
+    const kindsRequiringPoints = ["timeseries", "comparison", "composition", "horizontal-bar", "area", "radial"];
+    if (kindsRequiringPoints.includes(val.chartKind) && (!val.points || val.points.length < 2)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "points must have at least 2 entries for this chart kind" });
+    }
   }),
   anchorStrategy: phraseAnchorStrategy,
-  promptRule: "chart: timeseries/comparison/composition chart from research data. Uses dataItemId to pull in pre-extracted numeric series — do NOT fabricate numbers. Label is the chart title.",
+  promptRule: "chart: timeseries/comparison/composition/horizontal-bar/area/radial chart from research data. Uses dataItemId to pull in pre-extracted numeric series — do NOT fabricate numbers. Label is the chart title.",
   promotable: true,
   promptExample: '{"type":"chart","dataItemId":"timeseries-01","text":"SaaS Revenue Growth 2020–2024","anchorPhrase":"revenue growth","holdSec":4.5,"palette":"cool-tech"}',
   mixWeight: 0.2,

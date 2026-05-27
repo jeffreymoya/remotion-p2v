@@ -30,28 +30,40 @@ export const LLM_PROVIDERS: Record<LlmProviderId, LlmProviderConfig> = {
   grok: {
     baseUrl: "https://api.x.ai/v1",
     apiKeyEnv: "GROK_API_KEY",
-    defaultModel: "grok-3-beta",
+    defaultModel: "grok-4.3",
   },
 };
 
-export const LLM_DEFAULT_PROVIDER: LlmProviderId = "deepseek";
+export const LLM_DEFAULT_PROVIDER: LlmProviderId = "grok";
 
 /** Resolve a provider config, falling back to the default. */
 export function resolveProvider(providerId?: LlmProviderId): LlmProviderConfig {
   return LLM_PROVIDERS[providerId ?? LLM_DEFAULT_PROVIDER];
 }
 
-// ── DeepSeek per-call config ──────────────────────────────────────────
+// ── LLM per-call config ──────────────────────────────────────────────
 export interface LlmCallConfig {
   provider?: LlmProviderId;
   temperature?: number;
+  /** Flat model override (applies to all providers). Use providerModel for per-provider overrides. */
   model?: string;
+  /** Per-provider model override. Higher priority than `model` when the current provider matches. */
+  providerModel?: Partial<Record<LlmProviderId, string>>;
   reasoning?: {
     effort?: "low" | "medium" | "high";
     thinking?: "enabled" | "disabled";
   };
   maxTokens?: number;
   maxRetries?: number;
+}
+
+/** Resolve the effective model for a given provider from an LlmCallConfig.
+ *  Priority: providerModel[providerId] > model > undefined (provider's defaultModel). */
+export function resolveEffectiveModel(
+  config: LlmCallConfig | undefined,
+  providerId: LlmProviderId,
+): string | undefined {
+  return config?.providerModel?.[providerId] ?? config?.model;
 }
 
 /** Default (current behaviour) — low-temp deterministic, thinking disabled */
@@ -75,14 +87,21 @@ export const LLM_OVERLAY: LlmCallConfig = {
 /** Metric extraction: very low-temp, no creativity */
 export const LLM_METRIC: LlmCallConfig = {
   temperature: 0.1,
-  model: "deepseek-v4-flash",
+  providerModel: { deepseek: "deepseek-v4-flash" },
+  reasoning: { effort: "low", thinking: "disabled" },
+};
+
+/** Semantic judges (overlay placement, clip relevance): very low-temp, deterministic verdicts */
+export const LLM_JUDGE: LlmCallConfig = {
+  temperature: 0.1,
+  providerModel: { deepseek: "deepseek-v4-flash" },
   reasoning: { effort: "low", thinking: "disabled" },
 };
 
 /** Image query generation: moderate, fast */
 export const LLM_IMAGE_QUERY: LlmCallConfig = {
   temperature: 0.5,
-  model: "deepseek-v4-flash",
+  providerModel: { deepseek: "deepseek-v4-flash" },
   reasoning: { effort: "low", thinking: "disabled" },
 };
 
@@ -94,14 +113,14 @@ export const LLM_SEGMENT_PLAN: LlmCallConfig = {
 
 // ── Shared pipeline constants ─────────────────────────────────────────
 export const FPS = 30 as const;                         // canonical frame rate
-export const SENTENCES_PER_MINUTE = 5 as const;        // narration pacing
+export const SENTENCES_PER_MINUTE = 10 as const;        // narration pacing (Bloomberg: ~6s/sentence at rate 1.0)
 export const NARRATION_BATCH_SIZE = 10 as const;       // sentences per LLM batch
 export const LLM_DEFAULT_MAX_RETRIES = 2 as const;     // callStructured() default
 export const SEGMENT_IMAGE_QUERY_CONCURRENCY = 3 as const; // parallel segment queries
 export const INTER_SENTENCE_GAP_SECONDS = 0.3 as const;
 
 // ── Network timeouts (ms) ──────────────────────────────────────────────
-export const DEEPSEEK_TIMEOUT_MS = validateTimeout("DEEPSEEK_TIMEOUT_MS", 600_000);
+export const LLM_TIMEOUT_MS = validateTimeout("LLM_TIMEOUT_MS", 600_000);
 export const PIXABAY_TIMEOUT_MS = validateTimeout("PIXABAY_TIMEOUT_MS", 30_000);
 export const GOOGLE_TTS_TIMEOUT_MS = validateTimeout("GOOGLE_TTS_TIMEOUT_MS", 120_000);
 

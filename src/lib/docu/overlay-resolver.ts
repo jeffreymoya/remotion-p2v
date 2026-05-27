@@ -23,10 +23,18 @@ export function resolveOverlays(
   wordTimings: WordTiming[],
   fps: number,
 ): DocuOverlay[] {
-  return specs.map((spec): DocuOverlay => {
-    const strategy = getAnchorStrategy(spec.type);
-    const { startFrame, endFrame } = strategy({ spec, wordTimings, fps });
-    const { anchorPhrase, holdSec, leadSec, ...rest } = spec;
-    return { ...rest, startFrame, endFrame } as DocuOverlay;
-  });
+  const resolved: DocuOverlay[] = [];
+  for (const spec of specs) {
+    try {
+      const strategy = getAnchorStrategy(spec.type);
+      const { startFrame, endFrame } = strategy({ spec, wordTimings, fps });
+      const { anchorPhrase, holdSec, leadSec, ...rest } = spec;
+      resolved.push({ ...rest, startFrame, endFrame } as DocuOverlay);
+    } catch (err) {
+      console.warn(
+        `[overlay-resolver] Skipping overlay type="${spec.type}" — ${(err as Error).message}`,
+      );
+    }
+  }
+  return resolved;
 }

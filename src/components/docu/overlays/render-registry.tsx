@@ -119,7 +119,7 @@ export const RENDER_REGISTRY: Record<OverlayTypeId, RenderFn> = {
   },
   "chart": (o, _ctx) => {
     if (!renderChart(o)) return <></>;
-    const { chartKind, label, points, unit, source, palette } = o;
+    const { chartKind, label, points, unit, source, palette, forecastFromIndex } = o;
     const dur = o.endFrame - o.startFrame;
     return (
       <DocuChart
@@ -130,6 +130,7 @@ export const RENDER_REGISTRY: Record<OverlayTypeId, RenderFn> = {
         source={source}
         palette={palette}
         durationInFrames={dur}
+        forecastFromIndex={forecastFromIndex as number | undefined}
       />
     );
   },

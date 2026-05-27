@@ -13,15 +13,15 @@ import type { OverlaySpec } from "./overlays/registry";
 import { OverlaySpecSchema } from "./overlays/registry";
 import type { DataItem } from "./overlays/types";
 import { DataItemSchema } from "./overlays/types";
-import { generateSegmentNarration } from "./narration-prompt";
-import {
-  generateSegmentOverlays,
-  generateSegmentOverlaySelections,
-} from "./overlay-prompt";
+import { generateSegmentNarration, validateNarrationStyle } from "./narration-prompt";
+import { generateSegmentOverlaySelections } from "./overlay-prompt";
 import { extractDataItems } from "./metric-extraction-prompt";
 import { SENTENCES_PER_MINUTE, SEGMENT_IMAGE_QUERY_CONCURRENCY } from "../config";
 import { generateSegmentPlan, computeSentenceTargets } from "./segment-plan-prompt";
 import type { DocuSegmentPlan } from "./segment-types";
+import { generateYouTubeClipSpecs } from "./youtube-clip-prompt";
+import { gateNarrationFidelity } from "./narration-fidelity-gate";
+import type { YouTubeClipSpec } from "./youtube-pipeline";
 
 export interface TopicData {
   topic: string;
@@ -32,6 +32,7 @@ export interface TopicData {
   dataItems?: DataItem[];
   segmentCount?: number;
   segmentPlans?: DocuSegmentPlan[];
+  youtubeClipSpecs?: YouTubeClipSpec[];
 }
 
 const TopicDataSchema = z.object({
@@ -54,6 +55,13 @@ const TopicDataSchema = z.object({
     targetSentenceCount: z.number().int().positive(),
     assignedAnchorIds: z.array(z.string()),
   })).optional(),
+  youtubeClipSpecs: z.array(z.object({
+    sentenceIndex: z.number().int().min(0),
+    searchQuery: z.string().min(1),
+    targetPhrases: z.array(z.string()).min(1),
+    leadSec: z.number().positive().optional(),
+    trailSec: z.number().positive().optional(),
+  })).max(5).optional(),
 });
 
 const PROMPTS_DIR = "prompts/docu";
@@ -76,6 +84,25 @@ function segmentNarrationCachePath(slug: string, segIndex: number): string {
 
 function segmentOverlayCachePath(slug: string, segIndex: number): string {
   return `${PROMPTS_DIR}/${slug}-seg-${String(segIndex).padStart(2, "0")}-overlays.json`;
+}
+
+function youtubeClipCachePath(slug: string): string {
+  return `${PROMPTS_DIR}/${slug}-youtube-clips.json`;
+}
+
+function loadYoutubeClipSpecs(slug: string): YouTubeClipSpec[] | null {
+  const p = youtubeClipCachePath(slug);
+  if (!fs.existsSync(p)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf-8")) as YouTubeClipSpec[];
+  } catch {
+    return null;
+  }
+}
+
+function saveYoutubeClipSpecs(slug: string, specs: YouTubeClipSpec[]): void {
+  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
+  fs.writeFileSync(youtubeClipCachePath(slug), JSON.stringify(specs, null, 2));
 }
 
 export function loadCachedTopicData(slug: string): TopicData | null {
@@ -176,8 +203,8 @@ import { boundedMap } from "../shared/concurrency";
 
 export interface SegmentedTopicOpts {
   verbose?: boolean;
-  /** Resume from a specific phase: "plan" | "narration" | "overlays" */
-  from?: "plan" | "narration" | "overlays";
+  /** Resume from a specific phase: "plan" | "narration" | "overlays" | "youtube" */
+  from?: "plan" | "narration" | "overlays" | "youtube";
 }
 
 export async function generateSegmentedTopicData(
@@ -263,6 +290,28 @@ export async function generateSegmentedTopicData(
     allSentences.push(...segSentences);
   }
 
+  // Citation-fidelity gate — verify narration against anchors, rewrite unsupported sentences
+  if (verifiedAnchors.length > 0) {
+    console.log(`[topic] Running citation-fidelity gate on ${allSentences.length} sentences against ${verifiedAnchors.length} anchors...`);
+    allSentences = await gateNarrationFidelity(allSentences, verifiedAnchors, { verbose: opts?.verbose });
+  }
+
+  // Narration style gate — deterministic lint, log-only (no retry, no block)
+  // Runs AFTER fidelity so corrected text is also checked.
+  const styleViolations = validateNarrationStyle(allSentences);
+  if (styleViolations.length > 0) {
+    const summary = styleViolations.map((v) => `[${v.index}] ${v.rules.join(",")}`).join("; ");
+    process.stderr.write(
+      `[topic/narration-style] ${styleViolations.length} style violation(s) in ` +
+      `${styleViolations.length} sentence(s) — rules: ${summary}\n`
+    );
+    if (opts?.verbose) {
+      for (const v of styleViolations) {
+        console.warn(`  [${v.index}] "${v.text}" — ${v.rules.join(", ")}`);
+      }
+    }
+  }
+
   const expectedTotal = segmentPlans.reduce((sum, p) => sum + p.targetSentenceCount, 0);
   if (allSentences.length !== expectedTotal) {
     throw new Error(
@@ -314,9 +363,7 @@ export async function generateSegmentedTopicData(
         : [];
 
       console.log(`[topic]   seg-${String(i).padStart(2, "0")}: selecting overlays for ${segSentences.length} sentences (${segDataItems.length} data items)...`);
-      const overlays = segDataItems.length > 0
-        ? await generateSegmentOverlaySelections(plan, segSentences, segAnchors, segDataItems, { verbose: opts?.verbose })
-        : await generateSegmentOverlays(plan, segSentences, segAnchors, { verbose: opts?.verbose });
+      const overlays = await generateSegmentOverlaySelections(plan, segSentences, segAnchors, segDataItems, { verbose: opts?.verbose });
       saveCachedSegmentOverlays(slug, i, overlays);
       return overlays;
     },
@@ -325,6 +372,22 @@ export async function generateSegmentedTopicData(
 
   for (const overlays of segmentOverlayResults) {
     allOverlays.push(...overlays);
+  }
+
+  // 6. YouTube clip annotation
+  const regenerateClips = regenerateOverlays || from === "youtube";
+  let youtubeClipSpecs: YouTubeClipSpec[];
+  if (!regenerateClips) {
+    youtubeClipSpecs = loadYoutubeClipSpecs(slug) ?? [];
+    console.log(`[topic] Using cached YouTube clip specs (${youtubeClipSpecs.length} clips)`);
+  } else {
+    console.log(`[topic] --from ${from}: generating YouTube clip specs...`);
+    youtubeClipSpecs = await generateYouTubeClipSpecs(
+      allSentences, segmentPlans, verifiedAnchors, topic, { verbose: opts?.verbose },
+    );
+    if (youtubeClipSpecs.length > 0) {
+      saveYoutubeClipSpecs(slug, youtubeClipSpecs);
+    }
   }
 
   return {
@@ -336,5 +399,6 @@ export async function generateSegmentedTopicData(
     dataItems: hasDataItems ? allDataItems : undefined,
     segmentCount,
     segmentPlans,
+    youtubeClipSpecs: youtubeClipSpecs.length > 0 ? youtubeClipSpecs : undefined,
   };
 }

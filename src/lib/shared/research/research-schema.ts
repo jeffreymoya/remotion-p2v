@@ -47,7 +47,17 @@ export const RawCandidateSchema = z.object({
   attributionGuess: z.object({
     person: z.string().nullish().transform(v => v ?? undefined),
     work: z.string().nullish().transform(v => v ?? undefined),
-    year: z.number().int().nullish().transform(v => v ?? undefined),
+    year: z.preprocess(
+      (v) => {
+        if (v == null) return undefined;
+        if (typeof v === "string") {
+          const parsed = parseInt(v, 10);
+          return isNaN(parsed) ? undefined : parsed;
+        }
+        return v;
+      },
+      z.number().int().nullish().transform(v => v ?? undefined),
+    ),
     publisher: z.string().nullish().transform(v => v ?? undefined),
   }),
   quote: z.string().nullish().transform(v => v ?? undefined),

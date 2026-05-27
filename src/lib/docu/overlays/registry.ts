@@ -69,21 +69,6 @@ export const PROMPTABLE_REGISTRY = Object.fromEntries(
   Object.entries(OVERLAY_REGISTRY).filter(([, def]) => def.promotable),
 ) as Record<string, OverlayDef>;
 
-// Note: chart is excluded from the old-style output schema because charts
-// require DataItems from the metric-extraction pipeline. The old generateOverlays()
-// path has no DataItems available, so emitting charts there would bypass the
-// metric-fidelity gate. Charts only flow through the selection path.
-export const OverlayOutputSchema = z.object({
-  overlays: z.array(
-    z.discriminatedUnion("type", [
-      headlineCardDef.schema,
-      kineticNumberDef.schema,
-    ]),
-  ),
-});
-
-export type OverlayOutput = z.infer<typeof OverlayOutputSchema>;
-
 export type DocuOverlay =
   | (Omit<z.infer<typeof headlineCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
   | (Omit<z.infer<typeof kineticNumberDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })

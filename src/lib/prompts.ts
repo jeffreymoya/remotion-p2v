@@ -27,10 +27,10 @@ ${intent}
 4. Numbers MUST be digits: "$800", "9.1%", "2022" — never spelled out.
 5. Fact-first: open with year, institution, dollar amount, or person name.
 6. Stay within this segment's role: ${role} — ${intent}
-7. Reference the provided verified anchors; paraphrase (do not quote verbatim).
+7. Every numeric claim (dollar amount, percentage, growth rate, year-over-year change, index value) and every named claim (person, institution, regulatory action) MUST be traceable to a provided research anchor. If an anchor does not contain the fact, do not assert it.
 8. Each sentence gets a "palette": "cool-tech" for institutions/data/finance/charts, "warm-real" for human consequences/homes/streets/people.
 9. Each sentence gets 1-4 "emphasis" words — the most salient content words.
-10. ${anchorCount > 0 ? `You have ${anchorCount} research anchors to draw from.` : "No verified anchors available — rely on general knowledge but maintain investigative factual density."}
+10. ${anchorCount > 0 ? `You have ${anchorCount} research anchors to draw from.` : "You have 0 research anchors. Do NOT invent specific statistics, dollar amounts, percentages, dates, growth rates, or named figures not present in any anchor. Maintain density through structure, framing, and explanatory depth — not fabricated numbers."}
 
 ## Output
 Return JSON only, no markdown fences.`;
@@ -43,8 +43,13 @@ export function llmSegmentOverlaySelectionPrompt(args: {
   title: string;
   intent: string;
   menu: string;
+  hasDataItems: boolean;
 }): string {
-  const { role, title, intent, menu } = args;
+  const { role, title, intent, menu, hasDataItems } = args;
+  const dataItemsGuidance = hasDataItems
+    ? `2. Numeric overlays (kinetic-number, chart): reference a "dataItemId" from the Data Items list provided in the user message. Do NOT fabricate values — the data item provides them. Only select a dataItemId whose kind matches what the overlay type consumes.`
+    : "2. Numeric overlays ARE NOT AVAILABLE. Do NOT select kinetic-number or chart. All data presented must come from research anchors listed in the user message.";
+
   return `You are a documentary overlay designer. Given narration sentences and extracted data items for a "${role}" segment titled "${title}", select the best overlay placements.
 
 ## Segment Intent
@@ -55,8 +60,8 @@ ${menu}
 
 ## Selection Rules
 1. Select overlays — the exact count depends on sentence count but aim for ~1 overlay per 3 sentences.
-2. Numeric overlays (kinetic-number): reference a "dataItemId" from the Data Items list below. Do NOT fabricate values — the data item provides them. Only select a dataItemId whose kind matches what the overlay type consumes.
-3. Textual overlays (headline-card): provide "text" and optional "source" attribution. Frame an anchor's claim in documentary headline style.
+${dataItemsGuidance}
+3. Textual overlays (headline-card): provide "text", optional "source" attribution, and REQUIRED "sourceAnchorId" referencing one of the research anchors listed in the user message (e.g. "anc-1"). Frame an anchor's claim in documentary headline style.
 4. anchorPhrase MUST be 1–4 consecutive words copied VERBATIM from the sentence list provided below. Prefer 1–2 word anchors.
 5. Do NOT include trailing unit words in anchorPhrase.
 6. holdSec: 3.0–4.5 seconds.
@@ -66,64 +71,11 @@ ${menu}
 {
   "selections": [
     { "type": "kinetic-number", "dataItemId": "scalar-01", "anchorPhrase": "9.1 percent", "holdSec": 3.5, "palette": "cool-tech" },
-    { "type": "headline-card", "anchorPhrase": "The Federal Reserve", "holdSec": 4.0, "palette": "cool-tech", "text": "Headline text here", "source": "Source name" }
+    { "type": "headline-card", "anchorPhrase": "The Federal Reserve", "holdSec": 4.0, "palette": "cool-tech", "text": "Headline text here", "source": "Source name", "sourceAnchorId": "anc-1" }
   ]
 }
 
 Return JSON only, no markdown fences. All fields shown are required where applicable.`;
-}
-
-// ── Overlay (legacy — headline-card + kinetic-number only) ─────────────────
-
-export function llmOverlayLegacyPrompt(rules: string, examples: string): string {
-  return `You are a documentary overlay designer. Given investigative narration sentences and verified research anchors, produce 3–6 data-driven overlays (headline cards and kinetic numbers) that amplify key facts.
-
-## Rules
-1. 3–6 overlays total; place at sentences 4–17 (data-dense, not hook or lens).
-2. anchorPhrase MUST be 1–4 consecutive words copied VERBATIM from the sentence list provided below. Prefer 1–2 word anchors — TTS may merge adjacent words (e.g. "9.1 percent" → single spoken token), so shorter anchors are more reliable.
-3. Do NOT include trailing unit words ("percent", "dollars", "million", "billion", "trillion") in anchorPhrase if the number already carries the meaning — anchor on the number or the content word before it.
-4. Mix: ~60% kinetic-number (stats/rates/dollar amounts with a value+unit), ~40% headline-card (event labels, institution names, with a source attribution).
-5. holdSec: 3.0–4.5 seconds.
-6. Kinetic numbers must include "value" (the numeric amount) and "unit" ($, %, x, T, or B).
-7. Headline cards should include "source" with attribution when available from the research anchors.
-8. Each overlay gets a "palette": "cool-tech" for institutional/data/financial content, "warm-real" for human-impact content.
-9. Available overlay types and their rules:\n${rules}
-10. Example shapes:\n${examples}
-
-## Output format
-{ "overlays": [ {...}, {...} ] }
-
-Return JSON only, no markdown fences.`;
-}
-
-export function llmSegmentOverlayLegacyPrompt(args: {
-  role: string;
-  title: string;
-  intent: string;
-  rules: string;
-  examples: string;
-}): string {
-  const { role, title, intent, rules, examples } = args;
-  return `You are a documentary overlay designer. Given narration sentences and verified research anchors for a "${role}" segment titled "${title}", produce overlays that amplify key facts.
-
-## Segment Intent
-${intent}
-
-## Rules
-1. anchorPhrase MUST be 1–4 consecutive words copied VERBATIM from the sentence list provided below. Prefer 1–2 word anchors — TTS may merge adjacent words (e.g. "9.1 percent" → single spoken token), so shorter anchors are more reliable.
-2. Do NOT include trailing unit words ("percent", "dollars", "million", "billion", "trillion") in anchorPhrase if the number already carries the meaning — anchor on the number or the content word before it.
-3. Mix: ~60% kinetic-number (stats/rates/dollar amounts with a value+unit), ~40% headline-card (event labels, institution names, with a source attribution).
-4. holdSec: 3.0–4.5 seconds.
-5. Kinetic numbers must include "value" (the numeric amount) and "unit" ($, %, x, T, or B).
-6. Headline cards should include "source" with attribution when available from the research anchors.
-7. Each overlay gets a "palette": "cool-tech" for institutional/data/financial content, "warm-real" for human-impact content.
-8. Available overlay types and their rules:\n${rules}
-9. Example shapes:\n${examples}
-
-## Output format
-{ "overlays": [ {...}, {...} ] }
-
-Return JSON only, no markdown fences.`;
 }
 
 // ── Metric extraction ─────────────────────────────────────────────────────

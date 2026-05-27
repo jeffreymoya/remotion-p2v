@@ -10,7 +10,9 @@ export type SearchLens =
   | "contrarian_essay"
   | "historical_context"
   | "narrative_case_study"
-  | "protagonist_arc";
+  | "protagonist_arc"
+  | "institutional_report"
+  | "expert_testimony";
 
 export type SearchKind =
   | "primary_quote"

@@ -5,10 +5,13 @@
 //   npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> --audition              → audition only
 //   npx tsx --env-file=.env scripts/docu.ts <topic> --segments 5 --minutes 14       → segmented long-form
 //   npx tsx --env-file=.env scripts/docu.ts <topic> --segments 5 --minutes 14 --from narration
+//   npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> --clean                 → clean artifacts + full pipeline
 
 import { FPS, SEGMENT_IMAGE_QUERY_CONCURRENCY } from "../src/lib/config";
 import { topicToSlug } from "../src/lib/shared/slug";
 import { boundedMap } from "../src/lib/shared/concurrency";
+import fs from "node:fs";
+import path from "node:path";
 import { runTtsPipeline, runTtsAudition } from "../src/lib/docu/tts-pipeline";
 import type { SentenceDef } from "../src/lib/docu/tts-pipeline";
 import { runImagePipeline } from "../src/lib/docu/image-pipeline";
@@ -29,6 +32,14 @@ import {
 } from "../src/lib/docu/topic-generator";
 import type { DocuSegmentMeta } from "../src/lib/docu/segment-types";
 import type { DocuScript } from "../src/components/docu/DocumentaryComposition";
+import {
+  runYouTubeClipExtraction,
+  mergeYouTubeClipsIntoShots,
+  checkYtdlpAvailable,
+  type YouTubeClipSpec,
+  type YouTubeClipResult,
+  type MergedShot,
+} from "../src/lib/docu/youtube-pipeline";
 
 // ── Niche allowlist ─────────────────────────────────────────────────────
 
@@ -65,6 +76,71 @@ function checkNicheAllowlist(slug: string, topic: string): { allowed: boolean; n
   };
 }
 
+// ── Clean artifacts ─────────────────────────────────────────────────────
+
+function cleanArtifacts(slug: string): string[] {
+  const removed: string[] = [];
+  const rmFile = (p: string) => {
+    try { fs.unlinkSync(p); removed.push(p); } catch { /* ok if missing */ }
+  };
+  const rmDir = (p: string) => {
+    try { fs.rmSync(p, { recursive: true, force: true }); removed.push(p); } catch { /* ok if missing */ }
+  };
+
+  // Prompt JSONs
+  const promptsDir = "prompts/docu";
+  if (fs.existsSync(promptsDir)) {
+    for (const entry of fs.readdirSync(promptsDir)) {
+      if (entry.startsWith(slug) && entry.endsWith(".json")) {
+        rmFile(path.join(promptsDir, entry));
+      }
+    }
+  }
+
+  // Audio
+  rmFile(`public/audio/docu/${slug}.wav`);
+
+  // Images
+  rmDir(`public/images/docu/${slug}`);
+
+  // YouTube interview clips
+  rmDir(`public/videos/docu/interview-clips/${slug}`);
+
+  // Regenerate scripts file to drop removed topic
+  try {
+    const isTopicJson = (f: string) =>
+      f.endsWith(".json")
+      && !f.endsWith("-timings.json")
+      && !f.endsWith("-images.json")
+      && !f.endsWith("-topic.json")
+      && !f.endsWith("-plan.json")
+      && !/-seg-\d+-(narration|overlays)\.json$/.test(f);
+
+    const allTopicPaths = fs.existsSync(promptsDir)
+      ? fs.readdirSync(promptsDir).filter(isTopicJson).map((f) => path.join(promptsDir, f)).sort()
+      : [];
+
+    const allScripts = allTopicPaths
+      .map((p) => { try { return JSON.parse(fs.readFileSync(p, "utf-8")); } catch { return null; } })
+      .filter((s): s is object => s !== null && typeof s.slug === "string");
+
+    const content = [
+      `import type { DocuScript } from "../components/docu/DocumentaryComposition";`,
+      ``,
+      `// AUTO-GENERATED — do not edit manually. Run: npm run docu <topic>`,
+      `// Discovers all topics from prompts/docu/*.json automatically.`,
+      `export const docuScripts: DocuScript[] = ${JSON.stringify(allScripts, null, 2)};`,
+      ``,
+    ].join("\n");
+    fs.writeFileSync("src/generated/docu-scripts.ts", content);
+    removed.push("src/generated/docu-scripts.ts");
+  } catch {
+    // ok if generation fails
+  }
+
+  return removed;
+}
+
 // ── Full pipeline (hand-authored + LLM paths) ───────────────────────────
 
 async function runFullPipeline(
@@ -74,6 +150,7 @@ async function runFullPipeline(
   overlaySpecs: OverlaySpec[],
   imageQueries: ImageQuery[],
   segmentPlans?: TopicData["segmentPlans"],
+  youtubeClipSpecs?: YouTubeClipSpec[],
 ) {
   // 1. TTS pipeline
   console.log(`[docu] Running TTS pipeline for "${topic}"...`);
@@ -81,8 +158,32 @@ async function runFullPipeline(
   const { wordTimings, sentenceFrameRanges, sentenceData, durationSeconds } = ttsResult;
   const durationFrames = Math.ceil(durationSeconds * FPS);
 
+  // 1.5 — YouTube clip extraction (if specs exist)
+  let youtubeClipResults: YouTubeClipResult[] = [];
+  let effectiveClipSpecs = youtubeClipSpecs;
+  if (effectiveClipSpecs && effectiveClipSpecs.length > 0) {
+    if (!checkYtdlpAvailable()) {
+      console.warn("[docu] yt-dlp not found — skipping YouTube clip extraction");
+      effectiveClipSpecs = undefined;
+    }
+  }
+  if (effectiveClipSpecs && effectiveClipSpecs.length > 0) {
+    console.log(`\n[docu] Extracting ${effectiveClipSpecs.length} YouTube interview clips...`);
+    youtubeClipResults = await runYouTubeClipExtraction(slug, effectiveClipSpecs);
+    const succeeded = youtubeClipResults.filter((r) => r.success);
+    console.log(`[docu] YouTube clips: ${succeeded.length}/${effectiveClipSpecs.length} succeeded`);
+  }
+
   // 2. Shot scheduling
   const shots = scheduleShotsForSentences(sentenceFrameRanges, durationFrames);
+
+  // 2.5 — Merge YouTube clips into shot schedule (replaces `shots` for all downstream steps)
+  const mergedShots: MergedShot[] = mergeYouTubeClipsIntoShots(
+    shots,
+    youtubeClipResults,
+    sentenceFrameRanges,
+  );
+  // FROM THIS POINT ON: use `mergedShots`, not `shots`
 
   // 3. Image queries
   let finalImageQueries: ImageQuery[];
@@ -90,7 +191,7 @@ async function runFullPipeline(
     console.log(`\n[docu] Using ${imageQueries.length} hand-authored image queries`);
     finalImageQueries = imageQueries;
   } else if (segmentPlans && segmentPlans.length >= 1) {
-    console.log(`\n[docu] Generating image queries for ${shots.length} shots across ${segmentPlans.length} segments...`);
+    console.log(`\n[docu] Generating image queries for ${mergedShots.length} shots across ${segmentPlans.length} segments...`);
 
     const segmentFrameRanges = computeSegmentFrameRanges(segmentPlans, sentenceFrameRanges, durationFrames);
 
@@ -98,17 +199,18 @@ async function runFullPipeline(
       segmentPlans,
       async (plan, segIndex) => {
         const range = segmentFrameRanges[segIndex];
-        const segShots = shots.filter(
-          (sh) => sh.startFrame >= range.startFrame && sh.startFrame < range.endFrame,
+        const segShots = mergedShots.filter(
+          (sh) => sh.startFrame >= range.startFrame && sh.startFrame < range.endFrame
+            && sh.mediaType !== "video",
         );
 
-        const shotContexts: ShotContext[] = segShots.map((sh, i) => {
+        const shotContexts: ShotContext[] = segShots.map((sh) => {
           const sentIdx = sentenceFrameRanges.findIndex(
             (s) => s.startFrame <= sh.startFrame && sh.startFrame < s.endFrame,
           );
           const sent = sentIdx >= 0 ? sentences[sentIdx] : sentences[0];
           return {
-            shotIndex: shots.indexOf(sh),
+            shotIndex: sh.originalIndex!,
             palette: sh.palette,
             sentenceText: sent.text,
           };
@@ -130,16 +232,6 @@ async function runFullPipeline(
   console.log(`[docu] Downloaded ${imageResult.downloadedCount} images`);
 
   const downloadedSlotSet = new Set(imageResult.downloadedSlots);
-
-  const filteredShots = shots
-    .map((sh, i) => ({ shot: sh, originalIndex: i }))
-    .filter(({ originalIndex }) => {
-      if (!downloadedSlotSet.has(originalIndex)) {
-        console.warn(`[docu] ⚠ Shot ${originalIndex} dropped — image not downloaded`);
-        return false;
-      }
-      return true;
-    });
 
   // 5. Overlay resolution
   const overlays = resolveOverlays(overlaySpecs, wordTimings, FPS);
@@ -195,14 +287,33 @@ async function runFullPipeline(
         clipIndex: 0,
         startFrame: 0,
         endFrame: durationFrames,
-        shots: filteredShots.map(({ shot: sh, originalIndex: i }) => ({
-          imagePath: `images/docu/${slug}/img-${String(i).padStart(2, "0")}.jpg`,
-          mediaType: "image" as const,
-          loop: false,
-          startFrame: sh.startFrame,
-          endFrame: sh.endFrame,
-          palette: sh.palette,
-        })),
+        shots: mergedShots
+          .filter((ms) => {
+            if (ms.mediaType === "video") return true;
+            return ms.originalIndex !== undefined && downloadedSlotSet.has(ms.originalIndex);
+          })
+          .map((ms) => {
+            if (ms.mediaType === "video") {
+              return {
+                videoPath: ms.videoPath!,
+                mediaType: "video" as const,
+                loop: false,
+                startFrame: ms.startFrame,
+                endFrame: ms.endFrame,
+                palette: ms.palette,
+                isInterviewClip: true,
+                captionWords: ms.captionWords,
+              };
+            }
+            return {
+              imagePath: `images/docu/${slug}/img-${String(ms.originalIndex!).padStart(2, "0")}.jpg`,
+              mediaType: "image" as const,
+              loop: false,
+              startFrame: ms.startFrame,
+              endFrame: ms.endFrame,
+              palette: ms.palette,
+            };
+          }),
       },
     ],
     overlays,
@@ -213,11 +324,18 @@ async function runFullPipeline(
   console.log(`\n[docu] Generating docu-scripts.ts...`);
   generateDocuScriptsFile(docuScript);
 
+  const finalShotCount = mergedShots.filter((ms) => {
+    if (ms.mediaType === "video") return true;
+    return ms.originalIndex !== undefined && downloadedSlotSet.has(ms.originalIndex);
+  }).length;
+
   const extras: string[] = [];
   if (segmentMetas) extras.push(`${segmentMetas.length} segments`);
+  const videoShotCount = mergedShots.filter((ms) => ms.mediaType === "video").length;
+  if (videoShotCount > 0) extras.push(`${videoShotCount} interview clips`);
   console.log(
     `\n[docu] Done. Duration: ${durationSeconds.toFixed(1)}s, Frames: ${durationFrames}, ` +
-    `Shots: ${filteredShots.length}, Words: ${wordTimings.length}${extras.length ? ", " + extras.join(", ") : ""}`,
+    `Shots: ${finalShotCount}, Words: ${wordTimings.length}${extras.length ? ", " + extras.join(", ") : ""}`,
   );
   console.log("[docu] docu-scripts.ts updated — open studio to render");
 }
@@ -251,8 +369,9 @@ function computeSegmentFrameRanges(
 
 function parseArgs(args: string[]) {
   const audition = args.includes("--audition");
+  const clean = args.includes("--clean");
 
-  const flagSet = new Set(["--audition", "--segments", "--minutes", "--from"]);
+  const flagSet = new Set(["--audition", "--segments", "--minutes", "--from", "--clean"]);
   const flagVals = new Set<string>();
 
   // Collect flag values so they aren't mistaken for topicArg
@@ -276,23 +395,24 @@ function parseArgs(args: string[]) {
 
   const fromIdx = args.indexOf("--from");
   const from = fromIdx >= 0 && fromIdx + 1 < args.length
-    ? args[fromIdx + 1] as "plan" | "narration" | "overlays" | "tts"
+    ? args[fromIdx + 1] as "plan" | "narration" | "overlays" | "tts" | "youtube"
     : "tts";
 
-  return { topicArg, audition, segments, minutes, from };
+  return { topicArg, audition, clean, segments, minutes, from };
 }
 
 function printUsage() {
-  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--segments N] [--minutes N] [--from phase]");
+  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--segments N] [--minutes N] [--from phase]");
   console.error("  --segments N    Number of narrative segments (default: 1)");
   console.error("  --minutes N     Target video length in minutes (default: 4)");
-  console.error("  --from phase    Resume from: plan | narration | overlays | tts (default: tts)");
+  console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
   console.error("  --audition      TTS audition only (30s clips)");
+  console.error("  --clean         Remove all pipeline artifacts for this topic before running");
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { topicArg, audition, segments, minutes, from } = parseArgs(args);
+  const { topicArg, audition, clean, segments, minutes, from } = parseArgs(args);
 
   if (!topicArg) {
     printUsage();
@@ -312,13 +432,24 @@ async function main() {
   }
 
   // Validate --from
-  const validFrom = ["plan", "narration", "overlays", "tts"];
+  const validFrom = ["plan", "narration", "overlays", "youtube", "tts"];
   if (!validFrom.includes(from)) {
     console.error(`Error: --from must be one of: ${validFrom.join(", ")}`);
     process.exit(1);
   }
 
   const slug = topicToSlug(topicArg);
+
+  // Clean artifacts if requested
+  if (clean) {
+    console.log(`[docu] Cleaning artifacts for "${slug}"...`);
+    const removed = cleanArtifacts(slug);
+    if (removed.length > 0) {
+      for (const r of removed) console.log(`  removed: ${r}`);
+    } else {
+      console.log("  (no artifacts found)");
+    }
+  }
 
   // Niche allowlist gate
   const { allowed, niches } = checkNicheAllowlist(slug, topicArg);
@@ -347,12 +478,12 @@ async function main() {
     console.log(`[docu] Generating topic data: ${segments} segments, ${minutes} min target...`);
     topicData = await generateSegmentedTopicData(topicArg, slug, segments, minutes, {
       verbose: true,
-      from: from as "plan" | "narration" | "overlays",
+      from: from === "tts" ? "overlays" : from as "plan" | "narration" | "overlays" | "youtube",
     });
     saveTopicData(topicData);
   }
 
-  const { topic, sentences, overlaySpecs, segmentPlans } = topicData;
+  const { topic, sentences, overlaySpecs, segmentPlans, youtubeClipSpecs } = topicData;
 
   if (audition) {
     console.log(`[docu] Running TTS audition for "${topic}"...`);
@@ -361,7 +492,7 @@ async function main() {
     return;
   }
 
-  await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans);
+  await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans, youtubeClipSpecs);
 }
 
 main().catch((err) => {

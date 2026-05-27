@@ -1,7 +1,7 @@
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
 import type { ZodType } from "zod";
 import {
-  DEEPSEEK_TIMEOUT_MS,
+  LLM_TIMEOUT_MS,
   resolveProvider,
   LLM_DEFAULT_PROVIDER,
   type LlmProviderId,
@@ -82,7 +82,7 @@ async function llmChatImpl(
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
-  const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
+  const timeoutMs = options?.timeoutMs ?? LLM_TIMEOUT_MS;
   const runName = options?.runName;
   const model = options?.model ?? provider.defaultModel;
   const startTime = Date.now();
@@ -105,6 +105,8 @@ async function llmChatImpl(
     );
   }
 
+  const isDeepSeek = providerId === "deepseek";
+
   const controller = new AbortController();
   const timer = setTimeout(
     () => controller.abort(new DOMException(`LLM request timed out after ${timeoutMs}ms`, "TimeoutError")),
@@ -122,9 +124,11 @@ async function llmChatImpl(
         messages,
         temperature,
         ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
-        ...(reasoning.thinking.type === "enabled"
-          ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
-          : { thinking: { type: "disabled" } }),
+        ...(isDeepSeek
+          ? (reasoning.thinking.type === "enabled"
+            ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
+            : { thinking: { type: "disabled" } })
+          : {}),
       }),
       signal: controller.signal,
     });
@@ -211,7 +215,7 @@ async function llmChatJsonImpl<T>(
   const verbose = options?.verbose ?? false;
   const metadata = options?.metadata;
   const maxTokens = options?.maxTokens;
-  const timeoutMs = options?.timeoutMs ?? DEEPSEEK_TIMEOUT_MS;
+  const timeoutMs = options?.timeoutMs ?? LLM_TIMEOUT_MS;
   const runName = options?.runName;
   const model = options?.model ?? provider.defaultModel;
   const startTime = Date.now();
@@ -234,6 +238,8 @@ async function llmChatJsonImpl<T>(
     );
   }
 
+  const isDeepSeek = providerId === "deepseek";
+
   const controller = new AbortController();
   const timer = setTimeout(
     () => controller.abort(new DOMException(`LLM JSON request timed out after ${timeoutMs}ms`, "TimeoutError")),
@@ -252,9 +258,11 @@ async function llmChatJsonImpl<T>(
         temperature,
         response_format: { type: "json_object" },
         ...(maxTokens !== undefined ? { max_tokens: maxTokens } : {}),
-        ...(reasoning.thinking.type === "enabled"
-          ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
-          : { thinking: { type: "disabled" } }),
+        ...(isDeepSeek
+          ? (reasoning.thinking.type === "enabled"
+            ? { reasoning_effort: reasoning.effort, thinking: { type: "enabled" } }
+            : { thinking: { type: "disabled" } })
+          : {}),
       }),
       signal: controller.signal,
     });

@@ -7,6 +7,7 @@ export const headlineCardDef = {
     type: z.literal("headline-card"),
     text: z.string().min(1),
     source: z.string().optional(),
+    sourceAnchorId: z.string(),
     palette: z.enum(["cool-tech", "warm-real"]),
     anchorPhrase: z.string().min(1),
     holdSec: z.number().positive(),
