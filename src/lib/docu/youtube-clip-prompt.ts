@@ -224,7 +224,10 @@ export async function generateYouTubeClipSpecs(
     .join("\n");
 
   const segmentContext = segmentPlans
-    .map((p) => `· Segment ${p.index} "${p.title}" (${p.role}): ${p.intent}`)
+    .map((p) => {
+      const role = ("arcRole" in p) ? (p as { arcRole: string }).arcRole : p.role ?? "context";
+      return `· Segment ${p.index} "${p.title}" (${role}): ${p.intent}`;
+    })
     .join("\n");
 
   const userPrompt = `Topic: ${topic}

@@ -13,26 +13,104 @@ export function llmNarrationSegmentPrompt(args: {
   intent: string;
   anchorCount: number;
   batchSize: number;
+  scenarioPressure?: string;
+  retentionLoop?: string;
+  visualBeat?: string;
+  device?: string;
+  pronoun?: string;
+  emotionalRegister?: string;
+  isQuoteScene?: boolean;
 }): string {
   const { role, title, intent, anchorCount, batchSize } = args;
-  return `You are an investigative documentary script writer for a "${role}" segment titled "${title}".
+  const craftBlock = [
+    args.scenarioPressure ? `\n## Scenario Pressure\n${args.scenarioPressure}` : "",
+    args.retentionLoop ? `\n## Retention Loop (pull to next scene)\n${args.retentionLoop}` : "",
+    args.visualBeat ? `\n## Visual Beat\n${args.visualBeat}` : "",
+    args.device && args.device !== "none" ? `\n## Rhetorical Device\n${args.device}` : "",
+    args.pronoun ? `\n## Pronoun Frame\nUse "${args.pronoun}" as the dominant pronoun in this scene.` : "",
+    args.emotionalRegister ? `\n## Emotional Register\n${args.emotionalRegister}` : "",
+    args.isQuoteScene ? `\n## Quote Scene\nThis scene is designated as the QUOTE SCENE. If one of the anchors has a verbatim quote, land it here — this is the emotional peak.` : "",
+  ].filter(Boolean).join("");
 
-## Segment Intent
+  return `You are an infotainment documentary script writer. You are writing a "${role}" scene titled "${title}" inside a scenario-first animated documentary.
+
+## Scene Intent
 ${intent}
+${craftBlock}
 
-## Rules
-1. Produce exactly ${batchSize} fact-packed, declarative sentences.
-2. 6–15 words each, declarative, verb-driven.
-3. Permitted prosody: em-dash (—) for appositive contrast only (e.g. "9.1 percent — the highest in 40 years"). No ... or () — TTS cannot render pause marks reliably.
-4. Numbers MUST be digits: "$800", "9.1%", "2022" — never spelled out.
-5. Fact-first: open with year, institution, dollar amount, or person name.
-6. Stay within this segment's role: ${role} — ${intent}
-7. Every numeric claim (dollar amount, percentage, growth rate, year-over-year change, index value) and every named claim (person, institution, regulatory action) MUST be traceable to a provided research anchor. If an anchor does not contain the fact, do not assert it.
-8. Each sentence gets a "palette": "cool-tech" for institutions/data/finance/charts, "warm-real" for human consequences/homes/streets/people.
-9. Each sentence gets 1-4 "emphasis" words — the most salient content words.
-10. ${anchorCount > 0 ? `You have ${anchorCount} research anchors to draw from.` : "You have 0 research anchors. Do NOT invent specific statistics, dollar amounts, percentages, dates, growth rates, or named figures not present in any anchor. Maintain density through structure, framing, and explanatory depth — not fabricated numbers."}
+## INFOTAINMENT VOICE RULES
+
+1. Scenario-first opener: start with the viewer inside the problem.
+   The cost, risk, or trap must be concrete by sentence 3.
+   Do not open with background, definitions, or "Today we will discuss."
+   Good: "You cut the budget by 20 percent. For one week, the numbers look better."
+   Wrong: "Compound interest is a powerful force over long time horizons."
+
+2. Viewer-consequence: every fact must change the viewer's decision, fear,
+   expectation, or strategy. If the fact does not alter the scene, cut it or attach
+   it to a consequence.
+   Good: "At first, the line barely moves. Then the curve bends upward, and the money
+   you earned starts earning its own money."
+   Wrong: "Compound interest is powerful over time."
+
+3. Pronoun strategy: use the scene's assigned pronoun.
+   "You" for immediate stakes, decisions, traps.
+   "We" for shared patterns, human tendencies, market-wide behavior.
+   "They/he/she" for case-story actors, companies, banks, platforms.
+   "It" for systems, incentives, dashboards, contracts, algorithms.
+
+4. Visualizable lines: write lines that naturally summon animation.
+   Prefer: meters filling, charts bending, contracts highlighting, doors locking,
+   dashboards flashing, funnels leaking, money flowing from one box to another.
+   Wrong: "The user experiences inefficient operational friction."
+   Right: "Every approval is another locked door, and the invoice is stuck three doors back."
+
+5. Translated jargon: use the term, then translate it.
+   "CAC, or the price of buying one customer."
+   "Vendor lock-in, which is what happens when leaving costs more than staying."
+   One technical term per paragraph maximum.
+
+6. Flip: if this scene is marked flipFromPrior, invert the viewer's mental model.
+   The reveal must reward attention, not be random trivia.
+
+7. Retention loop: close every scene except the payoff with the unanswered question
+   from the scene's retentionLoop field.
+
+8. Prosody plan: use the scene's prosody hints.
+   Short landing lines (3-8 words) after reveals.
+   Em-dash (—) for abrupt turns. One-sentence paragraphs for emotional peaks.
+   Vary sentence length: short after dense explanation, long to build pressure.
+   Never stage directions in spoken narration.
+   No ... or () — TTS cannot render pause marks reliably.
+
+9. Shot-cut rhythm: alternate short (5-7 word) and long (14-18 word) sentences so
+   lines can begin on one shot and land on another (2-4 sec shots in the composition).
+
+10. Produce exactly ${batchSize} sentences for this batch.
+
+## HARD RULES (non-negotiable)
+
+A. Numbers MUST be digits: "$800", "9.1%", "2022" — never spelled out.
+B. Every numeric claim (dollar amount, percentage, growth rate, year-over-year change, index value) and every named claim (person, institution, regulatory action) MUST be traceable to a provided research anchor. If an anchor does not contain the fact, do not assert it.
+C. Each sentence gets 1-4 "emphasis" words — the most salient content words.
+D. Stay within this scene's arc role: ${role} — ${intent}
+E. ${anchorCount > 0 ? `You have ${anchorCount} research anchors to draw from.` : "You have 0 research anchors. Do NOT invent specific statistics, dollar amounts, percentages, dates, growth rates, or named figures not present in any anchor. Maintain density through structure, framing, and explanatory depth — not fabricated numbers."}
+${anchorCount > 0 ? `F. When an anchor carries a VERBATIM QUOTE, you MAY place it as a standalone sentence. Use at most one quoted sentence per batch. Quote text must be copied verbatim; do not paraphrase inside quotation marks. This is optional — if no quote is available or it does not serve the scene, proceed without one.
+
+G. When an anchor carries kind "case_study", "historical_event", or "named_person_anecdote", you MAY open that sentence from inside the scenario — describing what the person or institution experienced. Use this at most once per segment. The claim and detail must still be traceable to that anchor.` : ""}
 
 ## Output
+Return JSON in this EXACT shape:
+{
+  "sentences": [
+    {
+      "text": "The sentence text exactly as spoken",
+      "emphasis": ["word1", "word2"]
+    }
+  ]
+}
+
+Every sentence object must have both "text" (string) and "emphasis" (array of 1-4 strings).
 Return JSON only, no markdown fences.`;
 }
 
@@ -139,39 +217,112 @@ Return JSON only, no markdown fences.
 Shape: { "shots": [{ "shotIndex": 0, "query": "federal reserve building", "fallback": "government building" }, ...] }`;
 }
 
-// ── Segment plan ──────────────────────────────────────────────────────────
+// ── Story spine ───────────────────────────────────────────────────────────
 
-export function llmSegmentPlanPrompt(
-  segmentCount: number,
-  usesDefaultRoles: boolean,
-): string {
-  const roles = ["hook", "context", "data", "consequence", "cta", "build", "turn"] as const;
-  return `You are a documentary segment planner. Given a topic, target video length, and verified research anchors, plan ${segmentCount} segments that form a compelling narrative arc.
+export function llmSpinePrompt(segmentCount: number): string {
+  return `You are the story architect for a Bloomberg-style documentary. You receive a topic, target video length, and verified research anchors. Your job is to design a SCENARIO-FIRST story spine that gives the narration writer everything they need to write from inside the viewer's world.
 
-## Rules
-1. Distribute research anchors across segments so no single segment hogs all anchors. Each anchor carries a unique anchorId. Assign each anchor to exactly one segment using its id (e.g. "anchor-1").
-2. ${usesDefaultRoles
-    ? "Use this arc: hook → context → data → consequence → cta."
-    : "Assign arc roles per segment from: " + roles.join(", ") + ". You determine the best arc flow."
-  }
-3. Each segment gets a short title (3-6 words) and a one-sentence intent describing what it achieves in the narrative.
-4. The sentence count per segment is shown in the user message as "targetSentenceCount". Copy this exact number into each segment.
+## Phase 1 — Choose the Primary Structure
+
+Pick one primary structure from this list. DO NOT stack frameworks — choose exactly one.
+
+- scenario-escalation: default for most infotainment explainers. Scenario → obstacle → mechanism → consequence.
+- disaster-simulation: worst-case scenario walk-through for finance/legal/insurance/platform risk.
+- case-file-autopsy: failed businesses, lawsuits, scams. Autopsy a real case.
+- countdown: renewals, deadlines, market events. Tension through a ticking clock.
+- comparison-gauntlet: SaaS tools, credit products, strategies. Head-to-head comparison.
+- inside-the-machine: algorithms, ad platforms, banking, insurance. Reveal the hidden mechanics.
+- experiment-challenge: make-money, marketing, productivity. Test a common belief.
+- reveal-ladder: myths, hidden costs, confusing systems. Successive reveals building toward a final truth.
+
+## Phase 2 — Define the Scenario Frame
+
+1. viewerRole: who the viewer IS inside this scenario (e.g. "a small business owner comparing SaaS payroll tools"). Always second-person "you" framing.
+2. scenarioPressure: the immediate problem that makes this video necessary right now (e.g. "your ad campaign is profitable in the dashboard and losing money in the bank").
+3. hiddenSystem: the mechanism, rule, or incentive structure being revealed that the viewer doesn't see.
+4. centralFlip: the moment the viewer's mental model changes. A single sentence.
+5. viewerStake: what this costs or means for the viewer — money, time, leverage, risk, growth, or freedom.
+6. retentionQuestion: the open loop that holds the viewer to the end. A single sentence.
+
+7. caseStudyAgent (optional): if the research anchors contain a named person or institution suitable as a case study, include it here. Only populate if a case_study, named_person_anecdote, or historical_event anchor exists — many topics (SaaS features, platform algorithms, compounding mechanics) have no natural protagonist and that is fine. If none exists, leave undefined.
+8. caseStudyAnchorId (optional): the anchor id that grounds the case-study agent. Must match the anchor used.
+
+## Phase 3 — Lay the Scene Arc
+
+Plan exactly ${segmentCount} scenes along the 5-phase arc:
+    hook → baseline → escalation → turn → payoff
+
+These must be mapped onto the ${segmentCount} segments. Each scene gets one arcRole:
+- hook: What-If Hook — scenario trap, viewer identity, open loop
+- baseline: Baseline Reality — minimum mechanism, core term, visual model
+- escalation: Escalation stage — attempt → obstacle → mechanism → consequence (multiple escalation scenes are valid)
+- turn: Turning Point / Twist — counterintuitive reveal that changes the viewer's mental model
+- payoff: Resolution — answer the hook, rule-of-thumb or decision tree
+
+FIRST scene MUST be hook. LAST scene MUST be payoff. No payoff before a turn. At least one escalation between baseline and turn.
+
+## Phase 4 — Per-Scene Craft Constraints
+
+For each scene, provide:
+
+- index: zero-based scene index
+- title: 3-6 word scene title
+- intent: one sentence describing what this scene achieves narratively
+- assignedAnchorIds: recruit research anchors into this scene by id
+- arcRole: one of hook | baseline | escalation | turn | payoff
+- scenarioPressure: the concrete pressure driving THIS scene specifically (not the whole video)
+- retentionLoop: the unanswered question that pulls the viewer to the next scene
+- visualBeat: what Remotion can animate in this scene (e.g. "a countdown timer ticking from 30 days to 0", "ad spend bar chart growing while bank balance line drops")
+- device: one rhetorical device — what-if-scenario | countdown | scale-compression | contrast | failed-obvious-answer | callback-object | rhetorical-question | tricolon | none
+- pronoun: the dominant pronoun frame — you | we | they | it
+- palette: cool-tech for institutions/data/finance/charts, warm-real for human consequences/homes/streets/people. Assign deliberately based on the scene's emotional role: at least one scene must be warm-real (typically baseline and/or payoff — human-consequence scenes).
+- emotionalRegister: one phrase — e.g. "unease", "alarm", "curiosity", "resolve", "indignation", "hope"
+- flipFromPrior: true if this scene's emotional register reverses or intensifies vs the prior scene; false otherwise. At least ONE scene across the video must have flipFromPrior: true.
+- flipType (optional): only for the turn scene — which flip archetype applies — safety-to-danger | complexity-to-lever | profit-to-loss | cheap-to-expensive | expert-answer-to-fail | random-to-incentive | personal-mistake-to-structural-trap
+- targetSentenceCount: copy the sentence count provided per-scene in the user message
+
+## Phase 5 — Quote and Case Study
+
+- quoteSceneIndex: the index of the scene that should land the single optional quoted anchor near the emotional peak. null if no usable quote anchor exists. When non-null, the referenced scene's assigned anchors MUST include at least one anchor with a quote field.
+- caseStudyAnchorId (if caseStudyAgent is provided): must match the verbatim id of an anchor in the anchor list.
 
 ## Output schema
+
+Return JSON in this EXACT shape:
+
 {
+  "schemaVersion": 2,
+  "primaryStructure": "scenario-escalation",
+  "viewerRole": "a freelancer pricing their first SaaS product",
+  "caseStudyAgent": "Buffer's 2014 transparency experiment",
+  "caseStudyAnchorId": "anc-3",
+  "scenarioPressure": "you're leaving money on the table with every client because you don't know what the market pays",
+  "hiddenSystem": "SaaS pricing arbitrage between per-seat models and value-based pricing",
+  "centralFlip": "the customer who says your price is 'too cheap' is actually telling you they can't trust the product",
+  "viewerStake": "doubling revenue without adding a single new client",
+  "retentionQuestion": "which tier will actually make you the most money — and why the obvious answer is wrong",
+  "quoteSceneIndex": 2,
   "segments": [
     {
       "index": 0,
-      "title": "string",
-      "role": "${roles.join("\" | \"")}",
-      "intent": "string",
-      "targetSentenceCount": 10,
-      "assignedAnchorIds": ["anchor-1", "anchor-2"]
+      "title": "The Pricing Panic",
+      "arcRole": "hook",
+      "intent": "trap the viewer with the anxiety of naming a price for the first time",
+      "targetSentenceCount": 8,
+      "assignedAnchorIds": ["anc-1"],
+      "scenarioPressure": "you stare at a blank Stripe pricing page — paralyzed",
+      "retentionLoop": "what happened to the freelancer who charged 10x what anyone expected?",
+      "visualBeat": "cursor blinking on an empty pricing field — the viewer's own screen reflection",
+      "device": "what-if-scenario",
+      "pronoun": "you",
+      "palette": "warm-real",
+      "emotionalRegister": "anxiety",
+      "flipFromPrior": false
     }
   ]
 }
 
-Return JSON only, no markdown fences. All fields are required.`;
+Return JSON only, no markdown fences. All fields are required unless marked optional.`;
 }
 
 // ── Research ──────────────────────────────────────────────────────────────

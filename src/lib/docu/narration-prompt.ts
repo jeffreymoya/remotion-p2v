@@ -4,7 +4,7 @@ import { LLM_NARRATION, NARRATION_BATCH_SIZE } from "../config";
 import { llmNarrationSegmentPrompt } from "../prompts";
 import type { Anchor } from "../shared/research/research-schema";
 import type { SentenceDef } from "./tts-pipeline";
-import type { DocuSegmentPlan } from "./segment-types";
+import type { SceneSpec } from "./segment-types";
 import type { DocuPalette } from "../../components/docu/docu-tokens";
 import { normalizeToken } from "./overlays/anchor-strategies";
 
@@ -30,28 +30,23 @@ export function validateNarrationStyle(sentences: SentenceDef[]): StyleViolation
     const sent = sentences[i];
     const rules: string[] = [];
 
-    // word-count: must be in [6, 15]
     const wordCount = sent.text.split(/\s+/).filter(Boolean).length;
-    if (wordCount < 6 || wordCount > 15) {
+    if (wordCount < 3 || wordCount > 20) {
       rules.push("word-count");
     }
 
-    // spelled-number: spelled-out number with no digit in text
     if (SPELLED_OUT_NUMBER_WORDS_RE.test(sent.text) && !/\d/.test(sent.text)) {
       rules.push("spelled-number");
     }
 
-    // forbidden-punctuation: ellipsis or parens
     if (FORBIDDEN_PUNCTUATION_RE.test(sent.text)) {
       rules.push("forbidden-punctuation");
     }
 
-    // disallowed-dash: double-hyphen or en-dash
     if (DISALLOWED_DASH_RE.test(sent.text)) {
       rules.push("disallowed-dash");
     }
 
-    // emphasis-not-found: each emphasis item must match the sentence text
     const normalizedText = sent.text.split(/\s+/).map(normalizeToken).filter(Boolean);
     for (const emp of sent.emphasis) {
       const empTokens = emp.split(/\s+/).map(normalizeToken).filter(Boolean);
@@ -89,7 +84,6 @@ export function validateNarrationStyle(sentences: SentenceDef[]): StyleViolation
 const SENTENCE_SCHEMA = z.object({
   text: z.string().min(1),
   emphasis: z.array(z.string()).min(1).max(4),
-  palette: z.enum(["cool-tech", "warm-real"]),
 });
 
 function narrationSchema(batchSize: number) {
@@ -99,49 +93,67 @@ function narrationSchema(batchSize: number) {
 }
 
 function buildSegmentSystemPrompt(
-  plan: DocuSegmentPlan,
+  scene: SceneSpec,
   assignedAnchors: readonly Anchor[],
   batchSize: number,
+  isQuoteScene: boolean,
 ): string {
   return llmNarrationSegmentPrompt({
-    role: plan.role,
-    title: plan.title,
-    intent: plan.intent,
+    role: scene.arcRole,
+    title: scene.title,
+    intent: scene.intent,
     anchorCount: assignedAnchors.length,
     batchSize,
+    scenarioPressure: scene.scenarioPressure,
+    retentionLoop: scene.retentionLoop,
+    visualBeat: scene.visualBeat,
+    device: scene.device,
+    pronoun: scene.pronoun,
+    emotionalRegister: scene.emotionalRegister,
+    isQuoteScene,
   });
 }
 
 function anchorToLines(anchors: readonly Anchor[]): string {
-  return anchors.map((a, i) =>
-    `[anc-${i + 1}] ${a.claim} / ${a.detail}` +
-    (a.attribution.year ? ` / ${a.attribution.year}` : "") +
-    (a.attribution.person ? ` / ${a.attribution.person}` : "")
-  ).join("\n");
+  return anchors.map((a, i) => {
+    const head = `[anc-${i + 1}] (${a.kind}${a.sourceTier ? `, ${a.sourceTier}` : ""}) ${a.claim} / ${a.detail}`;
+    const attr = [
+      a.attribution.person ? `person: ${a.attribution.person}` : null,
+      a.attribution.year ? `year: ${a.attribution.year}` : null,
+    ].filter(Boolean).join(", ");
+    const quote = a.quote ? `\n    VERBATIM QUOTE${a.citation.quoteVerbatimVerified ? " (verified)" : ""}: "${a.quote}"` : "";
+    return `${head}${attr ? ` / ${attr}` : ""}${quote}`;
+  }).join("\n");
 }
 
 function mapToSentenceDefs(
-  sentences: Array<{ text: string; emphasis: string[]; palette: string }>,
+  sentences: Array<{ text: string; emphasis: string[] }>,
+  palette: DocuPalette,
 ): SentenceDef[] {
   return sentences.map((s) => ({
     text: s.text,
     emphasis: s.emphasis,
-    palette: s.palette as DocuPalette,
+    palette,
   }));
 }
 
-function lastNSentences(sentences: SentenceDef[], n: number): string {
-  return sentences.slice(-n).map((s) => s.text).join(" ");
+function allSentenceContext(sentences: SentenceDef[]): string {
+  return sentences.map((s) => s.text).join(" ");
+}
+
+export interface SegmentNarrationOpts {
+  verbose?: boolean;
+  isQuoteScene?: boolean;
 }
 
 export async function generateSegmentNarration(
   topic: string,
-  plan: DocuSegmentPlan,
+  scene: SceneSpec,
   assignedAnchors: readonly Anchor[],
   priorSegmentContext: string,
-  opts?: { verbose?: boolean },
+  opts?: SegmentNarrationOpts,
 ): Promise<SentenceDef[]> {
-  const targetCount = plan.targetSentenceCount;
+  const targetCount = scene.targetSentenceCount;
   const batchSizes: number[] = [];
   let remaining = targetCount;
 
@@ -153,26 +165,27 @@ export async function generateSegmentNarration(
 
   const verified = assignedAnchors.filter((a) => a.status === "verified");
   const allSentences: SentenceDef[] = [];
+  const isQuoteScene = opts?.isQuoteScene ?? false;
 
   for (let bi = 0; bi < batchSizes.length; bi++) {
     const batchSize = batchSizes[bi];
-    const system = buildSegmentSystemPrompt(plan, verified, batchSize);
+    const system = buildSegmentSystemPrompt(scene, verified, batchSize, isQuoteScene);
 
     let priorContext: string;
     if (bi === 0 && priorSegmentContext) {
       priorContext = priorSegmentContext;
     } else if (allSentences.length > 0) {
-      priorContext = lastNSentences(allSentences, 2);
+      priorContext = allSentenceContext(allSentences);
     } else {
       priorContext = "";
     }
 
     const userPrompt = `Topic: ${topic}
-Segment: ${plan.title} (${plan.role})
-Segment intent: ${plan.intent}
+Scene: ${scene.title} (${scene.arcRole})
+Scene intent: ${scene.intent}
 Batch ${bi + 1} of ${batchSizes.length}: produce exactly ${batchSize} sentences.
 ${priorContext ? `\nContinue naturally from prior context: "${priorContext}"` : ""}
-${bi === 0 && !priorContext ? `\nThis is the first batch of the segment — establish the segment's opening.` : ""}
+${bi === 0 && !priorContext ? `\nThis is the first batch of the scene — establish the scene's opening.` : ""}
 
 Research anchors:
 ${anchorToLines(verified)}`;
@@ -181,17 +194,17 @@ ${anchorToLines(verified)}`;
       schema: narrationSchema(batchSize),
       system,
       prompt: userPrompt,
-      runName: `docu/narration/seg-${String(plan.index).padStart(2, "0")}-batch-${bi + 1}`,
+      runName: `docu/narration/seg-${String(scene.index).padStart(2, "0")}-batch-${bi + 1}`,
       verbose: opts?.verbose,
       llm: LLM_NARRATION,
     });
 
-    allSentences.push(...mapToSentenceDefs(result.sentences));
+    allSentences.push(...mapToSentenceDefs(result.sentences, scene.palette as DocuPalette));
   }
 
   if (allSentences.length !== targetCount) {
     throw new Error(
-      `Segment ${plan.index} narration: expected ${targetCount} sentences but got ${allSentences.length}`,
+      `Scene ${scene.index} narration: expected ${targetCount} sentences but got ${allSentences.length}`,
     );
   }
 

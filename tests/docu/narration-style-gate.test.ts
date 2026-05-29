@@ -31,36 +31,36 @@ function s(text: string, emphasis: string[] = []): SentenceDef {
   assert(violations.length === 0, "happy path: 8-word sentence, emphasis in text — clean");
 }
 
-// ── Word count too short (5) ──────────────────────────────────────────
+// ── Word count too short (2) ──────────────────────────────────────────
 
 {
-  const sentences = [s("Markets are volatile right now")];
+  const sentences = [s("Markets rose")];
   const violations = validateNarrationStyle(sentences);
   assert(violations.length === 1, "word-count-short: one violation");
   assert(violations[0].rules.includes("word-count"), "word-count-short: rule is word-count");
 }
 
-// ── Word count too long (16) ──────────────────────────────────────────
+// ── Word count too long (21) ──────────────────────────────────────────
 
 {
-  const sentences = [s("The Federal Reserve decided to raise interest rates by fifty basis points yesterday afternoon before markets closed")];
+  const sentences = [s("The Federal Reserve decided to raise interest rates by fifty basis points yesterday afternoon before markets closed because inflation was too high and persistent")];
   const violations = validateNarrationStyle(sentences);
   assert(violations.length === 1, "word-count-long: one violation");
   assert(violations[0].rules.includes("word-count"), "word-count-long: rule is word-count");
 }
 
-// ── Word count boundaries 6 and 15 — clean ────────────────────────────
+// ── Word count boundaries 3 and 20 — clean ────────────────────────────
 
 {
-  const sentences = [s("Markets surged on Fed rate decision")];
+  const sentences = [s("The door locks")];
   const violations = validateNarrationStyle(sentences);
-  assert(violations.length === 0, "word-count-boundary-6: clean");
+  assert(violations.length === 0, "word-count-boundary-3: clean");
 }
 
 {
-  const sentences = [s("The Federal Reserve decided to raise interest rates at this very important quarterly meeting today")];
+  const sentences = [s("The Federal Reserve decided to raise interest rates at this very important quarterly meeting today and the markets responded immediately")];
   const violations = validateNarrationStyle(sentences);
-  assert(violations.length === 0, "word-count-boundary-15: clean");
+  assert(violations.length === 0, "word-count-boundary-20: clean");
 }
 
 // ── Spelled number with no digit ─────────────────────────────────────
@@ -173,7 +173,7 @@ function s(text: string, emphasis: string[] = []): SentenceDef {
 {
   const sentences = [
     s("The Federal Reserve raised interest rates today carefully", ["Federal Reserve"]),
-    s("short sentence here"),
+    s("no"),
     s("another perfectly fine sentence about market conditions too"),
   ];
   const violations = validateNarrationStyle(sentences);

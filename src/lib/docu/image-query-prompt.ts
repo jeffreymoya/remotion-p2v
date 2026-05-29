@@ -104,18 +104,22 @@ const STOPWORDS = new Set([
 
 const roleHints: Record<string, string> = {
   hook: "prefer striking, memorable imagery that grabs attention",
+  baseline: "prefer institutional, system-level imagery — offices, trading floors, data centers, mechanism diagrams",
+  escalation: "prefer escalating tension imagery — tightening graphs, magnifying glasses, systems under pressure",
+  turn: "prefer contrast imagery — before/after, two sides of street, opposing views, dramatic reveals",
+  payoff: "prefer forward-looking, aspirational imagery — modern offices, city skylines, people working, resolved tension",
   context: "prefer institutional, system-level imagery — offices, trading floors, data centers",
   data: "prefer charts, trading floors, data screens, financial terminals, spreadsheets — visual data representations",
   consequence: "prefer human-scale imagery — families, homes, streets, storefronts, communities affected",
   cta: "prefer forward-looking, aspirational imagery — modern offices, city skylines, people working",
   build: "prefer process-oriented, construction-like imagery — growth, development, scale",
-  turn: "prefer contrast imagery — before/after, two sides of street, opposing views",
 };
 
 function segmentSystemPrompt(plan: DocuSegmentPlan): string {
-  const hint = roleHints[plan.role] ?? `focus on imagery appropriate for a "${plan.role}" segment`;
+  const role = ("arcRole" in plan) ? (plan as { arcRole: string }).arcRole : plan.role ?? "context";
+  const hint = roleHints[role] ?? `focus on imagery appropriate for a "${role}" scene`;
   return llmSegmentImageQueryPrompt({
-    role: plan.role,
+    role,
     title: plan.title,
     intent: plan.intent,
     hint,

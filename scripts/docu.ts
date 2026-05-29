@@ -3,8 +3,8 @@
 // Usage:
 //   npx tsx --env-file=.env scripts/docu.ts <topic-or-slug>                        → full pipeline
 //   npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> --audition              → audition only
-//   npx tsx --env-file=.env scripts/docu.ts <topic> --segments 5 --minutes 14       → segmented long-form
-//   npx tsx --env-file=.env scripts/docu.ts <topic> --segments 5 --minutes 14 --from narration
+//   npx tsx --env-file=.env scripts/docu.ts <topic> --minutes 14                    → long-form (fixed 5-segment arc)
+//   npx tsx --env-file=.env scripts/docu.ts <topic> --minutes 14 --from narration
 //   npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> --clean                 → clean artifacts + full pipeline
 
 import { FPS, SEGMENT_IMAGE_QUERY_CONCURRENCY } from "../src/lib/config";
@@ -30,7 +30,7 @@ import {
   generateSegmentedTopicData,
   type TopicData,
 } from "../src/lib/docu/topic-generator";
-import type { DocuSegmentMeta } from "../src/lib/docu/segment-types";
+import type { ArcRole, DocuSegmentMeta } from "../src/lib/docu/segment-types";
 import type { DocuScript } from "../src/components/docu/DocumentaryComposition";
 import {
   runYouTubeClipExtraction,
@@ -245,7 +245,7 @@ async function runFullPipeline(
       const meta: DocuSegmentMeta = {
         index: plan.index,
         title: plan.title,
-        role: plan.role,
+        role: "arcRole" in plan ? plan.arcRole : plan.role as ArcRole,
         firstSentenceIndex,
         lastSentenceIndex: firstSentenceIndex + plan.targetSentenceCount - 1,
         startFrame: frameRanges[i].startFrame,
@@ -371,7 +371,7 @@ function parseArgs(args: string[]) {
   const audition = args.includes("--audition");
   const clean = args.includes("--clean");
 
-  const flagSet = new Set(["--audition", "--segments", "--minutes", "--from", "--clean"]);
+  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean"]);
   const flagVals = new Set<string>();
 
   // Collect flag values so they aren't mistaken for topicArg
@@ -383,11 +383,6 @@ function parseArgs(args: string[]) {
 
   const topicArg = args.find((a) => !a.startsWith("--") && !flagSet.has(a) && !flagVals.has(a));
 
-  const segmentsIdx = args.indexOf("--segments");
-  const segments = segmentsIdx >= 0 && segmentsIdx + 1 < args.length
-    ? Number(args[segmentsIdx + 1])
-    : 1;
-
   const minutesIdx = args.indexOf("--minutes");
   const minutes = minutesIdx >= 0 && minutesIdx + 1 < args.length
     ? Number(args[minutesIdx + 1])
@@ -398,32 +393,33 @@ function parseArgs(args: string[]) {
     ? args[fromIdx + 1] as "plan" | "narration" | "overlays" | "tts" | "youtube"
     : "tts";
 
-  return { topicArg, audition, clean, segments, minutes, from };
+  const onlyIdx = args.indexOf("--only");
+  const only = onlyIdx >= 0 && onlyIdx + 1 < args.length
+    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube"
+    : undefined;
+
+  return { topicArg, audition, clean, minutes, from, only };
 }
 
 function printUsage() {
-  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--segments N] [--minutes N] [--from phase]");
-  console.error("  --segments N    Number of narrative segments (default: 1)");
+  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--minutes N] [--from phase] [--only phase]");
   console.error("  --minutes N     Target video length in minutes (default: 4)");
   console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
+  console.error("  --only phase    Stop after: plan | narration | overlays | youtube (omit to run full pipeline)");
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove all pipeline artifacts for this topic before running");
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { topicArg, audition, clean, segments, minutes, from } = parseArgs(args);
+  const { topicArg, audition, clean, minutes, from, only } = parseArgs(args);
 
   if (!topicArg) {
     printUsage();
     process.exit(1);
   }
 
-  // Validate --segments
-  if (!Number.isInteger(segments) || segments < 1) {
-    console.error("Error: --segments must be a positive integer");
-    process.exit(1);
-  }
+  const segments = 5; // fixed 5-phase arc: hook → baseline → escalation → turn → payoff
 
   // Validate --minutes
   if (!Number.isFinite(minutes) || minutes <= 0) {
@@ -435,6 +431,13 @@ async function main() {
   const validFrom = ["plan", "narration", "overlays", "youtube", "tts"];
   if (!validFrom.includes(from)) {
     console.error(`Error: --from must be one of: ${validFrom.join(", ")}`);
+    process.exit(1);
+  }
+
+  // Validate --only
+  const validOnly = ["plan", "narration", "overlays", "youtube"];
+  if (only !== undefined && !validOnly.includes(only)) {
+    console.error(`Error: --only must be one of: ${validOnly.join(", ")}`);
     process.exit(1);
   }
 
@@ -464,26 +467,31 @@ async function main() {
   const topicCached = loadCachedTopicData(slug);
 
   const isCacheValid = topicCached
-    && topicCached.segmentCount === segments
     && topicCached.segmentPlans
-    && topicCached.segmentPlans.length === segments;
+    && topicCached.segmentPlans.length === 5;
 
-  if (isCacheValid && from === "tts") {
+  if (isCacheValid && from === "tts" && !only) {
     console.log(`[docu] Using cached topic data for "${topicCached.topic}" (generated ${topicCached.generatedAt})`);
     topicData = topicCached;
   } else {
     if (topicCached && !isCacheValid) {
-      console.log(`[docu] Cached topic data stale (segments mismatch or missing segmentPlans) — regenerating`);
+      console.log(`[docu] Cached topic data stale (missing segmentPlans) — regenerating`);
     }
-    console.log(`[docu] Generating topic data: ${segments} segments, ${minutes} min target...`);
-    topicData = await generateSegmentedTopicData(topicArg, slug, segments, minutes, {
+    console.log(`[docu] Generating topic data: ${minutes} min target...`);
+    topicData = await generateSegmentedTopicData(topicArg, slug, 5, minutes, {
       verbose: true,
       from: from === "tts" ? "overlays" : from as "plan" | "narration" | "overlays" | "youtube",
+      only,
     });
-    saveTopicData(topicData);
+    if (!only) saveTopicData(topicData);
   }
 
   const { topic, sentences, overlaySpecs, segmentPlans, youtubeClipSpecs } = topicData;
+
+  if (only) {
+    console.log(`[docu] --only ${only}: done. Inspect prompts/docu/${slug}-*.json`);
+    return;
+  }
 
   if (audition) {
     console.log(`[docu] Running TTS audition for "${topic}"...`);

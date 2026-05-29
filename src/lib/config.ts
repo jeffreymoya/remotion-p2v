@@ -113,7 +113,7 @@ export const LLM_SEGMENT_PLAN: LlmCallConfig = {
 
 // ── Shared pipeline constants ─────────────────────────────────────────
 export const FPS = 30 as const;                         // canonical frame rate
-export const SENTENCES_PER_MINUTE = 10 as const;        // narration pacing (Bloomberg: ~6s/sentence at rate 1.0)
+export const SENTENCES_PER_MINUTE = 5 as const;         // narration pacing (~8-12s/sentence — infotainment pace)
 export const NARRATION_BATCH_SIZE = 10 as const;       // sentences per LLM batch
 export const LLM_DEFAULT_MAX_RETRIES = 2 as const;     // callStructured() default
 export const SEGMENT_IMAGE_QUERY_CONCURRENCY = 3 as const; // parallel segment queries
@@ -178,29 +178,6 @@ export const ELEVENLABS_MODEL_ID =
 // ── LangSmith tracing ──────────────────────────────────────────────────
 export const LANGSMITH_TRACING_ENABLED =
   process.env.LANGSMITH_TRACING !== "false";
-
-// ── Narration gate thresholds ───────────────────────────────────────────
-export const REFINE_MAX_REVISIONS = 2;
-export const SIMPLICITY_FK_GRADE_MAX = 11.0;
-export const SIMPLICITY_UNCOMMON_WORD_PCT_MAX = 5.0;
-export const SERMON_RATIO_DIRECT_ADDRESS_MAX = 0.35;
-export const SPECIFICITY_MIN_NAMED_ENTITIES = 2;
-export const SPECIFICITY_MIN_DATED_MOMENTS = 1;
-export const PROSODY_MIN_MARKS = 3;
-export const PROSODY_MIN_DISTINCT_MARK_TYPES = 2;
-export const PROSODY_MIN_LONG_PAUSES = 1;
-
-// ── LLM judge gates ─────────────────────────────────────────────────────
-export const REFINE_MAX_LLM_CALLS_PER_GATE = 2;
-// More positive-attractor gates means each chapter can spend more LLM budget.
-export const RESONANCE_MIN_INTENSITY = 2;
-export const RECOGNITION_REQUIRED = true;
-export const SENSORY_MIN_CHANNELS = 1;
-export const EARNED_WISDOM_REQUIRED = true;
-export const MAX_ANCHORS_PER_CHAPTER = 4;
-
-// ── Cross-chapter proofreader ───────────────────────────────────────────
-export const PROOFREAD_MAX_REDRAFTS_PER_CHAPTER = 2;
 
 // ── Research phase ──────────────────────────────────────────────────────
 export const EXA_API_KEY = process.env.EXA_API_KEY;

@@ -99,8 +99,9 @@ function buildDataItemListing(dataItems: DataItem[]): string {
 }
 
 function segmentSelectionSystemPrompt(plan: DocuSegmentPlan, hasDataItems: boolean): string {
+  const role = ("arcRole" in plan) ? (plan as { arcRole: string }).arcRole : plan.role ?? "context";
   return llmSegmentOverlaySelectionPrompt({
-    role: plan.role,
+    role,
     title: plan.title,
     intent: plan.intent,
     menu: buildPromtableMenu(),

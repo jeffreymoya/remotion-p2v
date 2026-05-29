@@ -17,10 +17,12 @@ import { generateSegmentNarration, validateNarrationStyle } from "./narration-pr
 import { generateSegmentOverlaySelections } from "./overlay-prompt";
 import { extractDataItems } from "./metric-extraction-prompt";
 import { SENTENCES_PER_MINUTE, SEGMENT_IMAGE_QUERY_CONCURRENCY } from "../config";
-import { generateSegmentPlan, computeSentenceTargets } from "./segment-plan-prompt";
-import type { DocuSegmentPlan } from "./segment-types";
+import { generateSpine, computeSentenceTargets } from "./segment-plan-prompt";
+import type { DocuSegmentPlan, SceneSpec, StorySpine } from "./segment-types";
 import { generateYouTubeClipSpecs } from "./youtube-clip-prompt";
 import { gateNarrationFidelity } from "./narration-fidelity-gate";
+import { gateStoryStructure } from "./story-structure-gate";
+import { gateInfotainmentVoice } from "./infotainment-voice-gate";
 import type { YouTubeClipSpec } from "./youtube-pipeline";
 
 export interface TopicData {
@@ -50,7 +52,7 @@ const TopicDataSchema = z.object({
   segmentPlans: z.array(z.object({
     index: z.number().int().min(0),
     title: z.string(),
-    role: z.string(),
+    role: z.string().optional(),
     intent: z.string(),
     targetSentenceCount: z.number().int().positive(),
     assignedAnchorIds: z.array(z.string()),
@@ -144,19 +146,28 @@ function saveCachedDataItems(slug: string, items: DataItem[]): void {
 
 // ── Segmented pipeline ──────────────────────────────────────────────────
 
-function loadCachedPlan(slug: string): DocuSegmentPlan[] | null {
+function loadCachedPlan(slug: string): StorySpine | null {
   const p = planCachePath(slug);
   if (!fs.existsSync(p)) return null;
   try {
-    return JSON.parse(fs.readFileSync(p, "utf-8")) as DocuSegmentPlan[];
+    const raw = JSON.parse(fs.readFileSync(p, "utf-8"));
+    if (Array.isArray(raw)) {
+      console.log("[topic] Cached plan is v1 (array) — regenerating with spine");
+      return null;
+    }
+    if (raw.schemaVersion !== 2) {
+      console.log(`[topic] Cached plan schemaVersion=${raw.schemaVersion} — spine schema bump, regenerating`);
+      return null;
+    }
+    return raw as StorySpine;
   } catch {
     return null;
   }
 }
 
-function saveCachedPlan(slug: string, plans: DocuSegmentPlan[]): void {
+function saveCachedPlan(slug: string, spine: StorySpine): void {
   fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(planCachePath(slug), JSON.stringify(plans, null, 2));
+  fs.writeFileSync(planCachePath(slug), JSON.stringify(spine, null, 2));
 }
 
 function loadCachedSegmentNarration(slug: string, segIndex: number): SentenceDef[] | null {
@@ -205,6 +216,8 @@ export interface SegmentedTopicOpts {
   verbose?: boolean;
   /** Resume from a specific phase: "plan" | "narration" | "overlays" | "youtube" */
   from?: "plan" | "narration" | "overlays" | "youtube";
+  /** Stop after a specific phase and return without running later phases. */
+  only?: "plan" | "narration" | "overlays" | "youtube";
 }
 
 export async function generateSegmentedTopicData(
@@ -216,6 +229,17 @@ export async function generateSegmentedTopicData(
 ): Promise<TopicData> {
   const totalSentences = Math.round(targetMinutes * SENTENCES_PER_MINUTE);
   const from = opts?.from ?? "overlays";
+  const only = opts?.only;
+
+  const earlyReturn = (partial: Partial<TopicData>): TopicData => ({
+    topic,
+    slug,
+    generatedAt: new Date().toISOString(),
+    sentences: [],
+    overlaySpecs: [],
+    segmentCount,
+    ...partial,
+  });
 
   // 1. Research (unchanged)
   let researchBundle: ResearchBundle;
@@ -232,27 +256,32 @@ export async function generateSegmentedTopicData(
   const verifiedAnchors = researchBundle.anchors.filter((a) => a.status === "verified");
   console.log(`[topic] ${verifiedAnchors.length} verified anchors available for ${segmentCount} segments (${totalSentences} total sentences for ${targetMinutes} min)`);
 
-  // 2. Segment plan
-  let segmentPlans: DocuSegmentPlan[];
+  // 2. Story spine
+  let spine: StorySpine;
   if (from === "plan") {
-    console.log(`[topic] --from plan: regenerating segment plan...`);
-    segmentPlans = await generateSegmentPlan(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
-    saveCachedPlan(slug, segmentPlans);
+    console.log(`[topic] --from plan: regenerating story spine...`);
+    spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
+    saveCachedPlan(slug, spine);
   } else {
     const cachedPlan = loadCachedPlan(slug);
-    const cachedTotal = cachedPlan?.reduce((s, p) => s + p.targetSentenceCount, 0) ?? 0;
-    if (cachedPlan && cachedPlan.length === segmentCount && cachedTotal === totalSentences) {
-      segmentPlans = cachedPlan;
-      console.log(`[topic] Using cached segment plan (${segmentPlans.length} segments)`);
+    const cachedTotal = cachedPlan?.segments.reduce((s, p) => s + p.targetSentenceCount, 0) ?? 0;
+    if (cachedPlan && cachedPlan.segments.length === segmentCount && cachedTotal === totalSentences) {
+      spine = cachedPlan;
+      console.log(`[topic] Using cached story spine (${spine.segments.length} scenes, structure=${spine.primaryStructure})`);
     } else {
       if (cachedPlan) {
-        console.log(`[topic] Cached plan stale (len=${cachedPlan.length}, cachedSent=${cachedTotal}, expectedSent=${totalSentences}) — regenerating`);
+        console.log(`[topic] Cached plan stale (len=${cachedPlan.segments.length}, cachedSent=${cachedTotal}, expectedSent=${totalSentences}) — regenerating`);
       } else {
-        console.log(`[topic] Generating segment plan...`);
+        console.log(`[topic] Generating story spine...`);
       }
-      segmentPlans = await generateSegmentPlan(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
-      saveCachedPlan(slug, segmentPlans);
+      spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
+      saveCachedPlan(slug, spine);
     }
+  }
+
+  if (only === "plan") {
+    console.log(`[topic] --only plan: stopping after spine.`);
+    return earlyReturn({ segmentPlans: spine.segments });
   }
 
   // 3. Narration pass — SEQUENTIAL (priorContext threading)
@@ -263,14 +292,14 @@ export async function generateSegmentedTopicData(
     console.log(`[topic] --from ${from}: regenerating all segment narrations...`);
   }
 
-  for (let i = 0; i < segmentPlans.length; i++) {
-    const plan = segmentPlans[i];
-    const segAnchors = filterAnchorsByIds(verifiedAnchors, plan.assignedAnchorIds);
+  for (let i = 0; i < spine.segments.length; i++) {
+    const scene = spine.segments[i];
+    const segAnchors = filterAnchorsByIds(verifiedAnchors, scene.assignedAnchorIds);
 
     let segSentences: SentenceDef[];
     if (!regenerateNarration) {
       const cached = loadCachedSegmentNarration(slug, i);
-      if (cached && cached.length === plan.targetSentenceCount) {
+      if (cached && cached.length === scene.targetSentenceCount) {
         segSentences = cached;
         console.log(`[topic]   seg-${String(i).padStart(2, "0")}: cached ${segSentences.length} sentences`);
         allSentences.push(...segSentences);
@@ -282,9 +311,12 @@ export async function generateSegmentedTopicData(
       ? allSentences.slice(-2).map((s) => s.text).join(" ")
       : "";
 
-    console.log(`[topic]   seg-${String(i).padStart(2, "0")}: generating ${plan.targetSentenceCount} sentences (${plan.title}, ${plan.role})...`);
+    console.log(`[topic]   seg-${String(i).padStart(2, "0")}: generating ${scene.targetSentenceCount} sentences (${scene.title}, ${scene.arcRole})...`);
     segSentences = await generateSegmentNarration(
-      topic, plan, segAnchors, priorContext, { verbose: opts?.verbose },
+      topic, scene, segAnchors, priorContext, {
+        verbose: opts?.verbose,
+        isQuoteScene: spine.quoteSceneIndex === i,
+      },
     );
     saveCachedSegmentNarration(slug, i, segSentences);
     allSentences.push(...segSentences);
@@ -312,11 +344,26 @@ export async function generateSegmentedTopicData(
     }
   }
 
-  const expectedTotal = segmentPlans.reduce((sum, p) => sum + p.targetSentenceCount, 0);
+  // Story-structure gate — deterministic + LLM judge (log+pass, never blocks render)
+  console.log(`[topic] Running story-structure gate...`);
+  const structureResult = await gateStoryStructure(allSentences, spine, { verbose: opts?.verbose });
+  allSentences = structureResult.sentences;
+
+  // Infotainment-voice gate — LLM judge (log+pass, never blocks render)
+  console.log(`[topic] Running infotainment-voice gate...`);
+  const voiceResult = await gateInfotainmentVoice(allSentences, { verbose: opts?.verbose });
+  allSentences = voiceResult.sentences;
+
+  const expectedTotal = spine.segments.reduce((sum, p) => sum + p.targetSentenceCount, 0);
   if (allSentences.length !== expectedTotal) {
     throw new Error(
       `[topic] Assembled sentences count mismatch: expected ${expectedTotal} but got ${allSentences.length}`,
     );
+  }
+
+  if (only === "narration") {
+    console.log(`[topic] --only narration: stopping after narration.`);
+    return earlyReturn({ sentences: allSentences, segmentPlans: spine.segments });
   }
 
   // 4. Extraction — data items from all verified anchors
@@ -344,8 +391,8 @@ export async function generateSegmentedTopicData(
   const hasDataItems = allDataItems.length > 0;
 
   const segmentOverlayResults = await boundedMap(
-    segmentPlans,
-    async (plan, i) => {
+    spine.segments,
+    async (scene, i) => {
       if (!regenerateOverlays) {
         const cached = loadCachedSegmentOverlays(slug, i);
         if (cached) {
@@ -355,15 +402,15 @@ export async function generateSegmentedTopicData(
         }
       }
 
-      const startIdx = segmentPlans.slice(0, i).reduce((s, p) => s + p.targetSentenceCount, 0);
-      const segSentences = allSentences.slice(startIdx, startIdx + plan.targetSentenceCount);
-      const segAnchors = filterAnchorsByIds(verifiedAnchors, plan.assignedAnchorIds);
+      const startIdx = spine.segments.slice(0, i).reduce((s, p) => s + p.targetSentenceCount, 0);
+      const segSentences = allSentences.slice(startIdx, startIdx + scene.targetSentenceCount);
+      const segAnchors = filterAnchorsByIds(verifiedAnchors, scene.assignedAnchorIds);
       const segDataItems = hasDataItems
-        ? filterDataItemsByAnchors(allDataItems, plan.assignedAnchorIds)
+        ? filterDataItemsByAnchors(allDataItems, scene.assignedAnchorIds)
         : [];
 
       console.log(`[topic]   seg-${String(i).padStart(2, "0")}: selecting overlays for ${segSentences.length} sentences (${segDataItems.length} data items)...`);
-      const overlays = await generateSegmentOverlaySelections(plan, segSentences, segAnchors, segDataItems, { verbose: opts?.verbose });
+      const overlays = await generateSegmentOverlaySelections(scene, segSentences, segAnchors, segDataItems, { verbose: opts?.verbose });
       saveCachedSegmentOverlays(slug, i, overlays);
       return overlays;
     },
@@ -372,6 +419,16 @@ export async function generateSegmentedTopicData(
 
   for (const overlays of segmentOverlayResults) {
     allOverlays.push(...overlays);
+  }
+
+  if (only === "overlays") {
+    console.log(`[topic] --only overlays: stopping after overlays.`);
+    return earlyReturn({
+      sentences: allSentences,
+      overlaySpecs: allOverlays,
+      dataItems: hasDataItems ? allDataItems : undefined,
+      segmentPlans: spine.segments,
+    });
   }
 
   // 6. YouTube clip annotation
@@ -383,7 +440,7 @@ export async function generateSegmentedTopicData(
   } else {
     console.log(`[topic] --from ${from}: generating YouTube clip specs...`);
     youtubeClipSpecs = await generateYouTubeClipSpecs(
-      allSentences, segmentPlans, verifiedAnchors, topic, { verbose: opts?.verbose },
+      allSentences, spine.segments, verifiedAnchors, topic, { verbose: opts?.verbose },
     );
     if (youtubeClipSpecs.length > 0) {
       saveYoutubeClipSpecs(slug, youtubeClipSpecs);
@@ -398,7 +455,7 @@ export async function generateSegmentedTopicData(
     overlaySpecs: allOverlays,
     dataItems: hasDataItems ? allDataItems : undefined,
     segmentCount,
-    segmentPlans,
+    segmentPlans: spine.segments,
     youtubeClipSpecs: youtubeClipSpecs.length > 0 ? youtubeClipSpecs : undefined,
   };
 }
