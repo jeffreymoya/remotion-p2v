@@ -154,12 +154,22 @@ export async function gateStoryStructure(
   spine: StorySpine,
   opts?: { verbose?: boolean },
 ): Promise<{ sentences: SentenceDef[]; result: StoryStructureGateResult }> {
-  // Deterministic checks — always run, log-only
+  // Deterministic checks — always run
   const deterministicViolations = checkStructureDeterministic(sentences, spine);
   if (deterministicViolations.length > 0 && opts?.verbose) {
     for (const v of deterministicViolations) {
       console.warn(`[story-structure-gate/deterministic] ${v.check}: ${v.detail}`);
     }
+  }
+
+  const blockingViolations = deterministicViolations.filter(
+    (v) => v.check === "empty-scene" || v.check === "no-flip" || v.check === "quote-scene-missing-quote"
+  );
+  if (blockingViolations.length > 0) {
+    throw new Error(
+      `[story-structure-gate] Blocking structural violations — aborting:\n` +
+      blockingViolations.map((v) => `  ${v.check}: ${v.detail}`).join("\n")
+    );
   }
 
   // LLM judge — bounded repair loop

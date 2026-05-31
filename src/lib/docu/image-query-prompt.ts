@@ -7,8 +7,18 @@ import type { DocuSegmentPlan } from "./segment-types";
 
 // ── Image-query style gate (deterministic) ────────────────────────────
 
-export const MOTION_VERB_RE =
-  /\b(running|walking|flying|jumping|moving|spinning|rotating|dancing|driving|swimming|climbing|rushing|streaming|flowing)\b/i;
+/**
+ * An image query candidate carrying the LLM's semantic `motionFree` judgment.
+ * Motion detection is delegated to the model (A1); the word-count and
+ * query≠fallback guards remain deterministic.
+ */
+export interface ImageQueryCandidate {
+  slot: number;
+  query: string;
+  fallback: string;
+  /** LLM flag: true if the query describes a static scene (no motion/action). */
+  motionFree?: boolean;
+}
 
 export interface ImageQueryViolation {
   slot: number;
@@ -16,7 +26,7 @@ export interface ImageQueryViolation {
   reason: "word-count" | "motion-verb" | "query-equals-fallback";
 }
 
-export function validateImageQueryStyle(queries: ImageQuery[]): ImageQueryViolation[] {
+export function validateImageQueryStyle(queries: ImageQueryCandidate[]): ImageQueryViolation[] {
   const violations: ImageQueryViolation[] = [];
 
   for (const q of queries) {
@@ -26,7 +36,9 @@ export function validateImageQueryStyle(queries: ImageQuery[]): ImageQueryViolat
       violations.push({ slot: q.slot, query: q.query, reason: "word-count" });
     }
 
-    if (MOTION_VERB_RE.test(q.query)) {
+    // Motion is judged semantically by the LLM (motionFree flag), not a regex.
+    // Only an explicit `false` flags; an absent flag is not second-guessed.
+    if (q.motionFree === false) {
       violations.push({ slot: q.slot, query: q.query, reason: "motion-verb" });
     }
 
@@ -39,7 +51,7 @@ export function validateImageQueryStyle(queries: ImageQuery[]): ImageQueryViolat
 }
 
 export function applyImageQueryFallbacks(
-  queries: ImageQuery[],
+  queries: ImageQueryCandidate[],
   violations: ImageQueryViolation[],
   runName: string,
 ): ImageQuery[] {
@@ -102,6 +114,19 @@ const STOPWORDS = new Set([
   "rate", "just",
 ]);
 
+// Stop list for the OFFLINE fallback query derivation. Drops finance-relevant
+// tokens ("rate", "year") that are evocative for this niche's imagery, and adds
+// connective/prepositional fillers that crowd out concrete nouns.
+const QUERY_DERIVATION_STOPWORDS = (() => {
+  const s = new Set(STOPWORDS);
+  s.delete("rate");
+  s.delete("year");
+  for (const w of ["through", "while", "after", "before", "about", "between", "during", "across", "because", "though", "these", "those", "which"]) {
+    s.add(w);
+  }
+  return s;
+})();
+
 const roleHints: Record<string, string> = {
   hook: "prefer striking, memorable imagery that grabs attention",
   baseline: "prefer institutional, system-level imagery — offices, trading floors, data centers, mechanism diagrams",
@@ -126,13 +151,25 @@ function segmentSystemPrompt(plan: DocuSegmentPlan): string {
   });
 }
 
-function deriveFallbackQuery(sentenceText: string, palette: "cool-tech" | "warm-real"): string {
+/**
+ * Offline fallback query derivation — runs ONLY when the LLM has already failed
+ * all retries (catch path). Salience-ranks content words by length (a crude
+ * noun proxy) and keeps the top 4 in reading order, so evocative nouns survive
+ * instead of being lost to position-based top-3 truncation.
+ */
+export function deriveFallbackQuery(sentenceText: string, palette: "cool-tech" | "warm-real"): string {
   const words = sentenceText
     .replace(/[^a-zA-Z0-9\s]/g, "")
     .split(/\s+/)
-    .filter((w) => w.length > 3); // stricter: drop short tokens like years ("2013")
-  const contentWords = words.filter((w) => !STOPWORDS.has(w.toLowerCase()));
-  const top = contentWords.slice(0, 3).join(" ");
+    .filter((w) => w.length > 3); // drop short tokens (articles, short years like "2013")
+  const contentWords = words.filter((w) => !QUERY_DERIVATION_STOPWORDS.has(w.toLowerCase()));
+  const top = contentWords
+    .map((w, i) => ({ w, i }))
+    .sort((a, b) => b.w.length - a.w.length || a.i - b.i) // most salient (longest) first
+    .slice(0, 4)
+    .sort((a, b) => a.i - b.i) // restore reading order
+    .map((x) => x.w)
+    .join(" ");
   const paletteWord = PALETTE_FALLBACK_KEYWORD[palette];
   return top ? `${top} ${paletteWord}` : `${paletteWord} documentary`;
 }
@@ -148,6 +185,7 @@ async function generateImageQueriesImpl(
       shotIndex: z.number().int().min(0),
       query: z.string().min(1),
       fallback: z.string().min(1),
+      motionFree: z.boolean(),
     })),
   }).refine(
     (d) => d.shots.length === shots.length,
@@ -170,9 +208,9 @@ async function generateImageQueriesImpl(
       llm: LLM_IMAGE_QUERY,
     });
 
-    const sorted: ImageQuery[] = result.shots
+    const sorted: ImageQueryCandidate[] = result.shots
       .sort((a, b) => a.shotIndex - b.shotIndex)
-      .map((s) => ({ slot: s.shotIndex, query: s.query, fallback: s.fallback }));
+      .map((s) => ({ slot: s.shotIndex, query: s.query, fallback: s.fallback, motionFree: s.motionFree }));
 
     const violations = validateImageQueryStyle(sorted);
     return violations.length > 0

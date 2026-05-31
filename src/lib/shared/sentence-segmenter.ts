@@ -1,4 +1,14 @@
 import type { WordTiming } from "../tts-google";
+import { toSpokenForm } from "./numeric-normalize";
+
+/** How many tokens to look ahead in either stream when reconciling drift. */
+const ALIGN_LOOKAHEAD = 3;
+/** Resync search window radius around the current cursor. */
+const RESYNC_BACK = 8;
+const RESYNC_FORWARD = 8;
+/** Implausible single-sentence duration bounds for the sanity post-pass. */
+const MIN_SENTENCE_SEC = 0.3;
+const MAX_SENTENCE_SEC = 30;
 
 export interface SentenceTiming {
   sentenceIndex: number;
@@ -77,9 +87,14 @@ function splitIntoSentences(narration: string): string[] {
 
 /**
  * Tokenize a sentence the same way STT output would be tokenized.
+ *
+ * Numbers and currency/percent markers are first expanded to spoken tokens
+ * (`"$2.5T"` → `"two point five trillion dollars"`) so the text token stream
+ * matches the STT engine's spelled-out words instead of drifting the cursor.
+ * Spoken-form runs BEFORE symbol stripping so `$`/`%`/scale suffixes survive.
  */
 function tokenize(sentence: string): string[] {
-  return sentence
+  return toSpokenForm(sentence)
     .toLowerCase()
     .replace(/[^a-z0-9\s'-]/g, " ")
     .split(/\s+/)
@@ -117,22 +132,35 @@ function alignTokens(
       ti++;
       wi++;
     } else {
-      // Look ahead 1 in STT: was an extra STT word inserted?
-      const nextActual =
-        wi + 1 < wordTimings.length
-          ? normalizeToken(wordTimings[wi + 1].word)
-          : null;
-      // Look ahead 1 in text: was a text token not spoken?
-      const nextExpected = ti + 1 < tokens.length ? tokens[ti + 1] : null;
+      // Look ahead up to ALIGN_LOOKAHEAD in the STT stream: how far until the
+      // expected text token reappears (i.e. extra STT words were inserted)?
+      let insertDistance = -1;
+      for (let k = 1; k <= ALIGN_LOOKAHEAD && wi + k < wordTimings.length; k++) {
+        if (normalizeToken(wordTimings[wi + k].word) === expected) {
+          insertDistance = k;
+          break;
+        }
+      }
+      // Look ahead up to ALIGN_LOOKAHEAD in the text: how far until the current
+      // STT word reappears (i.e. text tokens the STT skipped)?
+      let deleteDistance = -1;
+      for (let k = 1; k <= ALIGN_LOOKAHEAD && ti + k < tokens.length; k++) {
+        if (tokens[ti + k] === actual) {
+          deleteDistance = k;
+          break;
+        }
+      }
 
-      if (nextActual !== null && nextActual === expected) {
-        // STT has an extra word at wi — skip it (insertion in STT stream)
-        wi++;
-      } else if (nextExpected !== null && nextExpected === actual) {
-        // Text has an extra token the STT skipped — map current text token
-        // to wi anyway and advance text only (deletion in STT stream)
-        tokenWordIndexes.push(wi);
-        ti++;
+      if (insertDistance !== -1 && (deleteDistance === -1 || insertDistance <= deleteDistance)) {
+        // STT inserted `insertDistance` extra words before the expected token — skip them.
+        wi += insertDistance;
+      } else if (deleteDistance !== -1) {
+        // Text has `deleteDistance` tokens the STT skipped — map them to the
+        // current word index and advance the text pointer past them.
+        for (let k = 0; k < deleteDistance; k++) {
+          tokenWordIndexes.push(wi);
+          ti++;
+        }
       } else {
         // Irreconcilable at this position — consume both, record mismatch
         mismatches.push({ tokenIdx: ti, expected, got: actual });
@@ -164,8 +192,8 @@ function resyncCursor(
   if (nextTokens.length === 0) return currentCursor;
 
   const probeLen = Math.min(3, nextTokens.length);
-  const windowStart = Math.max(0, currentCursor - 3);
-  const windowEnd = Math.min(wordTimings.length - probeLen, currentCursor + 5);
+  const windowStart = Math.max(0, currentCursor - RESYNC_BACK);
+  const windowEnd = Math.min(wordTimings.length - probeLen, currentCursor + RESYNC_FORWARD);
 
   let bestPos = currentCursor;
   let bestScore = -1;
@@ -300,5 +328,60 @@ export function segmentSentences(
     });
   }
 
-  return { sentences, warnings };
+  // ── Sanity post-pass ─────────────────────────────────────────────────
+  // Last-resort repair for sentences whose frame range is inverted or whose
+  // duration is implausible (alignment drift). Interpolate from neighbors.
+  // Each repair WARNS — a silent fix would hide the very drift this catches.
+  const repaired = repairImplausibleRanges(sentences, durationSeconds, warnings);
+
+  return { sentences: repaired, warnings };
+}
+
+function repairImplausibleRanges(
+  sentences: SentenceTiming[],
+  durationSeconds: number,
+  warnings: string[],
+): SentenceTiming[] {
+  const repaired: SentenceTiming[] = [];
+
+  for (let i = 0; i < sentences.length; i++) {
+    const sent = sentences[i];
+    const dur = sent.endSeconds - sent.startSeconds;
+    const inverted = sent.startFrame >= sent.endFrame || sent.endSeconds <= sent.startSeconds;
+    const implausible = dur < MIN_SENTENCE_SEC || dur > MAX_SENTENCE_SEC;
+
+    if (!inverted && !implausible) {
+      repaired.push(sent);
+      continue;
+    }
+
+    const prevEnd = i > 0 ? repaired[i - 1].endSeconds : 0;
+    const nextStart =
+      i < sentences.length - 1 ? sentences[i + 1].startSeconds : durationSeconds;
+
+    let newStart = Math.max(sent.startSeconds, prevEnd);
+    let newEnd = nextStart;
+    if (newEnd <= newStart) {
+      newStart = prevEnd;
+      newEnd = Math.min(durationSeconds, newStart + MIN_SENTENCE_SEC);
+    }
+
+    const fixed: SentenceTiming = {
+      ...sent,
+      startSeconds: newStart,
+      endSeconds: newEnd,
+      startFrame: Math.floor(newStart * 30),
+      endFrame: Math.ceil(newEnd * 30),
+    };
+    repaired.push(fixed);
+
+    const msg =
+      `Sentence ${i}: implausible frame range ` +
+      `(start=${sent.startFrame}, end=${sent.endFrame}, dur=${dur.toFixed(2)}s) ` +
+      `repaired to [${fixed.startFrame}, ${fixed.endFrame}]`;
+    warnings.push(msg);
+    console.warn(`[sentence-segmenter] ${msg}`);
+  }
+
+  return repaired;
 }

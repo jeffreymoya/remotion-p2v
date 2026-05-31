@@ -51,10 +51,10 @@ export async function gateNarrationFidelity(
   opts?: { verbose?: boolean },
 ): Promise<SentenceDef[]> {
   if (verifiedAnchors.length === 0) {
-    if (opts?.verbose) {
-      console.warn("[narration-fidelity] No verified anchors — skipping fidelity gate");
-    }
-    return sentences;
+    throw new Error(
+      `[narration-fidelity] Called with 0 verified anchors — gate cannot verify anything. ` +
+      `This should have been caught upstream.`
+    );
   }
 
   let current = [...sentences];
@@ -102,10 +102,10 @@ Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 throug
     }
 
     if (flagged.length >= previousFlaggedCount && attempt > 1) {
-      if (opts?.verbose) {
-        console.warn(`[narration-fidelity] No improvement — keeping ${flagged.length} flagged sentences as-is`);
-      }
-      return current;
+      throw new Error(
+        `[narration-fidelity] Attempt ${attempt}: corrector made 0 progress — ` +
+        `${flagged.length} sentences remain unsupported. Aborting to prevent GIGO.`
+      );
     }
     previousFlaggedCount = flagged.length;
 
@@ -116,8 +116,8 @@ Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 throug
     current = next;
   }
 
-  if (opts?.verbose) {
-    console.warn(`[narration-fidelity] Retries exhausted — proceeding with ${current.length} sentences`);
-  }
-  return current;
+  throw new Error(
+    `[narration-fidelity] ${MAX_RETRIES} attempts exhausted — narration still contains ` +
+    `unsupported sentences. Fix research anchors or tighten narration prompt.`
+  );
 }

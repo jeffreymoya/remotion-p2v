@@ -139,7 +139,7 @@ ${menu}
 ## Selection Rules
 1. Select overlays — the exact count depends on sentence count but aim for ~1 overlay per 3 sentences.
 ${dataItemsGuidance}
-3. Textual overlays (headline-card): provide "text", optional "source" attribution, and REQUIRED "sourceAnchorId" referencing one of the research anchors listed in the user message (e.g. "anc-1"). Frame an anchor's claim in documentary headline style.
+3. Textual overlays (headline-card): provide "text", optional "source" attribution, and REQUIRED "sourceAnchorId" referencing one of the research anchors listed in the user message (e.g. "anc-001"). Frame an anchor's claim in documentary headline style.
 4. anchorPhrase MUST be 1–4 consecutive words copied VERBATIM from the sentence list provided below. Prefer 1–2 word anchors.
 5. Do NOT include trailing unit words in anchorPhrase.
 6. holdSec: 3.0–4.5 seconds.
@@ -149,7 +149,7 @@ ${dataItemsGuidance}
 {
   "selections": [
     { "type": "kinetic-number", "dataItemId": "scalar-01", "anchorPhrase": "9.1 percent", "holdSec": 3.5, "palette": "cool-tech" },
-    { "type": "headline-card", "anchorPhrase": "The Federal Reserve", "holdSec": 4.0, "palette": "cool-tech", "text": "Headline text here", "source": "Source name", "sourceAnchorId": "anc-1" }
+    { "type": "headline-card", "anchorPhrase": "The Federal Reserve", "holdSec": 4.0, "palette": "cool-tech", "text": "Headline text here", "source": "Source name", "sourceAnchorId": "anc-001" }
   ]
 }
 
@@ -166,7 +166,7 @@ export const LLM_METRIC_EXTRACTION_PROMPT = `You are a financial-data extraction
 3. Use "timeseries" when two or more time-ordered data points exist (e.g. "2020: $50B, 2021: $75B, 2022: $94B").
 4. Use "comparison" for cross-sectional data (e.g. "SaaS: 75% margins, Manufacturing: 30% margins").
 5. Use "composition" for part-of-whole data (e.g. "Enterprise: 70%, SMB: 20%, Consumer: 10%").
-6. sourceAnchorId MUST be the exact anchor id (e.g. "anc-1") from the anchors list.
+6. sourceAnchorId MUST be the exact anchor id (e.g. "anc-001") from the anchors list.
 7. sourceUrl MUST be copied from the anchor's citation URL.
 8. For timeseries/comparison/composition, label describes the dataset. For scalar, label is the metric name.
 9. Unit choices: "$" dollars, "%" percentages or basis points, "x" multiples, "T" trillions, "B" billions, "M" millions, "K" thousands/counts.
@@ -178,10 +178,10 @@ Return a JSON object (NOT an array) with this exact structure:
 
 {
   "dataItems": [
-    { "kind": "scalar", "value": 94, "unit": "B", "label": "US Cloud Market Size", "sourceAnchorId": "anc-1", "sourceUrl": "https://..." },
-    { "kind": "timeseries", "points": [{"x": "2020", "y": 50}, {"x": "2021", "y": 75}], "unit": "B", "label": "Cloud Market Growth", "sourceAnchorId": "anc-2", "sourceUrl": "https://..." },
-    { "kind": "scalar", "value": 25, "unit": "%", "label": "Rate Hike (basis points)", "sourceAnchorId": "anc-3", "sourceUrl": "https://..." },
-    { "kind": "scalar", "value": 1.2, "unit": "M", "label": "Monthly Active Users", "sourceAnchorId": "anc-4", "sourceUrl": "https://..." }
+    { "kind": "scalar", "value": 94, "unit": "B", "label": "US Cloud Market Size", "sourceAnchorId": "anc-001", "sourceUrl": "https://..." },
+    { "kind": "timeseries", "points": [{"x": "2020", "y": 50}, {"x": "2021", "y": 75}], "unit": "B", "label": "Cloud Market Growth", "sourceAnchorId": "anc-002", "sourceUrl": "https://..." },
+    { "kind": "scalar", "value": 25, "unit": "%", "label": "Rate Hike (basis points)", "sourceAnchorId": "anc-003", "sourceUrl": "https://..." },
+    { "kind": "scalar", "value": 1.2, "unit": "M", "label": "Monthly Active Users", "sourceAnchorId": "anc-004", "sourceUrl": "https://..." }
   ]
 }
 
@@ -205,16 +205,17 @@ Imagery direction: ${hint}
 
 ## Rules
 1. Produce exactly N queries, one per shot (shot count is stated below).
-2. 2–4 word queries, concrete nouns/adjectives, no motion verbs (running, flying, walking).
+2. 2–4 word queries, concrete nouns/adjectives. Prefer static scenes over action.
 3. Palette mapping:
    - "cool-tech" → offices/trading floors/institutions/charts/data centres/financial districts/boardrooms
    - "warm-real" → families/homes/streets/grocery stores/residential neighborhoods/kitchens/parks
 4. Vary imagery across consecutive shots for the same sentence.
 5. "fallback" is a simpler/broader version of "query".
+6. "motionFree": set true when the query describes a STATIC scene (a building, a chart, a still object). Set false when it depicts motion or action (running, flying, walking, driving, a moving crowd) — stock photos of action read poorly as B-roll.
 
 ## Output
 Return JSON only, no markdown fences.
-Shape: { "shots": [{ "shotIndex": 0, "query": "federal reserve building", "fallback": "government building" }, ...] }`;
+Shape: { "shots": [{ "shotIndex": 0, "query": "federal reserve building", "fallback": "government building", "motionFree": true }, ...] }`;
 }
 
 // ── Story spine ───────────────────────────────────────────────────────────

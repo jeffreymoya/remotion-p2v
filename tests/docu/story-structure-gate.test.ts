@@ -6,6 +6,7 @@
  */
 import {
   checkStructureDeterministic,
+  gateStoryStructure,
   type StructureViolation,
 } from "../../src/lib/docu/story-structure-gate";
 import type { SentenceDef } from "../../src/lib/docu/tts-pipeline";
@@ -191,6 +192,103 @@ function makeSpine(segments: SceneSpec[]): StorySpine {
   spine.quoteSceneIndex = 1;
   const violations = checkStructureDeterministic(sentences, spine);
   assert(!violations.some((v) => v.check === "quote-scene-missing-quote"), "quote-present: not flagged");
+}
+
+// ── gateStoryStructure throws on blocking violations ─────────────────
+
+let pendingAsyncTests = 3;
+function asyncDone(): void {
+  pendingAsyncTests--;
+  if (pendingAsyncTests === 0) {
+    console.log("\nAll async gateStoryStructure tests completed.");
+  }
+}
+
+gateStoryStructure(
+  [
+    s("You check the balance."),
+    s("It's gone."),
+    s("We rebuild from here."),
+    s("The system resets."),
+  ],
+  makeSpine([
+    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2, flipFromPrior: true }),
+    makeScene({ index: 1, arcRole: "escalation", pronoun: "they", targetSentenceCount: 0 }),
+    makeScene({ index: 2, arcRole: "payoff", pronoun: "we", targetSentenceCount: 2 }),
+  ]),
+).then(
+  () => { throw new Error("FAIL gate should have thrown for empty-scene"); },
+  (e: Error) => {
+    assert(e.message.includes("empty-scene"), "gate throws on empty-scene", e.message);
+  },
+).finally(asyncDone);
+
+gateStoryStructure(
+  [
+    s("You open the door."),
+    s("Nothing happens."),
+    s("They leave the building."),
+    s("The end."),
+  ],
+  makeSpine([
+    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2 }),
+    makeScene({ index: 1, arcRole: "payoff", pronoun: "they", targetSentenceCount: 2 }),
+  ]),
+).then(
+  () => { throw new Error("FAIL gate should have thrown for no-flip"); },
+  (e: Error) => {
+    assert(e.message.includes("no-flip"), "gate throws on no-flip", e.message);
+  },
+).finally(asyncDone);
+
+(() => {
+  const scenes: SceneSpec[] = [
+    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2 }),
+    makeScene({ index: 1, arcRole: "payoff", pronoun: "they", flipFromPrior: true, targetSentenceCount: 2 }),
+  ];
+  const spine = makeSpine(scenes);
+  spine.quoteSceneIndex = 1;
+  return gateStoryStructure(
+    [
+      s("You see the number drop."),
+      s("The loss is real."),
+      s("They restructured the entire division."),
+      s("Nobody was warned."),
+    ],
+    spine,
+  );
+})().then(
+  () => { throw new Error("FAIL gate should have thrown for quote-scene-missing-quote"); },
+  (e: Error) => {
+    assert(e.message.includes("quote-scene-missing-quote"), "gate throws on quote-scene-missing-quote", e.message);
+  },
+).finally(asyncDone);
+
+// ── Non-blocking violations (hook-no-setup + pronoun-diversity) ───────
+// These remain log-only — gateStoryStructure must NOT throw for them.
+// Verified via checkStructureDeterministic (which still flags them).
+
+{
+  const scenes: SceneSpec[] = [
+    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2, flipFromPrior: true }),
+    makeScene({ index: 1, arcRole: "payoff", pronoun: "you", targetSentenceCount: 2 }),
+  ];
+  const sentences = [
+    s("Welcome to this overview of inflation."),
+    s("Prices rise every year on average."),
+    s("They adjust rates accordingly."),
+    s("The cycle repeats."),
+  ];
+  const spine = makeSpine(scenes);
+  const violations = checkStructureDeterministic(sentences, spine);
+  assert(violations.some((v) => v.check === "hook-no-setup"), "non-blocking: hook-no-setup still detected");
+  assert(violations.some((v) => v.check === "pronoun-diversity"), "non-blocking: pronoun-diversity still detected");
+  // Confirm neither is in the blocking set
+  const blocking = ["empty-scene", "no-flip", "quote-scene-missing-quote"];
+  assert(
+    !violations.some((v) => blocking.includes(v.check)),
+    "non-blocking: no blocking checks triggered",
+  );
 }
 
 console.log("\nAll story-structure-gate tests passed.");

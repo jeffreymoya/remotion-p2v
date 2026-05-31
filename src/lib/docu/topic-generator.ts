@@ -256,6 +256,13 @@ export async function generateSegmentedTopicData(
   const verifiedAnchors = researchBundle.anchors.filter((a) => a.status === "verified");
   console.log(`[topic] ${verifiedAnchors.length} verified anchors available for ${segmentCount} segments (${totalSentences} total sentences for ${targetMinutes} min)`);
 
+  if (verifiedAnchors.length === 0) {
+    throw new Error(
+      `[topic] No verified anchors from research — cannot produce data-driven content. ` +
+      `Run research phase first or check Exa/Serper API keys.`
+    );
+  }
+
   // 2. Story spine
   let spine: StorySpine;
   if (from === "plan") {
@@ -384,6 +391,16 @@ export async function generateSegmentedTopicData(
     console.log(`[topic] --from ${from}: re-extracting data items...`);
     allDataItems = await extractDataItems(verifiedAnchors, { verbose: opts?.verbose });
     if (allDataItems.length > 0) saveCachedDataItems(slug, allDataItems);
+  }
+
+  const hasNumericAnchors = verifiedAnchors.some(
+    (a) => /\d/.test(a.claim + a.detail)
+  );
+  if (allDataItems.length === 0 && hasNumericAnchors) {
+    throw new Error(
+      `[topic] Metric extraction returned 0 items despite ${verifiedAnchors.length} numeric anchors. ` +
+      `The metric-fidelity gate rejected everything — fix anchor data or re-run research.`
+    );
   }
 
   // 5. Overlay pass — PARALLEL (no cross-segment dependency)

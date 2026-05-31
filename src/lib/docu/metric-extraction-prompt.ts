@@ -5,6 +5,9 @@ import { DataItemSchema, OVERLAY_UNITS } from "./overlays/types";
 import { callStructured } from "./llm-client";
 import { LLM_METRIC } from "../config";
 import { LLM_METRIC_EXTRACTION_PROMPT } from "../prompts";
+import { normalizeNumericText, valueMatchesText } from "../shared/numeric-normalize";
+
+export { normalizeNumericText };
 
 const ExtractionOutputSchema = z.object({
   dataItems: z.array(DataItemSchema),
@@ -18,11 +21,6 @@ function anchorText(anchor: Anchor): string {
   const parts = [anchor.claim, anchor.detail];
   if (anchor.quote) parts.push(anchor.quote);
   return parts.join(" ").toLowerCase();
-}
-
-/** Strip commas from a number string so "250,000" and "250000" both match. */
-export function normalizeNumericText(text: string): string {
-  return text.replace(/(\d),(\d)/g, "$1$2");
 }
 
 /**
@@ -52,30 +50,28 @@ export function numberMatchesText(value: number, unit: string, text: string): bo
   return patterns.some((re) => re.test(normalizedText));
 }
 
-function valueInAnchorText(item: DataItem, text: string): boolean {
-  const normalizedText = normalizeNumericText(text);
-
+/**
+ * Metric-fidelity check: confirm a DataItem's value(s) are attested in the
+ * anchor's free-text prose. Uses the shared deterministic magnitude extractor
+ * (`valueMatchesText`), which gates on unit class (a percent item cannot be
+ * satisfied by a currency mention of the same digits) and tolerates magnitude
+ * shorthand (`$2.5T`), European decimals, and written-out numbers.
+ */
+export function valueInAnchorText(item: DataItem, text: string): boolean {
   if (item.kind === "scalar") {
-    return numberMatchesText(item.value, item.unit, text);
+    return valueMatchesText(item.value, item.unit, text);
   }
 
   const points = item.points as Array<{ x: string | number; y: number }>;
   if (points.length === 0) return false;
 
-  const allYStr = points.map((p) => String(p.y));
-
   let matches = 0;
-  for (const yStr of allYStr) {
-    const yInt = String(Math.trunc(Number(yStr)));
-    if (
-      new RegExp(`\\b${escapeRegex(yStr)}\\b`).test(normalizedText) ||
-      new RegExp(`\\b${escapeRegex(yInt)}\\b`).test(normalizedText)
-    ) {
-      matches++;
-    }
+  for (const p of points) {
+    if (valueMatchesText(p.y, item.unit, text)) matches++;
   }
   if (matches === 0) return false;
 
+  const normalizedText = normalizeNumericText(text);
   let labelFound = true;
   const labelLower = item.label.toLowerCase();
   if (labelLower.length > 0) {
@@ -83,7 +79,7 @@ function valueInAnchorText(item: DataItem, text: string): boolean {
     labelFound = labelWords.some((w) => new RegExp(`\\b${escapeRegex(w)}\\b`).test(normalizedText));
   }
 
-  return matches >= Math.min(2, allYStr.length) || (matches >= 1 && labelFound);
+  return matches >= Math.min(2, points.length) || (matches >= 1 && labelFound);
 }
 
 function escapeRegex(s: string): string {

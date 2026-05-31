@@ -173,4 +173,37 @@ const scalarDataItems: DataItem[] = [
   assert(violations[0].index === 1, "validate: mismatch at correct index");
 }
 
+// Test: spelled-out number is no longer skipped — matching value passes
+{
+  const sentences = [s("Inflation reached nine point one percent that summer")];
+  const selections = [
+    { type: "kinetic-number", dataItemId: "scalar-01", anchorPhrase: "Inflation reached", holdSec: 3.5, palette: "cool-tech" as const },
+  ];
+  const violations = validateNumberAgreement(selections, sentences, scalarDataItems);
+  assert(violations.length === 0, "validate: spelled-out 'nine point one percent' matches 9.1% (not skipped)");
+}
+
+// Test: spelled-out number MISMATCH is now detected (was skipped by /\d/ before)
+{
+  const sentences = [s("GDP grew four point two percent last quarter")];
+  const selections = [
+    { type: "kinetic-number", dataItemId: "scalar-01", anchorPhrase: "GDP grew", holdSec: 3.5, palette: "cool-tech" as const },
+  ];
+  const violations = validateNumberAgreement(selections, sentences, scalarDataItems);
+  assert(violations.length === 1, "validate: spelled-out mismatch detected (4.2 spoken vs 9.1 overlay)");
+}
+
+// Test: magnitude-shorthand sentence ($2.5T) matches a {2.5, T} scalar
+{
+  const sentences = [s("The acquisition was worth $2.5T at close")];
+  const dataItems: DataItem[] = [
+    { id: "scalar-05", kind: "scalar", value: 2.5, unit: "T", label: "Deal Value", sourceAnchorId: "anc-005", sourceUrl: "https://example.com" },
+  ];
+  const selections = [
+    { type: "kinetic-number", dataItemId: "scalar-05", anchorPhrase: "acquisition", holdSec: 3.5, palette: "cool-tech" as const },
+  ];
+  const violations = validateNumberAgreement(selections, sentences, dataItems);
+  assert(violations.length === 0, "validate: '$2.5T' shorthand matches {value:2.5, unit:'T'}");
+}
+
 console.log("\nAll number-agreement tests passed.");

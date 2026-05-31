@@ -24,6 +24,7 @@ export function resolveOverlays(
   fps: number,
 ): DocuOverlay[] {
   const resolved: DocuOverlay[] = [];
+  const skippedTypes: string[] = [];
   for (const spec of specs) {
     try {
       const strategy = getAnchorStrategy(spec.type);
@@ -32,9 +33,22 @@ export function resolveOverlays(
       resolved.push({ ...rest, startFrame, endFrame } as DocuOverlay);
     } catch (err) {
       console.warn(
-        `[overlay-resolver] Skipping overlay type="${spec.type}" — ${(err as Error).message}`,
+        `[overlay-resolver] Failed type="${spec.type}" — ${(err as Error).message}`,
       );
+      skippedTypes.push(spec.type);
     }
   }
+
+  const criticalSkipped = skippedTypes.filter(
+    (t) => t === "kinetic-number" || t === "chart"
+  );
+  if (criticalSkipped.length > 0) {
+    throw new Error(
+      `[overlay-resolver] ${criticalSkipped.length} metric/chart overlay(s) failed to resolve ` +
+      `and would be silently dropped: ${criticalSkipped.join(", ")}. ` +
+      `These carry verified data — cannot proceed.`
+    );
+  }
+
   return resolved;
 }

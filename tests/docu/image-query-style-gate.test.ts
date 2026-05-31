@@ -5,9 +5,8 @@
 import {
   validateImageQueryStyle,
   applyImageQueryFallbacks,
-  MOTION_VERB_RE,
+  type ImageQueryCandidate,
 } from "../../src/lib/docu/image-query-prompt";
-import type { ImageQuery } from "../../src/lib/docu/image-pipeline";
 
 function assert(condition: boolean, label: string, detail?: string): void {
   if (!condition) {
@@ -16,8 +15,10 @@ function assert(condition: boolean, label: string, detail?: string): void {
   console.log(`PASS ${label}`);
 }
 
-function iq(slot: number, query: string, fallback = "default fallback"): ImageQuery {
-  return { slot, query, fallback };
+// Default to motionFree (static scene) unless a test overrides it — motion is
+// now an LLM-provided flag, not a regex over the query text.
+function iq(slot: number, query: string, fallback = "default fallback", motionFree = true): ImageQueryCandidate {
+  return { slot, query, fallback, motionFree };
 }
 
 const runName = "test/image-queries";
@@ -79,25 +80,38 @@ const runName = "test/image-queries";
   );
 }
 
-// ── Motion verb "running" ─────────────────────────────────────────────
+// ── Motion violation comes from motionFree flag (not regex) ───────────
 
 {
-  const queries = [iq(0, "office running woman")];
+  // Query text contains no obvious "motion verb", but the LLM judged it as motion.
+  const queries = [iq(0, "busy crowded plaza", "city plaza", false)];
   const violations = validateImageQueryStyle(queries);
   assert(
     violations.some((v) => v.reason === "motion-verb"),
-    "motion-verb: running fires",
+    "motion-flag: motionFree=false fires",
   );
 }
 
-// ── Motion verb "streaming" ───────────────────────────────────────────
+// ── motionFree=true does NOT fire even with an action-looking word ────
 
 {
-  const queries = [iq(0, "streaming data charts")];
+  // Old regex would have flagged "running"; the flag now governs.
+  const queries = [iq(0, "office running track", "office track", true)];
   const violations = validateImageQueryStyle(queries);
   assert(
-    violations.some((v) => v.reason === "motion-verb"),
-    "motion-verb: streaming fires",
+    !violations.some((v) => v.reason === "motion-verb"),
+    "motion-flag: motionFree=true does not fire on action-looking text",
+  );
+}
+
+// ── Absent motionFree is not second-guessed ───────────────────────────
+
+{
+  const queries: ImageQueryCandidate[] = [{ slot: 0, query: "trading floor screens", fallback: "office screens" }];
+  const violations = validateImageQueryStyle(queries);
+  assert(
+    !violations.some((v) => v.reason === "motion-verb"),
+    "motion-flag: undefined flag → no motion violation",
   );
 }
 
@@ -130,7 +144,7 @@ const runName = "test/image-queries";
 
 {
   const queries = [
-    iq(0, "running man city", "office city skyline"),
+    iq(0, "running man city", "office city skyline", false),
   ];
   const violations = validateImageQueryStyle(queries);
   const motionV = violations.filter((v) => v.reason === "motion-verb");
@@ -156,7 +170,7 @@ const runName = "test/image-queries";
 {
   const queries = [
     iq(0, "single", "fallback zero"),
-    iq(1, "dancing finance woman", "office building chart"),
+    iq(1, "dancing finance woman", "office building chart", false),
     iq(2, "clean query here", "default fallback"),
   ];
   const violations = validateImageQueryStyle(queries);
@@ -166,11 +180,5 @@ const runName = "test/image-queries";
   assert(result[1].query === "office building chart", "mixed: slot 1 replaced (motion-verb)");
   assert(result[2].query === "clean query here", "mixed: slot 2 unchanged");
 }
-
-// ── Regex constant tests ──────────────────────────────────────────────
-
-assert(MOTION_VERB_RE.test("woman running in city"), "MOTION_VERB: matches 'running'");
-assert(MOTION_VERB_RE.test("flowing water stream"), "MOTION_VERB: matches 'flowing'");
-assert(!MOTION_VERB_RE.test("office building chart"), "MOTION_VERB: does not match static scene");
 
 console.log("\nAll image-query-style-gate tests passed.");

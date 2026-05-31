@@ -44,7 +44,14 @@ const BrainstormResponseSchema = z.object({
   candidates: z.array(BrainstormCandidateSchema),
 });
 
-function normalizeKind(rawKind: string): AnchorKind {
+/**
+ * Default kind for un-mapped model output. The switch below absorbs documented
+ * synonym drift; a genuinely unknown kind degrades to this instead of throwing
+ * (which would fail the entire research run over one mislabeled candidate).
+ */
+const DEFAULT_ANCHOR_KIND: AnchorKind = "study";
+
+export function normalizeKind(rawKind: string): AnchorKind {
   const normalized = rawKind.trim().toLowerCase().replace(/[\s-]+/g, "_");
 
   switch (normalized) {
@@ -88,7 +95,11 @@ function normalizeKind(rawKind: string): AnchorKind {
     case "transformation_story":
       return "narrative";
     default:
-      throw new Error(`Unsupported brainstorm candidate kind: ${rawKind}`);
+      console.warn(
+        `[brainstorm] unmapped candidate kind "${rawKind}" → defaulting to "${DEFAULT_ANCHOR_KIND}". ` +
+        `Add a synonym mapping if this recurs.`,
+      );
+      return DEFAULT_ANCHOR_KIND;
   }
 }
 
@@ -133,7 +144,7 @@ ${opts.corpus.excerpts
   })
   .join("\n\n")}
 
-When a candidate corresponds to one of these excerpts, set its queryHint to the excerpt's URL so verification finds it directly. You may still propose claims outside this list (especially canonical quotes the scan missed), but at least 60% of candidates should be grounded in the excerpts above. Favor excerpts from non-storytelling lenses (meta_analysis, review_article, primary_study, critique_or_replication_failure, definition_or_mechanism, statistics_or_distribution) to balance the bundle against narrative anchors.`
+When a candidate corresponds to one of these excerpts, set its queryHint to the excerpt's URL so verification finds it directly. You may still propose claims outside this list (especially canonical quotes the scan missed), but at least 60% of candidates should be grounded in the excerpts above. Favor excerpts from non-storytelling lenses (meta_analysis, review_article, primary_study, critique_or_replication_failure, definition_or_mechanism, statistics_or_distribution) to balance the bundle against narrative anchors. NOTE: those lens names describe a source's analytical angle — they are NOT valid \`kind\` values. Always set \`kind\` to one of the enum strings listed above.`
       : "";
 
   return `You are a research assistant preparing real-world anchors for a long-form narrated video about: "${topic}".

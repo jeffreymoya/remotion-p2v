@@ -14,7 +14,7 @@ import { LLM_OVERLAY, LLM_JUDGE } from "../config";
 import { llmSegmentOverlaySelectionPrompt } from "../prompts";
 import type { DocuSegmentPlan } from "./segment-types";
 import type { DocuPalette } from "../../components/docu/docu-tokens";
-import { numberMatchesText } from "./metric-extraction-prompt";
+import { extractMagnitudes, valueMatchesText } from "../shared/numeric-normalize";
 
 // ── Typed selection schema ────────────────────────────────────────────
 
@@ -305,13 +305,14 @@ export function validateNumberAgreement(
 
     const sentenceText = sentences[sentIdx].text;
 
-    // Check if the sentence contains ANY numeric token
-    const hasNumeric = /\d/.test(sentenceText);
-    if (!hasNumeric) continue; // overlay legitimately amplifies data narration doesn't state
+    // Check if the sentence states ANY numeric magnitude — digits OR spelled-out
+    // numbers (e.g. "nine point one percent"). A bare `/\d/` test would skip the
+    // spelled-out case and miss a real placement mismatch.
+    if (extractMagnitudes(sentenceText).length === 0) continue; // overlay legitimately amplifies data narration doesn't state
 
     // For scalar DataItems, check value agreement
     if (dataItem.kind === "scalar") {
-      if (!numberMatchesText(dataItem.value, dataItem.unit, sentenceText)) {
+      if (!valueMatchesText(dataItem.value, dataItem.unit, sentenceText)) {
         violations.push({
           index: i,
           anchorPhrase: sel.anchorPhrase,
@@ -488,33 +489,31 @@ export async function gateOverlayPlacement(
   return current;
 }
 
-// ── Anchor ID resolution ─────────────────────────────────────────────
+// ── Anchor ID validation ─────────────────────────────────────────────
 
 /**
- * Anchors are listed to the LLM as [anc-1], [anc-2], etc. (1-indexed position
- * within the segment's verified anchors). The LLM references these in
- * sourceAnchorId. Translate back to the canonical anchor id (e.g. "anc-001").
+ * The overlay LLM is shown anchors by their canonical id (e.g. [anc-001]) and
+ * references them in sourceAnchorId. No remapping is needed. Any sourceAnchorId
+ * that is not in the verified-anchor set is rejected (the selection is dropped)
+ * rather than silently passed through — an unresolved id would otherwise fail
+ * downstream sourceUrl/anchor matching silently. Surfacing the drift here is
+ * preferable to hiding it.
  */
-function resolveSourceAnchorIds(
+export function rejectUnknownSourceAnchorIds(
   selections: AnySelection[],
   verifiedAnchors: readonly Anchor[],
+  runName: string,
 ): AnySelection[] {
-  const ancIndexToId = new Map(
-    verifiedAnchors.map((a, i) => [`anc-${i + 1}`, a.id]),
-  );
-  return selections.map((sel) => {
-    if (!("sourceAnchorId" in sel)) return sel;
+  const validIds = new Set(verifiedAnchors.map((a) => a.id));
+  return selections.filter((sel) => {
+    if (!("sourceAnchorId" in sel)) return true;
     const sourceAnchorId = (sel as { sourceAnchorId?: string }).sourceAnchorId;
-    if (!sourceAnchorId) return sel;
-    const resolved = ancIndexToId.get(sourceAnchorId);
-    if (resolved) {
-      return { ...sel, sourceAnchorId: resolved };
-    } else {
-      console.warn(
-        `[overlay-selection] Unrecognized sourceAnchorId "${sourceAnchorId}" in textual selection; passing through. Known labels: ${Array.from(ancIndexToId.keys()).join(", ")}`,
-      );
-    }
-    return sel;
+    if (!sourceAnchorId) return true;
+    if (validIds.has(sourceAnchorId)) return true;
+    console.warn(
+      `[${runName}] Rejecting selection with unknown sourceAnchorId "${sourceAnchorId}" (anchorPhrase: "${sel.anchorPhrase}"). Known ids: ${Array.from(validIds).join(", ") || "(none)"}`,
+    );
+    return false;
   });
 }
 
@@ -530,8 +529,8 @@ async function generateOverlaySelectionsImpl(
   opts?: { verbose?: boolean },
 ): Promise<OverlaySpec[]> {
   const verified = anchors.filter((a) => a.status === "verified");
-  const anchorLines = verified.map((a, i) =>
-    `[anc-${i + 1}] ${a.claim} / ${a.detail}` +
+  const anchorLines = verified.map((a) =>
+    `[${a.id}] ${a.claim} / ${a.detail}` +
     (a.attribution.year ? ` / ${a.attribution.year}` : "") +
     (a.attribution.person ? ` / ${a.attribution.person}` : "")
   ).join("\n");
@@ -654,8 +653,8 @@ async function generateOverlaySelectionsImpl(
       return [];
     }
 
-    const resolvedSelections = resolveSourceAnchorIds(workingSelections, verified);
-    const specs = populateSelections(resolvedSelections, dataItems);
+    const knownAnchorSelections = rejectUnknownSourceAnchorIds(workingSelections, verified, runName);
+    const specs = populateSelections(knownAnchorSelections, dataItems);
 
     if (specs.length === 0) {
       if (!hasDataItems) {
