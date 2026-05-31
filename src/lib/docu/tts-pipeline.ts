@@ -241,6 +241,7 @@ export async function runTtsPipeline(
           startSeconds: sd.startSeconds,
           endSeconds: sd.endSeconds,
           emphasisIndices: sd.emphasisIndices,
+          tokenWordIndexes: sd.tokenWordIndexes,
         })),
         durationSeconds: totalDurationSeconds,
         voice: DOCU_TTS_VOICE,
@@ -257,6 +258,87 @@ export async function runTtsPipeline(
     sentenceData,
     sentenceFrameRanges,
     durationSeconds: totalDurationSeconds,
+    timingsJsonPath: timingsPath,
+  };
+}
+
+// Rehydrates a TtsPipelineResult from the cached timings JSON written by runTtsPipeline.
+// Returns null when the file is missing or the sentence count no longer matches the current
+// topic (stale cache), signalling the caller to re-run TTS.
+export function loadCachedTtsResult(
+  slug: string,
+  sentences: SentenceDef[],
+): TtsPipelineResult | null {
+  const timingsPath = path.join(PROMPTS_DIR, `${slug}-timings.json`);
+  if (!fs.existsSync(timingsPath)) return null;
+
+  const raw = JSON.parse(fs.readFileSync(timingsPath, "utf-8")) as unknown;
+  if (
+    !raw ||
+    typeof raw !== "object" ||
+    !Array.isArray((raw as Record<string, unknown>).wordTimings) ||
+    !Array.isArray((raw as Record<string, unknown>).sentences) ||
+    typeof (raw as Record<string, unknown>).durationSeconds !== "number"
+  ) {
+    throw new Error(`Timings file at ${timingsPath} is malformed — re-run without --only to regenerate.`);
+  }
+
+  type RawTimings = {
+    wordTimings: WordTiming[];
+    sentences: Array<{
+      startSeconds: number;
+      endSeconds: number;
+      emphasisIndices?: number[];
+      tokenWordIndexes?: number[];
+    }>;
+    durationSeconds: number;
+  };
+  const { wordTimings: allWordTimings, sentences: rawSentences, durationSeconds } = raw as RawTimings;
+
+  if (rawSentences.length !== sentences.length) {
+    console.warn(
+      `[tts:docu] Cache has ${rawSentences.length} sentences but topic has ${sentences.length} — treating as stale.`,
+    );
+    return null;
+  }
+
+  if (rawSentences.some((rs) => !Array.isArray(rs.tokenWordIndexes))) {
+    throw new Error(
+      `Timings file at ${timingsPath} is missing tokenWordIndexes — re-run without --only to regenerate.`,
+    );
+  }
+
+  const sentenceData: SentenceData[] = [];
+  const sentenceFrameRanges: SentenceFrameRange[] = [];
+
+  for (let i = 0; i < rawSentences.length; i++) {
+    const rs = rawSentences[i];
+    const tokenWordIndexes = rs.tokenWordIndexes!;
+    const sentWords = tokenWordIndexes.map((idx) => allWordTimings[idx]);
+
+    sentenceData.push({
+      wordTimings: sentWords,
+      startSeconds: rs.startSeconds,
+      endSeconds: rs.endSeconds,
+      startFrame: s(rs.startSeconds),
+      endFrame: e(rs.endSeconds),
+      emphasisIndices: rs.emphasisIndices ?? [],
+      tokenWordIndexes,
+    });
+
+    sentenceFrameRanges.push({
+      startFrame: s(rs.startSeconds),
+      endFrame: e(rs.endSeconds),
+      palette: sentences[i].palette,
+    });
+  }
+
+  return {
+    audioPath: path.join(AUDIO_DIR, `${slug}.wav`),
+    wordTimings: allWordTimings,
+    sentenceData,
+    sentenceFrameRanges,
+    durationSeconds,
     timingsJsonPath: timingsPath,
   };
 }

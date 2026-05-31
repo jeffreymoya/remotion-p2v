@@ -12,7 +12,7 @@ import { topicToSlug } from "../src/lib/shared/slug";
 import { boundedMap } from "../src/lib/shared/concurrency";
 import fs from "node:fs";
 import path from "node:path";
-import { runTtsPipeline, runTtsAudition } from "../src/lib/docu/tts-pipeline";
+import { runTtsPipeline, runTtsAudition, loadCachedTtsResult } from "../src/lib/docu/tts-pipeline";
 import type { SentenceDef } from "../src/lib/docu/tts-pipeline";
 import { runImagePipeline } from "../src/lib/docu/image-pipeline";
 import type { ImageQuery } from "../src/lib/docu/image-pipeline";
@@ -141,6 +141,7 @@ function cleanArtifacts(slug: string): string[] {
   return removed;
 }
 
+
 // ── Full pipeline (hand-authored + LLM paths) ───────────────────────────
 
 async function runFullPipeline(
@@ -151,10 +152,21 @@ async function runFullPipeline(
   imageQueries: ImageQuery[],
   segmentPlans?: TopicData["segmentPlans"],
   youtubeClipSpecs?: YouTubeClipSpec[],
+  opts?: { only?: "images" | "codegen" },
 ) {
-  // 1. TTS pipeline
-  console.log(`[docu] Running TTS pipeline for "${topic}"...`);
-  const ttsResult = await runTtsPipeline(slug, sentences);
+  const only = opts?.only;
+
+  // 1. TTS pipeline (or load from cache if skipping ahead)
+  let ttsResult;
+  if (only) {
+    const cached = loadCachedTtsResult(slug, sentences);
+    if (!cached) throw new Error("TTS timings not found — re-run without --only to regenerate.");
+    console.log(`[docu] Loaded TTS timings from cache (${cached.durationSeconds.toFixed(1)}s)`);
+    ttsResult = cached;
+  } else {
+    console.log(`[docu] Running TTS pipeline for "${topic}"...`);
+    ttsResult = await runTtsPipeline(slug, sentences);
+  }
   const { wordTimings, sentenceFrameRanges, sentenceData, durationSeconds } = ttsResult;
   const durationFrames = Math.ceil(durationSeconds * FPS);
 
@@ -185,9 +197,11 @@ async function runFullPipeline(
   );
   // FROM THIS POINT ON: use `mergedShots`, not `shots`
 
-  // 3. Image queries
-  let finalImageQueries: ImageQuery[];
-  if (imageQueries.length > 0) {
+  // 3. Image queries (skip LLM generation when loading images from manifest)
+  let finalImageQueries: ImageQuery[] = [];
+  if (only === "codegen") {
+    // queries not needed — images are loaded from manifest below
+  } else if (imageQueries.length > 0) {
     console.log(`\n[docu] Using ${imageQueries.length} hand-authored image queries`);
     finalImageQueries = imageQueries;
   } else if (segmentPlans && segmentPlans.length >= 1) {
@@ -226,12 +240,29 @@ async function runFullPipeline(
     console.log(`[docu] Generated ${finalImageQueries.length} image queries`);
   }
 
-  // 4. Image pipeline
-  console.log(`\n[docu] Downloading images...`);
-  const imageResult = await runImagePipeline(slug, finalImageQueries);
-  console.log(`[docu] Downloaded ${imageResult.downloadedCount} images`);
+  // 4. Image pipeline (or load manifest if skipping ahead)
+  let downloadedSlotSet: Set<number>;
+  if (only === "codegen") {
+    const manifestPath = `prompts/docu/${slug}-images.json`;
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as unknown;
+    if (!manifest || typeof manifest !== "object" || !Array.isArray((manifest as Record<string, unknown>).slots)) {
+      throw new Error(`Image manifest at ${manifestPath} is malformed (missing slots array) — re-run --only images.`);
+    }
+    downloadedSlotSet = new Set(
+      ((manifest as { slots: Array<{ index: number }> }).slots).map((slot) => slot.index),
+    );
+    console.log(`[docu] Loaded ${downloadedSlotSet.size} cached images from manifest`);
+  } else {
+    console.log(`\n[docu] Downloading images...`);
+    const imageResult = await runImagePipeline(slug, finalImageQueries);
+    console.log(`[docu] Downloaded ${imageResult.downloadedCount} images`);
+    downloadedSlotSet = new Set(imageResult.downloadedSlots);
+  }
 
-  const downloadedSlotSet = new Set(imageResult.downloadedSlots);
+  if (only === "images") {
+    console.log(`[docu] --only images: done. ${downloadedSlotSet.size} images ready.`);
+    return;
+  }
 
   // 5. Overlay resolution
   const overlays = resolveOverlays(overlaySpecs, wordTimings, FPS);
@@ -395,7 +426,7 @@ function parseArgs(args: string[]) {
 
   const onlyIdx = args.indexOf("--only");
   const only = onlyIdx >= 0 && onlyIdx + 1 < args.length
-    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube"
+    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen"
     : undefined;
 
   return { topicArg, audition, clean, minutes, from, only };
@@ -405,7 +436,7 @@ function printUsage() {
   console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--minutes N] [--from phase] [--only phase]");
   console.error("  --minutes N     Target video length in minutes (default: 4)");
   console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
-  console.error("  --only phase    Stop after: plan | narration | overlays | youtube (omit to run full pipeline)");
+  console.error("  --only phase    Stop after: plan | narration | overlays | youtube | tts | images | codegen (omit to run full pipeline)");
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove all pipeline artifacts for this topic before running");
 }
@@ -435,7 +466,7 @@ async function main() {
   }
 
   // Validate --only
-  const validOnly = ["plan", "narration", "overlays", "youtube"];
+  const validOnly = ["plan", "narration", "overlays", "youtube", "tts", "images", "codegen"];
   if (only !== undefined && !validOnly.includes(only)) {
     console.error(`Error: --only must be one of: ${validOnly.join(", ")}`);
     process.exit(1);
@@ -470,27 +501,59 @@ async function main() {
     && topicCached.segmentPlans
     && topicCached.segmentPlans.length === 5;
 
-  if (isCacheValid && from === "tts" && !only) {
+  const llmOnlyPhases = new Set(["plan", "narration", "overlays", "youtube"]);
+  const isLlmsOnly = only !== undefined && llmOnlyPhases.has(only);
+
+  if (isCacheValid && from === "tts" && !isLlmsOnly) {
     console.log(`[docu] Using cached topic data for "${topicCached.topic}" (generated ${topicCached.generatedAt})`);
     topicData = topicCached;
   } else {
     if (topicCached && !isCacheValid) {
       console.log(`[docu] Cached topic data stale (missing segmentPlans) — regenerating`);
     }
+    if (only === "tts") {
+      console.warn(`[docu] No valid topic cache — running LLM narration phase before TTS (this costs API credits).`);
+      console.warn(`[docu] To skip LLM: run the full pipeline once first, then re-use --only tts.`);
+    }
     console.log(`[docu] Generating topic data: ${minutes} min target...`);
     topicData = await generateSegmentedTopicData(topicArg, slug, 5, minutes, {
       verbose: true,
       from: from === "tts" ? "overlays" : from as "plan" | "narration" | "overlays" | "youtube",
-      only,
+      only: isLlmsOnly ? only : undefined,
     });
-    if (!only) saveTopicData(topicData);
+    if (!isLlmsOnly) saveTopicData(topicData);
   }
 
   const { topic, sentences, overlaySpecs, segmentPlans, youtubeClipSpecs } = topicData;
 
-  if (only) {
+  if (isLlmsOnly) {
     console.log(`[docu] --only ${only}: done. Inspect prompts/docu/${slug}-*.json`);
     return;
+  }
+
+  if (only === "tts") {
+    console.log(`[docu] --only tts: running TTS pipeline for "${topic}"...`);
+    await runTtsPipeline(slug, sentences);
+    console.log("[docu] --only tts: done.");
+    return;
+  }
+
+  if (only === "images") {
+    const timingsPath = `prompts/docu/${slug}-timings.json`;
+    if (!fs.existsSync(timingsPath)) {
+      console.error(`Error: No TTS timings found at ${timingsPath}.`);
+      console.error(`Run first: npx tsx --env-file=.env scripts/docu.ts "${topicArg}" --only tts`);
+      process.exit(1);
+    }
+  }
+
+  if (only === "codegen") {
+    const imagesPath = `prompts/docu/${slug}-images.json`;
+    if (!fs.existsSync(imagesPath)) {
+      console.error(`Error: No image manifest found at ${imagesPath}.`);
+      console.error(`Run first: npx tsx --env-file=.env scripts/docu.ts "${topicArg}" --only images`);
+      process.exit(1);
+    }
   }
 
   if (audition) {
@@ -500,7 +563,8 @@ async function main() {
     return;
   }
 
-  await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans, youtubeClipSpecs);
+  await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans, youtubeClipSpecs,
+    (only === "images" || only === "codegen") ? { only } : undefined);
 }
 
 main().catch((err) => {
