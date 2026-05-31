@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import { z } from "zod";
+import { traceable, getCurrentRunTree } from "langsmith/traceable";
+import { enrichCurrentRun } from "../tracing";
 import { topicToSlug } from "../shared/slug";
 import {
   loadCachedResearchBundle,
@@ -212,6 +214,19 @@ function filterDataItemsByAnchors(items: DataItem[], anchorIds: string[]): DataI
 
 import { boundedMap } from "../shared/concurrency";
 
+function recordGateOutcome(gateName: string, beforeTexts: string[], afterSentences: SentenceDef[]): void {
+  const rewriteCount = afterSentences.filter((s, i) => s.text !== beforeTexts[i]).length;
+  const pass = rewriteCount === 0;
+  const run = getCurrentRunTree(true);
+  if (!run) return;
+  run.metadata = {
+    ...run.metadata,
+    [`gate_${gateName}_pass`]: pass,
+    [`gate_${gateName}_rewrites`]: rewriteCount,
+  };
+  run.tags = [...(run.tags ?? []), `gate:${gateName}:${pass ? "pass" : "rewrite"}`];
+}
+
 export interface SegmentedTopicOpts {
   verbose?: boolean;
   /** Resume from a specific phase: "plan" | "narration" | "overlays" | "youtube" */
@@ -220,13 +235,16 @@ export interface SegmentedTopicOpts {
   only?: "plan" | "narration" | "overlays" | "youtube";
 }
 
-export async function generateSegmentedTopicData(
+export const generateSegmentedTopicData = traceable(
+  async function generateSegmentedTopicData_impl(
   topic: string,
   slug: string,
   segmentCount: number,
   targetMinutes: number,
   opts?: SegmentedTopicOpts,
 ): Promise<TopicData> {
+  enrichCurrentRun({ slug, topic });
+
   const totalSentences = Math.round(targetMinutes * SENTENCES_PER_MINUTE);
   const from = opts?.from ?? "overlays";
   const only = opts?.only;
@@ -292,6 +310,7 @@ export async function generateSegmentedTopicData(
   }
 
   // 3. Narration pass — SEQUENTIAL (priorContext threading)
+  enrichCurrentRun({ slug, topic, phase: "narration" });
   let allSentences: SentenceDef[] = [];
   const regenerateNarration = from === "plan" || from === "narration";
 
@@ -300,6 +319,7 @@ export async function generateSegmentedTopicData(
   }
 
   for (let i = 0; i < spine.segments.length; i++) {
+    enrichCurrentRun({ segmentIndex: i });
     const scene = spine.segments[i];
     const segAnchors = filterAnchorsByIds(verifiedAnchors, scene.assignedAnchorIds);
 
@@ -330,9 +350,12 @@ export async function generateSegmentedTopicData(
   }
 
   // Citation-fidelity gate — verify narration against anchors, rewrite unsupported sentences
+  enrichCurrentRun({ slug, topic, phase: "proofread" });
   if (verifiedAnchors.length > 0) {
     console.log(`[topic] Running citation-fidelity gate on ${allSentences.length} sentences against ${verifiedAnchors.length} anchors...`);
+    const beforeFidelity = allSentences.map(s => s.text);
     allSentences = await gateNarrationFidelity(allSentences, verifiedAnchors, { verbose: opts?.verbose });
+    recordGateOutcome("citation_fidelity", beforeFidelity, allSentences);
   }
 
   // Narration style gate — deterministic lint, log-only (no retry, no block)
@@ -353,13 +376,17 @@ export async function generateSegmentedTopicData(
 
   // Story-structure gate — deterministic + LLM judge (log+pass, never blocks render)
   console.log(`[topic] Running story-structure gate...`);
+  const beforeStructure = allSentences.map(s => s.text);
   const structureResult = await gateStoryStructure(allSentences, spine, { verbose: opts?.verbose });
   allSentences = structureResult.sentences;
+  recordGateOutcome("story_structure", beforeStructure, allSentences);
 
   // Infotainment-voice gate — LLM judge (log+pass, never blocks render)
   console.log(`[topic] Running infotainment-voice gate...`);
+  const beforeVoice = allSentences.map(s => s.text);
   const voiceResult = await gateInfotainmentVoice(allSentences, { verbose: opts?.verbose });
   allSentences = voiceResult.sentences;
+  recordGateOutcome("infotainment_voice", beforeVoice, allSentences);
 
   const expectedTotal = spine.segments.reduce((sum, p) => sum + p.targetSentenceCount, 0);
   if (allSentences.length !== expectedTotal) {
@@ -374,6 +401,7 @@ export async function generateSegmentedTopicData(
   }
 
   // 4. Extraction — data items from all verified anchors
+  enrichCurrentRun({ slug, topic, phase: "artdirect" });
   const regenerateOverlays = from === "plan" || from === "narration" || from === "overlays";
   let allDataItems: DataItem[];
 
@@ -404,6 +432,7 @@ export async function generateSegmentedTopicData(
   }
 
   // 5. Overlay pass — PARALLEL (no cross-segment dependency)
+  enrichCurrentRun({ slug, topic, phase: "compose" });
   let allOverlays: OverlaySpec[] = [];
   const hasDataItems = allDataItems.length > 0;
 
@@ -449,6 +478,7 @@ export async function generateSegmentedTopicData(
   }
 
   // 6. YouTube clip annotation
+  enrichCurrentRun({ slug, topic, phase: "videos" });
   const regenerateClips = regenerateOverlays || from === "youtube";
   let youtubeClipSpecs: YouTubeClipSpec[];
   if (!regenerateClips) {
@@ -475,4 +505,6 @@ export async function generateSegmentedTopicData(
     segmentPlans: spine.segments,
     youtubeClipSpecs: youtubeClipSpecs.length > 0 ? youtubeClipSpecs : undefined,
   };
-}
+},
+{ run_type: "chain", name: "generateTopic" },
+);

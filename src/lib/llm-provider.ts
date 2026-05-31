@@ -1,5 +1,5 @@
 import { traceable, getCurrentRunTree } from "langsmith/traceable";
-import type { ZodType } from "zod";
+import { ZodError, type ZodType } from "zod";
 import {
   LLM_TIMEOUT_MS,
   resolveProvider,
@@ -179,7 +179,18 @@ async function llmChatImpl(
     return content;
   } catch (error) {
     if (error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError")) {
+      enrichCurrentRun({ errorType: "timeout" });
       throw new LlmError(`LLM request timed out after ${timeoutMs}ms`);
+    }
+    if (error instanceof LlmError) {
+      enrichCurrentRun({
+        errorType: error.status === 429 ? "rate_limit"
+          : error.message.includes("max_tokens") ? "max_tokens"
+          : error.message.includes("empty") ? "empty_response"
+          : "api_error",
+      });
+    } else {
+      enrichCurrentRun({ errorType: "unknown" });
     }
     throw error;
   } finally {
@@ -245,6 +256,7 @@ async function llmChatJsonImpl<T>(
     () => controller.abort(new DOMException(`LLM JSON request timed out after ${timeoutMs}ms`, "TimeoutError")),
     timeoutMs,
   );
+  let cleaned = "";
   try {
     const response = await fetch(`${provider.baseUrl}/chat/completions`, {
       method: "POST",
@@ -310,12 +322,37 @@ async function llmChatJsonImpl<T>(
       );
     }
 
-    const cleaned = stripJsonFences(content);
+    cleaned = stripJsonFences(content);
     const parsed: unknown = JSON.parse(cleaned);
     return schema.parse(parsed);
   } catch (error) {
     if (error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError")) {
+      enrichCurrentRun({ errorType: "timeout" });
       throw new LlmError(`LLM JSON request timed out after ${timeoutMs}ms`);
+    }
+    if (error instanceof SyntaxError) {
+      enrichCurrentRun({ errorType: "json_parse" });
+      const run = getCurrentRunTree(true);
+      if (run) run.metadata = { ...run.metadata, error_preview: cleaned.slice(0, 200) };
+    } else if (error instanceof ZodError) {
+      enrichCurrentRun({ errorType: "zod_parse" });
+      const run = getCurrentRunTree(true);
+      if (run) {
+        run.metadata = {
+          ...run.metadata,
+          error_preview: cleaned.slice(0, 200),
+          zod_issues: error.issues.slice(0, 3).map(i => `${i.path.join(".")}: ${i.message}`),
+        };
+      }
+    } else if (error instanceof LlmError) {
+      enrichCurrentRun({
+        errorType: error.status === 429 ? "rate_limit"
+          : error.message.includes("max_tokens") ? "max_tokens"
+          : error.message.includes("empty") ? "empty_response"
+          : "api_error",
+      });
+    } else {
+      enrichCurrentRun({ errorType: "unknown" });
     }
     throw error;
   } finally {
