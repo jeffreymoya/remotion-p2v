@@ -18,7 +18,6 @@ Operational scripts live in `scripts/`. Generated pipeline artifacts are written
 - `npm run quotas`: check quota/liveness for all active API integrations.
 - `npm run test:pause-injector`: run TTS pause injector unit tests.
 - `npm run test:tts-chunking`: run TTS text chunking unit tests.
-- `npm run test:docu-stacked-bar`: run stacked bar layout tests.
 - `npm run test:docu-article-text`: run article text layout tests.
 
 ## Pipeline Overview

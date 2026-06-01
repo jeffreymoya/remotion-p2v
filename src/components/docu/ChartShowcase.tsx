@@ -39,21 +39,6 @@ export const ChartShowcase: React.FC = () => {
       </Sequence>
       <Sequence from={PER_CHART * 3} durationInFrames={PER_CHART}>
         <DocuChart
-          chartKind="stacked-bar"
-          label="Revenue Mix"
-          points={[]}
-          unit="$"
-          palette="warm-real"
-          durationInFrames={PER_CHART}
-          series={[
-            { name: "Subscriptions", points: [{ x: "Q1", y: 4.2 }, { x: "Q2", y: 5.8 }, { x: "Q3", y: 7.5 }, { x: "Q4", y: 9.6 }] },
-            { name: "Services", points: [{ x: "Q1", y: 1.8 }, { x: "Q2", y: 2.1 }, { x: "Q3", y: 2.4 }, { x: "Q4", y: 2.6 }] },
-            { name: "Marketplace", points: [{ x: "Q1", y: 0.4 }, { x: "Q2", y: 0.6 }, { x: "Q3", y: 1.1 }, { x: "Q4", y: 1.8 }] },
-          ]}
-        />
-      </Sequence>
-      <Sequence from={PER_CHART * 4} durationInFrames={PER_CHART}>
-        <DocuChart
           chartKind="area"
           label="ARR Growth"
           points={[
@@ -66,23 +51,7 @@ export const ChartShowcase: React.FC = () => {
           forecastFromIndex={9}
         />
       </Sequence>
-      <Sequence from={PER_CHART * 5} durationInFrames={PER_CHART}>
-        <DocuChart
-          chartKind="bubble"
-          label="Runway vs Growth"
-          points={[]}
-          unit="%"
-          palette="cool-tech"
-          durationInFrames={PER_CHART}
-          bubblePoints={[
-            { name: "Lumen", x: 84, y: 320, r: 22, highlight: true },
-            { name: "Cortex", x: 60, y: 285, r: 18, highlight: true },
-            { name: "Nimbus", x: 38, y: 240, r: 12, highlight: false },
-            { name: "Quill", x: 11, y: 55, r: 6, highlight: true },
-          ]}
-        />
-      </Sequence>
-      <Sequence from={PER_CHART * 6} durationInFrames={PER_CHART}>
+      <Sequence from={PER_CHART * 4} durationInFrames={PER_CHART}>
         <DocuChart
           chartKind="radial"
           label="Series B · 2026"

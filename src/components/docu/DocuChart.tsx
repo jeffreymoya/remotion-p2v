@@ -1,144 +1,64 @@
 import React from "react";
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
+import type { ChartKind } from "../../lib/docu/overlays/chart";
 import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 import { DonutChart } from "./DonutChart";
 import { LineChart } from "./LineChart";
 import { BarChart } from "./BarChart";
 import { HorizontalBarChart } from "./HorizontalBarChart";
-import { StackedBarChart } from "./StackedBarChart";
 import { AreaChart } from "./AreaChart";
-import { BubbleChart } from "./BubbleChart";
 import { RadialChart } from "./RadialChart";
 
 export interface DocuChartProps {
-  chartKind: "timeseries" | "comparison" | "composition"
-    | "horizontal-bar" | "stacked-bar" | "area" | "bubble" | "radial";
+  chartKind: ChartKind;
   label: string;
   points: Array<{ x: string | number; y: number }>;
   unit: OverlayUnit;
   source?: string;
   palette: DocuPalette;
   durationInFrames: number;
-  series?: Array<{ name: string; points: Array<{ x: string | number; y: number }> }>;
   forecastFromIndex?: number;
-  bubblePoints?: Array<{ name: string; x: number; y: number; r: number; highlight?: boolean }>;
   enter?: EnterPresetKey;
   enterParams?: Record<string, number>;
 }
 
-export const DocuChart: React.FC<DocuChartProps> = ({ enter, enterParams, ...props }) => {
-  const { chartKind } = props;
+// Shared render props passed to every chart component. Components ignore the
+// extra fields they do not use (e.g. only AreaChart reads forecastFromIndex).
+interface ChartRenderProps {
+  label: string;
+  points: Array<{ x: string | number; y: number }>;
+  unit: OverlayUnit;
+  source?: string;
+  palette: DocuPalette;
+  durationInFrames: number;
+  forecastFromIndex?: number;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
+}
 
-  const chartEnter = enter as EnterPresetKey | undefined;
+export const CHART_REGISTRY: Record<ChartKind, React.FC<ChartRenderProps>> = {
+  composition: DonutChart,
+  timeseries: LineChart,
+  comparison: BarChart,
+  "horizontal-bar": HorizontalBarChart,
+  area: AreaChart,
+  radial: RadialChart,
+};
 
-  switch (chartKind) {
-    case "composition":
-      return (
-        <DonutChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "timeseries":
-      return (
-        <LineChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "comparison":
-      return (
-        <BarChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "horizontal-bar":
-      return (
-        <HorizontalBarChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "stacked-bar":
-      return (
-        <StackedBarChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          series={props.series}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "area":
-      return (
-        <AreaChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          forecastFromIndex={props.forecastFromIndex}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "bubble":
-      return (
-        <BubbleChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          bubblePoints={props.bubblePoints}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-    case "radial":
-      return (
-        <RadialChart
-          points={props.points}
-          label={props.label}
-          unit={props.unit}
-          source={props.source}
-          palette={props.palette}
-          durationInFrames={props.durationInFrames}
-          enter={chartEnter}
-          enterParams={enterParams}
-        />
-      );
-  }
+export const DocuChart: React.FC<DocuChartProps> = ({ chartKind, enter, enterParams, ...rest }) => {
+  const ChartComponent = CHART_REGISTRY[chartKind];
+  return (
+    <ChartComponent
+      label={rest.label}
+      points={rest.points}
+      unit={rest.unit}
+      source={rest.source}
+      palette={rest.palette}
+      durationInFrames={rest.durationInFrames}
+      forecastFromIndex={rest.forecastFromIndex}
+      enter={enter}
+      enterParams={enterParams}
+    />
+  );
 };

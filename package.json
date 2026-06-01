@@ -10,7 +10,6 @@
     "smoke:deepseek-brainstorm": "tsx --env-file=.env scripts/deepseek-brainstorm-smoke.ts",
     "test:pause-injector": "tsx tests/shared/tts-pause-injector.test.ts",
     "test:tts-chunking": "tsx tests/tts/tts-google-chunking.test.ts",
-    "test:docu-stacked-bar": "tsx tests/docu/stacked-bar-layout.test.ts",
     "test:docu-article-text": "tsx tests/docu/article-text-layout.test.ts",
     "test:docu-youtube-pipeline": "tsx tests/docu/youtube-pipeline.test.ts",
     "quotas": "tsx --env-file=.env scripts/check-quotas.ts",

@@ -157,7 +157,7 @@ interface DocuScript {
 Shots and sentences are **decoupled**: B-roll cuts every 2–4 sec independently of sentence boundaries. Sentences average 6–9 sec and span multiple shots.
 
 **Chart rendering approach:**
-- All chart kinds (`timeseries`, `comparison`, `composition`) use hand-coded raw SVG path construction in `src/components/docu/DocuChart.tsx`.
+- Six render styles (`timeseries`, `comparison`, `composition`, `horizontal-bar`, `area`, `radial`) dispatch through `CHART_REGISTRY` in `src/components/docu/DocuChart.tsx`, all hand-coded raw SVG. Render style is decoupled from data shape via `CHART_KIND_CONSUMES` (`overlays/chart.ts`): each style consumes one of the three chartable `DataItemKind`s (`timeseries`/`comparison`/`composition`), so every renderable chart traces to a research anchor and is metric-fidelity-gated.
 - `ResponsiveContainer` is forbidden in Remotion (ResizeObserver is flaky in headless Chrome).
 - Neither `roughjs` nor Recharts is currently used for charts. Future sketch-style reveals would need `@remotion/paths` (already a dep) for animated `stroke-dashoffset`. `roughjs` (already a dep) could be layered on for rough-style line art but is not wired today.
 
