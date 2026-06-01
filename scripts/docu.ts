@@ -478,7 +478,7 @@ function parseArgs(args: string[]) {
   const audition = args.includes("--audition");
   const clean = args.includes("--clean");
 
-  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean"]);
+  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean", "--allow-youtube-clips"]);
   const flagVals = new Set<string>();
 
   // Collect flag values so they aren't mistaken for topicArg
@@ -505,21 +505,24 @@ function parseArgs(args: string[]) {
     ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen"
     : undefined;
 
-  return { topicArg, audition, clean, minutes, from, only };
+  const allowYoutubeClips = args.includes("--allow-youtube-clips");
+
+  return { topicArg, audition, clean, minutes, from, only, allowYoutubeClips };
 }
 
 function printUsage() {
-  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--minutes N] [--from phase] [--only phase]");
+  console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--minutes N] [--from phase] [--only phase] [--allow-youtube-clips]");
   console.error("  --minutes N     Target video length in minutes (default: 4)");
   console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
   console.error("  --only phase    Stop after: plan | narration | overlays | youtube | tts | images | codegen (omit to run full pipeline)");
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove pipeline artifacts for this topic. With --only <phase>, removes only that phase's artifacts");
+  console.error("  --allow-youtube-clips  Enable YouTube clip extraction (disabled by default)");
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { topicArg, audition, clean, minutes, from, only } = parseArgs(args);
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips } = parseArgs(args);
 
   if (!topicArg) {
     printUsage();
@@ -546,13 +549,13 @@ async function main() {
     process.exit(1);
   }
 
-  await runDocuCli({ topicArg, audition, clean, minutes, from, only });
+  await runDocuCli({ topicArg, audition, clean, minutes, from, only, allowYoutubeClips });
 }
 
 type ParsedDocuArgs = ReturnType<typeof parseArgs> & { topicArg: string };
 
 async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
-  const { topicArg, audition, clean, minutes, from, only } = args;
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips } = args;
   const slug = topicToSlug(topicArg);
   enrichCurrentRun({ slug, topic: topicArg, phase: "compose" });
 
@@ -609,7 +612,13 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     if (!isLlmsOnly) saveTopicData(topicData);
   }
 
-  const { topic, sentences, overlaySpecs, segmentPlans, youtubeClipSpecs } = topicData;
+  const { topic, sentences, overlaySpecs, segmentPlans } = topicData;
+  let { youtubeClipSpecs } = topicData;
+
+  if (youtubeClipSpecs && youtubeClipSpecs.length > 0 && !allowYoutubeClips) {
+    console.log(`[docu] YouTube clips disabled (pass --allow-youtube-clips to enable)`);
+    youtubeClipSpecs = undefined;
+  }
 
   if (isLlmsOnly) {
     console.log(`[docu] --only ${only}: done. Inspect prompts/docu/${slug}-*.json`);
