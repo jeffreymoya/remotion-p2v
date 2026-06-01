@@ -524,6 +524,11 @@ export function mergeYouTubeClipsIntoShots(
       });
     }
 
+    const truncatedVideoTitle =
+      result.videoTitle && result.videoTitle.length > 80
+        ? `${result.videoTitle.slice(0, 77)}...`
+        : result.videoTitle;
+
     citationBlocks.push({
       startFrame: blockStart,
       endFrame: blockEnd,
@@ -531,6 +536,8 @@ export function mergeYouTubeClipsIntoShots(
       anchorId: sentenceIndexToAnchorId?.get(result.sentenceIndex) ?? "",
       sentenceIndex: result.sentenceIndex,
       captionWords: result.captionWords,
+      name: result.channelTitle,
+      sourceLabel: truncatedVideoTitle || "Interview via YouTube",
     });
   }
 

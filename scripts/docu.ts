@@ -257,7 +257,12 @@ async function runFullPipeline_impl(
   );
   const annotatedCitationBlocks = citationBlocks.map((block) => {
     const attr = sentenceIndexToAttribution?.get(block.sentenceIndex);
-    return attr ? { ...block, ...attr } : block;
+    if (!attr) return block;
+    return {
+      ...block,
+      name: block.name || attr.name,
+      sourceLabel: block.sourceLabel || attr.sourceLabel,
+    };
   });
   // FROM THIS POINT ON: use `mergedShots`, not `shots`
 

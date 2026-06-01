@@ -357,6 +357,47 @@ function testMergeYouTubeClipsIntoShots(): void {
     assert(citationBlocks[0].captionWords !== undefined, "captionWords passed through");
     assertEqual(citationBlocks[0].captionWords!.length, 1, "correct caption word count");
   }
+
+  // CitationBlock carries YouTube attribution (channelTitle → name, videoTitle → sourceLabel)
+  {
+    const shots = makeShots([[0, 90, "cool-tech"], [90, 180, "warm-real"]]);
+    const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [{
+      sentenceIndex: 0,
+      success: true,
+      matchedTimestampSec: 5,
+      clipStartSec: 2,
+      clipEndSec: 10,
+      videoPath: "videos/docu/test/youtube-abc-2-10.mp4",
+      channelTitle: "CNBC Television",
+      videoTitle: "Fed Chair Powell Speaks After FOMC Decision",
+    }];
+    const sentRanges = makeSentRanges([[0, 90], [90, 180]]);
+    const { citationBlocks } = mergeYouTubeClipsIntoShots(shots, results, sentRanges, DEFAULT_FRAME_DURATION);
+    assertEqual(citationBlocks.length, 1, "attribution test — one block");
+    assert(citationBlocks[0].name !== undefined, "name set from channelTitle");
+    assertEqual(citationBlocks[0].name, "CNBC Television", "name matches channelTitle");
+    assert(citationBlocks[0].sourceLabel !== undefined, "sourceLabel set from videoTitle");
+    assertEqual(citationBlocks[0].sourceLabel, "Fed Chair Powell Speaks After FOMC Decision", "sourceLabel matches videoTitle");
+  }
+
+  // CitationBlock falls back to "Interview via YouTube" when videoTitle is absent
+  {
+    const shots = makeShots([[0, 90, "cool-tech"], [90, 180, "warm-real"]]);
+    const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [{
+      sentenceIndex: 0,
+      success: true,
+      matchedTimestampSec: 5,
+      clipStartSec: 2,
+      clipEndSec: 10,
+      videoPath: "videos/docu/test/youtube-abc-2-10.mp4",
+      channelTitle: "Bloomberg TV",
+    }];
+    const sentRanges = makeSentRanges([[0, 90], [90, 180]]);
+    const { citationBlocks } = mergeYouTubeClipsIntoShots(shots, results, sentRanges, DEFAULT_FRAME_DURATION);
+    assertEqual(citationBlocks.length, 1, "fallback attribution test — one block");
+    assertEqual(citationBlocks[0].name, "Bloomberg TV", "name matches channelTitle");
+    assertEqual(citationBlocks[0].sourceLabel, "Interview via YouTube", "sourceLabel fallback when missing videoTitle");
+  }
 }
 
 // ── Runner ──────────────────────────────────────────────────────────────
