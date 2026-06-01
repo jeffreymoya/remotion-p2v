@@ -4,7 +4,7 @@ import { traceable } from "langsmith/traceable";
 import { PEXELS_VIDEOS_BASE_URL, PEXELS_VIDEO_PER_PAGE, PIXABAY_TIMEOUT_MS } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
 import { screenThumbnails } from "./vision-screener";
-import { enrichCurrentRun } from "../tracing";
+import { enrichCurrentRun, textOnlyAssetSummary } from "../tracing";
 
 const USER_AGENT = "Mozilla/5.0 (compatible; remotion-p2v/1.0)";
 
@@ -187,4 +187,6 @@ async function searchAndDownloadVideoImpl(
 export const searchAndDownloadVideoFromPexels = traceable(searchAndDownloadVideoImpl, {
   name: "pexels_video_search",
   run_type: "tool",
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
 });

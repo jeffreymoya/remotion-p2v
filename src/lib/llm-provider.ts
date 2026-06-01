@@ -6,7 +6,15 @@ import {
   LLM_DEFAULT_PROVIDER,
   type LlmProviderId,
 } from "./config";
-import { enrichCurrentRun } from "./tracing";
+import { enrichCurrentRun, buildTags, type SpanMeta, textOnlyAssetSummary } from "./tracing";
+
+/** Mirror safe metadata fields onto tags so LangSmith filters work on LLM spans. */
+function syncPipelineTags(run: ReturnType<typeof getCurrentRunTree>): void {
+  if (!run) return;
+  const tags = buildTags(run.metadata as Partial<SpanMeta>);
+  if (tags.length === 0) return;
+  run.tags = Array.from(new Set([...(run.tags ?? []), ...tags]));
+}
 
 export interface LlmMessage {
   role: "system" | "user" | "assistant";
@@ -91,6 +99,7 @@ async function llmChatImpl(
   if (run) {
     if (runName) run.name = runName;
     if (metadata) run.metadata = { ...run.metadata, ...metadata };
+    syncPipelineTags(run);
   }
 
   const apiKey = process.env[provider.apiKeyEnv];
@@ -201,8 +210,8 @@ async function llmChatImpl(
 export const llmChat = traceable(llmChatImpl, {
   name: "llmChat",
   run_type: "llm",
-  processInputs: truncateKV,
-  processOutputs: truncateKV,
+  processInputs: (inputs) => textOnlyAssetSummary(truncateKV(inputs)) as Record<string, unknown>,
+  processOutputs: (outputs) => textOnlyAssetSummary(truncateKV(outputs)) as Record<string, unknown>,
 });
 
 // ── JSON-mode wrapper ────────────────────────────────────────────────────
@@ -235,6 +244,7 @@ async function llmChatJsonImpl<T>(
   if (run) {
     if (runName) run.name = runName;
     if (metadata) run.metadata = { ...run.metadata, ...metadata };
+    syncPipelineTags(run);
   }
 
   const apiKey = process.env[provider.apiKeyEnv];
@@ -363,8 +373,8 @@ async function llmChatJsonImpl<T>(
 const llmChatJsonTraceable = traceable(llmChatJsonImpl, {
   name: "llmChatJson",
   run_type: "llm",
-  processInputs: truncateKV,
-  processOutputs: truncateKV,
+  processInputs: (inputs) => textOnlyAssetSummary(truncateKV(inputs)) as Record<string, unknown>,
+  processOutputs: (outputs) => textOnlyAssetSummary(truncateKV(outputs)) as Record<string, unknown>,
 });
 
 export const llmChatJson = llmChatJsonTraceable as typeof llmChatJsonImpl;

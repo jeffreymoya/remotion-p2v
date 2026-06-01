@@ -20,6 +20,8 @@ export function llmNarrationSegmentPrompt(args: {
   pronoun?: string;
   emotionalRegister?: string;
   isQuoteScene?: boolean;
+  hasClipHandoff?: boolean;
+  clipPersonName?: string;
 }): string {
   const { role, title, intent, anchorCount, batchSize } = args;
   const craftBlock = [
@@ -30,6 +32,12 @@ export function llmNarrationSegmentPrompt(args: {
     args.pronoun ? `\n## Pronoun Frame\nUse "${args.pronoun}" as the dominant pronoun in this scene.` : "",
     args.emotionalRegister ? `\n## Emotional Register\n${args.emotionalRegister}` : "",
     args.isQuoteScene ? `\n## Quote Scene\nThis scene is designated as the QUOTE SCENE. If one of the anchors has a verbatim quote, land it here — this is the emotional peak.` : "",
+    (args.hasClipHandoff && args.clipPersonName)
+      ? `\n## Hand-off Scene\nThis segment ends with interview footage of ${args.clipPersonName}. ` +
+        `The LAST sentence of this segment MUST be a natural announcer hand-off that introduces the clip — ` +
+        `e.g. "Here's how ${args.clipPersonName} put it:" or "${args.clipPersonName} was direct about this." ` +
+        `The sentence must be complete, TTS-safe (no ellipsis, no parentheses), and ≤15 words.`
+      : "",
   ].filter(Boolean).join("");
 
   return `You are an infotainment documentary script writer. You are writing a "${role}" scene titled "${title}" inside a scenario-first animated documentary.
@@ -95,9 +103,11 @@ B. Every numeric claim (dollar amount, percentage, growth rate, year-over-year c
 C. Each sentence gets 1-4 "emphasis" words — the most salient content words.
 D. Stay within this scene's arc role: ${role} — ${intent}
 E. ${anchorCount > 0 ? `You have ${anchorCount} research anchors to draw from.` : "You have 0 research anchors. Do NOT invent specific statistics, dollar amounts, percentages, dates, growth rates, or named figures not present in any anchor. Maintain density through structure, framing, and explanatory depth — not fabricated numbers."}
-${anchorCount > 0 ? `F. When an anchor carries a VERBATIM QUOTE, you MAY place it as a standalone sentence. Use at most one quoted sentence per batch. Quote text must be copied verbatim; do not paraphrase inside quotation marks. This is optional — if no quote is available or it does not serve the scene, proceed without one.
+${anchorCount > 0 ? `F. When an anchor carries a VERBATIM QUOTE with "(verified)", you MAY place it as a standalone sentence. Use at most one quoted sentence per batch. Quote text must be copied verbatim; do not paraphrase inside quotation marks. This is optional — if no verified quote is available or it does not serve the scene, proceed without one.
 
-G. When an anchor carries kind "case_study", "historical_event", or "named_person_anecdote", you MAY open that sentence from inside the scenario — describing what the person or institution experienced. Use this at most once per segment. The claim and detail must still be traceable to that anchor.` : ""}
+G. DO NOT use any quote marked "QUOTE DISABLED (not verbatim-verified)". These quotes failed fact-checking and must not appear in narration. Treat the anchor as quote-unavailable.
+
+H. When an anchor carries kind "case_study", "historical_event", or "named_person_anecdote", you MAY open that sentence from inside the scenario — describing what the person or institution experienced. Use this at most once per segment. The claim and detail must still be traceable to that anchor.` : ""}
 
 ## Output
 Return JSON in this EXACT shape:
@@ -269,7 +279,7 @@ For each scene, provide:
 - index: zero-based scene index
 - title: 3-6 word scene title
 - intent: one sentence describing what this scene achieves narratively
-- assignedAnchorIds: recruit research anchors into this scene by id
+- assignedAnchorIds: recruit research anchors into this scene by id. Every non-hook scene MUST have at least 1 anchor. Across all scenes, at least 50% of the verified anchor pool must be assigned. Distribute anchors evenly — no single scene should hoard anchors while others go without.
 - arcRole: one of hook | baseline | escalation | turn | payoff
 - scenarioPressure: the concrete pressure driving THIS scene specifically (not the whole video)
 - retentionLoop: the unanswered question that pulls the viewer to the next scene
@@ -332,7 +342,7 @@ export const LLM_BRAINSTORM_PROMPT =
   "You are a meticulous research assistant. Return only valid JSON.";
 
 export const LLM_VERIFIER_PROMPT =
-  "You are a fact-checking assistant. Given a candidate claim and web search results, determine which hit (if any) supports the claim. Return JSON.";
+  "You are a fact-checking assistant. Given a candidate claim and web search results, determine which hit (if any) supports the claim. Return JSON. When the claim concerns US monetary policy, regulation, or US-specific economic data, reject hits whose source jurisdiction is clearly non-US (e.g. Bank of England publications, ECB working papers, Singapore MAS releases, Bank of Japan statements, Bundesbank reports) unless the claim is explicitly cross-jurisdictional. A US monetary policy claim must be verified against a US institutional source.";
 
 export function llmTopicalQueriesPrompt(topic: string): string {
   return `You are designing an investigative research scan for a Bloomberg-style documentary video about: "${topic}".

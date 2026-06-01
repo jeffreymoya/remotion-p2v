@@ -1,4 +1,5 @@
 import type { WordTiming } from "../audio-wav";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { OverlaySpec, DocuOverlay } from "./overlays/registry";
 import { getAnchorStrategy } from "./overlays/registry";
 
@@ -18,7 +19,7 @@ export { normalizeToken } from "./overlays/anchor-strategies";
  * replaced with startFrame/endFrame. Type-specific fields pass through
  * unchanged.
  */
-export function resolveOverlays(
+function resolveOverlays_impl(
   specs: OverlaySpec[],
   wordTimings: WordTiming[],
   fps: number,
@@ -52,3 +53,8 @@ export function resolveOverlays(
 
   return resolved;
 }
+
+export const resolveOverlays = traceableChain(resolveOverlays_impl, "resolveOverlays", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

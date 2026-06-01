@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import { callStructured } from "./llm-client";
 import { LLM_JUDGE } from "../config";
 import type { SentenceDef } from "./tts-pipeline";
@@ -57,7 +58,7 @@ export interface InfotainmentVoiceGateResult {
   flags: Array<{ flag: string; sentenceIndices: number[]; explanation: string }>;
 }
 
-export async function gateInfotainmentVoice(
+async function gateInfotainmentVoice_impl(
   sentences: SentenceDef[],
   opts?: { verbose?: boolean },
 ): Promise<{ sentences: SentenceDef[]; result: InfotainmentVoiceGateResult }> {
@@ -125,3 +126,8 @@ export async function gateInfotainmentVoice(
     result: { passed: lastFlags.length === 0, flags: lastFlags },
   };
 }
+
+export const gateInfotainmentVoice = traceableChain(gateInfotainmentVoice_impl, "gateInfotainmentVoice", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

@@ -25,7 +25,7 @@ import { generateYouTubeClipSpecs } from "./youtube-clip-prompt";
 import { gateNarrationFidelity } from "./narration-fidelity-gate";
 import { gateStoryStructure } from "./story-structure-gate";
 import { gateInfotainmentVoice } from "./infotainment-voice-gate";
-import type { YouTubeClipSpec } from "./youtube-pipeline";
+import type { YouTubeClipSpec, ClipCandidateInfo } from "./youtube-pipeline";
 
 export interface TopicData {
   topic: string;
@@ -37,6 +37,7 @@ export interface TopicData {
   segmentCount?: number;
   segmentPlans?: DocuSegmentPlan[];
   youtubeClipSpecs?: YouTubeClipSpec[];
+  clipCandidateInfo?: ClipCandidateInfo[];
 }
 
 const TopicDataSchema = z.object({
@@ -66,6 +67,13 @@ const TopicDataSchema = z.object({
     leadSec: z.number().positive().optional(),
     trailSec: z.number().positive().optional(),
   })).max(5).optional(),
+  clipCandidateInfo: z.array(z.object({
+    sentenceIndex: z.number().int().min(0),
+    anchorId: z.string(),
+    anchorClaim: z.string(),
+    personName: z.string().optional(),
+    sourceLabel: z.string().optional(),
+  })).optional(),
 });
 
 const PROMPTS_DIR = "prompts/docu";
@@ -212,6 +220,13 @@ function filterDataItemsByAnchors(items: DataItem[], anchorIds: string[]): DataI
   return items.filter((di) => idSet.has(di.sourceAnchorId));
 }
 
+function buildSourceLabel(anchor: Anchor | undefined): string | undefined {
+  const work = anchor?.attribution.work;
+  const year = anchor?.attribution.year;
+  if (work && year) return `${work}, ${year}`;
+  return work;
+}
+
 import { boundedMap } from "../shared/concurrency";
 
 function recordGateOutcome(gateName: string, beforeTexts: string[], afterSentences: SentenceDef[]): void {
@@ -343,6 +358,7 @@ export const generateSegmentedTopicData = traceable(
       topic, scene, segAnchors, priorContext, {
         verbose: opts?.verbose,
         isQuoteScene: spine.quoteSceneIndex === i,
+        clipCandidateAnchorIds: scene.clipCandidateAnchorIds ?? [],
       },
     );
     saveCachedSegmentNarration(slug, i, segSentences);
@@ -480,6 +496,29 @@ export const generateSegmentedTopicData = traceable(
   // 6. YouTube clip annotation
   enrichCurrentRun({ slug, topic, phase: "videos" });
   const regenerateClips = regenerateOverlays || from === "youtube";
+
+  const offsets: number[] = [];
+  let running = 0;
+  for (const seg of spine.segments) {
+    offsets.push(running);
+    running += seg.targetSentenceCount;
+  }
+
+  const clipCandidateInfo: ClipCandidateInfo[] = spine.segments
+    .flatMap((seg, i) =>
+      (seg.clipCandidateAnchorIds ?? []).map((anchorId) => {
+        const anchor = verifiedAnchors.find((a) => a.id === anchorId);
+        return {
+          sentenceIndex: offsets[i] + seg.targetSentenceCount - 1,
+          anchorId,
+          anchorClaim: anchor?.claim ?? "",
+          personName: anchor?.attribution.person,
+          sourceLabel: buildSourceLabel(anchor),
+        };
+      })
+    )
+    .slice(0, 2);
+
   let youtubeClipSpecs: YouTubeClipSpec[];
   if (!regenerateClips) {
     youtubeClipSpecs = loadYoutubeClipSpecs(slug) ?? [];
@@ -487,7 +526,10 @@ export const generateSegmentedTopicData = traceable(
   } else {
     console.log(`[topic] --from ${from}: generating YouTube clip specs...`);
     youtubeClipSpecs = await generateYouTubeClipSpecs(
-      allSentences, spine.segments, verifiedAnchors, topic, { verbose: opts?.verbose },
+      allSentences, spine.segments, verifiedAnchors, topic, {
+        verbose: opts?.verbose,
+        clipCandidateInfo: clipCandidateInfo.length > 0 ? clipCandidateInfo : undefined,
+      },
     );
     if (youtubeClipSpecs.length > 0) {
       saveYoutubeClipSpecs(slug, youtubeClipSpecs);
@@ -504,6 +546,7 @@ export const generateSegmentedTopicData = traceable(
     segmentCount,
     segmentPlans: spine.segments,
     youtubeClipSpecs: youtubeClipSpecs.length > 0 ? youtubeClipSpecs : undefined,
+    clipCandidateInfo: clipCandidateInfo.length > 0 ? clipCandidateInfo : undefined,
   };
 },
 { run_type: "chain", name: "generateTopic" },

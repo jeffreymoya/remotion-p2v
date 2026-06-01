@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { Anchor } from "../shared/research/research-schema";
 import type { SentenceDef } from "./tts-pipeline";
 import type { OverlaySpec, OverlayDef } from "./overlays/registry";
@@ -673,7 +674,7 @@ async function generateOverlaySelectionsImpl(
   throw lastError ?? new Error(`[${runName}] Failed to generate overlay selections`);
 }
 
-export async function generateSegmentOverlaySelections(
+async function generateSegmentOverlaySelections_impl(
   plan: DocuSegmentPlan,
   sentences: SentenceDef[],
   anchors: readonly Anchor[],
@@ -700,3 +701,8 @@ export async function generateSegmentOverlaySelections(
   }
   return gated;
 }
+
+export const generateSegmentOverlaySelections = traceableChain(generateSegmentOverlaySelections_impl, "generateSegmentOverlaySelections", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

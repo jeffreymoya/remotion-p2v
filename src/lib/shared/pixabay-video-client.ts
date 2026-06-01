@@ -4,7 +4,7 @@ import { traceable } from "langsmith/traceable";
 import { PIXABAY_VIDEOS_BASE_URL, PIXABAY_TIMEOUT_MS, PIXABAY_VIDEO_PER_PAGE } from "../config";
 import type { VideoDownloadResult, VideoSearchOptions, SelectionTier } from "./video-source";
 import { screenThumbnails } from "./vision-screener";
-import { enrichCurrentRun } from "../tracing";
+import { enrichCurrentRun, textOnlyAssetSummary } from "../tracing";
 
 export type { VideoDownloadResult } from "./video-source";
 
@@ -239,4 +239,6 @@ async function searchAndDownloadVideoImpl(
 export const searchAndDownloadVideo = traceable(searchAndDownloadVideoImpl, {
   name: "pixabay_video_search",
   run_type: "tool",
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
 });

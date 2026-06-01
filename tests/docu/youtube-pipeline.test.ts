@@ -210,6 +210,7 @@ function testMergeYouTubeClipsIntoShots(): void {
   console.log("\n--- mergeYouTubeClipsIntoShots ---");
 
   const fps = 30;
+  const DEFAULT_FRAME_DURATION = 5000;
 
   // No successful clips — passthrough
   {
@@ -217,12 +218,15 @@ function testMergeYouTubeClipsIntoShots(): void {
     const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [
       { sentenceIndex: 0, success: false },
     ];
-    const merged = mergeYouTubeClipsIntoShots(shots, results, makeSentRanges([[0, 60], [60, 120]]));
+    const { shots: merged, citationBlocks } = mergeYouTubeClipsIntoShots(
+      shots, results, makeSentRanges([[0, 60], [60, 120]]), DEFAULT_FRAME_DURATION,
+    );
     assertEqual(merged.length, 2, "no successful clips — passthrough");
     assert(merged.every((m) => m.mediaType === "image"), "all are image shots");
+    assertEqual(citationBlocks.length, 0, "no citation blocks emitted");
   }
 
-  // Single clip mid-video
+  // Single clip mid-video — block starts at sentence endFrame
   {
     const shots = makeShots([[0, 30, "cool-tech"], [30, 60, "cool-tech"], [60, 90, "warm-real"]]);
     const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [{
@@ -234,16 +238,26 @@ function testMergeYouTubeClipsIntoShots(): void {
       videoPath: "videos/docu/test/youtube-abc-2-10.mp4",
     }];
     const sentRanges = makeSentRanges([[0, 30], [30, 60], [60, 90]]);
-    // sent 1 startFrame = 30, matchedOffsetSec = 7 - 2 = 5s, clipStartFrame = 30 - 150 = -120 → 0
-    // clipDuration Frames = (10-2)*30 = 240 frames, startFrame = 0, endFrame = 240
-    const merged = mergeYouTubeClipsIntoShots(shots, results, sentRanges);
+    // sent 1 endFrame = 60, blockStart = 60
+    // clipDurationFrames = (10-2)*30 = 240, blockEnd = 60 + 240 = 300
+    const { shots: merged, citationBlocks } = mergeYouTubeClipsIntoShots(
+      shots, results, sentRanges, DEFAULT_FRAME_DURATION,
+    );
+    assertEqual(citationBlocks.length, 1, "one citation block emitted");
+    assertEqual(citationBlocks[0].startFrame, 60, "block starts at sent endFrame");
+    assertEqual(citationBlocks[0].endFrame, 300, "block end = start + clipDuration");
+    assertEqual(citationBlocks[0].sentenceIndex, 1, "sentenceIndex matches");
+
     const videoShots = merged.filter((m) => m.mediaType === "video");
-    assertEqual(videoShots.length, 1, "one video shot inserted");
-    assertEqual(videoShots[0].startFrame, 0, "clip starts at frame 0");
-    assert(videoShots[0].endFrame > 0, "clip has duration");
+    assertEqual(videoShots.length, 1, "one video shot inserted (talking-head)");
+    assertEqual(videoShots[0].startFrame, 60, "talking-head starts at blockStart");
+    assert(videoShots[0].endFrame <= 60 + 10 * fps, "talking-head is max 10s");
+
+    const imageShots = merged.filter((m) => m.mediaType === "image");
+    assert(imageShots.length >= 1, "B-roll images survive outside talking-head window");
   }
 
-  // Overlapping clips — earliest wins
+  // Overlapping clips — earliest sentenceIndex wins
   {
     const shots = makeShots([[0, 90, "cool-tech"], [90, 180, "warm-real"]]);
     const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [
@@ -265,9 +279,15 @@ function testMergeYouTubeClipsIntoShots(): void {
       },
     ];
     const sentRanges = makeSentRanges([[0, 90], [90, 180]]);
-    const merged = mergeYouTubeClipsIntoShots(shots, results, sentRanges);
+    // sent 0 endFrame = 90, block0 start = 90, block0 end = 90 + 240 = 330
+    // sent 1 endFrame = 180, block1 start = 180, block1 end = 180 + 240 = 420
+    // block1.start (180) < block0.end (330) → overlap, block1 dropped
+    const { shots: merged, citationBlocks } = mergeYouTubeClipsIntoShots(
+      shots, results, sentRanges, DEFAULT_FRAME_DURATION,
+    );
+    assertEqual(citationBlocks.length, 1, "overlapping — only first block survives");
     const videoShots = merged.filter((m) => m.mediaType === "video");
-    assertEqual(videoShots.length, 1, "overlapping — only first clip survives");
+    assertEqual(videoShots.length, 1, "one video shot (talking-head)");
   }
 
   // Stub below 12-frame threshold is dropped
@@ -282,10 +302,60 @@ function testMergeYouTubeClipsIntoShots(): void {
       videoPath: "videos/docu/test/youtube-abc-0-5.mp4",
     }];
     const sentRanges = makeSentRanges([[0, 15], [15, 30]]);
-    const merged = mergeYouTubeClipsIntoShots(shots, results, sentRanges);
-    // The 15-frame first shot is fully consumed or trimmed. Check that we don't have stub fragments
+    const { shots: merged } = mergeYouTubeClipsIntoShots(shots, results, sentRanges, DEFAULT_FRAME_DURATION);
     const veryShort = merged.filter((m) => m.mediaType === "image" && (m.endFrame - m.startFrame) < 12);
     assertEqual(veryShort.length, 0, "stubs below 12 frames are dropped");
+  }
+
+  // Overflow guard — blocks exceeding 45% of total duration are dropped
+  {
+    const shots = makeShots([[0, 60, "cool-tech"], [60, 120, "cool-tech"], [120, 180, "cool-tech"]]);
+    const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [
+      {
+        sentenceIndex: 0,
+        success: true,
+        matchedTimestampSec: 10,
+        clipStartSec: 0,
+        clipEndSec: 20,
+        videoPath: "videos/docu/test/youtube-aaa-0-20.mp4",
+      },
+      {
+        sentenceIndex: 1,
+        success: true,
+        matchedTimestampSec: 10,
+        clipStartSec: 0,
+        clipEndSec: 20,
+        videoPath: "videos/docu/test/youtube-bbb-0-20.mp4",
+      },
+    ];
+    const sentRanges = makeSentRanges([[0, 60], [60, 120], [120, 180]]);
+    // sent0 end = 60, clipDuration = 600 frames (20s)
+    // sent1 end = 120
+    // 600 frames ÷ 200 totalDurationFrames = 3.0 > 0.45 — first block alone exceeds limit! Both dropped.
+    const { citationBlocks } = mergeYouTubeClipsIntoShots(
+      shots, results, sentRanges, 200,
+    );
+    assertEqual(citationBlocks.length, 0, "overflow guard drops blocks exceeding 45% threshold");
+  }
+
+  // CitationBlock carries captionWords from result
+  {
+    const shots = makeShots([[0, 90, "cool-tech"], [90, 180, "warm-real"]]);
+    const captionWords = [{ word: "test", startMs: 0, endMs: 100, isMatch: true, wordIndexInEvent: 0 }];
+    const results: Parameters<typeof mergeYouTubeClipsIntoShots>[1] = [{
+      sentenceIndex: 0,
+      success: true,
+      matchedTimestampSec: 5,
+      clipStartSec: 2,
+      clipEndSec: 10,
+      videoPath: "videos/docu/test/youtube-abc-2-10.mp4",
+      captionWords,
+    }];
+    const sentRanges = makeSentRanges([[0, 90], [90, 180]]);
+    const { citationBlocks } = mergeYouTubeClipsIntoShots(shots, results, sentRanges, DEFAULT_FRAME_DURATION);
+    assertEqual(citationBlocks.length, 1, "caption test — one block");
+    assert(citationBlocks[0].captionWords !== undefined, "captionWords passed through");
+    assertEqual(citationBlocks[0].captionWords!.length, 1, "correct caption word count");
   }
 }
 

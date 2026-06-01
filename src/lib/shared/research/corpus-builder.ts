@@ -8,6 +8,24 @@ import { enrichCurrentRun } from "../../tracing";
 const DEFAULT_PER_QUERY_RESULTS = 8;
 const TEXT_EXCERPT_MAX_CHARS = 5000;
 const HIGHLIGHTS_MAX_CHARS = 500;
+const MIN_TEXT_EXCERPT_CHARS = 200;
+const DEAD_PAGE_MARKERS = [
+  /are you a robot/i,
+  /please enable javascript/i,
+  /access denied/i,
+  /captcha/i,
+  /cloudflare/i,
+  /sorry, you have been blocked/i,
+  /please verify you are a human/i,
+  /enable cookies/i,
+  /403 forbidden/i,
+  /this page isn't working/i,
+  /subscription required/i,
+  /subscribe to continue/i,
+  /paywall/i,
+  /please log in/i,
+  /sign in to continue/i,
+];
 
 function exaCategory(lens: TopicalLens): SearchOptions["category"] {
   switch (lens) {
@@ -87,6 +105,23 @@ async function buildCorpusImpl(
 
     for (const h of hits) {
       if (seenUrls.has(h.url)) continue;
+
+      // Skip dead entries: paywalled, bot-detection, or empty pages
+      const combinedText = (h.text ?? "") + (h.snippet ?? "");
+      if (combinedText.length < MIN_TEXT_EXCERPT_CHARS) {
+        if (opts?.verbose) {
+          process.stderr.write(`[corpus] skipping "${h.title.slice(0, 60)}" — too little text (${combinedText.length} chars)\n`);
+        }
+        continue;
+      }
+      if (DEAD_PAGE_MARKERS.some((re) => re.test(combinedText))) {
+        if (opts?.verbose) {
+          const marker = DEAD_PAGE_MARKERS.find((re) => re.test(combinedText));
+          process.stderr.write(`[corpus] skipping "${h.title.slice(0, 60)}" — dead page (match: ${marker?.source.slice(1, 30)})\n`);
+        }
+        continue;
+      }
+
       seenUrls.add(h.url);
       excerpts.push({
         id: `exc-${String(excerpts.length + 1).padStart(3, "0")}`,

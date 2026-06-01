@@ -1,4 +1,4 @@
-import { getCurrentRunTree } from "langsmith/traceable";
+import { traceable, getCurrentRunTree } from "langsmith/traceable";
 
 export interface SpanMeta {
   slug: string;
@@ -24,7 +24,8 @@ export interface SpanMeta {
     | "pixabay"
     | "pexels"
     | "exa"
-    | "serper";
+    | "serper"
+    | "firecrawl";
   cacheHit?: boolean;
   revisionNumber?: number;
   fallbackUsed?: string;
@@ -43,6 +44,65 @@ export function buildTags(meta: Partial<SpanMeta>): string[] {
   if (meta.segmentIndex !== undefined) tags.push(`segment:${meta.segmentIndex}`);
   if (meta.errorType) tags.push(`error:${meta.errorType}`);
   return tags;
+}
+
+/**
+ * Thin factory for the common `traceable({ run_type: "chain", name })` pattern.
+ * Collapses 17 copy-paste blocks into one line per call site.
+ */
+export function traceableChain<T extends (...args: any[]) => any>(
+  fn: T,
+  name: string,
+  opts?: {
+    processInputs?: (inputs: Record<string, unknown>) => Record<string, unknown>;
+    processOutputs?: (outputs: Record<string, unknown>) => Record<string, unknown>;
+  },
+): T {
+  return traceable(fn, {
+    run_type: "chain" as const,
+    name,
+    ...opts,
+  }) as T;
+}
+
+/**
+ * Recursively strip asset payloads and asset references from trace inputs/outputs.
+ * Keeps text, counts, statuses, safe metadata, and research/diagnostic URLs;
+ * redacts buffers, base64 payloads, media-file URLs, local asset paths,
+ * secrets, and API keys.
+ */
+export function textOnlyAssetSummary(value: unknown, _seen = new WeakSet<object>(), _depth = 0): unknown {
+  if (_depth > 20) return "(max depth)";
+  if (Buffer.isBuffer(value)) return { kind: "buffer", byteLength: value.byteLength };
+  if (value instanceof ArrayBuffer) return { kind: "arrayBuffer", byteLength: value.byteLength };
+  if (ArrayBuffer.isView(value)) return { kind: "typedArray", byteLength: value.byteLength };
+  if (typeof value === "string") {
+    if (/^data:.*;base64,/i.test(value)) return "(redacted base64 asset)";
+    if (/^https?:\/\/.*\.(wav|mp3|mp4|mov|webm|jpg|jpeg|png|webp|gif)(\?|$)/i.test(value)) return "(redacted asset url)";
+    if (/(^|\/)public\/(audio|images|videos)\//.test(value)) return "(redacted local asset path)";
+    if (/\.(wav|mp3|mp4|mov|webm|jpg|jpeg|png|webp|gif)$/i.test(value)) return "(redacted asset path)";
+    if (value.length > 4096 && /^[A-Za-z0-9+/=\r\n]+$/.test(value)) return "(redacted possible base64 payload)";
+  }
+  if (Array.isArray(value)) return value.map((v) => textOnlyAssetSummary(v, _seen, _depth + 1));
+  if (value && typeof value === "object") {
+    if (_seen.has(value as object)) return "(circular)";
+    _seen.add(value as object);
+    const out: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      if (/\b(apiKey|authorization|token|secret|header)\b/i.test(key)) continue;
+      if (/\b(audioBuffer|buffer|bytes|base64|audioContent|imageContent|videoContent)\b/i.test(key)) {
+        out[key] = textOnlyAssetSummary(child, _seen, _depth + 1);
+        continue;
+      }
+      if (/\b(path|url|sourceUrl|videoPath|imagePath|manifest)\b/i.test(key)) {
+        out[key] = "(redacted asset reference)";
+        continue;
+      }
+      out[key] = textOnlyAssetSummary(child, _seen, _depth + 1);
+    }
+    return out;
+  }
+  return value;
 }
 
 /**

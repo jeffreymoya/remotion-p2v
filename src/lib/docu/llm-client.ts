@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import { llmChatJson } from "../llm-provider";
 import {
   CODE_GEN_TEMPERATURE,
@@ -9,7 +10,7 @@ import {
   type LlmCallConfig,
 } from "../config";
 
-export async function callStructured<T>(args: {
+async function callStructured_impl<T>(args: {
   schema: z.ZodType<T>;
   system: string;
   prompt: string;
@@ -60,3 +61,8 @@ export async function callStructured<T>(args: {
 
   throw lastError;
 }
+
+export const callStructured = traceableChain(callStructured_impl, "callStructured", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+}) as typeof callStructured_impl;

@@ -5,6 +5,7 @@ export interface DocuSegmentPlan {
   intent: string;
   targetSentenceCount: number;
   assignedAnchorIds: string[];
+  clipCandidateAnchorIds?: string[];
 }
 
 export type ArcRole = "hook" | "baseline" | "escalation" | "turn" | "payoff";

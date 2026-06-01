@@ -61,7 +61,7 @@ function writeCache(file: string, value: unknown): void {
   fs.writeFileSync(p, JSON.stringify({ cachedAt: Date.now(), value }, null, 2));
 }
 
-type CachingProviderPrefix = "exa" | "serper";
+type CachingProviderPrefix = "exa" | "serper" | "firecrawl";
 
 function makeCachingProvider(inner: SearchProvider, prefix: CachingProviderPrefix): SearchProvider {
   return {
@@ -77,7 +77,20 @@ function makeCachingProvider(inner: SearchProvider, prefix: CachingProviderPrefi
       writeCache(file, hits);
       return hits;
     }, { name: `${prefix}.search`, run_type: "retriever" }),
-    getContents: inner.getContents?.bind(inner),
+    getContents: inner.getContents
+      ? async (urls: string[]): Promise<SearchHit[]> => {
+          const file = searchCacheKey(prefix, urls.join("|"), undefined);
+          const cached = readCache<SearchHit[]>(file);
+          if (cached) {
+            enrichCurrentRun({ provider: prefix, cacheHit: true });
+            return cached;
+          }
+          enrichCurrentRun({ provider: prefix, cacheHit: false });
+          const hits = await inner.getContents!(urls);
+          writeCache(file, hits);
+          return hits;
+        }
+      : undefined,
   };
 }
 
@@ -131,9 +144,50 @@ function resolveProvider(custom?: SearchProvider): SearchProvider {
     );
   }
   const exa = makeCachingProvider(makeExaProvider(EXA_API_KEY), "exa");
-  if (!SERPER_API_KEY) return exa;
-  const serper = makeCachingProvider(makeSerperProvider(SERPER_API_KEY), "serper");
-  return makeRoutedProvider(exa, serper);
+  // Exa is the content-honoring default for all documentary lenses.
+  // Serper is removed from the documentary path — it returns snippet-only
+  // hits (text: undefined) which disarms the corpus content contract.
+  // To enable Serper+Firecrawl scout/harvest: replace the second arg with
+  // makeScoutHarvestProvider(serper, firecrawl) once FIRECRAWL_API_KEY exists.
+  return makeRoutedProvider(exa, exa);
+}
+
+// ── Candidate deduplication ─────────────────────────────────────────────
+
+function claimWords(claim: string): string[] {
+  return claim.toLowerCase().replace(/[^\w\s]/g, "").split(/\s+/).filter(Boolean);
+}
+
+function deduplicateCandidates(candidates: RawCandidate[]): RawCandidate[] {
+  const seenUrls = new Set<string>();
+  const seenClaims: Array<{ words: string[]; idx: number }> = [];
+  const result: RawCandidate[] = [];
+
+  for (let i = 0; i < candidates.length; i++) {
+    const c = candidates[i];
+
+    // Dedup by queryHint URL
+    if (c.queryHint && /^https?:\/\//.test(c.queryHint)) {
+      if (seenUrls.has(c.queryHint)) continue;
+      seenUrls.add(c.queryHint);
+    }
+
+    // Dedup by substantial claim overlap (≥80% word overlap with an earlier claim)
+    const words = claimWords(c.claim);
+    if (words.length >= 5) {
+      const duplicate = seenClaims.some((prev) => {
+        if (Math.abs(prev.words.length - words.length) > Math.max(prev.words.length, words.length) * 0.3) return false;
+        const overlap = words.filter((w) => prev.words.includes(w)).length;
+        return overlap / Math.max(prev.words.length, words.length) >= 0.8;
+      });
+      if (duplicate) continue;
+      seenClaims.push({ words, idx: i });
+    }
+
+    result.push(c);
+  }
+
+  return result;
 }
 
 // ── Main pipeline ──────────────────────────────────────────────────────
@@ -188,12 +242,21 @@ async function runResearchPhaseImpl(
 
     totalCandidates += candidates.length;
 
+    // Deduplicate candidates by claim overlap before verification
+    const dedupedCandidates = deduplicateCandidates(candidates);
+
+    if (dedupedCandidates.length < candidates.length) {
+      console.log(
+        `  [research] deduplicated: ${candidates.length} → ${dedupedCandidates.length} candidates`,
+      );
+    }
+
     console.log(
-      `  [research] verifying ${candidates.length} candidates (concurrency=${RESEARCH_VERIFY_CONCURRENCY})...`,
+      `  [research] verifying ${dedupedCandidates.length} candidates (concurrency=${RESEARCH_VERIFY_CONCURRENCY})...`,
     );
 
     const results = await mapConcurrent(
-      candidates,
+      dedupedCandidates,
       RESEARCH_VERIFY_CONCURRENCY,
       async (c: RawCandidate): Promise<VerifyResult> => {
         const cached = readVerifyCache(c);
@@ -208,7 +271,7 @@ async function runResearchPhaseImpl(
       const result: VerifyResult = results[i];
       if ("status" in result && result.status === "rejected" && !("citation" in result)) {
         allRejected.push({
-          candidate: candidates[i].claim,
+          candidate: dedupedCandidates[i].claim,
           reason: (result as { status: "rejected"; reason: string }).reason,
         });
       } else {

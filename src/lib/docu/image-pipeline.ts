@@ -6,6 +6,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { searchAndDownloadImage } from "../shared/pexels-image-client";
+import { enrichCurrentRun, textOnlyAssetSummary, traceableChain } from "../tracing";
 
 export interface ImageQuery {
   slot: number;
@@ -19,10 +20,11 @@ export interface ImagePipelineResult {
   downloadedSlots: number[];
 }
 
-export async function runImagePipeline(
+async function runImagePipeline_impl(
   slug: string,
   queries: ImageQuery[],
 ): Promise<ImagePipelineResult> {
+  enrichCurrentRun({ slug, phase: "videos", provider: "pexels" });
   const outDir = path.join("public/images/docu", slug);
   const manifestPath = `prompts/docu/${slug}-images.json`;
 
@@ -59,3 +61,8 @@ export async function runImagePipeline(
 
   return { manifestPath, downloadedCount: manifest.length, downloadedSlots: manifest.map((m) => m.index) };
 }
+
+export const runImagePipeline = traceableChain(runImagePipeline_impl, "runImagePipeline", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
+});

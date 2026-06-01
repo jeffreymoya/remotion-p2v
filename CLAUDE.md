@@ -30,6 +30,22 @@ The LLM's role is placement and framing, not data fabrication. The research pipe
 
 ---
 
+## North Star: Viewer-Value Priority
+
+Every on-screen fact earns its place by what it changes for the viewer. Among admissible (verified or needs-review) anchors, selection priority is:
+
+1. **Personal impact** — numbers or events that directly touch the viewer's money, rate, bill, risk, or outcome
+2. **Actionable opportunity** — knowledge the viewer can act on: what to watch, when to move, what to demand
+3. **Foundational understanding** — mechanics and context that make the above legible
+
+Historical or background facts are admissible only in direct service of a present-tense stake. They do not count toward data-density requirements on their own.
+
+**Fidelity decides admissibility. Viewer-value decides priority among the admissible.** These axes are not in conflict — one is a gate, the other is a ranking. "Maximize viewer interest" is never license to promote a dramatic but poorly-sourced anchor over a verified one.
+
+This principle applies at every pipeline stage that selects, filters, or assigns anchors: corpus query design, brainstorm generation, verifier acceptance, and spine anchor assignment. If an anchor cannot be connected to a present-tense viewer stake, it should not be assigned to a segment even if technically verified.
+
+---
+
 ## Current State — `feat/rpm-optimized`
 
 Phase 1 is complete. The rendering layer is built and the pipeline is wired end-to-end for one hardcoded topic ("How the Fed Controls Your Money").

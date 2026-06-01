@@ -20,7 +20,8 @@ import { OVERLAY_REGISTRY } from "../../lib/docu/overlays/registry";
 import type { DocuSegmentMeta } from "../../lib/docu/segment-types";
 import { RENDER_REGISTRY, type OverlayRenderCtx } from "./overlays/render-registry";
 import { YouTubeInterviewCaptions } from "./YouTubeInterviewCaptions";
-import type { InterviewCaptionWord } from "../../lib/docu/youtube-pipeline";
+import { CitationChyron } from "./CitationChyron";
+import type { InterviewCaptionWord, CitationBlock } from "../../lib/docu/youtube-pipeline";
 
 export interface DocuShot {
   videoPath?: string;
@@ -31,6 +32,7 @@ export interface DocuShot {
   endFrame: number;
   palette: DocuPalette;
   isInterviewClip?: boolean;
+  startFrom?: number;
   captionWords?: InterviewCaptionWord[];
 }
 
@@ -67,6 +69,7 @@ export interface DocuScript {
   clips: DocuClip[];
   overlays: DocuOverlay[];
   segments?: DocuSegmentMeta[];
+  citationBlocks?: CitationBlock[];
   durationInFrames: number;
   fps: 30;
   width: 1920;
@@ -74,6 +77,7 @@ export interface DocuScript {
 }
 
 const TITLE_CARD_FRAMES = 90;
+const L_CUT_TAIL_FRAMES = 45;
 
 const TitleCardFade: React.FC<{ topic: string }> = ({ topic }) => {
   const frame = useCurrentFrame();
@@ -115,30 +119,36 @@ export const DocumentaryComposition = (props: DocuScript) => {
   }, 0);
   const blurPx = blurProgress * 10;
 
+  const isCitationActive = (props.citationBlocks ?? []).some(
+    (b) => frame >= b.startFrame && frame < b.endFrame,
+  );
+
   const currentShot = useMemo(() => {
     return allShots.find((s) => frame >= s.startFrame && frame < s.endFrame);
   }, [allShots, frame]);
 
   const isInterviewActive = useMemo(() => {
-    for (const shot of allShots) {
-      if (shot.isInterviewClip && frame >= shot.startFrame && frame < shot.endFrame) {
-        const localFrame = frame - shot.startFrame;
-        const dur = shot.endFrame - shot.startFrame;
+    const blocks = props.citationBlocks ?? [];
+    for (const block of blocks) {
+      const duckEnd = block.endFrame + L_CUT_TAIL_FRAMES;
+      if (frame >= block.startFrame && frame < duckEnd) {
+        const dur = duckEnd - block.startFrame;
+        const local = frame - block.startFrame;
         const RAMP = 6;
         return {
           active: true,
           progress: Math.min(
-            interpolate(localFrame, [0, RAMP], [0, 1], { extrapolateRight: "clamp" }),
-            interpolate(localFrame, [dur - RAMP, dur], [1, 0], { extrapolateLeft: "clamp" }),
+            interpolate(local, [0, RAMP], [0, 1], { extrapolateRight: "clamp" }),
+            interpolate(local, [dur - RAMP, dur], [1, 0], { extrapolateLeft: "clamp" }),
           ),
         };
       }
     }
     return { active: false, progress: 0 };
-  }, [frame, allShots]);
+  }, [frame, props.citationBlocks]);
 
   const narrationVolume = isInterviewActive.active
-    ? interpolate(isInterviewActive.progress, [0, 1], [1, 0.15])
+    ? interpolate(isInterviewActive.progress, [0, 1], [1, 0])
     : 1;
 
   const currentPalette: DocuPalette = useMemo(() => {
@@ -169,7 +179,8 @@ export const DocumentaryComposition = (props: DocuScript) => {
           shot.mediaType === "video" && shot.videoPath ? (
             <OffthreadVideo
               src={mediaSrc}
-              volume={shot.isInterviewClip ? 1 : 0}
+              startFrom={shot.startFrom}
+              volume={0}
               style={{ objectFit: "cover", width: "100%", height: "100%" }}
             />
           ) : (
@@ -190,7 +201,7 @@ export const DocumentaryComposition = (props: DocuScript) => {
                 filter: `${
                   PALETTE_MAP[shot.palette].filter
                 } url(#${HATTAB_LUT_ID})${
-                  blurPx > 0 && !currentShot?.isInterviewClip ? ` blur(${blurPx}px)` : ""
+                  blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
                 }`,
                 width: "100%",
                 height: "100%",
@@ -236,6 +247,13 @@ export const DocumentaryComposition = (props: DocuScript) => {
         <Audio src={staticFile(props.audioPath)} volume={narrationVolume} />
       )}
 
+      {/* Citation block audio beds — interview clips play as independent audio */}
+      {(props.citationBlocks ?? []).map((block, i) => (
+        <Sequence key={`citation-bed-${i}`} from={block.startFrame} durationInFrames={block.endFrame - block.startFrame}>
+          <Audio src={staticFile(block.videoPath)} volume={1} />
+        </Sequence>
+      ))}
+
       {/* Overlays */}
       {overlays.map((o, i) => {
         const overlayDuration = o.endFrame - o.startFrame;
@@ -265,19 +283,33 @@ export const DocumentaryComposition = (props: DocuScript) => {
         <TitleCardFade topic={props.topic} />
       </Sequence>
 
-      {/* Interview captions — word-by-word stagger reveal */}
-      {allShots.map((shot, i) => {
-        if (!shot.isInterviewClip || !shot.captionWords || shot.captionWords.length === 0) return null;
-        const shotDuration = shot.endFrame - shot.startFrame;
+      {/* Citation block captions — word-by-word stagger reveal for full block duration */}
+      {(props.citationBlocks ?? []).map((block, i) => {
+        if (!block.captionWords || block.captionWords.length === 0) return null;
         return (
           <Sequence
-            key={`interview-captions-${i}`}
-            from={shot.startFrame}
-            durationInFrames={shotDuration}
+            key={`citation-captions-${i}`}
+            from={block.startFrame}
+            durationInFrames={block.endFrame - block.startFrame}
           >
             <YouTubeInterviewCaptions
-              words={shot.captionWords}
+              words={block.captionWords}
               fps={props.fps}
+            />
+          </Sequence>
+        );
+      })}
+
+      {/* Citation block chyrons — source attribution strip */}
+      {(props.citationBlocks ?? []).map((block, i) => {
+        if (!block.name && !block.sourceLabel) return null;
+        const dur = block.endFrame - block.startFrame;
+        return (
+          <Sequence key={`chyron-${i}`} from={block.startFrame} durationInFrames={dur}>
+            <CitationChyron
+              name={block.name}
+              sourceLabel={block.sourceLabel}
+              durationInFrames={dur}
             />
           </Sequence>
         );

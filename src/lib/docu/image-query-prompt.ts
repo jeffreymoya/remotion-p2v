@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import { callStructured } from "./llm-client";
 import { LLM_IMAGE_QUERY } from "../config";
 import { llmSegmentImageQueryPrompt } from "../prompts";
@@ -227,7 +228,7 @@ async function generateImageQueriesImpl(
   }
 }
 
-export async function generateSegmentImageQueries(
+async function generateSegmentImageQueries_impl(
   plan: DocuSegmentPlan,
   shots: ShotContext[],
   opts?: { verbose?: boolean },
@@ -239,3 +240,8 @@ export async function generateSegmentImageQueries(
     opts,
   );
 }
+
+export const generateSegmentImageQueries = traceableChain(generateSegmentImageQueries_impl, "generateSegmentImageQueries", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

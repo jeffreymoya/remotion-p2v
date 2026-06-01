@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { traceable } from "langsmith/traceable";
 import { PEXELS_IMAGES_BASE_URL, PEXELS_IMAGE_PER_PAGE, PIXABAY_TIMEOUT_MS } from "../config";
-import { enrichCurrentRun } from "../tracing";
+import { enrichCurrentRun, textOnlyAssetSummary } from "../tracing";
 
 const USER_AGENT = "Mozilla/5.0 (compatible; remotion-p2v/1.0)";
 
@@ -107,4 +107,6 @@ async function searchAndDownloadImageImpl(
 export const searchAndDownloadImage = traceable(searchAndDownloadImageImpl, {
   name: "pexels_image_search",
   run_type: "tool",
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
 });

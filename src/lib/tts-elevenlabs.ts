@@ -6,7 +6,7 @@ import {
   ELEVENLABS_TIMEOUT_MS,
   ELEVENLABS_MODEL_ID,
 } from "./config";
-import { enrichCurrentRun } from "./tracing";
+import { enrichCurrentRun, textOnlyAssetSummary } from "./tracing";
 
 export type { WordTiming, TtsResult };
 
@@ -119,4 +119,6 @@ async function generateSpeechImpl(text: string): Promise<TtsResult> {
 export const generateSpeech = traceable(generateSpeechImpl, {
   name: "generateSpeechElevenLabs",
   run_type: "tool",
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
 });

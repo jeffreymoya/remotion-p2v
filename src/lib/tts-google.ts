@@ -10,7 +10,7 @@ import {
 import { pcmToWav } from "./audio-wav";
 import { injectPausesForGoogle } from "./shared/tts-pause-injector";
 import type { WordTiming, TtsResult } from "./audio-wav";
-import { enrichCurrentRun } from "./tracing";
+import { enrichCurrentRun, textOnlyAssetSummary } from "./tracing";
 export type { WordTiming, TtsResult } from "./audio-wav";
 
 const CHANNELS = 1;
@@ -303,6 +303,8 @@ async function generateSpeechImpl(
 export const generateSpeech = traceable(generateSpeechImpl, {
   name: "generateSpeech",
   run_type: "tool",
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
 });
 
 export {

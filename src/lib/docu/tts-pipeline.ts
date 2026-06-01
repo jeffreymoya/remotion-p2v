@@ -13,6 +13,8 @@ import { GOOGLE_TTS_SAMPLE_RATE, FPS, INTER_SENTENCE_GAP_SECONDS } from "../conf
 import { DOCU_TTS_VOICE, DOCU_TTS_SPEAKING_RATE } from "../config";
 import type { WordTiming } from "../audio-wav";
 import type { DocuPalette } from "../../components/docu/docu-tokens";
+import { getCurrentRunTree } from "langsmith/traceable";
+import { enrichCurrentRun, textOnlyAssetSummary, traceableChain } from "../tracing";
 
 export interface SentenceDef {
   text: string;
@@ -146,10 +148,11 @@ export async function runTtsAudition(
   );
 }
 
-export async function runTtsPipeline(
+async function runTtsPipeline_impl(
   slug: string,
   sentences: SentenceDef[],
 ): Promise<TtsPipelineResult> {
+  enrichCurrentRun({ slug, phase: "tts", provider: "google-tts" });
   fs.mkdirSync(AUDIO_DIR, { recursive: true });
   fs.mkdirSync(PROMPTS_DIR, { recursive: true });
 
@@ -224,6 +227,11 @@ export async function runTtsPipeline(
   const totalDurationSeconds = offsetSeconds;
 
   console.log(`[tts:docu] Post-processing audio...`);
+  const run = getCurrentRunTree(true);
+  run?.addEvent({
+    name: "audio-postprocess",
+    kwargs: { processor: "commandingVoice" },
+  });
   const processed = commandingVoice(wavBuffer, slug);
 
   const wavPath = path.join(AUDIO_DIR, `${slug}.wav`);
@@ -261,6 +269,11 @@ export async function runTtsPipeline(
     timingsJsonPath: timingsPath,
   };
 }
+
+export const runTtsPipeline = traceableChain(runTtsPipeline_impl, "runTtsPipeline", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
+});
 
 // Rehydrates a TtsPipelineResult from the cached timings JSON written by runTtsPipeline.
 // Returns null when the file is missing or the sentence count no longer matches the current

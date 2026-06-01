@@ -2,6 +2,7 @@ import { z } from "zod";
 import { callStructured } from "./llm-client";
 import { LLM_JUDGE } from "../config";
 import type { SentenceDef } from "./tts-pipeline";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { StorySpine, SceneSpec } from "./segment-types";
 
 const MAX_RETRIES = 2;
@@ -149,7 +150,7 @@ export interface StoryStructureGateResult {
   judgeIssues: string[];
 }
 
-export async function gateStoryStructure(
+async function gateStoryStructure_impl(
   sentences: SentenceDef[],
   spine: StorySpine,
   opts?: { verbose?: boolean },
@@ -241,6 +242,11 @@ export async function gateStoryStructure(
     result: { passed: judgeIssues.length === 0, deterministicViolations, judgeIssues },
   };
 }
+
+export const gateStoryStructure = traceableChain(gateStoryStructure_impl, "gateStoryStructure", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});
 
 // ── Helpers ───────────────────────────────────────────────────────────
 

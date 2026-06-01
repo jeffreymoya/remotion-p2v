@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { Anchor } from "../shared/research/research-schema";
 import type { DataItem } from "./overlays/types";
 import { DataItemSchema, OVERLAY_UNITS } from "./overlays/types";
@@ -135,7 +136,7 @@ function assignIds(items: Array<{ kind: string; sourceAnchorId: string; [key: st
   });
 }
 
-export async function extractDataItems(
+async function extractDataItems_impl(
   anchors: readonly Anchor[],
   opts?: { verbose?: boolean },
 ): Promise<DataItem[]> {
@@ -225,3 +226,8 @@ Extract data items now.`;
   if (accumulatedValid.length > 0) return accumulatedValid;
   throw lastError ?? new Error("[docu/metric-extraction] Failed to extract data items");
 }
+
+export const extractDataItems = traceableChain(extractDataItems_impl, "extractDataItems", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

@@ -129,7 +129,16 @@ function buildBrainstormPrompt(
     ? `\n\nDo NOT propose any of these previously rejected claims (or minor rephrasings of them):\n${opts.priorRejections.map((r) => `- ${r}`).join("\n")}`
     : "";
 
-  const canonicalWarning = `\nPrioritize primary sources with institutional credibility: Federal Reserve publications, SEC filings, congressional testimony transcripts, BLS/BEA data releases, central bank working papers, NBER studies, Supreme Court opinions, CFPB enforcement actions, FTC rulings, GAO reports, and peer-reviewed economics journals. When citing subject matter experts, prefer named individuals with verifiable institutional roles (Fed chairs, Treasury officials, SEC commissioners, academic economists, industry analysts whose statements appear in regulatory proceedings or major financial media). For each topic, identify the 5–10 authoritative sources most commonly cited in serious financial journalism and source verbatim excerpts. Self-help authors, motivational speakers, and pop-business influencers are NOT authoritative for this format — do not cite them as evidence.`;
+  const canonicalWarning = `\nPrioritize primary sources with institutional credibility: Federal Reserve publications, SEC filings, congressional testimony transcripts, BLS/BEA data releases, central bank working papers, NBER studies, Supreme Court opinions, CFPB enforcement actions, FTC rulings, GAO reports, and peer-reviewed economics journals. When citing subject matter experts, prefer named individuals with verifiable institutional roles (Fed chairs, Treasury officials, SEC commissioners, academic economists, industry analysts whose statements appear in regulatory proceedings or major financial media). For each topic, identify the 5–10 authoritative sources most commonly cited in serious financial journalism and source verbatim excerpts. Self-help authors, motivational speakers, and pop-business influencers are NOT authoritative for this format — do not cite them as evidence.
+
+VIEWER-VALUE PRIORITY (non-negotiable ranking):
+1. Personal impact — anchors that directly touch the viewer's money, rate, bill, risk, or outcome
+2. Actionable opportunity — anchors the viewer can act on: what to watch, when to move, what to demand
+3. Foundational understanding — mechanics and context that make the above legible
+
+Historical or background facts are admissible only in direct service of a present-tense stakeholder consequence. Among the ${targetCount} candidates, at least 70% must satisfy tier 1 or 2. Historical/anecdotal candidates (kind historical_event, named_person_anecdote, or narrative) must NOT exceed 2 total. A candidate that cannot be connected to a present-tense viewer stake should not be proposed — even if well-sourced.
+
+REAL-TIME DATA CONSTRAINT: Skip candidates that require same-day or intra-week Fed statistical releases (H.4.1, H.6, H.8, FRED same-day series, BLS daily feeds). These sources are never caught by web search on the same day and will fail verification. Use releases that are at least 48 hours old.`;
 
   const corpusClause =
     opts?.corpus && opts.corpus.excerpts.length > 0

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import { callStructured } from "./llm-client";
 import { LLM_NARRATION, NARRATION_BATCH_SIZE } from "../config";
 import { llmNarrationSegmentPrompt } from "../prompts";
@@ -97,6 +98,8 @@ function buildSegmentSystemPrompt(
   assignedAnchors: readonly Anchor[],
   batchSize: number,
   isQuoteScene: boolean,
+  hasClipHandoff?: boolean,
+  clipPersonName?: string,
 ): string {
   return llmNarrationSegmentPrompt({
     role: scene.arcRole,
@@ -111,6 +114,8 @@ function buildSegmentSystemPrompt(
     pronoun: scene.pronoun,
     emotionalRegister: scene.emotionalRegister,
     isQuoteScene,
+    hasClipHandoff,
+    clipPersonName,
   });
 }
 
@@ -121,7 +126,12 @@ function anchorToLines(anchors: readonly Anchor[]): string {
       a.attribution.person ? `person: ${a.attribution.person}` : null,
       a.attribution.year ? `year: ${a.attribution.year}` : null,
     ].filter(Boolean).join(", ");
-    const quote = a.quote ? `\n    VERBATIM QUOTE${a.citation.quoteVerbatimVerified ? " (verified)" : ""}: "${a.quote}"` : "";
+    const quoteVerbatimBlocked = a.quote && a.citation.quoteVerbatimVerified === false;
+    const quote = a.quote && !quoteVerbatimBlocked
+      ? `\n    VERBATIM QUOTE${a.citation.quoteVerbatimVerified ? " (verified)" : ""}: "${a.quote}"`
+      : quoteVerbatimBlocked
+        ? `\n    QUOTE DISABLED (not verbatim-verified): "${a.quote}"`
+        : "";
     return `${head}${attr ? ` / ${attr}` : ""}${quote}`;
   }).join("\n");
 }
@@ -144,9 +154,10 @@ function allSentenceContext(sentences: SentenceDef[]): string {
 export interface SegmentNarrationOpts {
   verbose?: boolean;
   isQuoteScene?: boolean;
+  clipCandidateAnchorIds?: string[];
 }
 
-export async function generateSegmentNarration(
+async function generateSegmentNarration_impl(
   topic: string,
   scene: SceneSpec,
   assignedAnchors: readonly Anchor[],
@@ -167,9 +178,20 @@ export async function generateSegmentNarration(
   const allSentences: SentenceDef[] = [];
   const isQuoteScene = opts?.isQuoteScene ?? false;
 
+  const clipAnchorIds = new Set(opts?.clipCandidateAnchorIds ?? []);
+  const clipAnchor = verified.find(
+    (a) => clipAnchorIds.has(a.id) && a.attribution.person
+  );
+  const hasClipHandoff = clipAnchor != null;
+  const clipPersonName = clipAnchor?.attribution.person;
+
   for (let bi = 0; bi < batchSizes.length; bi++) {
     const batchSize = batchSizes[bi];
-    const system = buildSegmentSystemPrompt(scene, verified, batchSize, isQuoteScene);
+    const system = buildSegmentSystemPrompt(
+      scene, verified, batchSize, isQuoteScene,
+      hasClipHandoff && bi === batchSizes.length - 1,
+      clipPersonName,
+    );
 
     let priorContext: string;
     if (bi === 0 && priorSegmentContext) {
@@ -210,3 +232,8 @@ ${anchorToLines(verified)}`;
 
   return allSentences;
 }
+
+export const generateSegmentNarration = traceableChain(generateSegmentNarration_impl, "generateSegmentNarration", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

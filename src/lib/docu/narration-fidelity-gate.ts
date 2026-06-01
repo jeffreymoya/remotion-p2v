@@ -2,6 +2,7 @@ import { z } from "zod";
 import { callStructured } from "./llm-client";
 import { LLM_METRIC } from "../config";
 import type { Anchor } from "../shared/research/research-schema";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { SentenceDef } from "./tts-pipeline";
 
 const MAX_RETRIES = 2;
@@ -45,7 +46,7 @@ function sentenceListing(sentences: SentenceDef[]): string {
   return sentences.map((s, i) => `[${i}] ${s.text}`).join("\n");
 }
 
-export async function gateNarrationFidelity(
+async function gateNarrationFidelity_impl(
   sentences: SentenceDef[],
   verifiedAnchors: readonly Anchor[],
   opts?: { verbose?: boolean },
@@ -121,3 +122,8 @@ Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 throug
     `unsupported sentences. Fix research anchors or tighten narration prompt.`
   );
 }
+
+export const gateNarrationFidelity = traceableChain(gateNarrationFidelity_impl, "gateNarrationFidelity", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { Anchor } from "../shared/research/research-schema";
 import { callStructured } from "./llm-client";
 import { LLM_SEGMENT_PLAN, SENTENCES_PER_MINUTE } from "../config";
@@ -84,6 +85,10 @@ export interface SpineViolations {
   arcRoleSequenceDetail: string;
   caseStudyAnchorUnknown: boolean;
   missingWarmReal: boolean;
+  segmentWithoutAnchor: boolean;
+  segmentWithoutAnchorIndices: number[];
+  anchorPoolUnderutilized: boolean;
+  anchorPoolAssignPct: number;
 }
 
 export function validateSpineStructure(
@@ -101,6 +106,10 @@ export function validateSpineStructure(
     arcRoleSequenceDetail: "",
     caseStudyAnchorUnknown: false,
     missingWarmReal: false,
+    segmentWithoutAnchor: false,
+    segmentWithoutAnchorIndices: [],
+    anchorPoolUnderutilized: false,
+    anchorPoolAssignPct: 0,
   };
 
   const anchorIdSet = new Set(anchors.map((a) => a.id));
@@ -191,6 +200,24 @@ export function validateSpineStructure(
     v.missingWarmReal = true;
   }
 
+  // 8. Every non-hook segment must have at least 1 assigned anchor
+  for (const seg of segments) {
+    if (seg.arcRole !== "hook" && seg.assignedAnchorIds.length === 0) {
+      v.segmentWithoutAnchor = true;
+      v.segmentWithoutAnchorIndices.push(seg.index);
+    }
+  }
+
+  // 9. At least 50% of verified anchor pool must be assigned
+  const totalAssigned = segments.reduce((sum, seg) => sum + seg.assignedAnchorIds.length, 0);
+  const verifiedAnchors = anchors.filter((a) => a.status === "verified");
+  if (verifiedAnchors.length > 0) {
+    v.anchorPoolAssignPct = Math.round((totalAssigned / verifiedAnchors.length) * 100);
+    if (v.anchorPoolAssignPct < 50) {
+      v.anchorPoolUnderutilized = true;
+    }
+  }
+
   return v;
 }
 
@@ -202,7 +229,9 @@ export function hasSpineViolations(v: SpineViolations): boolean {
     v.noFlipFromPrior ||
     v.arcRoleSequenceInvalid ||
     v.caseStudyAnchorUnknown ||
-    v.missingWarmReal
+    v.missingWarmReal ||
+    v.segmentWithoutAnchor ||
+    v.anchorPoolUnderutilized
   );
 }
 
@@ -241,6 +270,14 @@ export function buildSpineFeedback(v: SpineViolations): string {
 
   if (v.missingWarmReal) {
     lines.push("- No scene uses palette 'warm-real'. At least one scene (baseline or payoff) must use warm-real for human-consequence content.");
+  }
+
+  if (v.segmentWithoutAnchor) {
+    lines.push(`- Segments without anchors: ${v.segmentWithoutAnchorIndices.join(", ")}. Every non-hook segment must have at least 1 assigned anchor.`);
+  }
+
+  if (v.anchorPoolUnderutilized) {
+    lines.push(`- Anchor pool underutilized: only ${v.anchorPoolAssignPct}% of the verified anchor pool is assigned (minimum 50%). Assign more anchors across segments.`);
   }
 
   if (lines.length === 0) return "";
@@ -329,7 +366,7 @@ Research anchors (distribute these across segments by anchorId):
 ${anchorLines || "(no verified anchors)"}`;
 }
 
-export async function generateSpine(
+async function generateSpine_impl(
   topic: string,
   totalSentences: number,
   segmentCount: number,
@@ -397,24 +434,36 @@ export async function generateSpine(
   );
   const sentenceTargets = apportionByProportions(totalSentences, llmProportions);
 
-  const segments: SceneSpec[] = sortedOutputs.map((seg, i) => ({
-    index: i,
-    title: seg.title,
-    role: seg.role,
-    arcRole: seg.arcRole as ArcRole,
-    intent: seg.intent,
-    targetSentenceCount: sentenceTargets[i],
-    assignedAnchorIds: seg.assignedAnchorIds,
-    scenarioPressure: seg.scenarioPressure,
-    flipType: seg.flipType,
-    retentionLoop: seg.retentionLoop,
-    visualBeat: seg.visualBeat,
-    device: seg.device,
-    pronoun: seg.pronoun,
-    palette: seg.palette,
-    emotionalRegister: seg.emotionalRegister,
-    flipFromPrior: seg.flipFromPrior,
-  }));
+  const segments: SceneSpec[] = sortedOutputs.map((seg, i) => {
+    const clipCandidateAnchorIds = anchors
+      .filter((a) =>
+        (a.kind === "primary_quote" || a.kind === "named_person_anecdote") &&
+        !!a.attribution.person &&
+        a.status === "verified" &&
+        (seg.assignedAnchorIds ?? []).includes(a.id)
+      )
+      .map((a) => a.id);
+
+    return {
+      index: i,
+      title: seg.title,
+      role: seg.role,
+      arcRole: seg.arcRole as ArcRole,
+      intent: seg.intent,
+      targetSentenceCount: sentenceTargets[i],
+      assignedAnchorIds: seg.assignedAnchorIds,
+      clipCandidateAnchorIds,
+      scenarioPressure: seg.scenarioPressure,
+      flipType: seg.flipType,
+      retentionLoop: seg.retentionLoop,
+      visualBeat: seg.visualBeat,
+      device: seg.device,
+      pronoun: seg.pronoun,
+      palette: seg.palette,
+      emotionalRegister: seg.emotionalRegister,
+      flipFromPrior: seg.flipFromPrior,
+    };
+  });
 
   // Scaling guard: warn when a single escalation segment exceeds ~35% of total sentences
   const escalationCap = Math.max(20, Math.round(totalSentences * 0.35));
@@ -442,3 +491,8 @@ export async function generateSpine(
     segments,
   };
 }
+
+export const generateSpine = traceableChain(generateSpine_impl, "generateSpine", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
+});

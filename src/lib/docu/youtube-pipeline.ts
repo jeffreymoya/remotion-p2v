@@ -22,6 +22,14 @@ export interface YouTubeClipSpec {
   trailSec?: number;
 }
 
+export interface ClipCandidateInfo {
+  sentenceIndex: number;
+  anchorId: string;
+  anchorClaim: string;
+  personName?: string;
+  sourceLabel?: string;
+}
+
 export interface InterviewCaptionWord {
   word: string;
   startMs: number;
@@ -50,8 +58,20 @@ export interface MergedShot {
   palette: "cool-tech" | "warm-real";
   mediaType: "video" | "image";
   videoPath?: string;
+  startFrom?: number;
   captionWords?: InterviewCaptionWord[];
   originalIndex?: number;
+}
+
+export interface CitationBlock {
+  startFrame: number;
+  endFrame: number;
+  videoPath: string;
+  anchorId: string;
+  sentenceIndex: number;
+  captionWords?: InterviewCaptionWord[];
+  name?: string;
+  sourceLabel?: string;
 }
 
 // ── json3 parsing types ────────────────────────────────────────────────
@@ -243,8 +263,12 @@ export function extractCaptionWords(
 
 // ── Core extraction pipeline ───────────────────────────────────────────
 
-const DEFAULT_LEAD_SEC = 5;
-const DEFAULT_TRAIL_SEC = 8;
+const DEFAULT_LEAD_SEC = 10;
+const DEFAULT_TRAIL_SEC = 35;
+const TALKING_HEAD_SEC = 10;
+const CUTBACK_HEAD_SEC = 10;
+const MIN_CUTBACK_BLOCK_SEC = TALKING_HEAD_SEC + 20 + CUTBACK_HEAD_SEC;
+const MAX_CITATION_FRACTION = 0.45;
 const MAX_CANDIDATE_RETRIES = 3;
 
 export async function runYouTubeClipExtraction(
@@ -426,56 +450,91 @@ function tryDownloadJson3Captions(videoId: string): string | null {
 
 // ── Shot merging ───────────────────────────────────────────────────────
 
-const STUB_MIN_FRAMES = 12; // 0.4s minimum stub — drops below threshold
+const STUB_MIN_FRAMES = 12;
 
 export function mergeYouTubeClipsIntoShots(
   shots: ScheduledShot[],
   results: YouTubeClipResult[],
   sentenceFrameRanges: Array<{ startFrame: number; endFrame: number }>,
-): MergedShot[] {
+  totalDurationFrames: number,
+  sentenceIndexToAnchorId?: Map<number, string>,
+): { shots: MergedShot[]; citationBlocks: CitationBlock[] } {
   const fps = FPS;
+  const talkingHeadFrames = TALKING_HEAD_SEC * fps;
 
-  // 1. Convert successful results to reserved ranges
+  // 1. Convert successful results to CitationBlocks and reserved talking-head windows
+  const citationBlocks: CitationBlock[] = [];
   const reserved: Array<{
     startFrame: number;
     endFrame: number;
     result: YouTubeClipResult;
+    isCutback?: boolean;
   }> = [];
 
-  for (const result of results) {
-    if (!result.success || result.clipStartSec === undefined || result.clipEndSec === undefined) continue;
+  // Sort by sentence index for deterministic ordering before overlap guard
+  const sortedResults = [...results]
+    .filter((r) => r.success && r.clipStartSec !== undefined && r.clipEndSec !== undefined)
+    .sort((a, b) => a.sentenceIndex - b.sentenceIndex);
+
+  let cumulativeBlockFrames = 0;
+
+  for (const result of sortedResults) {
     const sent = sentenceFrameRanges[result.sentenceIndex];
     if (!sent) continue;
 
-    const matchedOffsetSec = result.matchedTimestampSec! - result.clipStartSec;
-    const clipDurationFrames = Math.round((result.clipEndSec - result.clipStartSec) * fps);
-    const matchedOffsetFrames = Math.round(matchedOffsetSec * fps);
-    const clipStartFrame = Math.max(0, sent.startFrame - matchedOffsetFrames);
-    const clipEndFrame = clipStartFrame + clipDurationFrames;
+    const blockStart = sent.endFrame;
+    const clipDurationFrames = Math.round((result.clipEndSec! - result.clipStartSec!) * fps);
+    const blockEnd = blockStart + clipDurationFrames;
 
+    // Overflow guard: skip if cumulative blocks exceed MAX_CITATION_FRACTION of total
+    if (cumulativeBlockFrames + clipDurationFrames > MAX_CITATION_FRACTION * totalDurationFrames) {
+      console.warn(
+        `[youtube] Citation block at sentence ${result.sentenceIndex} would exceed ${MAX_CITATION_FRACTION * 100}% of video — dropping`,
+      );
+      continue;
+    }
+
+    // Overlap guard: skip if blockStart overlaps previous block's end
+    const lastBlock = citationBlocks[citationBlocks.length - 1];
+    if (lastBlock && blockStart < lastBlock.endFrame) {
+      console.warn(
+        `[youtube] Citation block at sentence ${result.sentenceIndex} overlaps earlier block (sentence ${lastBlock.sentenceIndex}) — dropping`,
+      );
+      continue;
+    }
+
+    cumulativeBlockFrames += clipDurationFrames;
+
+    // Reserve the talking-head window for video replacement
     reserved.push({
-      startFrame: clipStartFrame,
-      endFrame: clipEndFrame,
+      startFrame: blockStart,
+      endFrame: blockStart + talkingHeadFrames,
       result,
+    });
+
+    // Mid-citation cutback: if block is long enough, add a second talking-head window
+    const blockDurationFrames = blockEnd - blockStart;
+    if (blockDurationFrames >= MIN_CUTBACK_BLOCK_SEC * fps) {
+      const cutbackStart = blockEnd - CUTBACK_HEAD_SEC * fps;
+      reserved.push({
+        startFrame: cutbackStart,
+        endFrame: blockEnd,
+        result,
+        isCutback: true,
+      });
+    }
+
+    citationBlocks.push({
+      startFrame: blockStart,
+      endFrame: blockEnd,
+      videoPath: result.videoPath!,
+      anchorId: sentenceIndexToAnchorId?.get(result.sentenceIndex) ?? "",
+      sentenceIndex: result.sentenceIndex,
+      captionWords: result.captionWords,
     });
   }
 
-  // 2. Sort and resolve overlaps — earliest start wins
-  reserved.sort((a, b) => a.startFrame - b.startFrame);
-  const dropped: typeof reserved = [];
-  for (let i = 1; i < reserved.length; i++) {
-    const prev = reserved[i - 1];
-    const curr = reserved[i];
-    if (curr.startFrame < prev.endFrame) {
-      console.warn(
-        `[youtube] Clip at sentence ${curr.result.sentenceIndex} overlaps earlier clip (sentence ${prev.result.sentenceIndex}) — dropping`,
-      );
-      dropped.push(curr);
-    }
-  }
-  const finalReserved = reserved.filter((r) => !dropped.includes(r));
-
-  // 3. Merge image shots with reserved ranges
+  // 2. Merge image shots with reserved talking-head ranges
   const survived: MergedShot[] = [];
 
   for (const shot of shots) {
@@ -483,7 +542,7 @@ export function mergeYouTubeClipsIntoShots(
     let e = shot.endFrame;
     let wasFullyConsumed = false;
 
-    for (const range of finalReserved) {
+    for (const range of reserved) {
       // Shot fully inside range — drop entirely
       if (s >= range.startFrame && e <= range.endFrame) {
         wasFullyConsumed = true;
@@ -497,7 +556,7 @@ export function mergeYouTubeClipsIntoShots(
       if (s >= range.startFrame && s < range.endFrame && e > range.endFrame) {
         s = range.endFrame;
       }
-      // Shot spans the range entirely — split later (handle in next pass)
+      // Shot spans the range entirely
       if (s < range.startFrame && e > range.endFrame) {
         // Front stub
         if (range.startFrame - s >= STUB_MIN_FRAMES) {
@@ -528,20 +587,25 @@ export function mergeYouTubeClipsIntoShots(
     }
   }
 
-  // 4. Insert YouTube clip shots
-  for (const range of finalReserved) {
-    survived.push({
+  // 3. Insert talking-head video shots (muted — audio lives in CitationBlock Audio elements)
+  for (const range of reserved) {
+    const shot: MergedShot = {
       startFrame: range.startFrame,
       endFrame: range.endFrame,
       palette: "cool-tech",
       mediaType: "video",
       videoPath: range.result.videoPath,
-      captionWords: range.result.captionWords,
-    });
+    };
+    if (range.isCutback) {
+      shot.startFrom = range.startFrame - reserved.find(
+        (r) => r.result.sentenceIndex === range.result.sentenceIndex && !r.isCutback,
+      )!.startFrame;
+    }
+    survived.push(shot);
   }
 
-  // 5. Sort by startFrame
+  // 4. Sort by startFrame
   survived.sort((a, b) => a.startFrame - b.startFrame);
 
-  return survived;
+  return { shots: survived, citationBlocks };
 }

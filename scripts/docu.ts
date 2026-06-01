@@ -38,8 +38,8 @@ import {
   checkYtdlpAvailable,
   type YouTubeClipSpec,
   type YouTubeClipResult,
-  type MergedShot,
 } from "../src/lib/docu/youtube-pipeline";
+import { enrichCurrentRun, textOnlyAssetSummary, traceableChain } from "../src/lib/tracing";
 
 // ── Niche allowlist ─────────────────────────────────────────────────────
 
@@ -78,7 +78,54 @@ function checkNicheAllowlist(slug: string, topic: string): { allowed: boolean; n
 
 // ── Clean artifacts ─────────────────────────────────────────────────────
 
-function cleanArtifacts(slug: string): string[] {
+type CleanPhase = "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen";
+
+const SEG_NARRATION_FILES = (slug: string) =>
+  Array.from({ length: 20 }, (_, i) => `prompts/docu/${slug}-seg-${String(i).padStart(2, "0")}-narration.json`);
+const SEG_OVERLAYS_FILES = (slug: string) =>
+  Array.from({ length: 20 }, (_, i) => `prompts/docu/${slug}-seg-${String(i).padStart(2, "0")}-overlays.json`);
+
+// Each phase's clean cascades through all downstream artifacts so that
+// regenerating an upstream phase never leaves stale files on disk.
+const PHASE_FILE_PATTERNS: Record<CleanPhase, (slug: string) => string[]> = {
+  plan: (slug) => [
+    `prompts/docu/${slug}-plan.json`,
+    `prompts/docu/${slug}-research.json`,
+    `prompts/docu/${slug}-corpus.json`,
+    `prompts/docu/${slug}-topic.json`,
+    ...SEG_NARRATION_FILES(slug),
+    ...SEG_OVERLAYS_FILES(slug),
+  ],
+  narration: (slug) => [
+    `prompts/docu/${slug}-plan.json`,
+    `prompts/docu/${slug}-research.json`,
+    `prompts/docu/${slug}-corpus.json`,
+    `prompts/docu/${slug}-topic.json`,
+    ...SEG_NARRATION_FILES(slug),
+    ...SEG_OVERLAYS_FILES(slug),
+  ],
+  overlays: (slug) => [
+    `prompts/docu/${slug}-topic.json`,
+    ...SEG_OVERLAYS_FILES(slug),
+  ],
+  youtube: (slug) => [
+    `prompts/docu/${slug}-topic.json`,
+    `public/videos/docu/interview-clips/${slug}/`,
+  ],
+  tts: (slug) => [
+    `public/audio/docu/${slug}.wav`,
+    `prompts/docu/${slug}-timings.json`,
+  ],
+  images: (slug) => [
+    `public/images/docu/${slug}/`,
+    `prompts/docu/${slug}-images.json`,
+  ],
+  codegen: () => [
+    `src/generated/docu-scripts.ts`,
+  ],
+};
+
+function cleanArtifacts(slug: string, only?: CleanPhase): string[] {
   const removed: string[] = [];
   const rmFile = (p: string) => {
     try { fs.unlinkSync(p); removed.push(p); } catch { /* ok if missing */ }
@@ -86,6 +133,14 @@ function cleanArtifacts(slug: string): string[] {
   const rmDir = (p: string) => {
     try { fs.rmSync(p, { recursive: true, force: true }); removed.push(p); } catch { /* ok if missing */ }
   };
+
+  if (only) {
+    for (const entry of PHASE_FILE_PATTERNS[only](slug)) {
+      if (entry.endsWith("/")) rmDir(entry);
+      else rmFile(entry);
+    }
+    return removed;
+  }
 
   // Prompt JSONs
   const promptsDir = "prompts/docu";
@@ -144,7 +199,7 @@ function cleanArtifacts(slug: string): string[] {
 
 // ── Full pipeline (hand-authored + LLM paths) ───────────────────────────
 
-async function runFullPipeline(
+async function runFullPipeline_impl(
   slug: string,
   topic: string,
   sentences: SentenceDef[],
@@ -152,8 +207,11 @@ async function runFullPipeline(
   imageQueries: ImageQuery[],
   segmentPlans?: TopicData["segmentPlans"],
   youtubeClipSpecs?: YouTubeClipSpec[],
+  sentenceIndexToAnchorId?: Map<number, string>,
+  sentenceIndexToAttribution?: Map<number, { name?: string; sourceLabel?: string }>,
   opts?: { only?: "images" | "codegen" },
 ) {
+  enrichCurrentRun({ slug, topic, phase: "compose" });
   const only = opts?.only;
 
   // 1. TTS pipeline (or load from cache if skipping ahead)
@@ -190,11 +248,17 @@ async function runFullPipeline(
   const shots = scheduleShotsForSentences(sentenceFrameRanges, durationFrames);
 
   // 2.5 — Merge YouTube clips into shot schedule (replaces `shots` for all downstream steps)
-  const mergedShots: MergedShot[] = mergeYouTubeClipsIntoShots(
+  const { shots: mergedShots, citationBlocks } = mergeYouTubeClipsIntoShots(
     shots,
     youtubeClipResults,
     sentenceFrameRanges,
+    durationFrames,
+    sentenceIndexToAnchorId,
   );
+  const annotatedCitationBlocks = citationBlocks.map((block) => {
+    const attr = sentenceIndexToAttribution?.get(block.sentenceIndex);
+    return attr ? { ...block, ...attr } : block;
+  });
   // FROM THIS POINT ON: use `mergedShots`, not `shots`
 
   // 3. Image queries (skip LLM generation when loading images from manifest)
@@ -333,6 +397,7 @@ async function runFullPipeline(
                 endFrame: ms.endFrame,
                 palette: ms.palette,
                 isInterviewClip: true,
+                startFrom: ms.startFrom,
                 captionWords: ms.captionWords,
               };
             }
@@ -349,6 +414,7 @@ async function runFullPipeline(
     ],
     overlays,
     segments: segmentMetas,
+    citationBlocks: annotatedCitationBlocks.length > 0 ? annotatedCitationBlocks : undefined,
   };
 
   // 9. Codegen
@@ -370,6 +436,11 @@ async function runFullPipeline(
   );
   console.log("[docu] docu-scripts.ts updated — open studio to render");
 }
+
+const runFullPipeline = traceableChain(runFullPipeline_impl, "runFullPipeline", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
+});
 
 function computeSegmentFrameRanges(
   segmentPlans: NonNullable<TopicData["segmentPlans"]>,
@@ -438,7 +509,7 @@ function printUsage() {
   console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
   console.error("  --only phase    Stop after: plan | narration | overlays | youtube | tts | images | codegen (omit to run full pipeline)");
   console.error("  --audition      TTS audition only (30s clips)");
-  console.error("  --clean         Remove all pipeline artifacts for this topic before running");
+  console.error("  --clean         Remove pipeline artifacts for this topic. With --only <phase>, removes only that phase's artifacts");
 }
 
 async function main() {
@@ -449,8 +520,6 @@ async function main() {
     printUsage();
     process.exit(1);
   }
-
-  const segments = 5; // fixed 5-phase arc: hook → baseline → escalation → turn → payoff
 
   // Validate --minutes
   if (!Number.isFinite(minutes) || minutes <= 0) {
@@ -472,12 +541,23 @@ async function main() {
     process.exit(1);
   }
 
+  await runDocuCli({ topicArg, audition, clean, minutes, from, only });
+}
+
+type ParsedDocuArgs = ReturnType<typeof parseArgs> & { topicArg: string };
+
+async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
+  const { topicArg, audition, clean, minutes, from, only } = args;
   const slug = topicToSlug(topicArg);
+  enrichCurrentRun({ slug, topic: topicArg, phase: "compose" });
+
+  const segments = 5;
 
   // Clean artifacts if requested
   if (clean) {
-    console.log(`[docu] Cleaning artifacts for "${slug}"...`);
-    const removed = cleanArtifacts(slug);
+    const cleanPhase = only as CleanPhase | undefined;
+    console.log(`[docu] Cleaning${cleanPhase ? ` (${cleanPhase})` : ""} artifacts for "${slug}"...`);
+    const removed = cleanArtifacts(slug, cleanPhase);
     if (removed.length > 0) {
       for (const r of removed) console.log(`  removed: ${r}`);
     } else {
@@ -563,9 +643,27 @@ async function main() {
     return;
   }
 
+  const sentenceIndexToAnchorId = new Map(
+    (topicData.clipCandidateInfo ?? []).map(({ sentenceIndex, anchorId }) => [sentenceIndex, anchorId])
+  );
+
+  const sentenceIndexToAttribution = new Map(
+    (topicData.clipCandidateInfo ?? []).map(({ sentenceIndex, personName, sourceLabel }) => [
+      sentenceIndex,
+      { name: personName, sourceLabel },
+    ]),
+  );
+
   await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans, youtubeClipSpecs,
+    sentenceIndexToAnchorId.size > 0 ? sentenceIndexToAnchorId : undefined,
+    sentenceIndexToAttribution.size > 0 ? sentenceIndexToAttribution : undefined,
     (only === "images" || only === "codegen") ? { only } : undefined);
 }
+
+const runDocuCli = traceableChain(runDocuCli_impl, "runDocuCli", {
+  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
+  processOutputs: (outputs) => textOnlyAssetSummary(outputs) as Record<string, unknown>,
+});
 
 main().catch((err) => {
   console.error(err);
