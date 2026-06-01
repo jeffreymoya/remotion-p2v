@@ -20,6 +20,10 @@ export interface YouTubeClipSpec {
   targetPhrases: string[];
   leadSec?: number;
   trailSec?: number;
+  /** Why this clip adds authority to the paired sentence (LLM-emitted, optional). */
+  rationale?: string;
+  /** How the excerpt is recontextualized as commentary (LLM-emitted, optional). */
+  transformationNote?: string;
 }
 
 export interface ClipCandidateInfo {
@@ -284,6 +288,96 @@ export async function runYouTubeClipExtraction(
   }
 
   return results;
+}
+
+// ── Clip-attribution gate (Deliverable B) ──────────────────────────────
+//
+// Blocking gate between extraction and shot-merge. Enforces the YPP report's
+// Backlog Item 2 controls: no clip is inserted without visible channel
+// attribution, every admitted clip emits a provenance record (source URL,
+// channel, title, timestamp, duration, rationale, transformation note), and a
+// missing transformation note blocks in publish mode (warns otherwise).
+
+export interface ClipAttributionRecord {
+  sentenceIndex: number;
+  /** Canonical watch URL for the source video. */
+  sourceUrl: string;
+  channel: string;
+  title: string;
+  /** Matched-phrase timestamp within the source video, in seconds. */
+  timestampSec: number;
+  /** Length of the extracted excerpt, in seconds. */
+  durationSec: number;
+  rationale?: string;
+  transformationNote?: string;
+}
+
+export interface ClipGateResult {
+  /** Successful results cleared for insertion (fed to `mergeYouTubeClipsIntoShots`). */
+  admitted: YouTubeClipResult[];
+  /** Provenance record per admitted clip. */
+  records: ClipAttributionRecord[];
+  /** Clips dropped by the gate, with the blocking reason. */
+  blocked: Array<{ sentenceIndex: number; reason: string }>;
+}
+
+function hasText(v: string | undefined): v is string {
+  return typeof v === "string" && v.trim().length > 0;
+}
+
+export function gateClipAttribution(
+  results: YouTubeClipResult[],
+  specs: YouTubeClipSpec[],
+  opts: { publishMode: boolean },
+): ClipGateResult {
+  const specBySentence = new Map(specs.map((s) => [s.sentenceIndex, s]));
+  const admitted: YouTubeClipResult[] = [];
+  const records: ClipAttributionRecord[] = [];
+  const blocked: Array<{ sentenceIndex: number; reason: string }> = [];
+
+  for (const result of results) {
+    // Failed extractions never reach the chyron; ignore them here.
+    if (!result.success) continue;
+
+    // Block 1 — no channel attribution means no insertion (rights posture).
+    if (!hasText(result.channelTitle)) {
+      blocked.push({ sentenceIndex: result.sentenceIndex, reason: "missing channel attribution" });
+      console.warn(`[youtube] Clip for sentence ${result.sentenceIndex} blocked — missing channel attribution`);
+      continue;
+    }
+
+    const spec = specBySentence.get(result.sentenceIndex);
+    const transformationNote = spec?.transformationNote;
+
+    // Block 2 — transformation note required to publish; warn otherwise.
+    if (!hasText(transformationNote)) {
+      if (opts.publishMode) {
+        blocked.push({ sentenceIndex: result.sentenceIndex, reason: "missing transformation note (publish mode)" });
+        console.warn(`[youtube] Clip for sentence ${result.sentenceIndex} blocked — missing transformation note (publish mode)`);
+        continue;
+      }
+      console.warn(`[youtube] Clip for sentence ${result.sentenceIndex} has no transformation note — allowed (non-publish run)`);
+    }
+
+    const durationSec =
+      result.clipStartSec !== undefined && result.clipEndSec !== undefined
+        ? Math.max(0, result.clipEndSec - result.clipStartSec)
+        : 0;
+
+    admitted.push(result);
+    records.push({
+      sentenceIndex: result.sentenceIndex,
+      sourceUrl: result.videoId ? `https://www.youtube.com/watch?v=${result.videoId}` : "",
+      channel: result.channelTitle,
+      title: result.videoTitle ?? "",
+      timestampSec: result.matchedTimestampSec ?? 0,
+      durationSec,
+      rationale: hasText(spec?.rationale) ? spec!.rationale : undefined,
+      transformationNote: hasText(transformationNote) ? transformationNote : undefined,
+    });
+  }
+
+  return { admitted, records, blocked };
 }
 
 async function extractSingleClip(

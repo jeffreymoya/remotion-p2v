@@ -109,6 +109,7 @@ export const PIPELINE: readonly PhaseDescriptor[] = [
     requires: [],
     cleanArtifacts: (slug) => [
       `${PROMPTS_DIR}/${slug}-topic.json`,
+      `${PROMPTS_DIR}/${slug}-clips.json`,
       `public/videos/docu/interview-clips/${slug}/`,
     ],
   },

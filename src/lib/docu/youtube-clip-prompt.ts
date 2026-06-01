@@ -16,6 +16,8 @@ const YouTubeClipAnnotationSchema = z.object({
     targetPhrases: z.array(z.string()).min(1),
     leadSec: z.number().positive().optional(),
     trailSec: z.number().positive().optional(),
+    rationale: z.string().optional(),
+    transformationNote: z.string().optional(),
   })).max(2),
 });
 
@@ -25,6 +27,8 @@ const YouTubeClipCandidateAnnotationSchema = z.object({
     targetPhrases: z.array(z.string()).min(1),
     leadSec: z.number().positive().optional(),
     trailSec: z.number().positive().optional(),
+    rationale: z.string().optional(),
+    transformationNote: z.string().optional(),
   })).max(2),
 });
 
@@ -42,6 +46,7 @@ function buildSystemPrompt(): string {
 6. Select at most 2 sentences. Choose the ones where an interview clip adds the most authority — skip narrative transitions, hooks, and pure descriptions.
 7. Assign sentence indices based on the 0-indexed sentence list provided below.
 8. If no sentence would benefit from an interview clip, return an empty clips array.
+9. For each clip, write a "rationale" (one sentence: why this clip adds authority to the paired sentence) and a "transformationNote" (one sentence: how the short excerpt is recontextualized — used as evidence under our original narration commentary, not as standalone reused footage). These are required for publication safety; do not leave them blank.
 
 ## Output Format
 Return JSON only, no markdown fences.
@@ -52,7 +57,9 @@ Return JSON only, no markdown fences.
       "searchQuery": "Jerome Powell average inflation targeting interview",
       "targetPhrases": ["average inflation", "flexible target"],
       "leadSec": 5,
-      "trailSec": 8
+      "trailSec": 8,
+      "rationale": "On-camera Fed chair reinforces the average-inflation claim with primary-source authority",
+      "transformationNote": "8s excerpt framed under original narration analysis of the rate decision"
     }
   ]
 }`;
@@ -71,6 +78,7 @@ For each designated moment, generate a "searchQuery" and 1–3 "targetPhrases" t
 4. leadSec (default 10) and trailSec (default 35) control the clip window around the matched phrase.
 5. Generate exactly one clip entry per designated moment provided.
 6. Return an empty clips array if no designated moments are listed.
+7. For each clip, write a "rationale" (one sentence: why this clip adds authority to the paired sentence) and a "transformationNote" (one sentence: how the short excerpt is recontextualized — used as evidence under our original narration commentary, not as standalone reused footage). These are required for publication safety; do not leave them blank.
 
 ## Output Format
 Return JSON only, no markdown fences.
@@ -80,7 +88,9 @@ Return JSON only, no markdown fences.
       "searchQuery": "Jerome Powell market stability interview",
       "targetPhrases": ["maintaining market stability", "Federal Reserve mandate"],
       "leadSec": 10,
-      "trailSec": 35
+      "trailSec": 35,
+      "rationale": "On-camera Fed chair reinforces the market-stability claim with primary-source authority",
+      "transformationNote": "Short excerpt framed under original narration analysis of Fed policy"
     }
   ]
 }`;
@@ -382,6 +392,8 @@ Return your search queries and target phrases as JSON.`;
       targetPhrases: llmClip.targetPhrases,
       leadSec: llmClip.leadSec,
       trailSec: llmClip.trailSec,
+      rationale: llmClip.rationale,
+      transformationNote: llmClip.transformationNote,
     }));
 
     const sentenceToAnchors = buildSentenceToAnchors(segmentPlans, verifiedAnchors, sentences.length);

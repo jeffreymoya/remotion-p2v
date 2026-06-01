@@ -68,6 +68,8 @@ const TopicDataSchema = z.object({
     targetPhrases: z.array(z.string()).min(1),
     leadSec: z.number().positive().optional(),
     trailSec: z.number().positive().optional(),
+    rationale: z.string().optional(),
+    transformationNote: z.string().optional(),
   })).max(5).optional(),
   clipCandidateInfo: z.array(z.object({
     sentenceIndex: z.number().int().min(0),

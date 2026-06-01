@@ -11,7 +11,9 @@ import {
   findPhraseInEvents,
   extractCaptionWords,
   mergeYouTubeClipsIntoShots,
+  gateClipAttribution,
 } from "../../src/lib/docu/youtube-pipeline";
+import type { YouTubeClipResult, YouTubeClipSpec } from "../../src/lib/docu/youtube-pipeline";
 import type { ScheduledShot } from "../../src/lib/docu/shot-scheduler";
 
 let failures = 0;
@@ -400,6 +402,109 @@ function testMergeYouTubeClipsIntoShots(): void {
   }
 }
 
+// ── gateClipAttribution (Deliverable B) ─────────────────────────────────
+
+function makeResult(over: Partial<YouTubeClipResult> & { sentenceIndex: number }): YouTubeClipResult {
+  return {
+    success: true,
+    videoId: "abc123",
+    videoTitle: "Fed Chair Powell Speaks",
+    channelTitle: "CNBC Television",
+    matchedTimestampSec: 12,
+    clipStartSec: 2,
+    clipEndSec: 10,
+    videoPath: "videos/docu/test/clip.mp4",
+    ...over,
+  };
+}
+
+function makeSpec(over: Partial<YouTubeClipSpec> & { sentenceIndex: number }): YouTubeClipSpec {
+  return {
+    searchQuery: "powell interview",
+    targetPhrases: ["average inflation"],
+    transformationNote: "8s excerpt under original narration analysis",
+    ...over,
+  };
+}
+
+function testGateClipAttribution(): void {
+  console.log("\n── gateClipAttribution ──");
+
+  // Fully-attributed clip with transformation note → admitted with provenance record
+  {
+    const results = [makeResult({ sentenceIndex: 0 })];
+    const specs = [makeSpec({ sentenceIndex: 0, rationale: "primary-source authority" })];
+    const gate = gateClipAttribution(results, specs, { publishMode: true });
+    assertEqual(gate.admitted.length, 1, "attributed clip admitted");
+    assertEqual(gate.blocked.length, 0, "attributed clip not blocked");
+    assertEqual(gate.records.length, 1, "one provenance record");
+    const rec = gate.records[0];
+    assertEqual(rec.sourceUrl, "https://www.youtube.com/watch?v=abc123", "sourceUrl well-formed");
+    assertEqual(rec.channel, "CNBC Television", "channel recorded");
+    assertEqual(rec.durationSec, 8, "durationSec = clipEnd - clipStart");
+    assertEqual(rec.rationale, "primary-source authority", "rationale recorded");
+    assertEqual(rec.transformationNote, "8s excerpt under original narration analysis", "transformationNote recorded");
+  }
+
+  // Missing channelTitle → blocked, never admitted (no attribution = no insertion)
+  {
+    const results = [makeResult({ sentenceIndex: 0, channelTitle: undefined })];
+    const specs = [makeSpec({ sentenceIndex: 0 })];
+    const gate = gateClipAttribution(results, specs, { publishMode: false });
+    assertEqual(gate.admitted.length, 0, "un-attributed clip not admitted");
+    assertEqual(gate.records.length, 0, "un-attributed clip has no record");
+    assertEqual(gate.blocked.length, 1, "un-attributed clip blocked");
+    assertEqual(gate.blocked[0].reason, "missing channel attribution", "block reason = missing channel attribution");
+  }
+
+  // Blank channelTitle (whitespace) → treated as missing
+  {
+    const results = [makeResult({ sentenceIndex: 0, channelTitle: "   " })];
+    const specs = [makeSpec({ sentenceIndex: 0 })];
+    const gate = gateClipAttribution(results, specs, { publishMode: false });
+    assertEqual(gate.blocked.length, 1, "whitespace channel blocked");
+  }
+
+  // Missing transformation note + non-publish → admitted with warn, note undefined
+  {
+    const results = [makeResult({ sentenceIndex: 0 })];
+    const specs = [makeSpec({ sentenceIndex: 0, transformationNote: undefined })];
+    const gate = gateClipAttribution(results, specs, { publishMode: false });
+    assertEqual(gate.admitted.length, 1, "missing note admitted off-publish");
+    assertEqual(gate.blocked.length, 0, "missing note not blocked off-publish");
+    assert(gate.records[0].transformationNote === undefined, "note undefined in record");
+  }
+
+  // Missing transformation note + publish → blocked
+  {
+    const results = [makeResult({ sentenceIndex: 0 })];
+    const specs = [makeSpec({ sentenceIndex: 0, transformationNote: undefined })];
+    const gate = gateClipAttribution(results, specs, { publishMode: true });
+    assertEqual(gate.admitted.length, 0, "missing note blocked in publish mode");
+    assertEqual(gate.blocked.length, 1, "publish-mode block recorded");
+    assertEqual(gate.blocked[0].reason, "missing transformation note (publish mode)", "publish block reason");
+  }
+
+  // Failed extractions are ignored (no record, no block)
+  {
+    const results = [makeResult({ sentenceIndex: 0, success: false })];
+    const specs = [makeSpec({ sentenceIndex: 0 })];
+    const gate = gateClipAttribution(results, specs, { publishMode: true });
+    assertEqual(gate.admitted.length, 0, "failed result not admitted");
+    assertEqual(gate.records.length, 0, "failed result has no record");
+    assertEqual(gate.blocked.length, 0, "failed result not counted as blocked");
+  }
+
+  // Missing videoId → empty sourceUrl, still admitted (channel present)
+  {
+    const results = [makeResult({ sentenceIndex: 0, videoId: undefined })];
+    const specs = [makeSpec({ sentenceIndex: 0 })];
+    const gate = gateClipAttribution(results, specs, { publishMode: false });
+    assertEqual(gate.admitted.length, 1, "clip without videoId still admitted");
+    assertEqual(gate.records[0].sourceUrl, "", "sourceUrl empty when videoId missing");
+  }
+}
+
 // ── Runner ──────────────────────────────────────────────────────────────
 
 testParseJson3();
@@ -407,6 +512,7 @@ testFlattenEvents();
 testFindPhraseInEvents();
 testExtractCaptionWords();
 testMergeYouTubeClipsIntoShots();
+testGateClipAttribution();
 
 console.log(`\n${failures === 0 ? "All tests passed!" : `${failures} test(s) failed`}`);
 process.exit(failures > 0 ? 1 : 0);

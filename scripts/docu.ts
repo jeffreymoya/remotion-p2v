@@ -35,6 +35,7 @@ import type { DocuScript } from "../src/components/docu/DocumentaryComposition";
 import {
   runYouTubeClipExtraction,
   mergeYouTubeClipsIntoShots,
+  gateClipAttribution,
   checkYtdlpAvailable,
   type YouTubeClipSpec,
   type YouTubeClipResult,
@@ -44,6 +45,7 @@ import {
   type PhaseName,
   cleanArtifactsFor,
   checkPrereqs,
+  writeCachedJson,
   VALID_FROM,
   VALID_ONLY,
 } from "../src/lib/docu/pipeline";
@@ -183,7 +185,7 @@ async function runFullPipeline_impl(
   youtubeClipSpecs?: YouTubeClipSpec[],
   sentenceIndexToAnchorId?: Map<number, string>,
   sentenceIndexToAttribution?: Map<number, { name?: string; sourceLabel?: string }>,
-  opts?: { only?: "images" | "codegen"; voiceName?: string; speakingRate?: number; targetShotSeconds?: number },
+  opts?: { only?: "images" | "codegen"; voiceName?: string; speakingRate?: number; targetShotSeconds?: number; publishMode?: boolean },
 ) {
   enrichCurrentRun({ slug, topic, phase: "compose" });
   const only = opts?.only;
@@ -219,6 +221,24 @@ async function runFullPipeline_impl(
     youtubeClipResults = await runYouTubeClipExtraction(slug, effectiveClipSpecs);
     const succeeded = youtubeClipResults.filter((r) => r.success);
     console.log(`[docu] YouTube clips: ${succeeded.length}/${effectiveClipSpecs.length} succeeded`);
+
+    // Clip-attribution gate (Deliverable B): block un-attributed clips, persist
+    // a provenance record per admitted clip, and (in publish mode) block clips
+    // with no transformation note. Runs before merge so blocked clips are never
+    // inserted into the shot schedule.
+    const gate = gateClipAttribution(youtubeClipResults, effectiveClipSpecs, {
+      publishMode: opts?.publishMode ?? false,
+    });
+    if (gate.blocked.length > 0) {
+      console.warn(`[docu] Clip-attribution gate blocked ${gate.blocked.length} clip(s):`);
+      for (const b of gate.blocked) console.warn(`  sentence ${b.sentenceIndex}: ${b.reason}`);
+    }
+    writeCachedJson(`prompts/docu/${slug}-clips.json`, {
+      records: gate.records,
+      blocked: gate.blocked,
+    });
+    console.log(`[docu] Clip provenance written: prompts/docu/${slug}-clips.json (${gate.records.length} admitted)`);
+    youtubeClipResults = gate.admitted;
   }
 
   // 2. Shot scheduling
@@ -455,7 +475,7 @@ function parseArgs(args: string[]) {
   const audition = args.includes("--audition");
   const clean = args.includes("--clean");
 
-  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean", "--allow-youtube-clips", "--variety"]);
+  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean", "--allow-youtube-clips", "--publish", "--variety"]);
   const flagVals = new Set<string>();
 
   // Collect flag values so they aren't mistaken for topicArg
@@ -483,13 +503,14 @@ function parseArgs(args: string[]) {
     : undefined;
 
   const allowYoutubeClips = args.includes("--allow-youtube-clips");
+  const publish = args.includes("--publish");
 
   const varietyIdx = args.indexOf("--variety");
   const variety = varietyIdx >= 0 && varietyIdx + 1 < args.length && !args[varietyIdx + 1].startsWith("--")
     ? args[varietyIdx + 1]
     : undefined;
 
-  return { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety };
+  return { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, publish, variety };
 }
 
 function printUsage() {
@@ -500,12 +521,13 @@ function printUsage() {
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove pipeline artifacts for this topic. With --only <phase>, removes only that phase's artifacts");
   console.error("  --allow-youtube-clips  Enable YouTube clip extraction (disabled by default)");
+  console.error("  --publish              Publish-intended run: clips missing a transformation note are blocked (otherwise warned)");
   console.error("  --variety <off|arc>    Force variety: 'off' = baseline preset (regression); an arc name pins that structure (omit for quota-based rotation)");
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety } = parseArgs(args);
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, publish, variety } = parseArgs(args);
 
   if (!topicArg) {
     printUsage();
@@ -536,7 +558,7 @@ async function main() {
     process.exit(1);
   }
 
-  await runDocuCli({ topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety });
+  await runDocuCli({ topicArg, audition, clean, minutes, from, only, allowYoutubeClips, publish, variety });
 }
 
 type ParsedDocuArgs = ReturnType<typeof parseArgs> & { topicArg: string };
@@ -585,7 +607,7 @@ function resolveVarietyAssignment(
 }
 
 async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
-  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety } = args;
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, publish, variety } = args;
   const slug = topicToSlug(topicArg);
   enrichCurrentRun({ slug, topic: topicArg, phase: "compose" });
 
@@ -708,6 +730,7 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
       voiceName: varietyAssignment.voice,
       speakingRate: pacing.speakingRate,
       targetShotSeconds: pacing.targetShotSeconds,
+      publishMode: publish,
     });
 }
 
