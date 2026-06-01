@@ -11,6 +11,8 @@ import type { HighlightBbox } from "./ArticleHighlights";
 import { ArticleCardLayout } from "./ArticleCardLayout";
 import type { ArticleData } from "../../lib/docu/article-pipeline";
 import { layoutHeadline, HEADLINE_LAYOUT_OPTS, CARD_HEIGHT } from "../../lib/docu/article-text-layout";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 export type { HighlightBbox } from "./ArticleHighlights";
 
@@ -29,6 +31,8 @@ export interface ArticleCardProps {
   displayWidth?: number;
   durationInFrames: number;
   enterFrame?: number;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({
@@ -40,6 +44,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   displayWidth = HEADLINE_LAYOUT_OPTS.containerWidth,
   durationInFrames,
   enterFrame = 0,
+  enter,
 }) => {
   const frame = useCurrentFrame();
   const localFrame = frame - enterFrame;
@@ -49,7 +54,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     [article.headline],
   );
 
-  // Count distinct headline lines so ArticleCardLayout can position byline correctly
   const numHeadlineLines = useMemo(() => {
     if (highlightBboxes.length === 0) return 1;
     const uniqueTops = new Set(highlightBboxes.map((b) => b.top));
@@ -59,17 +63,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const progress = localFrame / durationInFrames;
   const rotateY = interpolate(progress, [0, 1], [-8, 8]);
   const rotateX = interpolate(progress, [0, 1], [-3, 3]);
-  // No animated scale — scaling during a 3D transform forces the text layer
-  // to be re-rasterized every frame, causing jagged edges in preview and
-  // sub-pixel fringes in the rendered output.
   const cardScale = 1;
 
-  const opacity = interpolate(
-    localFrame,
-    [0, 15, durationInFrames - 12, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const enterOpacityStyle: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(localFrame, 0, 0, 15)
+    : {};
+
+  const opacity = enter
+    ? (enterOpacityStyle.opacity ?? 1)
+    : interpolate(
+        localFrame,
+        [0, 15, durationInFrames - 12, durationInFrames],
+        [0, 1, 1, 0],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+      );
 
   const highlightProgress = interpolate(
     localFrame,

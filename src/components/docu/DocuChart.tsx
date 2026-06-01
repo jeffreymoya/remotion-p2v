@@ -1,6 +1,7 @@
 import React from "react";
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 import { DonutChart } from "./DonutChart";
 import { LineChart } from "./LineChart";
 import { BarChart } from "./BarChart";
@@ -22,10 +23,14 @@ export interface DocuChartProps {
   series?: Array<{ name: string; points: Array<{ x: string | number; y: number }> }>;
   forecastFromIndex?: number;
   bubblePoints?: Array<{ name: string; x: number; y: number; r: number; highlight?: boolean }>;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
-export const DocuChart: React.FC<DocuChartProps> = (props) => {
+export const DocuChart: React.FC<DocuChartProps> = ({ enter, enterParams, ...props }) => {
   const { chartKind } = props;
+
+  const chartEnter = enter as EnterPresetKey | undefined;
 
   switch (chartKind) {
     case "composition":
@@ -37,6 +42,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           source={props.source}
           palette={props.palette}
           durationInFrames={props.durationInFrames}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "timeseries":
@@ -48,6 +55,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           source={props.source}
           palette={props.palette}
           durationInFrames={props.durationInFrames}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "comparison":
@@ -59,6 +68,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           source={props.source}
           palette={props.palette}
           durationInFrames={props.durationInFrames}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "horizontal-bar":
@@ -70,6 +81,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           source={props.source}
           palette={props.palette}
           durationInFrames={props.durationInFrames}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "stacked-bar":
@@ -82,6 +95,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           palette={props.palette}
           durationInFrames={props.durationInFrames}
           series={props.series}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "area":
@@ -94,6 +109,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           palette={props.palette}
           durationInFrames={props.durationInFrames}
           forecastFromIndex={props.forecastFromIndex}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "bubble":
@@ -106,6 +123,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           palette={props.palette}
           durationInFrames={props.durationInFrames}
           bubblePoints={props.bubblePoints}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
     case "radial":
@@ -117,6 +136,8 @@ export const DocuChart: React.FC<DocuChartProps> = (props) => {
           source={props.source}
           palette={props.palette}
           durationInFrames={props.durationInFrames}
+          enter={chartEnter}
+          enterParams={enterParams}
         />
       );
   }

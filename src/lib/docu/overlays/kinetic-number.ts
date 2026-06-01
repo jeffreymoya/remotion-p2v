@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
 import type { DataItem } from "./types";
-import { UnitSchema } from "./types";
+import { UnitSchema, overlayBaseSchema } from "./types";
 import type { SelectionInput } from "./registry";
 
 function populateKineticNumber(dataItem: DataItem, selection: SelectionInput): Record<string, unknown> {
@@ -23,16 +23,12 @@ function populateKineticNumber(dataItem: DataItem, selection: SelectionInput): R
 
 export const kineticNumberDef = {
   id: "kinetic-number" as const,
-  schema: z.object({
+  schema: overlayBaseSchema.extend({
     type: z.literal("kinetic-number"),
     text: z.string().min(1),
     value: z.number(),
     unit: UnitSchema,
     source: z.string().optional(),
-    palette: z.enum(["cool-tech", "warm-real"]),
-    anchorPhrase: z.string().min(1),
-    holdSec: z.number().positive(),
-    leadSec: z.number().optional(),
   }),
   anchorStrategy: phraseAnchorStrategy,
   promptRule: 'kinetic-number: numeric stat with value+unit ($/%/x/T/B); ~60% of overlays. Values come from extracted data items — do not fabricate numbers.',
@@ -45,4 +41,5 @@ export const kineticNumberDef = {
   category: "number" as const,
   consumes: "scalar" as const,
   populate: populateKineticNumber,
+  defaultEnter: "countUp" as const,
 };

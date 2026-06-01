@@ -64,6 +64,32 @@ for (const payload of Object.values(validPayloads)) {
   assert(parsed.success, `OverlaySpecSchema accepts ${payload.type}`, parsed.success ? "ok" : JSON.stringify(parsed.error.issues));
 }
 
+// ── Schema round-trip with optional enter/exit fields ────────────────────
+
+const headlineWithEnter = { ...validPayloads["headline-card"], enter: "fadeUp", enterParams: {} };
+const hlParsed = OverlaySpecSchema.safeParse(headlineWithEnter);
+assert(hlParsed.success, "accepts headline-card with enter=fadeUp");
+
+const headlineWithBadEnter = { ...validPayloads["headline-card"], enter: "garbage-preset" };
+const hlBadParsed = OverlaySpecSchema.safeParse(headlineWithBadEnter);
+assert(!hlBadParsed.success, "rejects headline-card with invalid enter preset");
+
+const kineticWithEnter = { ...validPayloads["kinetic-number"], enter: "countUp", enterParams: {} };
+const knParsed = OverlaySpecSchema.safeParse(kineticWithEnter);
+assert(knParsed.success, "accepts kinetic-number with enter=countUp");
+
+const chartWithEnter = { ...validPayloads["chart"], enter: "fadeIn", enterParams: {} };
+const chParsed = OverlaySpecSchema.safeParse(chartWithEnter);
+assert(chParsed.success, "accepts chart with enter=fadeIn");
+
+// ── Enter/exit field propagation on parsed specs ─────────────────────────
+
+if (hlParsed.success) {
+  assert(hlParsed.data.enter === "fadeUp", "parsed headline-card preserves enter field");
+  assert(hlParsed.data.palette === "cool-tech", "parsed headline-card preserves palette from base schema");
+  assert(hlParsed.data.holdSec === 3.5, "parsed headline-card preserves holdSec from base schema");
+}
+
 // ── PROMPTABLE_REGISTRY: only promotable overlays ────────────────────────
 
 const promotableKeys = Object.keys(PROMPTABLE_REGISTRY);

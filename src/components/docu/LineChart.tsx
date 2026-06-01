@@ -6,6 +6,8 @@ import { loadFont as loadIBMPlexMono } from "@remotion/google-fonts/IBMPlexMono"
 import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTextMode } from "./docu-tokens";
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 import { fadeIn, fadeUp, popIn } from "./chart-animations";
 
 loadSourceSerif4();
@@ -19,6 +21,8 @@ export interface LineChartProps {
   source?: string;
   palette: DocuPalette;
   durationInFrames: number;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
@@ -28,6 +32,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   source,
   palette: paletteName,
   durationInFrames,
+  enter,
 }) => {
   const frame = useCurrentFrame();
   const ramp = CHART_RAMP_DEFAULT;
@@ -77,7 +82,10 @@ export const LineChart: React.FC<LineChartProps> = ({
 
   const drawProgress = interpolate(frame, [8, 8 + Math.floor(durationInFrames * 0.75)], [1400, 0], { extrapolateRight: "clamp" });
 
-  const containerFade = fadeIn(frame, 0, 0, 10);
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const containerFade: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(frame, 0, 0, 10)
+    : fadeIn(frame, 0, 0, 10);
 
   const xLabelInterval = points.length > 8 ? Math.ceil(points.length / 6) : 1;
 

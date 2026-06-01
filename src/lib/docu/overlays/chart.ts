@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
-import { UnitSchema } from "./types";
+import { UnitSchema, overlayBaseSchema } from "./types";
 import type { DataItem } from "./types";
 import type { SelectionInput } from "./registry";
 
@@ -47,17 +47,13 @@ const ChartKindEnum = z.enum([
 
 export const chartDef = {
   id: "chart" as const,
-  schema: z.object({
+  schema: overlayBaseSchema.extend({
     type: z.literal("chart"),
     chartKind: ChartKindEnum,
     label: z.string().min(1),
     points: z.array(z.object({ x: z.union([z.string(), z.number()]), y: z.number() })).optional().default([]),
     unit: UnitSchema,
     source: z.string().optional(),
-    palette: z.enum(["cool-tech", "warm-real"]),
-    anchorPhrase: z.string().min(1),
-    holdSec: z.number().positive(),
-    leadSec: z.number().optional(),
     forecastFromIndex: z.number().int().nonnegative().optional(),
     // PIPELINE TODO: series and bubblePoints fields not yet in schema — stacked-bar/bubble fixture-only
   }).superRefine((val, ctx) => {
@@ -78,4 +74,5 @@ export const chartDef = {
   consumes: "timeseries" as const,
   consumesKinds: ["timeseries", "comparison", "composition"] as const,
   populate: populateChart,
+  defaultEnter: "fadeIn" as const,
 };

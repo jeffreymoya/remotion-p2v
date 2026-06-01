@@ -7,6 +7,8 @@ import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTe
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import { fadeIn, fadeUp, countUpValue } from "./chart-animations";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 loadSourceSerif4();
 loadIBMPlexSans();
@@ -19,6 +21,8 @@ export interface RadialChartProps {
   source?: string;
   palette: DocuPalette;
   durationInFrames: number;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 function formatRadialNumber(value: number): string {
@@ -47,6 +51,8 @@ export const RadialChart: React.FC<RadialChartProps> = ({
   source,
   palette: paletteName,
   durationInFrames,
+  enter,
+  enterParams,
 }) => {
   const frame = useCurrentFrame();
   const ramp = CHART_RAMP_DEFAULT;
@@ -86,7 +92,10 @@ export const RadialChart: React.FC<RadialChartProps> = ({
     { extrapolateRight: "clamp" }
   );
 
-  const containerFade = fadeIn(frame, 0, 0, 10);
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const containerFade: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(frame, 0, 0, 10)
+    : fadeIn(frame, 0, 0, 10);
   const displayValue = countUpValue(frame, 0, 8, Math.floor(durationInFrames * 0.75), value);
   const displayText = formatRadialValue(displayValue, unit, target);
   const targetText = formatRadialValue(target, unit, target);

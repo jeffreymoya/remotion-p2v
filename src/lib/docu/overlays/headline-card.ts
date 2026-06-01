@@ -1,17 +1,14 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
+import { overlayBaseSchema } from "./types";
 
 export const headlineCardDef = {
   id: "headline-card" as const,
-  schema: z.object({
+  schema: overlayBaseSchema.extend({
     type: z.literal("headline-card"),
     text: z.string().min(1),
     source: z.string().optional(),
     sourceAnchorId: z.string(),
-    palette: z.enum(["cool-tech", "warm-real"]),
-    anchorPhrase: z.string().min(1),
-    holdSec: z.number().positive(),
-    leadSec: z.number().optional(),
   }),
   anchorStrategy: phraseAnchorStrategy,
   promptRule: 'headline-card: event labels, institution names, regulatory actions with source attribution; ~40% of overlays.',
@@ -23,4 +20,5 @@ export const headlineCardDef = {
   placement: "llm" as const,
   category: "card" as const,
   consumes: "anchor" as const,
+  defaultEnter: "fadeUp" as const,
 };

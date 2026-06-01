@@ -8,8 +8,9 @@ import {
   FONT_BODY,
   FONT_DISPLAY,
   TRACKING,
-  docuEasing,
 } from "./docu-tokens";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 
 loadInter();
@@ -22,6 +23,8 @@ interface KineticNumberProps {
   durationFrames: number;
   palette: DocuPalette;
   kineticStyle?: Partial<KineticNumberStyle>;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 function formatValue(value: number, unit: OverlayUnit): string {
@@ -49,17 +52,17 @@ export const KineticNumber: React.FC<KineticNumberProps> = ({
   unit,
   durationFrames,
   kineticStyle,
+  enter,
 }) => {
   const frame = useCurrentFrame();
 
   const s = { ...DEFAULT_KINETIC_NUMBER_STYLE, ...kineticStyle };
 
-  const progress = interpolate(frame, [0, durationFrames], [0, 1], {
-    easing: docuEasing.snap,
-    extrapolateRight: "clamp",
-  });
-
-  const currentValue = progress * value;
+  const currentValue: number = enter
+    ? (getEnterPreset(enter).channel === "value"
+      ? (getEnterPreset(enter).fn as (f: number, sf: number, df: number, dur: number, t: number) => number)(frame, 0, 0, durationFrames, value)
+      : interpolate(frame, [0, durationFrames], [0, value], { extrapolateRight: "clamp" }))
+    : interpolate(frame, [0, durationFrames], [0, value], { extrapolateRight: "clamp" });
 
   const gradient = `linear-gradient(to right, ${s.gradientStart}, ${s.gradientEnd})`;
 

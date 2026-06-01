@@ -7,6 +7,8 @@ import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTe
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import { fadeIn, popIn } from "./chart-animations";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 loadSourceSerif4();
 loadIBMPlexSans();
@@ -20,6 +22,8 @@ export interface BubbleChartProps {
   palette: DocuPalette;
   durationInFrames: number;
   bubblePoints?: Array<{ name: string; x: number; y: number; r: number; highlight?: boolean }>;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 export const BubbleChart: React.FC<BubbleChartProps> = ({
@@ -29,6 +33,8 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
   palette: paletteName,
   durationInFrames,
   bubblePoints,
+  enter,
+  enterParams,
 }) => {
   const frame = useCurrentFrame();
   const ramp = CHART_RAMP_DEFAULT;
@@ -68,7 +74,10 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
   const toBX = (v: number) => padL + ((v - minX + xPad) / (xRange + xPad * 2)) * plotW;
   const toBY = (v: number) => padT + plotH - ((v - minY + yPad) / (yRange + yPad * 2)) * plotH;
 
-  const containerFade = fadeIn(frame, 0, 0, 10);
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const containerFade: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(frame, 0, 0, 10)
+    : fadeIn(frame, 0, 0, 10);
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", background: c.bg, backdropFilter: textMode === "dark" ? "blur(6px)" : undefined, opacity: containerFade.opacity }}>

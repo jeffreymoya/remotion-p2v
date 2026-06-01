@@ -7,6 +7,8 @@ import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTe
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import { fadeIn, fadeUp, popIn } from "./chart-animations";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 loadSourceSerif4();
 loadIBMPlexSans();
@@ -20,6 +22,8 @@ export interface AreaChartProps {
   palette: DocuPalette;
   durationInFrames: number;
   forecastFromIndex?: number;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 export const AreaChart: React.FC<AreaChartProps> = ({
@@ -30,6 +34,8 @@ export const AreaChart: React.FC<AreaChartProps> = ({
   palette: paletteName,
   durationInFrames,
   forecastFromIndex,
+  enter,
+  enterParams,
 }) => {
   const frame = useCurrentFrame();
   const ramp = CHART_RAMP_DEFAULT;
@@ -95,7 +101,10 @@ export const AreaChart: React.FC<AreaChartProps> = ({
   const forecastWidth = forecastLine ? (toX(points.length - 1) - toX(maxIdx) + 60) : 0;
   const animFW = forecastLine ? interpolate(frame, [8 + actualFrames, 8 + Math.floor(durationInFrames * 0.9)], [0, forecastWidth], { extrapolateRight: "clamp" }) : 0;
 
-  const containerFade = fadeIn(frame, 0, 0, 10);
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const containerFade: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(frame, 0, 0, 10)
+    : fadeIn(frame, 0, 0, 10);
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", background: c.bg, backdropFilter: textMode === "dark" ? "blur(6px)" : undefined, opacity: containerFade.opacity }}>

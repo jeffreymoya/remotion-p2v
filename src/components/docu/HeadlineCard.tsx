@@ -12,6 +12,8 @@ import {
   TRACKING,
   WEIGHT,
 } from "./docu-tokens";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey, ExitPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 loadInter();
 loadBarlowCondensed();
@@ -22,6 +24,10 @@ interface HeadlineCardProps {
   palette: DocuPalette;
   durationInFrames: number;
   headlineStyle?: Partial<HeadlineCardStyle>;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
+  exit?: ExitPresetKey;
+  exitParams?: Record<string, number>;
 }
 
 export const HeadlineCard: React.FC<HeadlineCardProps> = ({
@@ -29,6 +35,8 @@ export const HeadlineCard: React.FC<HeadlineCardProps> = ({
   source,
   durationInFrames,
   headlineStyle,
+  enter,
+  exit,
 }) => {
   const frame = useCurrentFrame();
 
@@ -37,19 +45,50 @@ export const HeadlineCard: React.FC<HeadlineCardProps> = ({
   const enterEnd = HEADLINE_ENTER_FRAMES;
   const exitStart = durationInFrames - HEADLINE_EXIT_FRAMES;
 
-  const translateY = interpolate(
-    frame,
-    [0, enterEnd, exitStart, durationInFrames],
-    [32, 0, 0, -16],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
+  let opacity: number;
+  let transform: string;
 
-  const opacity = interpolate(
-    frame,
-    [0, enterEnd, exitStart, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
+  const exitDur = HEADLINE_EXIT_FRAMES;
+  const inExit = frame >= exitStart;
+
+  if (exit && inExit) {
+    const exitPreset = getEnterPreset(exit);
+    const exitStyle: React.CSSProperties = exitPreset.channel === "style"
+      ? exitPreset.fn(frame, exitStart, 0, exitDur)
+      : {};
+    opacity = Number(exitStyle.opacity) || 0;
+    transform = exitStyle.transform ?? "none";
+  } else if (enter) {
+    const enterPreset = getEnterPreset(enter);
+    const enterStyle: React.CSSProperties = enterPreset.channel === "style"
+      ? enterPreset.fn(frame, 0, 0, enterEnd)
+      : {};
+
+    if (inExit) {
+      const exitY = interpolate(frame, [exitStart, durationInFrames], [0, -16], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+      const exitOpacityVal = interpolate(frame, [exitStart, durationInFrames], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+
+      opacity = exitOpacityVal;
+      transform = `translateY(${exitY}px)`;
+    } else {
+      opacity = Number(enterStyle.opacity) || 1;
+      transform = enterStyle.transform ?? "none";
+    }
+  } else {
+    const translateY = interpolate(
+      frame,
+      [0, enterEnd, exitStart, durationInFrames],
+      [32, 0, 0, -16],
+      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    );
+    opacity = interpolate(
+      frame,
+      [0, enterEnd, exitStart, durationInFrames],
+      [0, 1, 1, 0],
+      { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+    );
+    transform = `translateY(${translateY}px)`;
+  }
 
   const barScaleY = interpolate(
     frame,
@@ -66,7 +105,7 @@ export const HeadlineCard: React.FC<HeadlineCardProps> = ({
         bottom: s.bottomOffset,
         maxWidth: 640,
         opacity,
-        transform: `translateY(${translateY}px)`,
+        transform,
       }}
     >
       <div

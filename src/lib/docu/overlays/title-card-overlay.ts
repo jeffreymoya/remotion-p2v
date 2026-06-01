@@ -1,16 +1,13 @@
 import { z } from "zod";
 import { phraseAnchorStrategy } from "./anchor-strategies";
+import { overlayBaseSchema } from "./types";
 
 export const titleCardOverlayDef = {
   id: "title-card" as const,
-  schema: z.object({
+  schema: overlayBaseSchema.extend({
     type: z.literal("title-card"),
     text: z.string().min(1),
     subtitle: z.string().optional(),
-    palette: z.enum(["cool-tech", "warm-real"]),
-    anchorPhrase: z.string().min(1),
-    holdSec: z.number().positive(),
-    leadSec: z.number().optional(),
   }),
   anchorStrategy: phraseAnchorStrategy,
   promptRule: "title-card: UNWIRED — TODO.",

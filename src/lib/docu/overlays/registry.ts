@@ -8,6 +8,7 @@ import { titleCardOverlayDef } from "./title-card-overlay";
 import { articleCardDef } from "./article-card";
 import { chartDef } from "./chart";
 import type { AnchorStrategy, DataItemKind, DataItem, OverlayCategory } from "./types";
+import type { EnterPresetKey, ExitPresetKey } from "./overlay-animations";
 
 // Note: "overlay" in OverlaySpec/OverlayDef covers both composited overlays
 // (surface: "overlay") and full-frame scene cards (surface: "scene").
@@ -39,6 +40,10 @@ export type OverlayDef<S extends ZodType = ZodType> = {
   consumes: DataItemKind | "anchor";
   consumesKinds?: ReadonlyArray<DataItemKind>;
   populate?: PopulatorFn;
+  defaultEnter?: EnterPresetKey;
+  defaultEnterParams?: Record<string, number>;
+  defaultExit?: ExitPresetKey;
+  defaultExitParams?: Record<string, number>;
 };
 
 function createRegistry<T extends Record<string, OverlayDef>>(reg: T): T {

@@ -7,6 +7,8 @@ import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, DEFAULT_DONUT_CHART_STYLE, OVERLA
 import type { DocuPalette, DonutChartStyle } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import { fadeIn, fadeUp, popIn, countUpValue } from "./chart-animations";
+import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 
 loadSourceSerif4();
 loadIBMPlexSans();
@@ -20,6 +22,8 @@ export interface DonutChartProps {
   palette: DocuPalette;
   durationInFrames: number;
   chartStyle?: Partial<DonutChartStyle>;
+  enter?: EnterPresetKey;
+  enterParams?: Record<string, number>;
 }
 
 function fmtValue(v: number, unit: OverlayUnit): string {
@@ -37,6 +41,8 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   palette: paletteName,
   durationInFrames,
   chartStyle,
+  enter,
+  enterParams,
 }) => {
   const frame = useCurrentFrame();
   const ramp = CHART_RAMP_DEFAULT;
@@ -79,7 +85,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
     return { x: pt.x, y: pt.y, path };
   });
 
-  const containerFade = fadeIn(frame, 0, 0, 10);
+  const enterPreset = enter ? getEnterPreset(enter) : null;
+  const containerFade: React.CSSProperties = enterPreset && enterPreset.channel === "style"
+    ? enterPreset.fn(frame, 0, 0, 10)
+    : fadeIn(frame, 0, 0, 10);
 
   return (
     <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", background: c.bg, backdropFilter: textMode === "dark" ? "blur(6px)" : undefined, opacity: containerFade.opacity }}>

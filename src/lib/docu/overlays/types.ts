@@ -1,6 +1,7 @@
 import type { DocuPalette } from "../../../components/docu/docu-tokens";
 import type { WordTiming } from "../../audio-wav";
 import { z } from "zod";
+import { ENTER_PRESET_KEYS, EXIT_PRESET_KEYS } from "./overlay-animations";
 
 export const OVERLAY_UNITS = ["$", "%", "x", "T", "B", "M", "K"] as const;
 export type OverlayUnit = typeof OVERLAY_UNITS[number];
@@ -24,6 +25,19 @@ function normalizeUnit(val: unknown): unknown {
 }
 
 export const UnitSchema = z.preprocess(normalizeUnit, z.enum(OVERLAY_UNITS));
+
+export const animationParamsSchema = z.record(z.string(), z.number()).optional();
+
+export const overlayBaseSchema = z.object({
+  palette: z.enum(["cool-tech", "warm-real"]),
+  anchorPhrase: z.string().min(1),
+  holdSec: z.number().positive(),
+  leadSec: z.number().optional(),
+  enter: z.enum(ENTER_PRESET_KEYS).optional(),
+  enterParams: animationParamsSchema,
+  exit: z.enum(EXIT_PRESET_KEYS).optional(),
+  exitParams: animationParamsSchema,
+});
 
 export interface OverlaySpecBase {
   anchorPhrase: string;
