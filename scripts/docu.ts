@@ -40,6 +40,13 @@ import {
   type YouTubeClipResult,
 } from "../src/lib/docu/youtube-pipeline";
 import { enrichCurrentRun, textOnlyAssetSummary, traceableChain } from "../src/lib/tracing";
+import {
+  type PhaseName,
+  cleanArtifactsFor,
+  checkPrereqs,
+  VALID_FROM,
+  VALID_ONLY,
+} from "../src/lib/docu/pipeline";
 
 // ── Niche allowlist ─────────────────────────────────────────────────────
 
@@ -78,52 +85,7 @@ function checkNicheAllowlist(slug: string, topic: string): { allowed: boolean; n
 
 // ── Clean artifacts ─────────────────────────────────────────────────────
 
-type CleanPhase = "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen";
-
-const SEG_NARRATION_FILES = (slug: string) =>
-  Array.from({ length: 20 }, (_, i) => `prompts/docu/${slug}-seg-${String(i).padStart(2, "0")}-narration.json`);
-const SEG_OVERLAYS_FILES = (slug: string) =>
-  Array.from({ length: 20 }, (_, i) => `prompts/docu/${slug}-seg-${String(i).padStart(2, "0")}-overlays.json`);
-
-// Each phase's clean cascades through all downstream artifacts so that
-// regenerating an upstream phase never leaves stale files on disk.
-const PHASE_FILE_PATTERNS: Record<CleanPhase, (slug: string) => string[]> = {
-  plan: (slug) => [
-    `prompts/docu/${slug}-plan.json`,
-    `prompts/docu/${slug}-research.json`,
-    `prompts/docu/${slug}-corpus.json`,
-    `prompts/docu/${slug}-topic.json`,
-    ...SEG_NARRATION_FILES(slug),
-    ...SEG_OVERLAYS_FILES(slug),
-  ],
-  narration: (slug) => [
-    `prompts/docu/${slug}-plan.json`,
-    `prompts/docu/${slug}-research.json`,
-    `prompts/docu/${slug}-corpus.json`,
-    `prompts/docu/${slug}-topic.json`,
-    ...SEG_NARRATION_FILES(slug),
-    ...SEG_OVERLAYS_FILES(slug),
-  ],
-  overlays: (slug) => [
-    `prompts/docu/${slug}-topic.json`,
-    ...SEG_OVERLAYS_FILES(slug),
-  ],
-  youtube: (slug) => [
-    `prompts/docu/${slug}-topic.json`,
-    `public/videos/docu/interview-clips/${slug}/`,
-  ],
-  tts: (slug) => [
-    `public/audio/docu/${slug}.wav`,
-    `prompts/docu/${slug}-timings.json`,
-  ],
-  images: (slug) => [
-    `public/images/docu/${slug}/`,
-    `prompts/docu/${slug}-images.json`,
-  ],
-  codegen: () => [
-    `src/generated/docu-scripts.ts`,
-  ],
-};
+type CleanPhase = PhaseName;
 
 function cleanArtifacts(slug: string, only?: CleanPhase): string[] {
   const removed: string[] = [];
@@ -135,7 +97,7 @@ function cleanArtifacts(slug: string, only?: CleanPhase): string[] {
   };
 
   if (only) {
-    for (const entry of PHASE_FILE_PATTERNS[only](slug)) {
+    for (const entry of cleanArtifactsFor(slug, only)) {
       if (entry.endsWith("/")) rmDir(entry);
       else rmFile(entry);
     }
@@ -536,16 +498,14 @@ async function main() {
   }
 
   // Validate --from
-  const validFrom = ["plan", "narration", "overlays", "youtube", "tts"];
-  if (!validFrom.includes(from)) {
-    console.error(`Error: --from must be one of: ${validFrom.join(", ")}`);
+  if (!VALID_FROM.includes(from as PhaseName)) {
+    console.error(`Error: --from must be one of: ${VALID_FROM.join(", ")}`);
     process.exit(1);
   }
 
   // Validate --only
-  const validOnly = ["plan", "narration", "overlays", "youtube", "tts", "images", "codegen"];
-  if (only !== undefined && !validOnly.includes(only)) {
-    console.error(`Error: --only must be one of: ${validOnly.join(", ")}`);
+  if (only !== undefined && !VALID_ONLY.includes(only as PhaseName)) {
+    console.error(`Error: --only must be one of: ${VALID_ONLY.join(", ")}`);
     process.exit(1);
   }
 
@@ -632,20 +592,10 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     return;
   }
 
-  if (only === "images") {
-    const timingsPath = `prompts/docu/${slug}-timings.json`;
-    if (!fs.existsSync(timingsPath)) {
-      console.error(`Error: No TTS timings found at ${timingsPath}.`);
-      console.error(`Run first: npx tsx --env-file=.env scripts/docu.ts "${topicArg}" --only tts`);
-      process.exit(1);
-    }
-  }
-
-  if (only === "codegen") {
-    const imagesPath = `prompts/docu/${slug}-images.json`;
-    if (!fs.existsSync(imagesPath)) {
-      console.error(`Error: No image manifest found at ${imagesPath}.`);
-      console.error(`Run first: npx tsx --env-file=.env scripts/docu.ts "${topicArg}" --only images`);
+  if (only !== undefined) {
+    const prereqErr = checkPrereqs(only as PhaseName, slug, topicArg);
+    if (prereqErr) {
+      console.error(prereqErr);
       process.exit(1);
     }
   }

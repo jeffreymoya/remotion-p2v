@@ -26,6 +26,7 @@ import { gateNarrationFidelity } from "./narration-fidelity-gate";
 import { gateStoryStructure } from "./story-structure-gate";
 import { gateInfotainmentVoice } from "./infotainment-voice-gate";
 import type { YouTubeClipSpec, ClipCandidateInfo } from "./youtube-pipeline";
+import { readCachedJson, writeCachedJson } from "./pipeline";
 
 export interface TopicData {
   topic: string;
@@ -103,18 +104,11 @@ function youtubeClipCachePath(slug: string): string {
 }
 
 function loadYoutubeClipSpecs(slug: string): YouTubeClipSpec[] | null {
-  const p = youtubeClipCachePath(slug);
-  if (!fs.existsSync(p)) return null;
-  try {
-    return JSON.parse(fs.readFileSync(p, "utf-8")) as YouTubeClipSpec[];
-  } catch {
-    return null;
-  }
+  return readCachedJson<YouTubeClipSpec[]>(youtubeClipCachePath(slug));
 }
 
 function saveYoutubeClipSpecs(slug: string, specs: YouTubeClipSpec[]): void {
-  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(youtubeClipCachePath(slug), JSON.stringify(specs, null, 2));
+  writeCachedJson(youtubeClipCachePath(slug), specs);
 }
 
 export function loadCachedTopicData(slug: string): TopicData | null {
@@ -139,19 +133,11 @@ export function saveTopicData(data: TopicData): void {
 }
 
 function loadCachedDataItems(slug: string): DataItem[] | null {
-  const p = dataItemsCachePath(slug);
-  if (!fs.existsSync(p)) return null;
-  try {
-    const raw = JSON.parse(fs.readFileSync(p, "utf-8"));
-    return z.array(DataItemSchema).parse(raw) as DataItem[];
-  } catch {
-    return null;
-  }
+  return readCachedJson(dataItemsCachePath(slug), z.array(DataItemSchema)) as DataItem[] | null;
 }
 
 function saveCachedDataItems(slug: string, items: DataItem[]): void {
-  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(dataItemsCachePath(slug), JSON.stringify(items, null, 2));
+  writeCachedJson(dataItemsCachePath(slug), items);
 }
 
 // ── Segmented pipeline ──────────────────────────────────────────────────
@@ -176,38 +162,23 @@ function loadCachedPlan(slug: string): StorySpine | null {
 }
 
 function saveCachedPlan(slug: string, spine: StorySpine): void {
-  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(planCachePath(slug), JSON.stringify(spine, null, 2));
+  writeCachedJson(planCachePath(slug), spine);
 }
 
 function loadCachedSegmentNarration(slug: string, segIndex: number): SentenceDef[] | null {
-  const p = segmentNarrationCachePath(slug, segIndex);
-  if (!fs.existsSync(p)) return null;
-  try {
-    return JSON.parse(fs.readFileSync(p, "utf-8")) as SentenceDef[];
-  } catch {
-    return null;
-  }
+  return readCachedJson<SentenceDef[]>(segmentNarrationCachePath(slug, segIndex));
 }
 
 function saveCachedSegmentNarration(slug: string, segIndex: number, sentences: SentenceDef[]): void {
-  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(segmentNarrationCachePath(slug, segIndex), JSON.stringify(sentences, null, 2));
+  writeCachedJson(segmentNarrationCachePath(slug, segIndex), sentences);
 }
 
 function loadCachedSegmentOverlays(slug: string, segIndex: number): OverlaySpec[] | null {
-  const p = segmentOverlayCachePath(slug, segIndex);
-  if (!fs.existsSync(p)) return null;
-  try {
-    return JSON.parse(fs.readFileSync(p, "utf-8")) as OverlaySpec[];
-  } catch {
-    return null;
-  }
+  return readCachedJson<OverlaySpec[]>(segmentOverlayCachePath(slug, segIndex));
 }
 
 function saveCachedSegmentOverlays(slug: string, segIndex: number, overlays: OverlaySpec[]): void {
-  fs.mkdirSync(PROMPTS_DIR, { recursive: true });
-  fs.writeFileSync(segmentOverlayCachePath(slug, segIndex), JSON.stringify(overlays, null, 2));
+  writeCachedJson(segmentOverlayCachePath(slug, segIndex), overlays);
 }
 
 function filterAnchorsByIds(anchors: readonly Anchor[], ids: string[]): Anchor[] {
