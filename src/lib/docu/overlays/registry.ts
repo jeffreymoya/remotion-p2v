@@ -24,9 +24,9 @@ export interface SelectionInput {
 
 export type PopulatorFn = (dataItem: DataItem, selection: SelectionInput) => Record<string, unknown>;
 
-export type OverlayDef = {
+export type OverlayDef<S extends ZodType = ZodType> = {
   id: string;
-  schema: ZodType;
+  schema: S;
   anchorStrategy: AnchorStrategy;
   promptRule: string;
   promotable: boolean;
@@ -41,7 +41,11 @@ export type OverlayDef = {
   populate?: PopulatorFn;
 };
 
-export const OVERLAY_REGISTRY = {
+function createRegistry<T extends Record<string, OverlayDef>>(reg: T): T {
+  return reg;
+}
+
+export const OVERLAY_REGISTRY = createRegistry({
   "headline-card": headlineCardDef,
   "kinetic-number": kineticNumberDef,
   "split-card": splitCardDef,
@@ -49,34 +53,38 @@ export const OVERLAY_REGISTRY = {
   "title-card": titleCardOverlayDef,
   "article-card": articleCardDef,
   "chart": chartDef,
-} as const satisfies Record<string, OverlayDef>;
+});
 
 export type OverlayTypeId = keyof typeof OVERLAY_REGISTRY;
 
 export const OverlaySpecSchema = z.discriminatedUnion("type", [
-  headlineCardDef.schema,
-  kineticNumberDef.schema,
-  splitCardDef.schema,
-  contextBarDef.schema,
-  titleCardOverlayDef.schema,
-  articleCardDef.schema,
-  chartDef.schema,
+  OVERLAY_REGISTRY["headline-card"].schema,
+  OVERLAY_REGISTRY["kinetic-number"].schema,
+  OVERLAY_REGISTRY["split-card"].schema,
+  OVERLAY_REGISTRY["context-bar"].schema,
+  OVERLAY_REGISTRY["title-card"].schema,
+  OVERLAY_REGISTRY["article-card"].schema,
+  OVERLAY_REGISTRY["chart"].schema,
 ]);
 
-export type OverlaySpec = z.infer<typeof OverlaySpecSchema>;
+type RegistrySchemas = typeof OVERLAY_REGISTRY;
+type AllOverlaySpecs = {
+  [K in keyof RegistrySchemas]: z.infer<RegistrySchemas[K]["schema"]>;
+};
+export type OverlaySpec = AllOverlaySpecs[keyof AllOverlaySpecs];
+
+type __ParityAssert<T extends true> = T;
+type __OverlayParity1 = __ParityAssert<OverlaySpec extends z.infer<typeof OverlaySpecSchema> ? true : false>;
+type __OverlayParity2 = __ParityAssert<z.infer<typeof OverlaySpecSchema> extends OverlaySpec ? true : false>;
 
 export const PROMPTABLE_REGISTRY = Object.fromEntries(
   Object.entries(OVERLAY_REGISTRY).filter(([, def]) => def.promotable),
 ) as Record<string, OverlayDef>;
 
-export type DocuOverlay =
-  | (Omit<z.infer<typeof headlineCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof kineticNumberDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof splitCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof contextBarDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof titleCardOverlayDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof articleCardDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number })
-  | (Omit<z.infer<typeof chartDef.schema>, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number });
+type Resolved<T> = T extends any
+  ? Omit<T, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number }
+  : never;
+export type DocuOverlay = Resolved<OverlaySpec>;
 
 export function getAnchorStrategy(type: OverlayTypeId): AnchorStrategy {
   return OVERLAY_REGISTRY[type].anchorStrategy;
