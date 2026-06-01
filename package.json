@@ -15,11 +15,13 @@
     "test:docu-publish-manifest": "tsx tests/docu/publish-manifest.test.ts",
     "test:docu-channel-audit": "tsx tests/docu/channel-audit.test.ts",
     "test:docu-export-description": "tsx tests/docu/description-export.test.ts",
+    "test:docu-ai-disclosure": "tsx tests/docu/ai-disclosure.test.ts",
     "quotas": "tsx --env-file=.env scripts/check-quotas.ts",
     "docu": "npx tsx --env-file=.env scripts/docu.ts",
     "docu:audition": "npx tsx --env-file=.env scripts/docu.ts --audition",
     "docu:channel-audit": "npx tsx scripts/docu-channel-audit.ts",
     "docu:export-description": "npx tsx scripts/docu-export-description.ts",
+    "docu:ai-disclosure": "npx tsx scripts/docu-ai-disclosure.ts",
     "youtube-spike": "npx tsx --env-file=.env scripts/youtube-spike.ts"
   },
   "dependencies": {
