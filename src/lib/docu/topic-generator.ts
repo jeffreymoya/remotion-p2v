@@ -27,6 +27,7 @@ import { gateStoryStructure } from "./story-structure-gate";
 import { gateInfotainmentVoice } from "./infotainment-voice-gate";
 import type { YouTubeClipSpec, ClipCandidateInfo } from "./youtube-pipeline";
 import { readCachedJson, writeCachedJson } from "./pipeline";
+import type { VarietyAssignment } from "./variety-controller";
 
 export interface TopicData {
   topic: string;
@@ -219,6 +220,8 @@ export interface SegmentedTopicOpts {
   from?: "plan" | "narration" | "overlays" | "youtube";
   /** Stop after a specific phase and return without running later phases. */
   only?: "plan" | "narration" | "overlays" | "youtube";
+  /** Variety assignment (arc forces the spine structure; opener shapes narration). */
+  variety?: VarietyAssignment;
 }
 
 export const generateSegmentedTopicData = traceable(
@@ -271,7 +274,7 @@ export const generateSegmentedTopicData = traceable(
   let spine: StorySpine;
   if (from === "plan") {
     console.log(`[topic] --from plan: regenerating story spine...`);
-    spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
+    spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose, requiredArc: opts?.variety?.arc });
     saveCachedPlan(slug, spine);
   } else {
     const cachedPlan = loadCachedPlan(slug);
@@ -285,7 +288,7 @@ export const generateSegmentedTopicData = traceable(
       } else {
         console.log(`[topic] Generating story spine...`);
       }
-      spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose });
+      spine = await generateSpine(topic, totalSentences, segmentCount, verifiedAnchors, { verbose: opts?.verbose, requiredArc: opts?.variety?.arc });
       saveCachedPlan(slug, spine);
     }
   }
@@ -330,6 +333,7 @@ export const generateSegmentedTopicData = traceable(
         verbose: opts?.verbose,
         isQuoteScene: spine.quoteSceneIndex === i,
         clipCandidateAnchorIds: scene.clipCandidateAnchorIds ?? [],
+        opener: opts?.variety?.opener,
       },
     );
     saveCachedSegmentNarration(slug, i, segSentences);

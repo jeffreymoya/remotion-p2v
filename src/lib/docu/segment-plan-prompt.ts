@@ -45,18 +45,21 @@ const SceneSpecOutputSchema = z.object({
   flipFromPrior: z.boolean(),
 });
 
+/** The 8 story structures the spine LLM may choose. Single source of truth. */
+export const SpineOutputSchemaPrimaryStructures = [
+  "scenario-escalation",
+  "disaster-simulation",
+  "case-file-autopsy",
+  "countdown",
+  "comparison-gauntlet",
+  "inside-the-machine",
+  "experiment-challenge",
+  "reveal-ladder",
+] as const;
+
 const SpineOutputSchema = z.object({
   schemaVersion: z.literal(2),
-  primaryStructure: z.enum([
-    "scenario-escalation",
-    "disaster-simulation",
-    "case-file-autopsy",
-    "countdown",
-    "comparison-gauntlet",
-    "inside-the-machine",
-    "experiment-challenge",
-    "reveal-ladder",
-  ]),
+  primaryStructure: z.enum(SpineOutputSchemaPrimaryStructures),
   viewerRole: z.string().min(1),
   caseStudyAgent: z.string().nullable().optional(),
   caseStudyAnchorId: z.string().nullable().optional(),
@@ -371,9 +374,9 @@ async function generateSpine_impl(
   totalSentences: number,
   segmentCount: number,
   anchors: readonly Anchor[],
-  opts?: { verbose?: boolean },
+  opts?: { verbose?: boolean; requiredArc?: string },
 ): Promise<StorySpine> {
-  const system = llmSpinePrompt(segmentCount);
+  const system = llmSpinePrompt(segmentCount, opts?.requiredArc);
   let feedbackContext = "";
   let raw: SpineOutput | null = null;
 

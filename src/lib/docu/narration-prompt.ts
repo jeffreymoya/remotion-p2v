@@ -100,6 +100,7 @@ function buildSegmentSystemPrompt(
   isQuoteScene: boolean,
   hasClipHandoff?: boolean,
   clipPersonName?: string,
+  opener?: string,
 ): string {
   return llmNarrationSegmentPrompt({
     role: scene.arcRole,
@@ -116,6 +117,7 @@ function buildSegmentSystemPrompt(
     isQuoteScene,
     hasClipHandoff,
     clipPersonName,
+    opener,
   });
 }
 
@@ -155,6 +157,7 @@ export interface SegmentNarrationOpts {
   verbose?: boolean;
   isQuoteScene?: boolean;
   clipCandidateAnchorIds?: string[];
+  opener?: string;
 }
 
 async function generateSegmentNarration_impl(
@@ -191,6 +194,7 @@ async function generateSegmentNarration_impl(
       scene, verified, batchSize, isQuoteScene,
       hasClipHandoff && bi === batchSizes.length - 1,
       clipPersonName,
+      opts?.opener,
     );
 
     let priorContext: string;

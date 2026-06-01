@@ -29,6 +29,7 @@ const TARGET_SHOT_SECONDS = 2.5;
 export function scheduleShotsForSentences(
   sentences: SentenceScheduleInput[],
   totalDurationFrames: number,
+  targetShotSeconds: number = TARGET_SHOT_SECONDS,
 ): ScheduledShot[] {
   const shots: ScheduledShot[] = [];
 
@@ -41,7 +42,7 @@ export function scheduleShotsForSentences(
 
     const sentFrames = sent.endFrame - sent.startFrame;
     const sentSec = sentFrames / FPS;
-    const shotCount = Math.max(1, Math.round(sentSec / TARGET_SHOT_SECONDS));
+    const shotCount = Math.max(1, Math.round(sentSec / targetShotSeconds));
 
     for (let j = 0; j < shotCount; j++) {
       const isLast = j === shotCount - 1;

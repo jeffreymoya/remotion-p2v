@@ -47,6 +47,18 @@ import {
   VALID_FROM,
   VALID_ONLY,
 } from "../src/lib/docu/pipeline";
+import {
+  assignVariety,
+  loadLedger,
+  saveLedger,
+  loadCachedAssignment,
+  saveCachedAssignment,
+  pacingProfile,
+  presetForArc,
+  ARC_AXES,
+  type ArcAxis,
+  type VarietyAssignment,
+} from "../src/lib/docu/variety-controller";
 
 // ── Niche allowlist ─────────────────────────────────────────────────────
 
@@ -171,7 +183,7 @@ async function runFullPipeline_impl(
   youtubeClipSpecs?: YouTubeClipSpec[],
   sentenceIndexToAnchorId?: Map<number, string>,
   sentenceIndexToAttribution?: Map<number, { name?: string; sourceLabel?: string }>,
-  opts?: { only?: "images" | "codegen" },
+  opts?: { only?: "images" | "codegen"; voiceName?: string; speakingRate?: number; targetShotSeconds?: number },
 ) {
   enrichCurrentRun({ slug, topic, phase: "compose" });
   const only = opts?.only;
@@ -185,7 +197,10 @@ async function runFullPipeline_impl(
     ttsResult = cached;
   } else {
     console.log(`[docu] Running TTS pipeline for "${topic}"...`);
-    ttsResult = await runTtsPipeline(slug, sentences);
+    ttsResult = await runTtsPipeline(slug, sentences, {
+      voiceName: opts?.voiceName,
+      speakingRate: opts?.speakingRate,
+    });
   }
   const { wordTimings, sentenceFrameRanges, sentenceData, durationSeconds } = ttsResult;
   const durationFrames = Math.ceil(durationSeconds * FPS);
@@ -207,7 +222,7 @@ async function runFullPipeline_impl(
   }
 
   // 2. Shot scheduling
-  const shots = scheduleShotsForSentences(sentenceFrameRanges, durationFrames);
+  const shots = scheduleShotsForSentences(sentenceFrameRanges, durationFrames, opts?.targetShotSeconds);
 
   // 2.5 — Merge YouTube clips into shot schedule (replaces `shots` for all downstream steps)
   const { shots: mergedShots, citationBlocks } = mergeYouTubeClipsIntoShots(
@@ -440,7 +455,7 @@ function parseArgs(args: string[]) {
   const audition = args.includes("--audition");
   const clean = args.includes("--clean");
 
-  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean", "--allow-youtube-clips"]);
+  const flagSet = new Set(["--audition", "--minutes", "--from", "--only", "--clean", "--allow-youtube-clips", "--variety"]);
   const flagVals = new Set<string>();
 
   // Collect flag values so they aren't mistaken for topicArg
@@ -469,7 +484,12 @@ function parseArgs(args: string[]) {
 
   const allowYoutubeClips = args.includes("--allow-youtube-clips");
 
-  return { topicArg, audition, clean, minutes, from, only, allowYoutubeClips };
+  const varietyIdx = args.indexOf("--variety");
+  const variety = varietyIdx >= 0 && varietyIdx + 1 < args.length && !args[varietyIdx + 1].startsWith("--")
+    ? args[varietyIdx + 1]
+    : undefined;
+
+  return { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety };
 }
 
 function printUsage() {
@@ -480,11 +500,12 @@ function printUsage() {
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove pipeline artifacts for this topic. With --only <phase>, removes only that phase's artifacts");
   console.error("  --allow-youtube-clips  Enable YouTube clip extraction (disabled by default)");
+  console.error("  --variety <off|arc>    Force variety: 'off' = baseline preset (regression); an arc name pins that structure (omit for quota-based rotation)");
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips } = parseArgs(args);
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety } = parseArgs(args);
 
   if (!topicArg) {
     printUsage();
@@ -509,13 +530,62 @@ async function main() {
     process.exit(1);
   }
 
-  await runDocuCli({ topicArg, audition, clean, minutes, from, only, allowYoutubeClips });
+  // Validate --variety
+  if (variety !== undefined && variety !== "off" && !ARC_AXES.includes(variety as ArcAxis)) {
+    console.error(`Error: --variety must be "off" or one of: ${ARC_AXES.join(", ")}`);
+    process.exit(1);
+  }
+
+  await runDocuCli({ topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety });
 }
 
 type ParsedDocuArgs = ReturnType<typeof parseArgs> & { topicArg: string };
 
+/**
+ * Variety phase (first PIPELINE phase). Resolves the per-video
+ * {arc, opener, pacing, voice, skin} assignment. The assignment is cached per
+ * slug (so resume runs stay deterministic) and every assignment is recorded to
+ * the channel-level ledger for the Step 3 audit. `--variety off` forces the
+ * baseline preset (golden-frame regression); an arc name pins that structure.
+ */
+function resolveVarietyAssignment(
+  slug: string,
+  topic: string,
+  varietyFlag: string | undefined,
+): VarietyAssignment {
+  const cached = loadCachedAssignment(slug);
+  if (cached && varietyFlag === undefined) {
+    console.log(`[docu] variety: reusing cached assignment (arc=${cached.arc}, voice=${cached.voice})`);
+    return cached;
+  }
+
+  const baseLedger = loadLedger();
+  // Exclude any prior entry for this slug so re-assignment doesn't self-count
+  // against the rolling quota.
+  const ledger = {
+    schemaVersion: 1 as const,
+    entries: baseLedger.entries.filter((e) => e.slug !== slug),
+  };
+
+  const opts =
+    varietyFlag === "off"
+      ? { force: true }
+      : varietyFlag !== undefined
+        ? { preset: presetForArc(varietyFlag as ArcAxis) }
+        : undefined;
+
+  const { assignment, ledger: next } = assignVariety(slug, topic, ledger, opts);
+  saveLedger(next);
+  saveCachedAssignment(slug, assignment);
+  console.log(
+    `[docu] variety: assigned arc=${assignment.arc}, opener=${assignment.opener}, ` +
+    `pacing=${assignment.pacing}, voice=${assignment.voice}, skin=${assignment.skin}`,
+  );
+  return assignment;
+}
+
 async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
-  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips } = args;
+  const { topicArg, audition, clean, minutes, from, only, allowYoutubeClips, variety } = args;
   const slug = topicToSlug(topicArg);
   enrichCurrentRun({ slug, topic: topicArg, phase: "compose" });
 
@@ -539,6 +609,13 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     console.error(`Error: topic "${topicArg}" (slug: "${slug}") is not in an allowed niche.`);
     console.error(`Allowed niches: ${niches}`);
     process.exit(1);
+  }
+
+  // ── Variety phase (first PIPELINE phase) ──────────────────────────
+  const varietyAssignment = resolveVarietyAssignment(slug, topicArg, variety);
+  if (only === "variety") {
+    console.log(`[docu] --only variety: done. Assignment cached at prompts/docu/${slug}-variety.json`);
+    return;
   }
 
   // ── LLM generation path ───────────────────────────────────────────
@@ -568,6 +645,7 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
       verbose: true,
       from: from === "tts" ? "overlays" : from as "plan" | "narration" | "overlays" | "youtube",
       only: isLlmsOnly ? only : undefined,
+      variety: varietyAssignment,
     });
     if (!isLlmsOnly) saveTopicData(topicData);
   }
@@ -587,7 +665,10 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
 
   if (only === "tts") {
     console.log(`[docu] --only tts: running TTS pipeline for "${topic}"...`);
-    await runTtsPipeline(slug, sentences);
+    await runTtsPipeline(slug, sentences, {
+      voiceName: varietyAssignment.voice,
+      speakingRate: pacingProfile(varietyAssignment.pacing).speakingRate,
+    });
     console.log("[docu] --only tts: done.");
     return;
   }
@@ -618,10 +699,16 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     ]),
   );
 
+  const pacing = pacingProfile(varietyAssignment.pacing);
   await runFullPipeline(slug, topic, sentences, overlaySpecs, [], segmentPlans, youtubeClipSpecs,
     sentenceIndexToAnchorId.size > 0 ? sentenceIndexToAnchorId : undefined,
     sentenceIndexToAttribution.size > 0 ? sentenceIndexToAttribution : undefined,
-    (only === "images" || only === "codegen") ? { only } : undefined);
+    {
+      ...((only === "images" || only === "codegen") ? { only } : {}),
+      voiceName: varietyAssignment.voice,
+      speakingRate: pacing.speakingRate,
+      targetShotSeconds: pacing.targetShotSeconds,
+    });
 }
 
 const runDocuCli = traceableChain(runDocuCli_impl, "runDocuCli", {

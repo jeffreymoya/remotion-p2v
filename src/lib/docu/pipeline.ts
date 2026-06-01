@@ -18,6 +18,7 @@ import { z } from "zod";
 const PROMPTS_DIR = "prompts/docu";
 
 export type PhaseName =
+  | "variety"
   | "plan"
   | "narration"
   | "overlays"
@@ -48,6 +49,17 @@ const SEG_OVERLAYS_FILES = (slug: string): string[] =>
   Array.from({ length: 20 }, (_, i) => `${PROMPTS_DIR}/${slug}-seg-${String(i).padStart(2, "0")}-overlays.json`);
 
 export const PIPELINE: readonly PhaseDescriptor[] = [
+  {
+    name: "variety",
+    group: "llm",
+    resumable: true,
+    stoppable: true,
+    requires: [],
+    // Per-slug assignment only. The channel-level ledger
+    // (`_variety-ledger.json`) is durable channel state and is never removed by a
+    // per-slug clean.
+    cleanArtifacts: (slug) => [`${PROMPTS_DIR}/${slug}-variety.json`],
+  },
   {
     name: "plan",
     group: "llm",

@@ -151,14 +151,17 @@ export async function runTtsAudition(
 async function runTtsPipeline_impl(
   slug: string,
   sentences: SentenceDef[],
+  opts?: { voiceName?: string; speakingRate?: number },
 ): Promise<TtsPipelineResult> {
+  const voiceName = opts?.voiceName ?? DOCU_TTS_VOICE;
+  const speakingRate = opts?.speakingRate ?? DOCU_TTS_SPEAKING_RATE;
   enrichCurrentRun({ slug, phase: "tts", provider: "google-tts" });
   fs.mkdirSync(AUDIO_DIR, { recursive: true });
   fs.mkdirSync(PROMPTS_DIR, { recursive: true });
 
   const silencePcm = makeSilencePcm(INTER_SENTENCE_GAP_SECONDS);
 
-  console.log(`[tts:docu] Generating ${sentences.length} sentences with ${DOCU_TTS_VOICE} at rate ${DOCU_TTS_SPEAKING_RATE}...`);
+  console.log(`[tts:docu] Generating ${sentences.length} sentences with ${voiceName} at rate ${speakingRate}...`);
 
   const pcmParts: Buffer[] = [];
   const allWordTimings: WordTiming[] = [];
@@ -171,8 +174,8 @@ async function runTtsPipeline_impl(
     const sent = sentences[i];
     console.log(`  [tts:docu] Sentence ${i + 1}/${sentences.length}: "${sent.text.slice(0, 40)}..."`);
     const result = await generateSpeechGoogle(sent.text, {
-      speakingRate: DOCU_TTS_SPEAKING_RATE,
-      voiceName: DOCU_TTS_VOICE,
+      speakingRate,
+      voiceName,
     });
 
     const sentPcm = extractPcm(result.audioBuffer);
@@ -252,7 +255,7 @@ async function runTtsPipeline_impl(
           tokenWordIndexes: sd.tokenWordIndexes,
         })),
         durationSeconds: totalDurationSeconds,
-        voice: DOCU_TTS_VOICE,
+        voice: voiceName,
       },
       null,
       2,

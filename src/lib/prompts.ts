@@ -7,6 +7,38 @@
 
 // ── Narration ─────────────────────────────────────────────────────────────
 
+// Opener archetypes (variety controller). `scenario-first` is the baseline —
+// its text is byte-identical to the prior hardcoded rule 1, so the default
+// assignment reproduces today's prompt exactly.
+const OPENER_RULES: Record<string, string> = {
+  "scenario-first": `Scenario-first opener: start with the viewer inside the problem.
+   The cost, risk, or trap must be concrete by sentence 3.
+   Do not open with background, definitions, or "Today we will discuss."
+   Good: "You cut the budget by 20 percent. For one week, the numbers look better."
+   Wrong: "Compound interest is a powerful force over long time horizons."`,
+  "cold-stat": `Cold-stat opener: open on a single hard number from the research anchors,
+   stated flat with no preamble, then immediately translate its stakes for the viewer.
+   The number must be traceable to an anchor. Do not open with definitions or framing.
+   Good: "Forty percent. That is how much of the typical refund the IRS now holds past February."
+   Wrong: "Today we'll look at some interesting statistics about refunds."`,
+  "second-person-scenario": `Second-person-scenario opener: drop the viewer into a vivid moment as the protagonist
+   ("you") already mid-consequence. The stakes must be concrete by sentence 2.
+   Good: "You open the app and the balance is wrong. Not by a little — by a month's rent."
+   Wrong: "Banking errors can sometimes affect consumers."`,
+  "contrarian-claim": `Contrarian-claim opener: lead with a claim that contradicts the viewer's assumption,
+   then promise the proof. The reversal must be supported by an anchor later in the scene.
+   Good: "The safest account at the bank is quietly the most expensive one you own."
+   Wrong: "There are pros and cons to different savings accounts."`,
+  "dollar-shock": `Dollar-shock opener: open on a large or surprising dollar figure from the anchors,
+   framed as something the viewer is gaining or losing. The figure must trace to an anchor.
+   Good: "Eight hundred dollars a year leaves your account before you ever see it."
+   Wrong: "Fees can add up over time in various ways."`,
+  question: `Question opener: open with one sharp second-person question that names the viewer's stake,
+   then spend the scene answering it. One question only — never a list.
+   Good: "What happens to your rate the day the Fed stops pretending?"
+   Wrong: "Have you ever wondered about interest rates, inflation, and monetary policy?"`,
+};
+
 export function llmNarrationSegmentPrompt(args: {
   role: string;
   title: string;
@@ -22,8 +54,10 @@ export function llmNarrationSegmentPrompt(args: {
   isQuoteScene?: boolean;
   hasClipHandoff?: boolean;
   clipPersonName?: string;
+  opener?: string;
 }): string {
   const { role, title, intent, anchorCount, batchSize } = args;
+  const openerRule = OPENER_RULES[args.opener ?? "scenario-first"] ?? OPENER_RULES["scenario-first"];
   const craftBlock = [
     args.scenarioPressure ? `\n## Scenario Pressure\n${args.scenarioPressure}` : "",
     args.retentionLoop ? `\n## Retention Loop (pull to next scene)\n${args.retentionLoop}` : "",
@@ -48,11 +82,7 @@ ${craftBlock}
 
 ## INFOTAINMENT VOICE RULES
 
-1. Scenario-first opener: start with the viewer inside the problem.
-   The cost, risk, or trap must be concrete by sentence 3.
-   Do not open with background, definitions, or "Today we will discuss."
-   Good: "You cut the budget by 20 percent. For one week, the numbers look better."
-   Wrong: "Compound interest is a powerful force over long time horizons."
+1. ${openerRule}
 
 2. Viewer-consequence: every fact must change the viewer's decision, fear,
    expectation, or strategy. If the fact does not alter the scene, cut it or attach
@@ -230,7 +260,10 @@ Shape: { "shots": [{ "shotIndex": 0, "query": "federal reserve building", "fallb
 
 // ── Story spine ───────────────────────────────────────────────────────────
 
-export function llmSpinePrompt(segmentCount: number): string {
+export function llmSpinePrompt(segmentCount: number, requiredStructure?: string): string {
+  const structureDirective = requiredStructure
+    ? `\n\n## REQUIRED PRIMARY STRUCTURE (non-negotiable)\nFor this video the primary structure is assigned: **${requiredStructure}**. Set "primaryStructure" to exactly "${requiredStructure}" and design the spine around it. Do not choose a different structure.`
+    : "";
   return `You are the story architect for a Bloomberg-style documentary. You receive a topic, target video length, and verified research anchors. Your job is to design a SCENARIO-FIRST story spine that gives the narration writer everything they need to write from inside the viewer's world.
 
 ## Phase 1 — Choose the Primary Structure
@@ -333,7 +366,7 @@ Return JSON in this EXACT shape:
   ]
 }
 
-Return JSON only, no markdown fences. All fields are required unless marked optional.`;
+Return JSON only, no markdown fences. All fields are required unless marked optional.${structureDirective}`;
 }
 
 // ── Research ──────────────────────────────────────────────────────────────
