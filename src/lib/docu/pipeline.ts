@@ -25,7 +25,8 @@ export type PhaseName =
   | "youtube"
   | "tts"
   | "images"
-  | "codegen";
+  | "codegen"
+  | "publish-manifest";
 
 export interface PhaseDescriptor {
   name: PhaseName;
@@ -144,6 +145,18 @@ export const PIPELINE: readonly PhaseDescriptor[] = [
     stoppable: true,
     requires: ["images"],
     cleanArtifacts: () => [`src/generated/docu-scripts.ts`],
+  },
+  {
+    // Final phase: aggregate provenance + readiness from existing artifacts.
+    // `requires: []` so `--only publish-manifest` runs on partial pipelines —
+    // missing artifacts degrade to gaps the readiness check reports, not a crash.
+    // `resumable: false` keeps it out of `--from` (it is always last).
+    name: "publish-manifest",
+    group: "io",
+    resumable: false,
+    stoppable: true,
+    requires: [],
+    cleanArtifacts: (slug) => [`${PROMPTS_DIR}/${slug}-publish-manifest.json`],
   },
 ];
 

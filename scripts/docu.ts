@@ -49,6 +49,7 @@ import {
   VALID_FROM,
   VALID_ONLY,
 } from "../src/lib/docu/pipeline";
+import { generatePublishManifest } from "../src/lib/docu/publish-manifest";
 import {
   assignVariety,
   loadLedger,
@@ -61,6 +62,9 @@ import {
   type ArcAxis,
   type VarietyAssignment,
 } from "../src/lib/docu/variety-controller";
+
+// Shared so the rendered DocuScript and the publish manifest report one source.
+const DOCU_BACKGROUND_MUSIC = "background-music/scott-buckley-permafrost(chosic.com).mp3";
 
 // ── Niche allowlist ─────────────────────────────────────────────────────
 
@@ -358,7 +362,7 @@ async function runFullPipeline_impl(
     slug,
     topic,
     audioPath: `audio/docu/${slug}.wav`,
-    backgroundMusicPath: "background-music/scott-buckley-permafrost(chosic.com).mp3",
+    backgroundMusicPath: DOCU_BACKGROUND_MUSIC,
     durationInFrames: durationFrames,
     fps: FPS,
     width: 1920,
@@ -499,7 +503,7 @@ function parseArgs(args: string[]) {
 
   const onlyIdx = args.indexOf("--only");
   const only = onlyIdx >= 0 && onlyIdx + 1 < args.length
-    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen"
+    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen" | "publish-manifest"
     : undefined;
 
   const allowYoutubeClips = args.includes("--allow-youtube-clips");
@@ -517,7 +521,7 @@ function printUsage() {
   console.error("Usage: npx tsx --env-file=.env scripts/docu.ts <topic-or-slug> [--audition] [--clean] [--minutes N] [--from phase] [--only phase] [--allow-youtube-clips]");
   console.error("  --minutes N     Target video length in minutes (default: 4)");
   console.error("  --from phase    Resume from: plan | narration | overlays | youtube | tts (default: tts)");
-  console.error("  --only phase    Stop after: plan | narration | overlays | youtube | tts | images | codegen (omit to run full pipeline)");
+  console.error("  --only phase    Stop after: plan | narration | overlays | youtube | tts | images | codegen | publish-manifest (omit to run full pipeline)");
   console.error("  --audition      TTS audition only (30s clips)");
   console.error("  --clean         Remove pipeline artifacts for this topic. With --only <phase>, removes only that phase's artifacts");
   console.error("  --allow-youtube-clips  Enable YouTube clip extraction (disabled by default)");
@@ -640,6 +644,18 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     return;
   }
 
+  // ── Publish-manifest phase (final PIPELINE phase) ─────────────────
+  // Standalone regeneration from already-written artifacts — no LLM/IO run.
+  if (only === "publish-manifest") {
+    generatePublishManifest(slug, {
+      topic: topicArg,
+      voiceName: varietyAssignment.voice,
+      musicPath: DOCU_BACKGROUND_MUSIC,
+      publishMode: publish,
+    });
+    return;
+  }
+
   // ── LLM generation path ───────────────────────────────────────────
   let topicData: TopicData;
   const topicCached = loadCachedTopicData(slug);
@@ -732,6 +748,18 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
       targetShotSeconds: pacing.targetShotSeconds,
       publishMode: publish,
     });
+
+  // ── Publish-manifest phase (final PIPELINE phase) ─────────────────
+  // Only after the pipeline reaches codegen (full run or `--only codegen`);
+  // `--only images` returns from runFullPipeline before codegen, so skip it.
+  if (only === undefined || only === "codegen") {
+    generatePublishManifest(slug, {
+      topic,
+      voiceName: varietyAssignment.voice,
+      musicPath: DOCU_BACKGROUND_MUSIC,
+      publishMode: publish,
+    });
+  }
 }
 
 const runDocuCli = traceableChain(runDocuCli_impl, "runDocuCli", {

@@ -12,6 +12,7 @@
     "test:tts-chunking": "tsx tests/tts/tts-google-chunking.test.ts",
     "test:docu-article-text": "tsx tests/docu/article-text-layout.test.ts",
     "test:docu-youtube-pipeline": "tsx tests/docu/youtube-pipeline.test.ts",
+    "test:docu-publish-manifest": "tsx tests/docu/publish-manifest.test.ts",
     "quotas": "tsx --env-file=.env scripts/check-quotas.ts",
     "docu": "npx tsx --env-file=.env scripts/docu.ts",
     "docu:audition": "npx tsx --env-file=.env scripts/docu.ts --audition",
