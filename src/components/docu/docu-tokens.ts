@@ -37,17 +37,7 @@ export const LEADING = {
   normal: 1.35,
 } as const;
 
-// ── HaTTab cinematic teal-orange LUT ─────────────────────────────────────
-// Applied globally via SVG feComponentTransfer (true shadow/highlight split-tone).
-// Render <HaTTabLutDefs /> once at the root, then reference with
-// `filter: url(#hattab-cinematic-lut)` on any media element.
-export const HATTAB_LUT_ID = "hattab-cinematic-lut";
-// 7-stop 1D LUT per channel (covers 6 equal tonal segments, 0.0 → 1.0)
-export const HATTAB_R_CURVE = "0.04 0.14 0.36 0.60 0.80 0.96 1.00"; // pull shadows down, push highlights warm
-export const HATTAB_G_CURVE = "0.04 0.14 0.37 0.61 0.82 0.96 1.00"; // slight midtone warmth boost
-export const HATTAB_B_CURVE = "0.14 0.30 0.46 0.54 0.54 0.48 0.40"; // boost shadows (teal), pull highlights (kills blue in warm zones)
-
-// ── Per-shot palette accents (applied before the global LUT) ─────────────
+// ── Per-shot palette accents ───────────────────────────────────────────────
 // Removed: sepia+hue-rotate fighting each other in COOL_TECH (sepia warms,
 // hue-rotate cools). Simplified to coherent per-axis adjustments.
 export const COOL_TECH = {

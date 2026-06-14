@@ -11,8 +11,7 @@ import {
   useCurrentFrame,
 } from "remotion";
 import type { DocuPalette } from "./docu-tokens";
-import { HATTAB_LUT_ID, PALETTE_MAP } from "./docu-tokens";
-import { HaTTabLutDefs } from "./HaTTabLut";
+import { PALETTE_MAP } from "./docu-tokens";
 import { DocuKenBurns } from "./DocuKenBurns";
 import { DocuTitleCard } from "./DocuTitleCard";
 import type { DocuOverlay } from "../../lib/docu/overlays/registry";
@@ -161,9 +160,6 @@ export const DocumentaryComposition = (props: DocuScript) => {
 
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      {/* HaTTab cinematic LUT — must be rendered before any url(#hattab-cinematic-lut) reference */}
-      <HaTTabLutDefs />
-
       {/* Media layer */}
       {allShots.map((shot, i) => {
         const shotDuration = shot.endFrame - shot.startFrame;
@@ -205,10 +201,10 @@ export const DocumentaryComposition = (props: DocuScript) => {
                       ? `blur(${blurPx}px)`
                       : "none"
                     : shot.gradeMode === "highlight-safe"
-                      ? `contrast(1.05) saturate(1.1)${
+                    ? `contrast(1.05) saturate(1.1)${
                           blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
                         }`
-                      : `${PALETTE_MAP[shot.palette].filter} url(#${HATTAB_LUT_ID})${
+                      : `${PALETTE_MAP[shot.palette].filter}${
                           blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
                         }`,
                 width: "100%",

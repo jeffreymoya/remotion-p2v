@@ -8,1835 +8,1835 @@ export const docuScripts: DocuScript[] = [
     "topic": "how-the-fed-controls-your-money",
     "audioPath": "audio/docu/how-the-fed-controls-your-money.wav",
     "backgroundMusicPath": "background-music/scott-buckley-permafrost(chosic.com).mp3",
-    "durationInFrames": 3526,
+    "durationInFrames": 3532,
     "fps": 30,
     "width": 1920,
     "height": 1080,
     "wordTimings": [
       {
         "word": "you",
-        "startSeconds": 0,
-        "endSeconds": 0.5
+        "startSeconds": 0.2,
+        "endSeconds": 0.8
       },
       {
         "word": "tear",
-        "startSeconds": 0.5,
-        "endSeconds": 0.5
+        "startSeconds": 0.8,
+        "endSeconds": 1
       },
       {
         "word": "open",
-        "startSeconds": 0.5,
-        "endSeconds": 0.7
-      },
-      {
-        "word": "the",
-        "startSeconds": 0.7,
-        "endSeconds": 0.9
-      },
-      {
-        "word": "envelope",
-        "startSeconds": 0.9,
+        "startSeconds": 1,
         "endSeconds": 1.1
       },
       {
-        "word": "and",
-        "startSeconds": 1.1,
-        "endSeconds": 1.5
-      },
-      {
         "word": "the",
-        "startSeconds": 1.5,
+        "startSeconds": 1.1,
+        "endSeconds": 1.2
+      },
+      {
+        "word": "envelope",
+        "startSeconds": 1.2,
         "endSeconds": 1.5
       },
       {
-        "word": "numbers",
+        "word": "and",
         "startSeconds": 1.5,
         "endSeconds": 1.9
       },
       {
-        "word": "already",
+        "word": "the",
         "startSeconds": 1.9,
+        "endSeconds": 2.1
+      },
+      {
+        "word": "number",
+        "startSeconds": 2.1,
         "endSeconds": 2.3
       },
       {
-        "word": "circled",
+        "word": "is",
         "startSeconds": 2.3,
-        "endSeconds": 2.4
-      },
-      {
-        "word": "in",
-        "startSeconds": 2.4,
-        "endSeconds": 2.7
-      },
-      {
-        "word": "red",
-        "startSeconds": 2.7,
         "endSeconds": 2.8
       },
       {
-        "word": "your",
-        "startSeconds": 3.30225,
-        "endSeconds": 3.70225
-      },
-      {
-        "word": "mortgage",
-        "startSeconds": 3.70225,
-        "endSeconds": 3.90225
-      },
-      {
-        "word": "payment",
-        "startSeconds": 3.90225,
-        "endSeconds": 4.10225
-      },
-      {
-        "word": "just",
-        "startSeconds": 4.10225,
-        "endSeconds": 4.30225
-      },
-      {
-        "word": "jumped",
-        "startSeconds": 4.30225,
-        "endSeconds": 4.702249999999999
-      },
-      {
-        "word": "$800",
-        "startSeconds": 4.702249999999999,
-        "endSeconds": 5.50225
-      },
-      {
-        "word": "money",
-        "startSeconds": 5.50225,
-        "endSeconds": 6.30225
-      },
-      {
-        "word": "you",
-        "startSeconds": 6.30225,
-        "endSeconds": 6.50225
-      },
-      {
-        "word": "don't",
-        "startSeconds": 6.50225,
-        "endSeconds": 6.60225
-      },
-      {
-        "word": "have",
-        "startSeconds": 6.60225,
-        "endSeconds": 6.702249999999999
-      },
-      {
-        "word": "the",
-        "startSeconds": 7.7005,
-        "endSeconds": 8.000499999999999
-      },
-      {
-        "word": "adjustable",
-        "startSeconds": 8.000499999999999,
-        "endSeconds": 8.3005
-      },
-      {
-        "word": "rate",
-        "startSeconds": 8.3005,
-        "endSeconds": 8.6005
-      },
-      {
-        "word": "you",
-        "startSeconds": 8.6005,
-        "endSeconds": 8.9005
-      },
-      {
-        "word": "barely",
-        "startSeconds": 8.9005,
-        "endSeconds": 9.1005
-      },
-      {
-        "word": "understood",
-        "startSeconds": 9.1005,
-        "endSeconds": 9.4005
-      },
-      {
-        "word": "has",
-        "startSeconds": 9.4005,
-        "endSeconds": 9.7005
-      },
-      {
-        "word": "now",
-        "startSeconds": 9.7005,
-        "endSeconds": 9.9005
-      },
-      {
-        "word": "reset",
-        "startSeconds": 9.9005,
-        "endSeconds": 10.3005
-      },
-      {
-        "word": "and",
-        "startSeconds": 10.3005,
-        "endSeconds": 10.7005
-      },
-      {
-        "word": "the",
-        "startSeconds": 10.7005,
-        "endSeconds": 10.8005
-      },
-      {
-        "word": "math",
-        "startSeconds": 10.8005,
-        "endSeconds": 11.1005
-      },
-      {
-        "word": "is",
-        "startSeconds": 11.1005,
-        "endSeconds": 11.3005
-      },
-      {
-        "word": "merciless",
-        "startSeconds": 11.3005,
-        "endSeconds": 11.8005
-      },
-      {
-        "word": "what",
-        "startSeconds": 12.274750000000001,
-        "endSeconds": 12.47475
-      },
-      {
-        "word": "chain",
-        "startSeconds": 12.47475,
-        "endSeconds": 12.774750000000001
-      },
-      {
-        "word": "reaction",
-        "startSeconds": 12.774750000000001,
-        "endSeconds": 13.174750000000001
-      },
-      {
-        "word": "did",
-        "startSeconds": 13.174750000000001,
-        "endSeconds": 13.47475
-      },
-      {
-        "word": "the",
-        "startSeconds": 13.47475,
-        "endSeconds": 13.574750000000002
-      },
-      {
-        "word": "FED",
-        "startSeconds": 13.574750000000002,
-        "endSeconds": 13.87475
-      },
-      {
-        "word": "set",
-        "startSeconds": 13.87475,
-        "endSeconds": 14.174750000000001
-      },
-      {
-        "word": "off",
-        "startSeconds": 14.174750000000001,
-        "endSeconds": 14.37475
-      },
-      {
-        "word": "that",
-        "startSeconds": 14.37475,
-        "endSeconds": 14.47475
-      },
-      {
-        "word": "ends",
-        "startSeconds": 14.47475,
-        "endSeconds": 14.674750000000001
-      },
-      {
-        "word": "with",
-        "startSeconds": 14.674750000000001,
-        "endSeconds": 14.774750000000001
-      },
-      {
-        "word": "this",
-        "startSeconds": 14.774750000000001,
-        "endSeconds": 14.97475
-      },
-      {
-        "word": "letter",
-        "startSeconds": 14.97475,
-        "endSeconds": 15.174750000000001
-      },
-      {
-        "word": "in",
-        "startSeconds": 15.174750000000001,
-        "endSeconds": 15.37475
-      },
-      {
-        "word": "your",
-        "startSeconds": 15.37475,
-        "endSeconds": 15.47475
-      },
-      {
-        "word": "hand",
-        "startSeconds": 15.47475,
-        "endSeconds": 15.574750000000002
-      },
-      {
-        "word": "it",
-        "startSeconds": 16.089000000000002,
-        "endSeconds": 16.389000000000003
-      },
-      {
-        "word": "starts",
-        "startSeconds": 16.389000000000003,
-        "endSeconds": 16.489
-      },
-      {
-        "word": "in",
-        "startSeconds": 16.489,
-        "endSeconds": 16.789
-      },
-      {
-        "word": "a",
-        "startSeconds": 16.789,
-        "endSeconds": 16.889000000000003
-      },
-      {
-        "word": "Washington",
-        "startSeconds": 16.889000000000003,
-        "endSeconds": 16.989
-      },
-      {
-        "word": "boardroom",
-        "startSeconds": 16.989,
-        "endSeconds": 17.489
-      },
-      {
-        "word": "where",
-        "startSeconds": 17.489,
-        "endSeconds": 17.789
-      },
-      {
-        "word": "the",
-        "startSeconds": 17.789,
-        "endSeconds": 17.989
-      },
-      {
-        "word": "FED",
-        "startSeconds": 17.989,
-        "endSeconds": 18.189000000000004
-      },
-      {
-        "word": "sets",
-        "startSeconds": 18.189000000000004,
-        "endSeconds": 18.489
-      },
-      {
-        "word": "the",
-        "startSeconds": 18.489,
-        "endSeconds": 18.589000000000002
-      },
-      {
-        "word": "federal",
-        "startSeconds": 18.589000000000002,
-        "endSeconds": 18.789
-      },
-      {
-        "word": "funds",
-        "startSeconds": 18.789,
-        "endSeconds": 19.189000000000004
-      },
-      {
-        "word": "rate",
-        "startSeconds": 19.189000000000004,
-        "endSeconds": 19.489
-      },
-      {
-        "word": "the",
-        "startSeconds": 19.489,
-        "endSeconds": 19.789
-      },
-      {
-        "word": "overnight",
-        "startSeconds": 19.789,
-        "endSeconds": 20.189
-      },
-      {
-        "word": "interest",
-        "startSeconds": 20.189,
-        "endSeconds": 20.389000000000003
-      },
-      {
-        "word": "Banks",
-        "startSeconds": 20.389000000000003,
-        "endSeconds": 20.889000000000003
-      },
-      {
-        "word": "charge",
-        "startSeconds": 20.889000000000003,
-        "endSeconds": 21.189
-      },
-      {
-        "word": "each",
-        "startSeconds": 21.189,
-        "endSeconds": 21.289
-      },
-      {
-        "word": "other",
-        "startSeconds": 21.289,
-        "endSeconds": 21.289
-      },
-      {
-        "word": "to",
-        "startSeconds": 21.289,
-        "endSeconds": 21.589000000000002
-      },
-      {
-        "word": "borrow",
-        "startSeconds": 21.589000000000002,
-        "endSeconds": 21.789
-      },
-      {
-        "word": "Reserves",
-        "startSeconds": 21.789,
-        "endSeconds": 22.089000000000002
-      },
-      {
-        "word": "that",
-        "startSeconds": 22.655250000000002,
-        "endSeconds": 23.155250000000002
-      },
-      {
-        "word": "single",
-        "startSeconds": 23.155250000000002,
-        "endSeconds": 23.35525
-      },
-      {
-        "word": "number",
-        "startSeconds": 23.35525,
-        "endSeconds": 23.655250000000002
-      },
-      {
-        "word": "ripples",
-        "startSeconds": 23.655250000000002,
-        "endSeconds": 24.255250000000004
-      },
-      {
-        "word": "outward",
-        "startSeconds": 24.255250000000004,
-        "endSeconds": 24.455250000000003
-      },
-      {
-        "word": "Banks",
-        "startSeconds": 24.455250000000003,
-        "endSeconds": 25.55525
-      },
-      {
-        "word": "adjust",
-        "startSeconds": 25.55525,
-        "endSeconds": 25.755250000000004
-      },
-      {
-        "word": "their",
-        "startSeconds": 25.755250000000004,
-        "endSeconds": 25.955250000000003
-      },
-      {
-        "word": "prime",
-        "startSeconds": 25.955250000000003,
-        "endSeconds": 26.255250000000004
-      },
-      {
-        "word": "rate",
-        "startSeconds": 26.255250000000004,
-        "endSeconds": 26.455250000000003
-      },
-      {
-        "word": "and",
-        "startSeconds": 26.455250000000003,
-        "endSeconds": 26.755250000000004
-      },
-      {
-        "word": "your",
-        "startSeconds": 26.755250000000004,
-        "endSeconds": 27.155250000000002
-      },
-      {
-        "word": "adjustable",
-        "startSeconds": 27.155250000000002,
-        "endSeconds": 27.255250000000004
-      },
-      {
-        "word": "rate",
-        "startSeconds": 27.255250000000004,
-        "endSeconds": 27.55525
-      },
-      {
-        "word": "mortgages",
-        "startSeconds": 27.55525,
-        "endSeconds": 27.85525
-      },
-      {
-        "word": "APR",
-        "startSeconds": 27.85525,
-        "endSeconds": 28.55525
-      },
-      {
-        "word": "shifts",
-        "startSeconds": 28.55525,
-        "endSeconds": 28.85525
-      },
-      {
-        "word": "in",
-        "startSeconds": 28.85525,
-        "endSeconds": 29.455250000000003
-      },
-      {
-        "word": "lock",
-        "startSeconds": 29.455250000000003,
-        "endSeconds": 29.755250000000004
-      },
-      {
-        "word": "step",
-        "startSeconds": 29.755250000000004,
-        "endSeconds": 29.85525
-      },
-      {
-        "word": "in",
-        "startSeconds": 30.573500000000003,
-        "endSeconds": 30.973500000000005
-      },
-      {
-        "word": "2020",
-        "startSeconds": 30.973500000000005,
-        "endSeconds": 31.473500000000005
-      },
-      {
-        "word": "the",
-        "startSeconds": 31.473500000000005,
-        "endSeconds": 31.773500000000002
-      },
-      {
-        "word": "FED",
-        "startSeconds": 31.773500000000002,
-        "endSeconds": 32.173500000000004
-      },
-      {
-        "word": "earned",
-        "startSeconds": 32.173500000000004,
-        "endSeconds": 32.4735
-      },
-      {
-        "word": "88.6",
-        "startSeconds": 32.4735,
-        "endSeconds": 33.4735
-      },
-      {
-        "word": "billion",
-        "startSeconds": 33.5735,
-        "endSeconds": 33.9735
-      },
-      {
-        "word": "and",
-        "startSeconds": 33.9735,
-        "endSeconds": 34.773500000000006
-      },
-      {
-        "word": "sent",
-        "startSeconds": 34.773500000000006,
-        "endSeconds": 34.87350000000001
-      },
-      {
-        "word": "86.9",
-        "startSeconds": 34.87350000000001,
-        "endSeconds": 35.773500000000006
-      },
-      {
-        "word": "billion",
-        "startSeconds": 35.9735,
-        "endSeconds": 36.4735
-      },
-      {
-        "word": "to",
-        "startSeconds": 36.4735,
-        "endSeconds": 36.773500000000006
-      },
-      {
-        "word": "the",
-        "startSeconds": 36.773500000000006,
-        "endSeconds": 36.87350000000001
-      },
-      {
-        "word": "treasury",
-        "startSeconds": 36.87350000000001,
-        "endSeconds": 37.37350000000001
-      },
-      {
-        "word": "it",
-        "startSeconds": 37.37350000000001,
-        "endSeconds": 37.9735
-      },
-      {
-        "word": "profits",
-        "startSeconds": 37.9735,
-        "endSeconds": 38.37350000000001
-      },
-      {
-        "word": "from",
-        "startSeconds": 38.37350000000001,
-        "endSeconds": 38.4735
-      },
-      {
-        "word": "the",
-        "startSeconds": 38.4735,
-        "endSeconds": 38.5735
-      },
-      {
-        "word": "very",
-        "startSeconds": 38.5735,
-        "endSeconds": 38.87350000000001
-      },
-      {
-        "word": "rate",
-        "startSeconds": 38.87350000000001,
-        "endSeconds": 39.173500000000004
-      },
-      {
-        "word": "it",
-        "startSeconds": 39.173500000000004,
-        "endSeconds": 39.37350000000001
-      },
-      {
-        "word": "controls",
-        "startSeconds": 39.37350000000001,
-        "endSeconds": 39.87350000000001
-      },
-      {
-        "word": "but",
-        "startSeconds": 40.71575,
-        "endSeconds": 40.81575
-      },
-      {
-        "word": "if",
-        "startSeconds": 40.81575,
-        "endSeconds": 40.91575
-      },
-      {
-        "word": "the",
-        "startSeconds": 40.91575,
-        "endSeconds": 41.01575
-      },
-      {
-        "word": "FED",
-        "startSeconds": 41.01575,
-        "endSeconds": 41.21575
-      },
-      {
-        "word": "can",
-        "startSeconds": 41.21575,
-        "endSeconds": 41.41575
-      },
-      {
-        "word": "create",
-        "startSeconds": 41.41575,
-        "endSeconds": 41.61575
-      },
-      {
-        "word": "money",
-        "startSeconds": 41.61575,
-        "endSeconds": 41.81575
-      },
-      {
-        "word": "from",
-        "startSeconds": 41.81575,
-        "endSeconds": 42.01575
-      },
-      {
-        "word": "thin",
-        "startSeconds": 42.01575,
-        "endSeconds": 42.41575
-      },
-      {
-        "word": "air",
-        "startSeconds": 42.41575,
-        "endSeconds": 42.61575
-      },
-      {
-        "word": "why",
-        "startSeconds": 42.61575,
-        "endSeconds": 43.01575
-      },
-      {
-        "word": "does",
-        "startSeconds": 43.01575,
-        "endSeconds": 43.21575
-      },
-      {
-        "word": "it",
-        "startSeconds": 43.21575,
-        "endSeconds": 43.21575
-      },
-      {
-        "word": "have",
-        "startSeconds": 43.21575,
-        "endSeconds": 43.31575
-      },
-      {
-        "word": "to",
-        "startSeconds": 43.31575,
-        "endSeconds": 43.41575
-      },
-      {
-        "word": "squeeze",
-        "startSeconds": 43.41575,
-        "endSeconds": 43.81575
-      },
-      {
-        "word": "you",
-        "startSeconds": 43.81575,
-        "endSeconds": 43.91575
-      },
-      {
-        "word": "to",
-        "startSeconds": 43.91575,
-        "endSeconds": 44.11575
-      },
-      {
-        "word": "fix",
-        "startSeconds": 44.11575,
-        "endSeconds": 44.31575
-      },
-      {
-        "word": "inflation",
-        "startSeconds": 44.31575,
-        "endSeconds": 44.61575
-      },
-      {
-        "word": "they",
-        "startSeconds": 45.105999999999995,
-        "endSeconds": 45.205999999999996
-      },
-      {
-        "word": "pushed",
-        "startSeconds": 45.205999999999996,
-        "endSeconds": 45.50599999999999
-      },
-      {
-        "word": "the",
-        "startSeconds": 45.50599999999999,
-        "endSeconds": 45.605999999999995
-      },
-      {
-        "word": "federal",
-        "startSeconds": 45.605999999999995,
-        "endSeconds": 45.806
-      },
-      {
-        "word": "funds",
-        "startSeconds": 45.806,
-        "endSeconds": 46.105999999999995
-      },
-      {
-        "word": "rate",
-        "startSeconds": 46.105999999999995,
-        "endSeconds": 46.40599999999999
-      },
-      {
-        "word": "to",
-        "startSeconds": 46.40599999999999,
-        "endSeconds": 46.605999999999995
-      },
-      {
-        "word": "20%",
-        "startSeconds": 46.605999999999995,
-        "endSeconds": 46.90599999999999
-      },
-      {
-        "word": "a",
-        "startSeconds": 46.90599999999999,
-        "endSeconds": 47.605999999999995
-      },
-      {
-        "word": "sledgehammer",
-        "startSeconds": 47.605999999999995,
-        "endSeconds": 48.00599999999999
-      },
-      {
-        "word": "that",
-        "startSeconds": 48.00599999999999,
-        "endSeconds": 48.205999999999996
-      },
-      {
-        "word": "shattered",
-        "startSeconds": 48.205999999999996,
-        "endSeconds": 48.50599999999999
-      },
-      {
-        "word": "inflation",
-        "startSeconds": 48.50599999999999,
-        "endSeconds": 48.806
-      },
-      {
-        "word": "but",
-        "startSeconds": 48.806,
-        "endSeconds": 49.105999999999995
-      },
-      {
-        "word": "also",
-        "startSeconds": 49.105999999999995,
-        "endSeconds": 49.205999999999996
-      },
-      {
-        "word": "crushed",
-        "startSeconds": 49.205999999999996,
-        "endSeconds": 49.705999999999996
-      },
-      {
-        "word": "your",
-        "startSeconds": 49.705999999999996,
-        "endSeconds": 49.806
-      },
-      {
-        "word": "job",
-        "startSeconds": 49.806,
-        "endSeconds": 50.105999999999995
-      },
-      {
-        "word": "and",
-        "startSeconds": 50.105999999999995,
-        "endSeconds": 50.40599999999999
-      },
-      {
-        "word": "your",
-        "startSeconds": 50.40599999999999,
-        "endSeconds": 50.50599999999999
-      },
-      {
-        "word": "home's",
-        "startSeconds": 50.50599999999999,
-        "endSeconds": 50.806
-      },
-      {
-        "word": "value",
-        "startSeconds": 50.806,
-        "endSeconds": 50.90599999999999
-      },
-      {
-        "word": "manufacturing",
-        "startSeconds": 51.35224999999999,
-        "endSeconds": 51.95224999999999
-      },
-      {
-        "word": "shed",
-        "startSeconds": 51.95224999999999,
-        "endSeconds": 52.45224999999999
-      },
-      {
-        "word": "1.1",
-        "startSeconds": 52.45224999999999,
-        "endSeconds": 53.15224999999999
-      },
-      {
-        "word": "million",
-        "startSeconds": 53.25224999999999,
-        "endSeconds": 53.65224999999999
-      },
-      {
-        "word": "jobs",
-        "startSeconds": 53.65224999999999,
-        "endSeconds": 53.85224999999999
-      },
-      {
-        "word": "and",
-        "startSeconds": 53.85224999999999,
-        "endSeconds": 54.25224999999999
-      },
-      {
-        "word": "mortgage",
-        "startSeconds": 54.25224999999999,
-        "endSeconds": 54.65224999999999
-      },
-      {
-        "word": "rates",
-        "startSeconds": 54.65224999999999,
-        "endSeconds": 54.95224999999999
-      },
-      {
-        "word": "above",
-        "startSeconds": 54.95224999999999,
-        "endSeconds": 55.15224999999999
-      },
-      {
-        "word": "18%",
-        "startSeconds": 55.15224999999999,
-        "endSeconds": 55.75224999999999
-      },
-      {
-        "word": "froze",
-        "startSeconds": 55.75224999999999,
-        "endSeconds": 56.65224999999999
-      },
-      {
-        "word": "the",
-        "startSeconds": 56.65224999999999,
-        "endSeconds": 56.75224999999999
-      },
-      {
-        "word": "housing",
-        "startSeconds": 56.75224999999999,
-        "endSeconds": 56.95224999999999
-      },
-      {
-        "word": "market",
-        "startSeconds": 56.95224999999999,
-        "endSeconds": 57.15224999999999
-      },
-      {
-        "word": "solid",
-        "startSeconds": 57.15224999999999,
-        "endSeconds": 57.65224999999999
-      },
-      {
-        "word": "Mr",
-        "startSeconds": 58.11049999999999,
-        "endSeconds": 58.510499999999986
-      },
-      {
-        "word": "vulkar",
-        "startSeconds": 58.510499999999986,
-        "endSeconds": 59.11049999999999
-      },
-      {
-        "word": "orchestrated",
-        "startSeconds": 59.11049999999999,
-        "endSeconds": 59.61049999999999
-      },
-      {
-        "word": "a",
-        "startSeconds": 59.61049999999999,
-        "endSeconds": 59.910499999999985
-      },
-      {
-        "word": "series",
-        "startSeconds": 59.910499999999985,
-        "endSeconds": 60.010499999999986
-      },
-      {
-        "word": "of",
-        "startSeconds": 60.010499999999986,
-        "endSeconds": 60.010499999999986
-      },
-      {
-        "word": "interest",
-        "startSeconds": 60.010499999999986,
-        "endSeconds": 60.410499999999985
-      },
-      {
-        "word": "rate",
-        "startSeconds": 60.410499999999985,
-        "endSeconds": 60.71049999999999
-      },
-      {
-        "word": "increases",
-        "startSeconds": 60.71049999999999,
-        "endSeconds": 61.010499999999986
-      },
-      {
-        "word": "that",
-        "startSeconds": 61.010499999999986,
-        "endSeconds": 61.21049999999999
-      },
-      {
-        "word": "took",
-        "startSeconds": 61.21049999999999,
-        "endSeconds": 61.510499999999986
-      },
-      {
-        "word": "the",
-        "startSeconds": 61.510499999999986,
-        "endSeconds": 61.61049999999999
-      },
-      {
-        "word": "federal",
-        "startSeconds": 61.61049999999999,
-        "endSeconds": 61.81049999999999
-      },
-      {
-        "word": "funds",
-        "startSeconds": 61.81049999999999,
-        "endSeconds": 62.31049999999999
-      },
-      {
-        "word": "Target",
-        "startSeconds": 62.31049999999999,
-        "endSeconds": 62.510499999999986
-      },
-      {
-        "word": "from",
-        "startSeconds": 62.510499999999986,
-        "endSeconds": 62.71049999999999
-      },
-      {
-        "word": "around",
-        "startSeconds": 62.71049999999999,
-        "endSeconds": 62.910499999999985
-      },
-      {
-        "word": "10%",
-        "startSeconds": 62.910499999999985,
-        "endSeconds": 63.410499999999985
-      },
-      {
-        "word": "to",
-        "startSeconds": 63.410499999999985,
-        "endSeconds": 64.0105
-      },
-      {
-        "word": "near",
-        "startSeconds": 64.0105,
-        "endSeconds": 64.21049999999998
-      },
-      {
-        "word": "20%",
-        "startSeconds": 64.21049999999998,
-        "endSeconds": 64.5105
-      },
-      {
-        "word": "they",
-        "startSeconds": 65.67274999999998,
-        "endSeconds": 65.97274999999999
-      },
-      {
-        "word": "were",
-        "startSeconds": 65.97274999999999,
-        "endSeconds": 66.07274999999998
-      },
-      {
-        "word": "willing",
-        "startSeconds": 66.07274999999998,
-        "endSeconds": 66.27274999999999
-      },
-      {
-        "word": "to",
-        "startSeconds": 66.27274999999999,
-        "endSeconds": 66.37274999999998
-      },
-      {
-        "word": "crash",
-        "startSeconds": 66.37274999999998,
-        "endSeconds": 66.67274999999998
-      },
-      {
-        "word": "entire",
-        "startSeconds": 66.67274999999998,
-        "endSeconds": 67.27274999999999
-      },
-      {
-        "word": "Industries",
-        "startSeconds": 67.27274999999999,
-        "endSeconds": 67.87274999999998
-      },
-      {
-        "word": "and",
-        "startSeconds": 67.87274999999998,
-        "endSeconds": 68.07274999999998
-      },
-      {
-        "word": "cost",
-        "startSeconds": 68.07274999999998,
-        "endSeconds": 68.47274999999999
-      },
-      {
-        "word": "you",
-        "startSeconds": 68.47274999999999,
-        "endSeconds": 68.67274999999998
-      },
-      {
-        "word": "your",
-        "startSeconds": 68.67274999999998,
-        "endSeconds": 68.77274999999999
-      },
-      {
-        "word": "livelihood",
-        "startSeconds": 68.77274999999999,
-        "endSeconds": 69.07274999999998
-      },
-      {
-        "word": "could",
-        "startSeconds": 69.07274999999998,
-        "endSeconds": 69.97274999999999
-      },
-      {
-        "word": "today's",
-        "startSeconds": 69.97274999999999,
-        "endSeconds": 70.47274999999999
-      },
-      {
-        "word": "fed",
-        "startSeconds": 70.47274999999999,
-        "endSeconds": 70.87274999999998
-      },
-      {
-        "word": "go",
-        "startSeconds": 70.87274999999998,
-        "endSeconds": 70.97274999999999
-      },
-      {
-        "word": "that",
-        "startSeconds": 70.97274999999999,
-        "endSeconds": 71.07274999999998
-      },
-      {
-        "word": "far",
-        "startSeconds": 71.07274999999998,
-        "endSeconds": 71.37274999999998
-      },
-      {
-        "word": "again",
-        "startSeconds": 71.37274999999998,
-        "endSeconds": 71.57274999999998
-      },
-      {
-        "word": "it",
-        "startSeconds": 72.20299999999999,
-        "endSeconds": 72.80299999999998
-      },
-      {
-        "word": "ballooned",
-        "startSeconds": 72.80299999999998,
-        "endSeconds": 73.00299999999999
-      },
-      {
-        "word": "to",
-        "startSeconds": 73.00299999999999,
-        "endSeconds": 73.103
-      },
-      {
-        "word": "9",
-        "startSeconds": 73.103,
-        "endSeconds": 73.20299999999999
-      },
-      {
-        "word": "trillion",
-        "startSeconds": 73.30299999999998,
-        "endSeconds": 73.80299999999998
-      },
-      {
-        "word": "dollars",
-        "startSeconds": 73.80299999999998,
-        "endSeconds": 74.00299999999999
-      },
-      {
-        "word": "pumping",
-        "startSeconds": 74.00299999999999,
-        "endSeconds": 74.603
-      },
-      {
-        "word": "so",
-        "startSeconds": 74.603,
-        "endSeconds": 74.90299999999999
-      },
-      {
-        "word": "much",
-        "startSeconds": 74.90299999999999,
-        "endSeconds": 74.90299999999999
-      },
-      {
-        "word": "money",
-        "startSeconds": 74.90299999999999,
-        "endSeconds": 75.20299999999999
-      },
-      {
-        "word": "into",
-        "startSeconds": 75.20299999999999,
-        "endSeconds": 75.50299999999999
-      },
-      {
-        "word": "the",
-        "startSeconds": 75.50299999999999,
-        "endSeconds": 75.70299999999999
-      },
-      {
-        "word": "system",
-        "startSeconds": 75.70299999999999,
-        "endSeconds": 75.90299999999999
-      },
-      {
-        "word": "that",
-        "startSeconds": 75.90299999999999,
-        "endSeconds": 76.103
-      },
-      {
-        "word": "your",
-        "startSeconds": 76.103,
-        "endSeconds": 76.50299999999999
-      },
-      {
-        "word": "mortgage",
-        "startSeconds": 76.50299999999999,
-        "endSeconds": 76.70299999999999
-      },
-      {
-        "word": "rate",
-        "startSeconds": 76.70299999999999,
-        "endSeconds": 77.00299999999999
-      },
-      {
-        "word": "stayed",
-        "startSeconds": 77.00299999999999,
-        "endSeconds": 77.30299999999998
-      },
-      {
-        "word": "low",
-        "startSeconds": 77.30299999999998,
-        "endSeconds": 77.40299999999999
-      },
-      {
-        "word": "and",
-        "startSeconds": 77.40299999999999,
-        "endSeconds": 77.80299999999998
-      },
-      {
-        "word": "your",
-        "startSeconds": 77.80299999999998,
-        "endSeconds": 78.103
-      },
-      {
-        "word": "401k",
-        "startSeconds": 78.103,
-        "endSeconds": 78.603
-      },
-      {
-        "word": "looked",
-        "startSeconds": 78.603,
-        "endSeconds": 78.80299999999998
-      },
-      {
-        "word": "invincible",
-        "startSeconds": 78.80299999999998,
-        "endSeconds": 79.20299999999999
-      },
-      {
-        "word": "now",
-        "startSeconds": 79.85724999999998,
-        "endSeconds": 80.05724999999998
-      },
-      {
-        "word": "it's",
-        "startSeconds": 80.05724999999998,
-        "endSeconds": 80.55724999999998
-      },
-      {
-        "word": "shrinking",
-        "startSeconds": 80.55724999999998,
-        "endSeconds": 80.75724999999998
-      },
-      {
-        "word": "down",
-        "startSeconds": 80.75724999999998,
-        "endSeconds": 81.15724999999998
-      },
-      {
-        "word": "to",
-        "startSeconds": 81.15724999999998,
-        "endSeconds": 81.45724999999997
-      },
-      {
-        "word": "7",
-        "startSeconds": 81.45724999999997,
-        "endSeconds": 81.75724999999998
-      },
-      {
-        "word": "trillion",
-        "startSeconds": 81.75724999999998,
-        "endSeconds": 82.15724999999998
-      },
-      {
-        "word": "and",
-        "startSeconds": 82.15724999999998,
-        "endSeconds": 82.95724999999997
-      },
-      {
-        "word": "that",
-        "startSeconds": 82.95724999999997,
-        "endSeconds": 83.05724999999998
-      },
-      {
-        "word": "tightening",
-        "startSeconds": 83.05724999999998,
-        "endSeconds": 83.45724999999997
-      },
-      {
-        "word": "is",
-        "startSeconds": 83.45724999999997,
-        "endSeconds": 83.65724999999998
-      },
-      {
-        "word": "cracking",
-        "startSeconds": 83.65724999999998,
-        "endSeconds": 83.95724999999997
-      },
-      {
-        "word": "the",
-        "startSeconds": 83.95724999999997,
-        "endSeconds": 84.15724999999998
-      },
-      {
-        "word": "credit",
-        "startSeconds": 84.15724999999998,
-        "endSeconds": 84.25724999999998
-      },
-      {
-        "word": "Market",
-        "startSeconds": 84.25724999999998,
-        "endSeconds": 84.55724999999998
-      },
-      {
-        "word": "wall",
-        "startSeconds": 84.55724999999998,
-        "endSeconds": 84.85724999999998
-      },
-      {
-        "word": "right",
-        "startSeconds": 84.85724999999998,
-        "endSeconds": 85.15724999999998
-      },
-      {
-        "word": "behind",
-        "startSeconds": 85.15724999999998,
-        "endSeconds": 85.35724999999998
-      },
-      {
-        "word": "your",
-        "startSeconds": 85.35724999999998,
-        "endSeconds": 85.75724999999998
-      },
-      {
-        "word": "small",
-        "startSeconds": 85.75724999999998,
-        "endSeconds": 85.85724999999998
-      },
-      {
-        "word": "business",
-        "startSeconds": 85.85724999999998,
-        "endSeconds": 86.15724999999998
-      },
-      {
-        "word": "loan",
-        "startSeconds": 86.15724999999998,
-        "endSeconds": 86.85724999999998
-      },
-      {
-        "word": "the",
-        "startSeconds": 87.06349999999998,
-        "endSeconds": 87.16349999999997
-      },
-      {
-        "word": "FED",
-        "startSeconds": 87.16349999999997,
-        "endSeconds": 87.46349999999998
-      },
-      {
-        "word": "saved",
-        "startSeconds": 87.46349999999998,
-        "endSeconds": 87.86349999999997
-      },
-      {
-        "word": "you",
-        "startSeconds": 87.86349999999997,
-        "endSeconds": 87.96349999999998
-      },
-      {
-        "word": "once",
-        "startSeconds": 87.96349999999998,
-        "endSeconds": 88.16349999999997
-      },
-      {
-        "word": "but",
-        "startSeconds": 88.16349999999997,
-        "endSeconds": 88.66349999999997
-      },
-      {
-        "word": "its",
-        "startSeconds": 88.66349999999997,
-        "endSeconds": 89.16349999999997
-      },
-      {
-        "word": "cure",
-        "startSeconds": 89.16349999999997,
-        "endSeconds": 89.26349999999998
-      },
-      {
-        "word": "now",
-        "startSeconds": 89.26349999999998,
-        "endSeconds": 89.46349999999998
-      },
-      {
-        "word": "threatens",
-        "startSeconds": 89.46349999999998,
-        "endSeconds": 89.76349999999998
-      },
-      {
-        "word": "to",
-        "startSeconds": 89.76349999999998,
-        "endSeconds": 89.86349999999997
-      },
-      {
-        "word": "freeze",
-        "startSeconds": 89.86349999999997,
-        "endSeconds": 90.26349999999998
-      },
-      {
-        "word": "the",
-        "startSeconds": 90.26349999999998,
-        "endSeconds": 90.46349999999998
-      },
-      {
-        "word": "very",
-        "startSeconds": 90.46349999999998,
-        "endSeconds": 90.66349999999997
-      },
-      {
-        "word": "lending",
-        "startSeconds": 90.66349999999997,
-        "endSeconds": 91.06349999999998
-      },
-      {
-        "word": "that",
-        "startSeconds": 91.06349999999998,
-        "endSeconds": 91.36349999999997
-      },
-      {
-        "word": "keeps",
-        "startSeconds": 91.36349999999997,
-        "endSeconds": 91.46349999999998
-      },
-      {
-        "word": "your",
-        "startSeconds": 91.46349999999998,
-        "endSeconds": 91.56349999999998
-      },
-      {
-        "word": "expansion",
-        "startSeconds": 91.56349999999998,
-        "endSeconds": 91.96349999999998
-      },
-      {
-        "word": "alive",
-        "startSeconds": 91.96349999999998,
-        "endSeconds": 92.26349999999998
-      },
-      {
-        "word": "Kevin",
-        "startSeconds": 92.73374999999997,
-        "endSeconds": 93.03374999999997
-      },
-      {
-        "word": "Walsh",
-        "startSeconds": 93.03374999999997,
-        "endSeconds": 93.53374999999997
-      },
-      {
-        "word": "was",
-        "startSeconds": 93.53374999999997,
-        "endSeconds": 93.73374999999997
-      },
-      {
-        "word": "direct",
-        "startSeconds": 93.73374999999997,
-        "endSeconds": 93.93374999999997
-      },
-      {
-        "word": "the",
-        "startSeconds": 93.93374999999997,
-        "endSeconds": 94.43374999999997
-      },
-      {
-        "word": "fed's",
-        "startSeconds": 94.43374999999997,
-        "endSeconds": 94.93374999999997
-      },
-      {
-        "word": "balance",
-        "startSeconds": 94.93374999999997,
-        "endSeconds": 95.03374999999997
-      },
-      {
-        "word": "sheet",
-        "startSeconds": 95.03374999999997,
-        "endSeconds": 95.33374999999997
-      },
-      {
-        "word": "is",
-        "startSeconds": 95.33374999999997,
-        "endSeconds": 95.43374999999997
-      },
-      {
-        "word": "a",
-        "startSeconds": 95.43374999999997,
-        "endSeconds": 95.53374999999997
-      },
-      {
-        "word": "weapon",
-        "startSeconds": 95.53374999999997,
-        "endSeconds": 95.73374999999997
-      },
-      {
-        "word": "that",
-        "startSeconds": 95.73374999999997,
-        "endSeconds": 95.73374999999997
-      },
-      {
-        "word": "can",
-        "startSeconds": 95.73374999999997,
-        "endSeconds": 95.93374999999997
-      },
-      {
-        "word": "break",
-        "startSeconds": 95.93374999999997,
-        "endSeconds": 96.03374999999997
-      },
-      {
-        "word": "the",
-        "startSeconds": 96.03374999999997,
-        "endSeconds": 96.23374999999997
-      },
-      {
-        "word": "economy",
-        "startSeconds": 96.23374999999997,
-        "endSeconds": 96.63374999999998
-      },
-      {
-        "word": "it's",
-        "startSeconds": 96.63374999999998,
-        "endSeconds": 97.03374999999997
-      },
-      {
-        "word": "trying",
-        "startSeconds": 97.03374999999997,
-        "endSeconds": 97.13374999999998
-      },
-      {
-        "word": "to",
-        "startSeconds": 97.13374999999998,
-        "endSeconds": 97.13374999999998
-      },
-      {
-        "word": "save",
-        "startSeconds": 97.13374999999998,
-        "endSeconds": 97.43374999999997
-      },
-      {
-        "word": "so",
-        "startSeconds": 98.28399999999998,
-        "endSeconds": 98.58399999999997
-      },
-      {
-        "word": "what's",
-        "startSeconds": 98.58399999999997,
-        "endSeconds": 98.78399999999998
-      },
-      {
-        "word": "your",
-        "startSeconds": 98.78399999999998,
-        "endSeconds": 98.88399999999997
-      },
-      {
-        "word": "move",
-        "startSeconds": 98.88399999999997,
-        "endSeconds": 99.18399999999997
-      },
-      {
-        "word": "before",
-        "startSeconds": 99.18399999999997,
-        "endSeconds": 99.28399999999998
-      },
-      {
-        "word": "that",
-        "startSeconds": 99.28399999999998,
-        "endSeconds": 99.58399999999997
-      },
-      {
-        "word": "red",
-        "startSeconds": 99.58399999999997,
-        "endSeconds": 99.88399999999997
+        "word": "already",
+        "startSeconds": 2.8,
+        "endSeconds": 3
       },
       {
         "word": "circled",
-        "startSeconds": 99.88399999999997,
-        "endSeconds": 100.38399999999997
-      },
-      {
-        "word": "number",
-        "startSeconds": 100.38399999999997,
-        "endSeconds": 100.48399999999998
-      },
-      {
-        "word": "on",
-        "startSeconds": 100.48399999999998,
-        "endSeconds": 100.68399999999997
-      },
-      {
-        "word": "your",
-        "startSeconds": 100.68399999999997,
-        "endSeconds": 100.68399999999997
-      },
-      {
-        "word": "letter",
-        "startSeconds": 100.68399999999997,
-        "endSeconds": 100.98399999999998
-      },
-      {
-        "word": "climbs",
-        "startSeconds": 100.98399999999998,
-        "endSeconds": 101.58399999999997
-      },
-      {
-        "word": "even",
-        "startSeconds": 101.58399999999997,
-        "endSeconds": 101.78399999999998
-      },
-      {
-        "word": "higher",
-        "startSeconds": 101.78399999999998,
-        "endSeconds": 101.88399999999997
-      },
-      {
-        "word": "lock",
-        "startSeconds": 102.76624999999997,
-        "endSeconds": 103.36624999999998
+        "startSeconds": 3,
+        "endSeconds": 3.1
       },
       {
         "word": "in",
-        "startSeconds": 103.36624999999998,
-        "endSeconds": 103.66624999999998
+        "startSeconds": 3.1,
+        "endSeconds": 3.4
       },
       {
-        "word": "a",
-        "startSeconds": 103.66624999999998,
-        "endSeconds": 103.76624999999997
+        "word": "red",
+        "startSeconds": 3.4,
+        "endSeconds": 3.5
       },
       {
-        "word": "fixed",
-        "startSeconds": 103.76624999999997,
-        "endSeconds": 103.86624999999998
-      },
-      {
-        "word": "rate",
-        "startSeconds": 103.86624999999998,
-        "endSeconds": 104.06624999999998
+        "word": "your",
+        "startSeconds": 4.19825,
+        "endSeconds": 4.59825
       },
       {
         "word": "mortgage",
-        "startSeconds": 104.06624999999998,
-        "endSeconds": 104.36624999999998
-      },
-      {
-        "word": "now",
-        "startSeconds": 104.36624999999998,
-        "endSeconds": 104.56624999999998
-      },
-      {
-        "word": "every",
-        "startSeconds": 104.56624999999998,
-        "endSeconds": 105.16624999999998
-      },
-      {
-        "word": "quarter",
-        "startSeconds": 105.16624999999998,
-        "endSeconds": 105.46624999999997
-      },
-      {
-        "word": "you",
-        "startSeconds": 105.46624999999997,
-        "endSeconds": 105.56624999999998
-      },
-      {
-        "word": "wait",
-        "startSeconds": 105.56624999999998,
-        "endSeconds": 105.76624999999997
-      },
-      {
-        "word": "that",
-        "startSeconds": 105.76624999999997,
-        "endSeconds": 106.26624999999997
-      },
-      {
-        "word": "monthly",
-        "startSeconds": 106.26624999999997,
-        "endSeconds": 106.66624999999998
+        "startSeconds": 4.59825,
+        "endSeconds": 4.7982499999999995
       },
       {
         "word": "payment",
-        "startSeconds": 106.66624999999998,
-        "endSeconds": 106.86624999999998
+        "startSeconds": 4.7982499999999995,
+        "endSeconds": 4.99825
       },
       {
-        "word": "climbs",
-        "startSeconds": 106.86624999999998,
-        "endSeconds": 107.36624999999998
+        "word": "just",
+        "startSeconds": 4.99825,
+        "endSeconds": 5.19825
       },
       {
-        "word": "higher",
-        "startSeconds": 107.36624999999998,
-        "endSeconds": 107.56624999999998
+        "word": "jumped",
+        "startSeconds": 5.19825,
+        "endSeconds": 5.59825
       },
       {
-        "word": "or",
-        "startSeconds": 108.40849999999998,
-        "endSeconds": 108.90849999999998
+        "word": "$800",
+        "startSeconds": 5.59825,
+        "endSeconds": 6.39825
       },
       {
-        "word": "build",
-        "startSeconds": 108.90849999999998,
-        "endSeconds": 109.10849999999998
+        "word": "money",
+        "startSeconds": 6.39825,
+        "endSeconds": 7.19825
       },
       {
-        "word": "a",
-        "startSeconds": 109.10849999999998,
-        "endSeconds": 109.20849999999997
+        "word": "you",
+        "startSeconds": 7.19825,
+        "endSeconds": 7.39825
       },
       {
-        "word": "cash",
-        "startSeconds": 109.20849999999997,
-        "endSeconds": 109.30849999999997
+        "word": "don't",
+        "startSeconds": 7.39825,
+        "endSeconds": 7.49825
       },
       {
-        "word": "buffer",
-        "startSeconds": 109.30849999999997,
-        "endSeconds": 109.50849999999997
+        "word": "have",
+        "startSeconds": 7.49825,
+        "endSeconds": 7.59825
+      },
+      {
+        "word": "the",
+        "startSeconds": 8.3965,
+        "endSeconds": 8.6965
+      },
+      {
+        "word": "adjustable",
+        "startSeconds": 8.6965,
+        "endSeconds": 9.096499999999999
+      },
+      {
+        "word": "rate",
+        "startSeconds": 9.096499999999999,
+        "endSeconds": 9.3965
+      },
+      {
+        "word": "you",
+        "startSeconds": 9.3965,
+        "endSeconds": 9.6965
+      },
+      {
+        "word": "barely",
+        "startSeconds": 9.6965,
+        "endSeconds": 9.7965
+      },
+      {
+        "word": "understood",
+        "startSeconds": 9.7965,
+        "endSeconds": 10.1965
+      },
+      {
+        "word": "has",
+        "startSeconds": 10.1965,
+        "endSeconds": 10.4965
+      },
+      {
+        "word": "now",
+        "startSeconds": 10.4965,
+        "endSeconds": 10.596499999999999
+      },
+      {
+        "word": "reset",
+        "startSeconds": 10.596499999999999,
+        "endSeconds": 11.096499999999999
+      },
+      {
+        "word": "and",
+        "startSeconds": 11.096499999999999,
+        "endSeconds": 11.596499999999999
+      },
+      {
+        "word": "the",
+        "startSeconds": 11.596499999999999,
+        "endSeconds": 11.6965
+      },
+      {
+        "word": "math",
+        "startSeconds": 11.6965,
+        "endSeconds": 11.9965
+      },
+      {
+        "word": "is",
+        "startSeconds": 11.9965,
+        "endSeconds": 12.1965
+      },
+      {
+        "word": "merciless",
+        "startSeconds": 12.1965,
+        "endSeconds": 12.6965
+      },
+      {
+        "word": "what",
+        "startSeconds": 13.29875,
+        "endSeconds": 13.49875
+      },
+      {
+        "word": "chain",
+        "startSeconds": 13.49875,
+        "endSeconds": 13.79875
+      },
+      {
+        "word": "reaction",
+        "startSeconds": 13.79875,
+        "endSeconds": 14.19875
+      },
+      {
+        "word": "did",
+        "startSeconds": 14.19875,
+        "endSeconds": 14.49875
+      },
+      {
+        "word": "the",
+        "startSeconds": 14.49875,
+        "endSeconds": 14.59875
+      },
+      {
+        "word": "FED",
+        "startSeconds": 14.59875,
+        "endSeconds": 14.89875
+      },
+      {
+        "word": "set",
+        "startSeconds": 14.89875,
+        "endSeconds": 15.19875
+      },
+      {
+        "word": "off",
+        "startSeconds": 15.19875,
+        "endSeconds": 15.39875
       },
       {
         "word": "that",
-        "startSeconds": 109.50849999999997,
-        "endSeconds": 109.70849999999997
+        "startSeconds": 15.39875,
+        "endSeconds": 15.498750000000001
       },
       {
-        "word": "earns",
-        "startSeconds": 109.70849999999997,
-        "endSeconds": 109.90849999999998
+        "word": "ends",
+        "startSeconds": 15.498750000000001,
+        "endSeconds": 15.69875
       },
       {
-        "word": "more",
-        "startSeconds": 109.90849999999998,
-        "endSeconds": 110.10849999999998
+        "word": "with",
+        "startSeconds": 15.69875,
+        "endSeconds": 15.79875
       },
       {
-        "word": "as",
-        "startSeconds": 110.10849999999998,
-        "endSeconds": 110.40849999999998
+        "word": "this",
+        "startSeconds": 15.79875,
+        "endSeconds": 15.998750000000001
       },
       {
-        "word": "rates",
-        "startSeconds": 110.40849999999998,
-        "endSeconds": 110.60849999999998
+        "word": "letter",
+        "startSeconds": 15.998750000000001,
+        "endSeconds": 16.19875
       },
       {
-        "word": "rise",
-        "startSeconds": 110.60849999999998,
-        "endSeconds": 110.80849999999997
-      },
-      {
-        "word": "turning",
-        "startSeconds": 110.80849999999997,
-        "endSeconds": 111.40849999999998
-      },
-      {
-        "word": "the",
-        "startSeconds": 111.40849999999998,
-        "endSeconds": 111.60849999999998
-      },
-      {
-        "word": "feds",
-        "startSeconds": 111.60849999999998,
-        "endSeconds": 112.00849999999997
-      },
-      {
-        "word": "game",
-        "startSeconds": 112.00849999999997,
-        "endSeconds": 112.20849999999997
-      },
-      {
-        "word": "into",
-        "startSeconds": 112.20849999999997,
-        "endSeconds": 112.30849999999997
+        "word": "in",
+        "startSeconds": 16.19875,
+        "endSeconds": 16.39875
       },
       {
         "word": "your",
-        "startSeconds": 112.30849999999997,
-        "endSeconds": 112.60849999999998
+        "startSeconds": 16.39875,
+        "endSeconds": 16.49875
       },
       {
-        "word": "game",
-        "startSeconds": 112.60849999999998,
-        "endSeconds": 112.80849999999997
+        "word": "hand",
+        "startSeconds": 16.49875,
+        "endSeconds": 16.59875
       },
       {
-        "word": "1",
-        "startSeconds": 113.36674999999997,
-        "endSeconds": 113.76674999999997
+        "word": "it",
+        "startSeconds": 17.113,
+        "endSeconds": 17.613
       },
       {
-        "word": "side",
-        "startSeconds": 113.76674999999997,
-        "endSeconds": 114.06674999999997
+        "word": "starts",
+        "startSeconds": 17.613,
+        "endSeconds": 17.713
       },
       {
-        "word": "secures",
-        "startSeconds": 114.06674999999997,
-        "endSeconds": 114.26674999999997
+        "word": "in",
+        "startSeconds": 17.713,
+        "endSeconds": 17.913
       },
       {
-        "word": "your",
-        "startSeconds": 114.26674999999997,
-        "endSeconds": 114.36674999999997
+        "word": "a",
+        "startSeconds": 17.913,
+        "endSeconds": 18.113
       },
       {
-        "word": "biggest",
-        "startSeconds": 114.36674999999997,
-        "endSeconds": 114.46674999999996
+        "word": "Washington",
+        "startSeconds": 18.113,
+        "endSeconds": 18.213
       },
       {
-        "word": "expense",
-        "startSeconds": 114.46674999999996,
-        "endSeconds": 114.96674999999996
+        "word": "boardroom",
+        "startSeconds": 18.213,
+        "endSeconds": 18.713
+      },
+      {
+        "word": "where",
+        "startSeconds": 18.713,
+        "endSeconds": 19.012999999999998
       },
       {
         "word": "the",
-        "startSeconds": 114.96674999999996,
-        "endSeconds": 115.36674999999997
+        "startSeconds": 19.012999999999998,
+        "endSeconds": 19.113
+      },
+      {
+        "word": "FED",
+        "startSeconds": 19.113,
+        "endSeconds": 19.413
+      },
+      {
+        "word": "sets",
+        "startSeconds": 19.413,
+        "endSeconds": 19.713
+      },
+      {
+        "word": "the",
+        "startSeconds": 19.713,
+        "endSeconds": 19.813
+      },
+      {
+        "word": "federal",
+        "startSeconds": 19.813,
+        "endSeconds": 19.913
+      },
+      {
+        "word": "funds",
+        "startSeconds": 19.913,
+        "endSeconds": 20.313
+      },
+      {
+        "word": "rate",
+        "startSeconds": 20.313,
+        "endSeconds": 20.512999999999998
+      },
+      {
+        "word": "the",
+        "startSeconds": 20.512999999999998,
+        "endSeconds": 21.012999999999998
+      },
+      {
+        "word": "overnight",
+        "startSeconds": 21.012999999999998,
+        "endSeconds": 21.313
+      },
+      {
+        "word": "interest",
+        "startSeconds": 21.313,
+        "endSeconds": 21.613
+      },
+      {
+        "word": "Banks",
+        "startSeconds": 21.613,
+        "endSeconds": 22.012999999999998
+      },
+      {
+        "word": "charge",
+        "startSeconds": 22.012999999999998,
+        "endSeconds": 22.313
+      },
+      {
+        "word": "each",
+        "startSeconds": 22.313,
+        "endSeconds": 22.512999999999998
       },
       {
         "word": "other",
-        "startSeconds": 115.36674999999997,
-        "endSeconds": 115.56674999999997
+        "startSeconds": 22.512999999999998,
+        "endSeconds": 22.512999999999998
       },
       {
-        "word": "grows",
-        "startSeconds": 115.56674999999997,
-        "endSeconds": 115.96674999999996
+        "word": "to",
+        "startSeconds": 22.512999999999998,
+        "endSeconds": 22.713
+      },
+      {
+        "word": "borrow",
+        "startSeconds": 22.713,
+        "endSeconds": 22.913
+      },
+      {
+        "word": "Reserves",
+        "startSeconds": 22.913,
+        "endSeconds": 23.313
+      },
+      {
+        "word": "that",
+        "startSeconds": 23.99925,
+        "endSeconds": 24.49925
+      },
+      {
+        "word": "single",
+        "startSeconds": 24.49925,
+        "endSeconds": 24.59925
+      },
+      {
+        "word": "number",
+        "startSeconds": 24.59925,
+        "endSeconds": 24.79925
+      },
+      {
+        "word": "ripples",
+        "startSeconds": 24.79925,
+        "endSeconds": 25.39925
+      },
+      {
+        "word": "outward",
+        "startSeconds": 25.39925,
+        "endSeconds": 25.59925
+      },
+      {
+        "word": "Banks",
+        "startSeconds": 25.59925,
+        "endSeconds": 26.49925
+      },
+      {
+        "word": "adjust",
+        "startSeconds": 26.49925,
+        "endSeconds": 26.69925
+      },
+      {
+        "word": "their",
+        "startSeconds": 26.69925,
+        "endSeconds": 26.89925
+      },
+      {
+        "word": "prime",
+        "startSeconds": 26.89925,
+        "endSeconds": 27.19925
+      },
+      {
+        "word": "rate",
+        "startSeconds": 27.19925,
+        "endSeconds": 27.39925
+      },
+      {
+        "word": "and",
+        "startSeconds": 27.39925,
+        "endSeconds": 27.69925
       },
       {
         "word": "your",
-        "startSeconds": 115.96674999999996,
-        "endSeconds": 116.16674999999996
+        "startSeconds": 27.69925,
+        "endSeconds": 28.099249999999998
+      },
+      {
+        "word": "adjustable",
+        "startSeconds": 28.099249999999998,
+        "endSeconds": 28.29925
+      },
+      {
+        "word": "rate",
+        "startSeconds": 28.29925,
+        "endSeconds": 28.399250000000002
+      },
+      {
+        "word": "mortgages",
+        "startSeconds": 28.399250000000002,
+        "endSeconds": 28.899250000000002
+      },
+      {
+        "word": "APR",
+        "startSeconds": 28.899250000000002,
+        "endSeconds": 29.599249999999998
+      },
+      {
+        "word": "shifts",
+        "startSeconds": 29.599249999999998,
+        "endSeconds": 29.99925
+      },
+      {
+        "word": "and",
+        "startSeconds": 29.99925,
+        "endSeconds": 30.399250000000002
+      },
+      {
+        "word": "lock",
+        "startSeconds": 30.399250000000002,
+        "endSeconds": 30.49925
+      },
+      {
+        "word": "step",
+        "startSeconds": 30.49925,
+        "endSeconds": 30.69925
+      },
+      {
+        "word": "in",
+        "startSeconds": 31.113500000000002,
+        "endSeconds": 31.5135
+      },
+      {
+        "word": "2020",
+        "startSeconds": 31.5135,
+        "endSeconds": 32.0135
+      },
+      {
+        "word": "the",
+        "startSeconds": 32.0135,
+        "endSeconds": 32.3135
+      },
+      {
+        "word": "FED",
+        "startSeconds": 32.3135,
+        "endSeconds": 32.8135
+      },
+      {
+        "word": "earned",
+        "startSeconds": 32.8135,
+        "endSeconds": 33.0135
+      },
+      {
+        "word": "88.6",
+        "startSeconds": 33.0135,
+        "endSeconds": 34.0135
+      },
+      {
+        "word": "billion",
+        "startSeconds": 34.0135,
+        "endSeconds": 34.4135
+      },
+      {
+        "word": "and",
+        "startSeconds": 34.4135,
+        "endSeconds": 35.2135
+      },
+      {
+        "word": "sent",
+        "startSeconds": 35.2135,
+        "endSeconds": 35.3135
+      },
+      {
+        "word": "86.9",
+        "startSeconds": 35.3135,
+        "endSeconds": 36.2135
+      },
+      {
+        "word": "billion",
+        "startSeconds": 36.3135,
+        "endSeconds": 36.8135
+      },
+      {
+        "word": "to",
+        "startSeconds": 36.8135,
+        "endSeconds": 37.3135
+      },
+      {
+        "word": "the",
+        "startSeconds": 37.3135,
+        "endSeconds": 37.3135
+      },
+      {
+        "word": "treasury",
+        "startSeconds": 37.3135,
+        "endSeconds": 37.8135
+      },
+      {
+        "word": "it",
+        "startSeconds": 37.8135,
+        "endSeconds": 38.6135
+      },
+      {
+        "word": "profits",
+        "startSeconds": 38.6135,
+        "endSeconds": 39.0135
+      },
+      {
+        "word": "from",
+        "startSeconds": 39.0135,
+        "endSeconds": 39.213499999999996
+      },
+      {
+        "word": "the",
+        "startSeconds": 39.213499999999996,
+        "endSeconds": 39.213499999999996
+      },
+      {
+        "word": "very",
+        "startSeconds": 39.213499999999996,
+        "endSeconds": 39.5135
+      },
+      {
+        "word": "rated",
+        "startSeconds": 39.5135,
+        "endSeconds": 39.9135
+      },
+      {
+        "word": "controls",
+        "startSeconds": 39.9135,
+        "endSeconds": 40.313500000000005
+      },
+      {
+        "word": "but",
+        "startSeconds": 40.90775,
+        "endSeconds": 41.00775
+      },
+      {
+        "word": "if",
+        "startSeconds": 41.00775,
+        "endSeconds": 41.10775
+      },
+      {
+        "word": "the",
+        "startSeconds": 41.10775,
+        "endSeconds": 41.30775
+      },
+      {
+        "word": "FED",
+        "startSeconds": 41.30775,
+        "endSeconds": 41.50775
+      },
+      {
+        "word": "can",
+        "startSeconds": 41.50775,
+        "endSeconds": 41.80775
+      },
+      {
+        "word": "create",
+        "startSeconds": 41.80775,
+        "endSeconds": 41.80775
+      },
+      {
+        "word": "money",
+        "startSeconds": 41.80775,
+        "endSeconds": 42.00775
+      },
+      {
+        "word": "from",
+        "startSeconds": 42.00775,
+        "endSeconds": 42.20775
+      },
+      {
+        "word": "thin",
+        "startSeconds": 42.20775,
+        "endSeconds": 42.50775
+      },
+      {
+        "word": "air",
+        "startSeconds": 42.50775,
+        "endSeconds": 42.70775
+      },
+      {
+        "word": "why",
+        "startSeconds": 42.70775,
+        "endSeconds": 43.10775
+      },
+      {
+        "word": "does",
+        "startSeconds": 43.10775,
+        "endSeconds": 43.40775
+      },
+      {
+        "word": "it",
+        "startSeconds": 43.40775,
+        "endSeconds": 43.40775
+      },
+      {
+        "word": "have",
+        "startSeconds": 43.40775,
+        "endSeconds": 43.60775
+      },
+      {
+        "word": "to",
+        "startSeconds": 43.60775,
+        "endSeconds": 43.60775
+      },
+      {
+        "word": "squeeze",
+        "startSeconds": 43.60775,
+        "endSeconds": 44.00775
+      },
+      {
+        "word": "you",
+        "startSeconds": 44.00775,
+        "endSeconds": 44.20775
+      },
+      {
+        "word": "to",
+        "startSeconds": 44.20775,
+        "endSeconds": 44.30775
+      },
+      {
+        "word": "fix",
+        "startSeconds": 44.30775,
+        "endSeconds": 44.50775
+      },
+      {
+        "word": "inflation",
+        "startSeconds": 44.50775,
+        "endSeconds": 44.90775
+      },
+      {
+        "word": "they",
+        "startSeconds": 45.297999999999995,
+        "endSeconds": 45.397999999999996
+      },
+      {
+        "word": "pushed",
+        "startSeconds": 45.397999999999996,
+        "endSeconds": 45.69799999999999
+      },
+      {
+        "word": "the",
+        "startSeconds": 45.69799999999999,
+        "endSeconds": 45.797999999999995
+      },
+      {
+        "word": "federal",
+        "startSeconds": 45.797999999999995,
+        "endSeconds": 46.09799999999999
+      },
+      {
+        "word": "funds",
+        "startSeconds": 46.09799999999999,
+        "endSeconds": 46.498
+      },
+      {
+        "word": "rate",
+        "startSeconds": 46.498,
+        "endSeconds": 46.797999999999995
+      },
+      {
+        "word": "to",
+        "startSeconds": 46.797999999999995,
+        "endSeconds": 46.897999999999996
+      },
+      {
+        "word": "20%",
+        "startSeconds": 46.897999999999996,
+        "endSeconds": 47.297999999999995
+      },
+      {
+        "word": "a",
+        "startSeconds": 47.297999999999995,
+        "endSeconds": 48.397999999999996
+      },
+      {
+        "word": "sledgehammer",
+        "startSeconds": 48.397999999999996,
+        "endSeconds": 48.897999999999996
+      },
+      {
+        "word": "that",
+        "startSeconds": 48.897999999999996,
+        "endSeconds": 48.998
+      },
+      {
+        "word": "shattered",
+        "startSeconds": 48.998,
+        "endSeconds": 49.498
+      },
+      {
+        "word": "inflation",
+        "startSeconds": 49.498,
+        "endSeconds": 49.797999999999995
+      },
+      {
+        "word": "but",
+        "startSeconds": 49.797999999999995,
+        "endSeconds": 49.998
+      },
+      {
+        "word": "also",
+        "startSeconds": 49.998,
+        "endSeconds": 50.19799999999999
+      },
+      {
+        "word": "crushed",
+        "startSeconds": 50.19799999999999,
+        "endSeconds": 50.69799999999999
+      },
+      {
+        "word": "your",
+        "startSeconds": 50.69799999999999,
+        "endSeconds": 50.797999999999995
+      },
+      {
+        "word": "job",
+        "startSeconds": 50.797999999999995,
+        "endSeconds": 51.09799999999999
+      },
+      {
+        "word": "and",
+        "startSeconds": 51.09799999999999,
+        "endSeconds": 51.397999999999996
+      },
+      {
+        "word": "your",
+        "startSeconds": 51.397999999999996,
+        "endSeconds": 51.498
+      },
+      {
+        "word": "home's",
+        "startSeconds": 51.498,
+        "endSeconds": 51.69799999999999
+      },
+      {
+        "word": "value",
+        "startSeconds": 51.69799999999999,
+        "endSeconds": 51.998
+      },
+      {
+        "word": "manufacturing",
+        "startSeconds": 52.24824999999999,
+        "endSeconds": 52.84824999999999
+      },
+      {
+        "word": "shed",
+        "startSeconds": 52.84824999999999,
+        "endSeconds": 53.34824999999999
+      },
+      {
+        "word": "1.1",
+        "startSeconds": 53.34824999999999,
+        "endSeconds": 54.04824999999999
+      },
+      {
+        "word": "million",
+        "startSeconds": 54.14824999999999,
+        "endSeconds": 54.54824999999999
+      },
+      {
+        "word": "jobs",
+        "startSeconds": 54.54824999999999,
+        "endSeconds": 54.74824999999999
+      },
+      {
+        "word": "and",
+        "startSeconds": 54.74824999999999,
+        "endSeconds": 55.14824999999999
+      },
+      {
+        "word": "mortgage",
+        "startSeconds": 55.14824999999999,
+        "endSeconds": 55.54824999999999
+      },
+      {
+        "word": "rates",
+        "startSeconds": 55.54824999999999,
+        "endSeconds": 55.84824999999999
+      },
+      {
+        "word": "above",
+        "startSeconds": 55.84824999999999,
+        "endSeconds": 56.04824999999999
+      },
+      {
+        "word": "18%",
+        "startSeconds": 56.04824999999999,
+        "endSeconds": 56.64824999999999
+      },
+      {
+        "word": "froze",
+        "startSeconds": 56.64824999999999,
+        "endSeconds": 57.54824999999999
+      },
+      {
+        "word": "the",
+        "startSeconds": 57.54824999999999,
+        "endSeconds": 57.64824999999999
+      },
+      {
+        "word": "housing",
+        "startSeconds": 57.64824999999999,
+        "endSeconds": 57.84824999999999
+      },
+      {
+        "word": "market",
+        "startSeconds": 57.84824999999999,
+        "endSeconds": 58.04824999999999
+      },
+      {
+        "word": "solid",
+        "startSeconds": 58.04824999999999,
+        "endSeconds": 58.54824999999999
+      },
+      {
+        "word": "Mr",
+        "startSeconds": 59.00649999999999,
+        "endSeconds": 59.20649999999999
+      },
+      {
+        "word": "vulkar",
+        "startSeconds": 59.20649999999999,
+        "endSeconds": 59.90649999999999
+      },
+      {
+        "word": "orchestrated",
+        "startSeconds": 59.90649999999999,
+        "endSeconds": 60.20649999999999
+      },
+      {
+        "word": "a",
+        "startSeconds": 60.20649999999999,
+        "endSeconds": 60.50649999999999
+      },
+      {
+        "word": "series",
+        "startSeconds": 60.50649999999999,
+        "endSeconds": 60.60649999999999
+      },
+      {
+        "word": "of",
+        "startSeconds": 60.60649999999999,
+        "endSeconds": 60.70649999999999
+      },
+      {
+        "word": "interest",
+        "startSeconds": 60.70649999999999,
+        "endSeconds": 61.00649999999999
+      },
+      {
+        "word": "rate",
+        "startSeconds": 61.00649999999999,
+        "endSeconds": 61.306499999999986
+      },
+      {
+        "word": "increases",
+        "startSeconds": 61.306499999999986,
+        "endSeconds": 61.70649999999999
+      },
+      {
+        "word": "that",
+        "startSeconds": 61.70649999999999,
+        "endSeconds": 62.20649999999999
+      },
+      {
+        "word": "took",
+        "startSeconds": 62.20649999999999,
+        "endSeconds": 62.40649999999999
+      },
+      {
+        "word": "the",
+        "startSeconds": 62.40649999999999,
+        "endSeconds": 62.50649999999999
+      },
+      {
+        "word": "federal",
+        "startSeconds": 62.50649999999999,
+        "endSeconds": 62.70649999999999
+      },
+      {
+        "word": "funds",
+        "startSeconds": 62.70649999999999,
+        "endSeconds": 63.10649999999999
+      },
+      {
+        "word": "Target",
+        "startSeconds": 63.10649999999999,
+        "endSeconds": 63.40649999999999
+      },
+      {
+        "word": "from",
+        "startSeconds": 63.40649999999999,
+        "endSeconds": 63.50649999999999
+      },
+      {
+        "word": "around",
+        "startSeconds": 63.50649999999999,
+        "endSeconds": 63.70649999999999
+      },
+      {
+        "word": "10%",
+        "startSeconds": 63.70649999999999,
+        "endSeconds": 64.20649999999999
+      },
+      {
+        "word": "to",
+        "startSeconds": 64.20649999999999,
+        "endSeconds": 64.80649999999999
+      },
+      {
+        "word": "near",
+        "startSeconds": 64.80649999999999,
+        "endSeconds": 65.00649999999999
+      },
+      {
+        "word": "20%",
+        "startSeconds": 65.00649999999999,
+        "endSeconds": 65.30649999999999
+      },
+      {
+        "word": "they",
+        "startSeconds": 66.02074999999998,
+        "endSeconds": 66.12074999999997
+      },
+      {
+        "word": "were",
+        "startSeconds": 66.12074999999997,
+        "endSeconds": 66.22074999999998
+      },
+      {
+        "word": "willing",
+        "startSeconds": 66.22074999999998,
+        "endSeconds": 66.52074999999998
+      },
+      {
+        "word": "to",
+        "startSeconds": 66.52074999999998,
+        "endSeconds": 66.52074999999998
+      },
+      {
+        "word": "crash",
+        "startSeconds": 66.52074999999998,
+        "endSeconds": 67.02074999999998
+      },
+      {
+        "word": "entire",
+        "startSeconds": 67.02074999999998,
+        "endSeconds": 67.62074999999997
+      },
+      {
+        "word": "Industries",
+        "startSeconds": 67.62074999999997,
+        "endSeconds": 68.02074999999998
+      },
+      {
+        "word": "and",
+        "startSeconds": 68.02074999999998,
+        "endSeconds": 68.52074999999998
+      },
+      {
+        "word": "cost",
+        "startSeconds": 68.52074999999998,
+        "endSeconds": 68.92074999999998
+      },
+      {
+        "word": "you",
+        "startSeconds": 68.92074999999998,
+        "endSeconds": 69.12074999999997
+      },
+      {
+        "word": "your",
+        "startSeconds": 69.12074999999997,
+        "endSeconds": 69.22074999999998
+      },
+      {
+        "word": "livelihood",
+        "startSeconds": 69.22074999999998,
+        "endSeconds": 69.62074999999997
+      },
+      {
+        "word": "could",
+        "startSeconds": 69.62074999999997,
+        "endSeconds": 70.52074999999998
+      },
+      {
+        "word": "today's",
+        "startSeconds": 70.52074999999998,
+        "endSeconds": 70.92074999999998
+      },
+      {
+        "word": "fed",
+        "startSeconds": 70.92074999999998,
+        "endSeconds": 71.32074999999998
+      },
+      {
+        "word": "go",
+        "startSeconds": 71.32074999999998,
+        "endSeconds": 71.52074999999998
+      },
+      {
+        "word": "that",
+        "startSeconds": 71.52074999999998,
+        "endSeconds": 71.62074999999997
+      },
+      {
+        "word": "far",
+        "startSeconds": 71.62074999999997,
+        "endSeconds": 71.82074999999998
+      },
+      {
+        "word": "again",
+        "startSeconds": 71.82074999999998,
+        "endSeconds": 72.12074999999997
+      },
+      {
+        "word": "it",
+        "startSeconds": 72.52299999999998,
+        "endSeconds": 73.12299999999998
+      },
+      {
+        "word": "ballooned",
+        "startSeconds": 73.12299999999998,
+        "endSeconds": 73.42299999999999
+      },
+      {
+        "word": "to",
+        "startSeconds": 73.42299999999999,
+        "endSeconds": 73.52299999999998
+      },
+      {
+        "word": "9",
+        "startSeconds": 73.52299999999998,
+        "endSeconds": 73.72299999999998
+      },
+      {
+        "word": "trillion",
+        "startSeconds": 73.72299999999998,
+        "endSeconds": 74.12299999999998
+      },
+      {
+        "word": "dollars",
+        "startSeconds": 74.12299999999998,
+        "endSeconds": 74.32299999999998
+      },
+      {
+        "word": "pumping",
+        "startSeconds": 74.32299999999998,
+        "endSeconds": 74.92299999999999
+      },
+      {
+        "word": "so",
+        "startSeconds": 74.92299999999999,
+        "endSeconds": 75.12299999999998
+      },
+      {
+        "word": "much",
+        "startSeconds": 75.12299999999998,
+        "endSeconds": 75.22299999999998
+      },
+      {
+        "word": "money",
+        "startSeconds": 75.22299999999998,
+        "endSeconds": 75.42299999999999
+      },
+      {
+        "word": "into",
+        "startSeconds": 75.42299999999999,
+        "endSeconds": 75.72299999999998
+      },
+      {
+        "word": "the",
+        "startSeconds": 75.72299999999998,
+        "endSeconds": 75.72299999999998
+      },
+      {
+        "word": "system",
+        "startSeconds": 75.72299999999998,
+        "endSeconds": 75.92299999999999
+      },
+      {
+        "word": "that",
+        "startSeconds": 75.92299999999999,
+        "endSeconds": 76.52299999999998
+      },
+      {
+        "word": "your",
+        "startSeconds": 76.52299999999998,
+        "endSeconds": 76.82299999999998
+      },
+      {
+        "word": "mortgage",
+        "startSeconds": 76.82299999999998,
+        "endSeconds": 77.02299999999998
+      },
+      {
+        "word": "rate",
+        "startSeconds": 77.02299999999998,
+        "endSeconds": 77.32299999999998
+      },
+      {
+        "word": "stayed",
+        "startSeconds": 77.32299999999998,
+        "endSeconds": 77.62299999999998
+      },
+      {
+        "word": "low",
+        "startSeconds": 77.62299999999998,
+        "endSeconds": 77.72299999999998
+      },
+      {
+        "word": "and",
+        "startSeconds": 77.72299999999998,
+        "endSeconds": 78.12299999999998
+      },
+      {
+        "word": "your",
+        "startSeconds": 78.12299999999998,
+        "endSeconds": 78.42299999999999
+      },
+      {
+        "word": "401k",
+        "startSeconds": 78.42299999999999,
+        "endSeconds": 79.12299999999998
+      },
+      {
+        "word": "looked",
+        "startSeconds": 79.12299999999998,
+        "endSeconds": 79.32299999999998
+      },
+      {
+        "word": "invincible",
+        "startSeconds": 79.32299999999998,
+        "endSeconds": 79.72299999999998
+      },
+      {
+        "word": "now",
+        "startSeconds": 80.43324999999997,
+        "endSeconds": 80.63324999999998
+      },
+      {
+        "word": "it's",
+        "startSeconds": 80.63324999999998,
+        "endSeconds": 81.13324999999998
+      },
+      {
+        "word": "shrinking",
+        "startSeconds": 81.13324999999998,
+        "endSeconds": 81.23324999999997
+      },
+      {
+        "word": "down",
+        "startSeconds": 81.23324999999997,
+        "endSeconds": 81.93324999999997
+      },
+      {
+        "word": "to",
+        "startSeconds": 81.93324999999997,
+        "endSeconds": 82.03324999999997
+      },
+      {
+        "word": "7",
+        "startSeconds": 82.03324999999997,
+        "endSeconds": 82.43324999999997
+      },
+      {
+        "word": "trillion",
+        "startSeconds": 82.53324999999997,
+        "endSeconds": 83.03324999999997
+      },
+      {
+        "word": "and",
+        "startSeconds": 83.03324999999997,
+        "endSeconds": 83.73324999999997
+      },
+      {
+        "word": "that",
+        "startSeconds": 83.73324999999997,
+        "endSeconds": 84.03324999999997
+      },
+      {
+        "word": "tightening",
+        "startSeconds": 84.03324999999997,
+        "endSeconds": 84.23324999999997
+      },
+      {
+        "word": "is",
+        "startSeconds": 84.23324999999997,
+        "endSeconds": 84.43324999999997
+      },
+      {
+        "word": "cracking",
+        "startSeconds": 84.43324999999997,
+        "endSeconds": 84.63324999999998
+      },
+      {
+        "word": "the",
+        "startSeconds": 84.63324999999998,
+        "endSeconds": 84.73324999999997
+      },
+      {
+        "word": "credit",
+        "startSeconds": 84.73324999999997,
+        "endSeconds": 85.03324999999997
+      },
+      {
+        "word": "Market",
+        "startSeconds": 85.03324999999997,
+        "endSeconds": 85.23324999999997
+      },
+      {
+        "word": "wall",
+        "startSeconds": 85.23324999999997,
+        "endSeconds": 85.63324999999998
+      },
+      {
+        "word": "right",
+        "startSeconds": 85.63324999999998,
+        "endSeconds": 85.83324999999998
+      },
+      {
+        "word": "behind",
+        "startSeconds": 85.83324999999998,
+        "endSeconds": 85.93324999999997
+      },
+      {
+        "word": "your",
+        "startSeconds": 85.93324999999997,
+        "endSeconds": 86.23324999999997
+      },
+      {
+        "word": "small",
+        "startSeconds": 86.23324999999997,
+        "endSeconds": 86.33324999999998
+      },
+      {
+        "word": "business",
+        "startSeconds": 86.33324999999998,
+        "endSeconds": 86.53324999999997
+      },
+      {
+        "word": "loan",
+        "startSeconds": 86.53324999999997,
+        "endSeconds": 86.93324999999997
+      },
+      {
+        "word": "the",
+        "startSeconds": 87.31949999999996,
+        "endSeconds": 87.41949999999996
+      },
+      {
+        "word": "FED",
+        "startSeconds": 87.41949999999996,
+        "endSeconds": 87.81949999999996
+      },
+      {
+        "word": "saved",
+        "startSeconds": 87.81949999999996,
+        "endSeconds": 88.21949999999997
+      },
+      {
+        "word": "you",
+        "startSeconds": 88.21949999999997,
+        "endSeconds": 88.31949999999996
+      },
+      {
+        "word": "once",
+        "startSeconds": 88.31949999999996,
+        "endSeconds": 88.61949999999996
+      },
+      {
+        "word": "but",
+        "startSeconds": 88.61949999999996,
+        "endSeconds": 88.91949999999996
+      },
+      {
+        "word": "its",
+        "startSeconds": 88.91949999999996,
+        "endSeconds": 89.51949999999997
+      },
+      {
+        "word": "cure",
+        "startSeconds": 89.51949999999997,
+        "endSeconds": 89.51949999999997
+      },
+      {
+        "word": "now",
+        "startSeconds": 89.51949999999997,
+        "endSeconds": 89.81949999999996
+      },
+      {
+        "word": "threatens",
+        "startSeconds": 89.81949999999996,
+        "endSeconds": 90.01949999999997
+      },
+      {
+        "word": "to",
+        "startSeconds": 90.01949999999997,
+        "endSeconds": 90.11949999999996
+      },
+      {
+        "word": "freeze",
+        "startSeconds": 90.11949999999996,
+        "endSeconds": 90.61949999999996
+      },
+      {
+        "word": "the",
+        "startSeconds": 90.61949999999996,
+        "endSeconds": 90.61949999999996
+      },
+      {
+        "word": "very",
+        "startSeconds": 90.61949999999996,
+        "endSeconds": 90.81949999999996
+      },
+      {
+        "word": "lending",
+        "startSeconds": 90.81949999999996,
+        "endSeconds": 91.11949999999996
+      },
+      {
+        "word": "that",
+        "startSeconds": 91.11949999999996,
+        "endSeconds": 91.31949999999996
+      },
+      {
+        "word": "keeps",
+        "startSeconds": 91.31949999999996,
+        "endSeconds": 91.51949999999997
+      },
+      {
+        "word": "your",
+        "startSeconds": 91.51949999999997,
+        "endSeconds": 91.71949999999997
+      },
+      {
+        "word": "expansion",
+        "startSeconds": 91.71949999999997,
+        "endSeconds": 92.11949999999996
+      },
+      {
+        "word": "alive",
+        "startSeconds": 92.11949999999996,
+        "endSeconds": 92.41949999999996
+      },
+      {
+        "word": "Kevin",
+        "startSeconds": 93.16174999999996,
+        "endSeconds": 93.46174999999995
+      },
+      {
+        "word": "Walsh",
+        "startSeconds": 93.46174999999995,
+        "endSeconds": 93.96174999999995
+      },
+      {
+        "word": "was",
+        "startSeconds": 93.96174999999995,
+        "endSeconds": 94.06174999999996
+      },
+      {
+        "word": "direct",
+        "startSeconds": 94.06174999999996,
+        "endSeconds": 94.36174999999996
+      },
+      {
+        "word": "the",
+        "startSeconds": 94.36174999999996,
+        "endSeconds": 94.96174999999995
+      },
+      {
+        "word": "fed's",
+        "startSeconds": 94.96174999999995,
+        "endSeconds": 95.36174999999996
+      },
+      {
+        "word": "balance",
+        "startSeconds": 95.36174999999996,
+        "endSeconds": 95.56174999999996
+      },
+      {
+        "word": "sheet",
+        "startSeconds": 95.56174999999996,
+        "endSeconds": 95.76174999999996
+      },
+      {
+        "word": "is",
+        "startSeconds": 95.76174999999996,
+        "endSeconds": 95.86174999999996
+      },
+      {
+        "word": "a",
+        "startSeconds": 95.86174999999996,
+        "endSeconds": 96.06174999999996
+      },
+      {
+        "word": "weapon",
+        "startSeconds": 96.06174999999996,
+        "endSeconds": 96.26174999999996
+      },
+      {
+        "word": "that",
+        "startSeconds": 96.26174999999996,
+        "endSeconds": 96.76174999999996
+      },
+      {
+        "word": "can",
+        "startSeconds": 96.76174999999996,
+        "endSeconds": 96.96174999999995
+      },
+      {
+        "word": "break",
+        "startSeconds": 96.96174999999995,
+        "endSeconds": 97.06174999999996
+      },
+      {
+        "word": "the",
+        "startSeconds": 97.06174999999996,
+        "endSeconds": 97.26174999999996
+      },
+      {
+        "word": "economy",
+        "startSeconds": 97.26174999999996,
+        "endSeconds": 97.66174999999996
+      },
+      {
+        "word": "it's",
+        "startSeconds": 97.66174999999996,
+        "endSeconds": 98.06174999999996
+      },
+      {
+        "word": "trying",
+        "startSeconds": 98.06174999999996,
+        "endSeconds": 98.16174999999996
+      },
+      {
+        "word": "to",
+        "startSeconds": 98.16174999999996,
+        "endSeconds": 98.26174999999996
+      },
+      {
+        "word": "save",
+        "startSeconds": 98.26174999999996,
+        "endSeconds": 98.46174999999995
+      },
+      {
+        "word": "so",
+        "startSeconds": 99.43599999999996,
+        "endSeconds": 99.73599999999996
+      },
+      {
+        "word": "what's",
+        "startSeconds": 99.73599999999996,
+        "endSeconds": 99.93599999999996
+      },
+      {
+        "word": "your",
+        "startSeconds": 99.93599999999996,
+        "endSeconds": 100.03599999999996
+      },
+      {
+        "word": "move",
+        "startSeconds": 100.03599999999996,
+        "endSeconds": 100.33599999999996
+      },
+      {
+        "word": "before",
+        "startSeconds": 100.33599999999996,
+        "endSeconds": 100.53599999999996
+      },
+      {
+        "word": "that",
+        "startSeconds": 100.53599999999996,
+        "endSeconds": 100.83599999999996
+      },
+      {
+        "word": "red",
+        "startSeconds": 100.83599999999996,
+        "endSeconds": 101.03599999999996
+      },
+      {
+        "word": "circled",
+        "startSeconds": 101.03599999999996,
+        "endSeconds": 101.53599999999996
+      },
+      {
+        "word": "number",
+        "startSeconds": 101.53599999999996,
+        "endSeconds": 101.73599999999996
+      },
+      {
+        "word": "on",
+        "startSeconds": 101.73599999999996,
+        "endSeconds": 101.83599999999996
+      },
+      {
+        "word": "your",
+        "startSeconds": 101.83599999999996,
+        "endSeconds": 101.83599999999996
+      },
+      {
+        "word": "letter",
+        "startSeconds": 101.83599999999996,
+        "endSeconds": 102.03599999999996
+      },
+      {
+        "word": "climbs",
+        "startSeconds": 102.03599999999996,
+        "endSeconds": 102.53599999999996
+      },
+      {
+        "word": "even",
+        "startSeconds": 102.53599999999996,
+        "endSeconds": 102.73599999999996
+      },
+      {
+        "word": "higher",
+        "startSeconds": 102.73599999999996,
+        "endSeconds": 102.93599999999996
+      },
+      {
+        "word": "lock",
+        "startSeconds": 103.49824999999996,
+        "endSeconds": 103.89824999999996
+      },
+      {
+        "word": "in",
+        "startSeconds": 103.89824999999996,
+        "endSeconds": 104.09824999999995
+      },
+      {
+        "word": "a",
+        "startSeconds": 104.09824999999995,
+        "endSeconds": 104.19824999999996
+      },
+      {
+        "word": "fixed",
+        "startSeconds": 104.19824999999996,
+        "endSeconds": 104.19824999999996
+      },
+      {
+        "word": "rate",
+        "startSeconds": 104.19824999999996,
+        "endSeconds": 104.39824999999996
+      },
+      {
+        "word": "mortgage",
+        "startSeconds": 104.39824999999996,
+        "endSeconds": 104.59824999999995
+      },
+      {
+        "word": "now",
+        "startSeconds": 104.59824999999995,
+        "endSeconds": 104.79824999999995
+      },
+      {
+        "word": "every",
+        "startSeconds": 104.79824999999995,
+        "endSeconds": 105.49824999999996
+      },
+      {
+        "word": "quarter",
+        "startSeconds": 105.49824999999996,
+        "endSeconds": 105.79824999999995
+      },
+      {
+        "word": "you",
+        "startSeconds": 105.79824999999995,
+        "endSeconds": 105.99824999999996
+      },
+      {
+        "word": "wait",
+        "startSeconds": 105.99824999999996,
+        "endSeconds": 106.19824999999996
+      },
+      {
+        "word": "that",
+        "startSeconds": 106.19824999999996,
+        "endSeconds": 106.59824999999995
+      },
+      {
+        "word": "monthly",
+        "startSeconds": 106.59824999999995,
+        "endSeconds": 106.89824999999996
+      },
+      {
+        "word": "payment",
+        "startSeconds": 106.89824999999996,
+        "endSeconds": 107.19824999999996
+      },
+      {
+        "word": "climbs",
+        "startSeconds": 107.19824999999996,
+        "endSeconds": 107.69824999999996
+      },
+      {
+        "word": "higher",
+        "startSeconds": 107.69824999999996,
+        "endSeconds": 107.89824999999996
+      },
+      {
+        "word": "or",
+        "startSeconds": 108.65649999999995,
+        "endSeconds": 109.05649999999996
+      },
+      {
+        "word": "build",
+        "startSeconds": 109.05649999999996,
+        "endSeconds": 109.35649999999995
+      },
+      {
+        "word": "a",
+        "startSeconds": 109.35649999999995,
+        "endSeconds": 109.45649999999995
+      },
+      {
+        "word": "cash",
+        "startSeconds": 109.45649999999995,
+        "endSeconds": 109.55649999999996
+      },
+      {
+        "word": "buffer",
+        "startSeconds": 109.55649999999996,
+        "endSeconds": 109.75649999999995
+      },
+      {
+        "word": "that",
+        "startSeconds": 109.75649999999995,
+        "endSeconds": 109.95649999999995
+      },
+      {
+        "word": "earns",
+        "startSeconds": 109.95649999999995,
+        "endSeconds": 110.25649999999995
+      },
+      {
+        "word": "more",
+        "startSeconds": 110.25649999999995,
+        "endSeconds": 110.45649999999995
+      },
+      {
+        "word": "as",
+        "startSeconds": 110.45649999999995,
+        "endSeconds": 110.65649999999995
+      },
+      {
+        "word": "rates",
+        "startSeconds": 110.65649999999995,
+        "endSeconds": 110.95649999999995
+      },
+      {
+        "word": "rise",
+        "startSeconds": 110.95649999999995,
+        "endSeconds": 111.45649999999995
+      },
+      {
+        "word": "turning",
+        "startSeconds": 111.45649999999995,
+        "endSeconds": 111.95649999999995
+      },
+      {
+        "word": "the",
+        "startSeconds": 111.95649999999995,
+        "endSeconds": 112.05649999999996
+      },
+      {
+        "word": "feds",
+        "startSeconds": 112.05649999999996,
+        "endSeconds": 112.45649999999995
+      },
+      {
+        "word": "game",
+        "startSeconds": 112.45649999999995,
+        "endSeconds": 112.55649999999996
+      },
+      {
+        "word": "into",
+        "startSeconds": 112.55649999999996,
+        "endSeconds": 112.65649999999995
+      },
+      {
+        "word": "your",
+        "startSeconds": 112.65649999999995,
+        "endSeconds": 112.75649999999995
+      },
+      {
+        "word": "game",
+        "startSeconds": 112.75649999999995,
+        "endSeconds": 113.25649999999995
+      },
+      {
+        "word": "1",
+        "startSeconds": 113.55874999999995,
+        "endSeconds": 113.95874999999995
+      },
+      {
+        "word": "side",
+        "startSeconds": 113.95874999999995,
+        "endSeconds": 114.25874999999995
+      },
+      {
+        "word": "secures",
+        "startSeconds": 114.25874999999995,
+        "endSeconds": 114.45874999999995
+      },
+      {
+        "word": "your",
+        "startSeconds": 114.45874999999995,
+        "endSeconds": 114.55874999999995
+      },
+      {
+        "word": "biggest",
+        "startSeconds": 114.55874999999995,
+        "endSeconds": 114.65874999999994
+      },
+      {
+        "word": "expense",
+        "startSeconds": 114.65874999999994,
+        "endSeconds": 115.15874999999994
+      },
+      {
+        "word": "the",
+        "startSeconds": 115.15874999999994,
+        "endSeconds": 115.55874999999995
+      },
+      {
+        "word": "other",
+        "startSeconds": 115.55874999999995,
+        "endSeconds": 115.75874999999995
+      },
+      {
+        "word": "grows",
+        "startSeconds": 115.75874999999995,
+        "endSeconds": 116.15874999999994
+      },
+      {
+        "word": "your",
+        "startSeconds": 116.15874999999994,
+        "endSeconds": 116.35874999999994
       },
       {
         "word": "safety",
-        "startSeconds": 116.16674999999996,
-        "endSeconds": 116.36674999999997
+        "startSeconds": 116.35874999999994,
+        "endSeconds": 116.55874999999995
       },
       {
         "word": "net",
-        "startSeconds": 116.36674999999997,
-        "endSeconds": 116.46674999999996
+        "startSeconds": 116.55874999999995,
+        "endSeconds": 116.65874999999994
       },
       {
         "word": "both",
-        "startSeconds": 116.46674999999996,
-        "endSeconds": 116.86674999999997
+        "startSeconds": 116.65874999999994,
+        "endSeconds": 117.05874999999995
       },
       {
         "word": "be",
-        "startSeconds": 116.86674999999997,
-        "endSeconds": 117.16674999999996
+        "startSeconds": 117.05874999999995,
+        "endSeconds": 117.35874999999994
       },
       {
         "word": "waiting",
-        "startSeconds": 117.16674999999996,
-        "endSeconds": 117.36674999999997
+        "startSeconds": 117.35874999999994,
+        "endSeconds": 117.55874999999995
       }
     ],
     "sentences": [
@@ -1844,9 +1844,9 @@ export const docuScripts: DocuScript[] = [
         "sentenceIndex": 0,
         "text": "You tear open the envelope and the number is already circled in red.",
         "startSeconds": 0,
-        "endSeconds": 3.00225,
+        "endSeconds": 3.89825,
         "startFrame": 0,
-        "endFrame": 91,
+        "endFrame": 117,
         "clipIndex": 0,
         "tokenWordIndexes": [
           0,
@@ -1860,22 +1860,22 @@ export const docuScripts: DocuScript[] = [
           8,
           9,
           10,
-          11
+          11,
+          12
         ],
         "emphasisWordIndexes": [
-          9
+          10
         ]
       },
       {
         "sentenceIndex": 1,
         "text": "Your mortgage payment just jumped $800 — money you don't have.",
-        "startSeconds": 3.30225,
-        "endSeconds": 7.2005,
-        "startFrame": 99,
-        "endFrame": 217,
+        "startSeconds": 4.19825,
+        "endSeconds": 8.096499999999999,
+        "startFrame": 125,
+        "endFrame": 243,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          12,
           13,
           14,
           15,
@@ -1884,7 +1884,8 @@ export const docuScripts: DocuScript[] = [
           18,
           19,
           20,
-          21
+          21,
+          22
         ],
         "emphasisWordIndexes": [
           4,
@@ -1894,13 +1895,12 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 2,
         "text": "The adjustable rate you barely understood has now reset, and the math is merciless.",
-        "startSeconds": 7.5005,
-        "endSeconds": 11.97475,
-        "startFrame": 225,
-        "endFrame": 360,
+        "startSeconds": 8.3965,
+        "endSeconds": 12.99875,
+        "startFrame": 251,
+        "endFrame": 390,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          22,
           23,
           24,
           25,
@@ -1913,7 +1913,8 @@ export const docuScripts: DocuScript[] = [
           32,
           33,
           34,
-          35
+          35,
+          36
         ],
         "emphasisWordIndexes": [
           8,
@@ -1923,13 +1924,12 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 3,
         "text": "What chain reaction did the Fed set off that ends with this letter in your hand?",
-        "startSeconds": 12.274750000000001,
-        "endSeconds": 15.789000000000001,
-        "startFrame": 368,
-        "endFrame": 474,
+        "startSeconds": 13.29875,
+        "endSeconds": 16.813,
+        "startFrame": 398,
+        "endFrame": 505,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          36,
           37,
           38,
           39,
@@ -1944,7 +1944,8 @@ export const docuScripts: DocuScript[] = [
           48,
           49,
           50,
-          51
+          51,
+          52
         ],
         "emphasisWordIndexes": [
           5,
@@ -1954,13 +1955,12 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 4,
         "text": "It starts in a Washington boardroom where the Fed sets the federal funds rate — the overnight interest banks charge each other to borrow reserves.",
-        "startSeconds": 16.089000000000002,
-        "endSeconds": 22.35525,
-        "startFrame": 482,
-        "endFrame": 671,
+        "startSeconds": 17.113,
+        "endSeconds": 23.69925,
+        "startFrame": 513,
+        "endFrame": 711,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          52,
           53,
           54,
           55,
@@ -1983,7 +1983,8 @@ export const docuScripts: DocuScript[] = [
           72,
           73,
           74,
-          75
+          75,
+          76
         ],
         "emphasisWordIndexes": [
           0,
@@ -1994,13 +1995,12 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 5,
         "text": "That single number ripples outward: banks adjust their prime rate, and your adjustable-rate mortgage's APR shifts in lockstep.",
-        "startSeconds": 22.655250000000002,
-        "endSeconds": 30.073500000000003,
-        "startFrame": 679,
-        "endFrame": 903,
+        "startSeconds": 23.99925,
+        "endSeconds": 30.7135,
+        "startFrame": 719,
+        "endFrame": 922,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          76,
           77,
           78,
           79,
@@ -2019,7 +2019,8 @@ export const docuScripts: DocuScript[] = [
           92,
           93,
           94,
-          95
+          95,
+          96
         ],
         "emphasisWordIndexes": [
           15
@@ -2028,13 +2029,12 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 6,
         "text": "In 2020, the Fed earned $88.6 billion and sent $86.9 billion to the Treasury — it profits from the very rate it controls.",
-        "startSeconds": 30.373500000000003,
-        "endSeconds": 40.41575,
-        "startFrame": 911,
-        "endFrame": 1213,
+        "startSeconds": 31.0135,
+        "endSeconds": 40.60775,
+        "startFrame": 930,
+        "endFrame": 1219,
         "clipIndex": 0,
         "tokenWordIndexes": [
-          96,
           97,
           98,
           99,
@@ -2064,10 +2064,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 7,
         "text": "But if the Fed can create money from thin air, why does it have to squeeze you to fix inflation?",
-        "startSeconds": 40.71575,
-        "endSeconds": 44.806,
-        "startFrame": 1221,
-        "endFrame": 1345,
+        "startSeconds": 40.90775,
+        "endSeconds": 44.998,
+        "startFrame": 1227,
+        "endFrame": 1350,
         "clipIndex": 0,
         "tokenWordIndexes": [
           118,
@@ -2100,10 +2100,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 8,
         "text": "They pushed the federal funds rate to 20%—a sledgehammer that shattered inflation but also crushed your job and your home's value.",
-        "startSeconds": 45.105999999999995,
-        "endSeconds": 51.052249999999994,
-        "startFrame": 1353,
-        "endFrame": 1532,
+        "startSeconds": 45.297999999999995,
+        "endSeconds": 51.948249999999994,
+        "startFrame": 1358,
+        "endFrame": 1559,
         "clipIndex": 0,
         "tokenWordIndexes": [
           138,
@@ -2137,10 +2137,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 9,
         "text": "Manufacturing shed 1.1 million jobs, and mortgage rates above 18% froze the housing market solid.",
-        "startSeconds": 51.35224999999999,
-        "endSeconds": 57.81049999999999,
-        "startFrame": 1540,
-        "endFrame": 1735,
+        "startSeconds": 52.24824999999999,
+        "endSeconds": 58.70649999999999,
+        "startFrame": 1567,
+        "endFrame": 1762,
         "clipIndex": 0,
         "tokenWordIndexes": [
           160,
@@ -2167,10 +2167,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 10,
         "text": "Mr Volcker orchestrated a series of interest rate increases that took the federal funds target from around 10% to near 20%.",
-        "startSeconds": 58.11049999999999,
-        "endSeconds": 65.27274999999999,
-        "startFrame": 1743,
-        "endFrame": 1959,
+        "startSeconds": 59.00649999999999,
+        "endSeconds": 65.72074999999998,
+        "startFrame": 1770,
+        "endFrame": 1972,
         "clipIndex": 0,
         "tokenWordIndexes": [
           175,
@@ -2204,10 +2204,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 11,
         "text": "They were willing to crash entire industries and cost you your livelihood—could today's Fed go that far again?",
-        "startSeconds": 65.57274999999998,
-        "endSeconds": 71.90299999999999,
-        "startFrame": 1967,
-        "endFrame": 2158,
+        "startSeconds": 66.02074999999998,
+        "endSeconds": 72.22299999999998,
+        "startFrame": 1980,
+        "endFrame": 2167,
         "clipIndex": 0,
         "tokenWordIndexes": [
           196,
@@ -2237,10 +2237,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 12,
         "text": "It ballooned to $9 trillion, pumping so much money into the system that your mortgage rate stayed low and your 401(k) looked invincible.",
-        "startSeconds": 72.20299999999999,
-        "endSeconds": 79.55724999999998,
-        "startFrame": 2166,
-        "endFrame": 2387,
+        "startSeconds": 72.52299999999998,
+        "endSeconds": 80.13324999999998,
+        "startFrame": 2175,
+        "endFrame": 2404,
         "clipIndex": 0,
         "tokenWordIndexes": [
           215,
@@ -2275,10 +2275,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 13,
         "text": "Now it's shrinking—down to $7 trillion—and that tightening is cracking the credit market wall right behind your small business loan.",
-        "startSeconds": 79.85724999999998,
-        "endSeconds": 86.76349999999998,
-        "startFrame": 2395,
-        "endFrame": 2603,
+        "startSeconds": 80.43324999999997,
+        "endSeconds": 87.01949999999997,
+        "startFrame": 2412,
+        "endFrame": 2611,
         "clipIndex": 0,
         "tokenWordIndexes": [
           239,
@@ -2312,10 +2312,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 14,
         "text": "The Fed saved you once, but its cure now threatens to freeze the very lending that keeps your expansion alive.",
-        "startSeconds": 87.06349999999998,
-        "endSeconds": 92.43374999999997,
-        "startFrame": 2611,
-        "endFrame": 2774,
+        "startSeconds": 87.31949999999996,
+        "endSeconds": 92.56174999999996,
+        "startFrame": 2619,
+        "endFrame": 2777,
         "clipIndex": 0,
         "tokenWordIndexes": [
           261,
@@ -2349,10 +2349,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 15,
         "text": "Kevin Warsh was direct: 'The Fed's balance sheet is a weapon that can break the economy it's trying to save.'",
-        "startSeconds": 92.73374999999997,
-        "endSeconds": 97.78399999999998,
-        "startFrame": 2782,
-        "endFrame": 2934,
+        "startSeconds": 92.86174999999996,
+        "endSeconds": 98.93599999999996,
+        "startFrame": 2785,
+        "endFrame": 2969,
         "clipIndex": 0,
         "tokenWordIndexes": [
           281,
@@ -2383,10 +2383,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 16,
         "text": "So what's your move before that red-circled number on your letter climbs even higher?",
-        "startSeconds": 98.08399999999997,
-        "endSeconds": 102.36624999999998,
-        "startFrame": 2942,
-        "endFrame": 3071,
+        "startSeconds": 99.23599999999996,
+        "endSeconds": 103.19824999999996,
+        "startFrame": 2977,
+        "endFrame": 3096,
         "clipIndex": 0,
         "tokenWordIndexes": [
           301,
@@ -2414,10 +2414,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 17,
         "text": "Lock in a fixed-rate mortgage now—every quarter you wait, that monthly payment climbs higher.",
-        "startSeconds": 102.66624999999998,
-        "endSeconds": 107.90849999999998,
-        "startFrame": 3079,
-        "endFrame": 3238,
+        "startSeconds": 103.49824999999996,
+        "endSeconds": 108.35649999999995,
+        "startFrame": 3104,
+        "endFrame": 3251,
         "clipIndex": 0,
         "tokenWordIndexes": [
           316,
@@ -2446,10 +2446,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 18,
         "text": "Or build a cash buffer that earns more as rates rise, turning the Fed's game into your gain.",
-        "startSeconds": 108.20849999999997,
-        "endSeconds": 113.06674999999997,
-        "startFrame": 3246,
-        "endFrame": 3393,
+        "startSeconds": 108.65649999999995,
+        "endSeconds": 113.25874999999995,
+        "startFrame": 3259,
+        "endFrame": 3398,
         "clipIndex": 0,
         "tokenWordIndexes": [
           332,
@@ -2480,10 +2480,10 @@ export const docuScripts: DocuScript[] = [
       {
         "sentenceIndex": 19,
         "text": "One side secures your biggest expense, the other grows your safety net—both beat waiting.",
-        "startSeconds": 113.36674999999997,
-        "endSeconds": 117.52099999999997,
-        "startFrame": 3401,
-        "endFrame": 3526,
+        "startSeconds": 113.55874999999995,
+        "endSeconds": 117.71299999999995,
+        "startFrame": 3406,
+        "endFrame": 3532,
         "clipIndex": 0,
         "tokenWordIndexes": [
           350,
@@ -2512,511 +2512,574 @@ export const docuScripts: DocuScript[] = [
       {
         "clipIndex": 0,
         "startFrame": 0,
-        "endFrame": 3526,
+        "endFrame": 3532,
         "shots": [
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-00.jpg",
             "mediaType": "image",
             "loop": false,
             "startFrame": 0,
-            "endFrame": 46,
-            "palette": "warm-real"
+            "endFrame": 59,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-01.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 46,
-            "endFrame": 99,
-            "palette": "warm-real"
+            "startFrame": 59,
+            "endFrame": 125,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-02.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 99,
-            "endFrame": 158,
-            "palette": "warm-real"
+            "startFrame": 125,
+            "endFrame": 184,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-03.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 158,
-            "endFrame": 225,
-            "palette": "warm-real"
+            "startFrame": 184,
+            "endFrame": 251,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-04.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 225,
-            "endFrame": 270,
-            "palette": "warm-real"
+            "startFrame": 251,
+            "endFrame": 297,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-05.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 270,
-            "endFrame": 315,
-            "palette": "warm-real"
+            "startFrame": 297,
+            "endFrame": 344,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-06.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 315,
-            "endFrame": 368,
-            "palette": "warm-real"
+            "startFrame": 344,
+            "endFrame": 398,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-07.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 368,
-            "endFrame": 421,
-            "palette": "warm-real"
+            "startFrame": 398,
+            "endFrame": 452,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-08.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 421,
-            "endFrame": 482,
-            "palette": "warm-real"
+            "startFrame": 452,
+            "endFrame": 513,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-09.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 482,
-            "endFrame": 529,
-            "palette": "cool-tech"
+            "startFrame": 513,
+            "endFrame": 563,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-10.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 529,
-            "endFrame": 577,
-            "palette": "cool-tech"
+            "startFrame": 563,
+            "endFrame": 612,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-11.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 577,
-            "endFrame": 624,
-            "palette": "cool-tech"
+            "startFrame": 612,
+            "endFrame": 662,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-12.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 624,
-            "endFrame": 679,
-            "palette": "cool-tech"
+            "startFrame": 662,
+            "endFrame": 719,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-13.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 679,
-            "endFrame": 735,
-            "palette": "cool-tech"
+            "startFrame": 719,
+            "endFrame": 770,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-14.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 735,
-            "endFrame": 791,
-            "palette": "cool-tech"
+            "startFrame": 770,
+            "endFrame": 821,
+            "palette": "cool-tech",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-15.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 791,
-            "endFrame": 847,
-            "palette": "cool-tech"
+            "startFrame": 821,
+            "endFrame": 871,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-16.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 847,
-            "endFrame": 911,
-            "palette": "cool-tech"
+            "startFrame": 871,
+            "endFrame": 930,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-17.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 911,
-            "endFrame": 961,
-            "palette": "cool-tech"
+            "startFrame": 930,
+            "endFrame": 988,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-18.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 961,
-            "endFrame": 1012,
-            "palette": "cool-tech"
+            "startFrame": 988,
+            "endFrame": 1046,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-19.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1012,
-            "endFrame": 1062,
-            "palette": "cool-tech"
+            "startFrame": 1046,
+            "endFrame": 1103,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-20.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1062,
-            "endFrame": 1112,
-            "palette": "cool-tech"
+            "startFrame": 1103,
+            "endFrame": 1161,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-21.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1112,
-            "endFrame": 1163,
-            "palette": "cool-tech"
+            "startFrame": 1161,
+            "endFrame": 1227,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-22.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1163,
-            "endFrame": 1221,
-            "palette": "cool-tech"
+            "startFrame": 1227,
+            "endFrame": 1289,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-23.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1221,
-            "endFrame": 1283,
-            "palette": "cool-tech"
+            "startFrame": 1289,
+            "endFrame": 1358,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-24.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1283,
-            "endFrame": 1353,
-            "palette": "cool-tech"
+            "startFrame": 1358,
+            "endFrame": 1408,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-25.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1353,
-            "endFrame": 1413,
-            "palette": "cool-tech"
+            "startFrame": 1408,
+            "endFrame": 1459,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-26.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1413,
-            "endFrame": 1472,
-            "palette": "cool-tech"
+            "startFrame": 1459,
+            "endFrame": 1509,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-27.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1472,
-            "endFrame": 1540,
-            "palette": "cool-tech"
+            "startFrame": 1509,
+            "endFrame": 1567,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-28.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1540,
-            "endFrame": 1589,
-            "palette": "cool-tech"
+            "startFrame": 1567,
+            "endFrame": 1616,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-29.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1589,
-            "endFrame": 1638,
-            "palette": "cool-tech"
+            "startFrame": 1616,
+            "endFrame": 1665,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-30.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1638,
-            "endFrame": 1686,
-            "palette": "cool-tech"
+            "startFrame": 1665,
+            "endFrame": 1713,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-31.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1686,
-            "endFrame": 1743,
-            "palette": "cool-tech"
+            "startFrame": 1713,
+            "endFrame": 1770,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-32.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1743,
-            "endFrame": 1797,
-            "palette": "cool-tech"
+            "startFrame": 1770,
+            "endFrame": 1821,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-33.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1797,
-            "endFrame": 1851,
-            "palette": "cool-tech"
+            "startFrame": 1821,
+            "endFrame": 1871,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-34.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1851,
-            "endFrame": 1905,
-            "palette": "cool-tech"
+            "startFrame": 1871,
+            "endFrame": 1922,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-35.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1905,
-            "endFrame": 1967,
-            "palette": "cool-tech"
+            "startFrame": 1922,
+            "endFrame": 1980,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-36.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 1967,
-            "endFrame": 2015,
-            "palette": "cool-tech"
+            "startFrame": 1980,
+            "endFrame": 2042,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-37.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2015,
-            "endFrame": 2063,
-            "palette": "cool-tech"
+            "startFrame": 2042,
+            "endFrame": 2105,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-38.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2063,
-            "endFrame": 2110,
-            "palette": "cool-tech"
+            "startFrame": 2105,
+            "endFrame": 2175,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-39.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2110,
-            "endFrame": 2166,
-            "palette": "cool-tech"
+            "startFrame": 2175,
+            "endFrame": 2232,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-40.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2166,
-            "endFrame": 2221,
-            "palette": "cool-tech"
+            "startFrame": 2232,
+            "endFrame": 2290,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-41.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2221,
-            "endFrame": 2277,
-            "palette": "cool-tech"
+            "startFrame": 2290,
+            "endFrame": 2347,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-42.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2277,
-            "endFrame": 2332,
-            "palette": "cool-tech"
+            "startFrame": 2347,
+            "endFrame": 2412,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-43.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2332,
-            "endFrame": 2395,
-            "palette": "cool-tech"
+            "startFrame": 2412,
+            "endFrame": 2462,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-44.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2395,
-            "endFrame": 2447,
-            "palette": "cool-tech"
+            "startFrame": 2462,
+            "endFrame": 2512,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-45.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2447,
-            "endFrame": 2499,
-            "palette": "cool-tech"
+            "startFrame": 2512,
+            "endFrame": 2561,
+            "palette": "cool-tech",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-46.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2499,
-            "endFrame": 2551,
-            "palette": "cool-tech"
+            "startFrame": 2561,
+            "endFrame": 2619,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-47.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2551,
-            "endFrame": 2611,
-            "palette": "cool-tech"
+            "startFrame": 2619,
+            "endFrame": 2672,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-48.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2611,
-            "endFrame": 2665,
-            "palette": "cool-tech"
+            "startFrame": 2672,
+            "endFrame": 2724,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-49.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2665,
-            "endFrame": 2720,
-            "palette": "cool-tech"
+            "startFrame": 2724,
+            "endFrame": 2785,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-50.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2720,
-            "endFrame": 2782,
-            "palette": "cool-tech"
+            "startFrame": 2785,
+            "endFrame": 2846,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-51.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2782,
-            "endFrame": 2833,
-            "palette": "cool-tech"
+            "startFrame": 2846,
+            "endFrame": 2908,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-52.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2833,
-            "endFrame": 2883,
-            "palette": "cool-tech"
+            "startFrame": 2908,
+            "endFrame": 2977,
+            "palette": "cool-tech",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-53.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2883,
-            "endFrame": 2942,
-            "palette": "cool-tech"
+            "startFrame": 2977,
+            "endFrame": 3037,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-54.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 2942,
-            "endFrame": 3007,
-            "palette": "warm-real"
+            "startFrame": 3037,
+            "endFrame": 3104,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-55.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3007,
-            "endFrame": 3079,
-            "palette": "warm-real"
+            "startFrame": 3104,
+            "endFrame": 3153,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-56.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3079,
-            "endFrame": 3132,
-            "palette": "warm-real"
+            "startFrame": 3153,
+            "endFrame": 3202,
+            "palette": "warm-real",
+            "gradeMode": "highlight-safe"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-57.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3132,
-            "endFrame": 3185,
-            "palette": "warm-real"
+            "startFrame": 3202,
+            "endFrame": 3259,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-58.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3185,
-            "endFrame": 3246,
-            "palette": "warm-real"
+            "startFrame": 3259,
+            "endFrame": 3305,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-59.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3246,
-            "endFrame": 3295,
-            "palette": "warm-real"
+            "startFrame": 3305,
+            "endFrame": 3352,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-60.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3295,
-            "endFrame": 3344,
-            "palette": "warm-real"
+            "startFrame": 3352,
+            "endFrame": 3406,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
             "imagePath": "images/docu/how-the-fed-controls-your-money/img-61.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3344,
-            "endFrame": 3401,
-            "palette": "warm-real"
+            "startFrame": 3406,
+            "endFrame": 3469,
+            "palette": "warm-real",
+            "gradeMode": "full"
           },
           {
-            "imagePath": "images/docu/how-the-fed-controls-your-money/img-63.jpg",
+            "imagePath": "images/docu/how-the-fed-controls-your-money/img-62.jpg",
             "mediaType": "image",
             "loop": false,
-            "startFrame": 3464,
-            "endFrame": 3526,
-            "palette": "warm-real"
+            "startFrame": 3469,
+            "endFrame": 3532,
+            "palette": "warm-real",
+            "gradeMode": "full"
           }
         ]
       }
@@ -3028,8 +3091,8 @@ export const docuScripts: DocuScript[] = [
         "text": "The Fed sets the federal funds rate — the overnight rate banks charge each other",
         "source": "Federal Reserve",
         "sourceAnchorId": "anc-005",
-        "startFrame": 554,
-        "endFrame": 675
+        "startFrame": 591,
+        "endFrame": 712
       },
       {
         "palette": "cool-tech",
@@ -3038,8 +3101,8 @@ export const docuScripts: DocuScript[] = [
         "value": 88.6,
         "unit": "B",
         "source": "https://en.wikipedia.org/wiki/Federal_Reserve",
-        "startFrame": 974,
-        "endFrame": 1080
+        "startFrame": 990,
+        "endFrame": 1096
       },
       {
         "palette": "cool-tech",
@@ -3048,8 +3111,8 @@ export const docuScripts: DocuScript[] = [
         "value": 86.9,
         "unit": "B",
         "source": "https://en.wikipedia.org/wiki/Federal_Reserve",
-        "startFrame": 1046,
-        "endFrame": 1152
+        "startFrame": 1059,
+        "endFrame": 1165
       },
       {
         "palette": "cool-tech",
@@ -3058,8 +3121,8 @@ export const docuScripts: DocuScript[] = [
         "value": 20,
         "unit": "%",
         "source": "https://www.economist.com/free-exchange/2010/03/31/who-beat-inflation",
-        "startFrame": 1398,
-        "endFrame": 1504
+        "startFrame": 1406,
+        "endFrame": 1512
       },
       {
         "palette": "warm-real",
@@ -3068,8 +3131,8 @@ export const docuScripts: DocuScript[] = [
         "value": 1.1,
         "unit": "M",
         "source": "https://www.economist.com/free-exchange/2010/03/31/who-beat-inflation",
-        "startFrame": 1573,
-        "endFrame": 1679
+        "startFrame": 1600,
+        "endFrame": 1706
       },
       {
         "palette": "warm-real",
@@ -3078,8 +3141,8 @@ export const docuScripts: DocuScript[] = [
         "value": 18,
         "unit": "%",
         "source": "https://www.economist.com/free-exchange/2010/03/31/who-beat-inflation",
-        "startFrame": 1654,
-        "endFrame": 1760
+        "startFrame": 1681,
+        "endFrame": 1787
       },
       {
         "palette": "cool-tech",
@@ -3087,8 +3150,8 @@ export const docuScripts: DocuScript[] = [
         "text": "Volcker's Fed: From 10% to 20%",
         "source": "The Economist",
         "sourceAnchorId": "anc-006",
-        "startFrame": 1743,
-        "endFrame": 1864
+        "startFrame": 1770,
+        "endFrame": 1891
       },
       {
         "palette": "cool-tech",
@@ -3097,8 +3160,8 @@ export const docuScripts: DocuScript[] = [
         "value": 9,
         "unit": "T",
         "source": "https://www.realclearpolitics.com/2026/02/18/behold_the_story_of_fed_balance_sheet_in_a_single_chart_692258.html",
-        "startFrame": 2193,
-        "endFrame": 2299
+        "startFrame": 2205,
+        "endFrame": 2311
       },
       {
         "palette": "cool-tech",
@@ -3106,8 +3169,8 @@ export const docuScripts: DocuScript[] = [
         "text": "Warsh: 'The Fed's balance sheet is a weapon that can break the economy it's trying to save.'",
         "source": "FT",
         "sourceAnchorId": "anc-008",
-        "startFrame": 2782,
-        "endFrame": 2903
+        "startFrame": 2794,
+        "endFrame": 2915
       },
       {
         "palette": "cool-tech",
@@ -3116,8 +3179,8 @@ export const docuScripts: DocuScript[] = [
         "value": 88.6,
         "unit": "B",
         "source": "https://en.wikipedia.org/wiki/Federal_Reserve",
-        "startFrame": 2942,
-        "endFrame": 3048
+        "startFrame": 2977,
+        "endFrame": 3083
       },
       {
         "palette": "cool-tech",
@@ -3125,8 +3188,8 @@ export const docuScripts: DocuScript[] = [
         "text": "Lock in a fixed-rate mortgage now before rates rise further.",
         "source": "Federal Reserve",
         "sourceAnchorId": "anc-005",
-        "startFrame": 3079,
-        "endFrame": 3200
+        "startFrame": 3104,
+        "endFrame": 3225
       },
       {
         "palette": "cool-tech",
@@ -3135,8 +3198,8 @@ export const docuScripts: DocuScript[] = [
         "value": 86.9,
         "unit": "B",
         "source": "https://en.wikipedia.org/wiki/Federal_Reserve",
-        "startFrame": 3276,
-        "endFrame": 3382
+        "startFrame": 3283,
+        "endFrame": 3389
       }
     ],
     "segments": [
@@ -3147,7 +3210,7 @@ export const docuScripts: DocuScript[] = [
         "firstSentenceIndex": 0,
         "lastSentenceIndex": 3,
         "startFrame": 0,
-        "endFrame": 482
+        "endFrame": 513
       },
       {
         "index": 1,
@@ -3155,8 +3218,8 @@ export const docuScripts: DocuScript[] = [
         "role": "baseline",
         "firstSentenceIndex": 4,
         "lastSentenceIndex": 7,
-        "startFrame": 482,
-        "endFrame": 1353
+        "startFrame": 513,
+        "endFrame": 1358
       },
       {
         "index": 2,
@@ -3164,8 +3227,8 @@ export const docuScripts: DocuScript[] = [
         "role": "escalation",
         "firstSentenceIndex": 8,
         "lastSentenceIndex": 11,
-        "startFrame": 1353,
-        "endFrame": 2166
+        "startFrame": 1358,
+        "endFrame": 2175
       },
       {
         "index": 3,
@@ -3173,8 +3236,8 @@ export const docuScripts: DocuScript[] = [
         "role": "turn",
         "firstSentenceIndex": 12,
         "lastSentenceIndex": 15,
-        "startFrame": 2166,
-        "endFrame": 2942
+        "startFrame": 2175,
+        "endFrame": 2977
       },
       {
         "index": 4,
@@ -3182,8 +3245,8 @@ export const docuScripts: DocuScript[] = [
         "role": "payoff",
         "firstSentenceIndex": 16,
         "lastSentenceIndex": 19,
-        "startFrame": 2942,
-        "endFrame": 3526
+        "startFrame": 2977,
+        "endFrame": 3532
       }
     ]
   }

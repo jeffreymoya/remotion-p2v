@@ -5,9 +5,8 @@ import {
   Sequence,
   staticFile,
 } from "remotion";
-import { HATTAB_LUT_ID, PALETTE_MAP } from "./docu-tokens";
+import { PALETTE_MAP } from "./docu-tokens";
 import type { DocuPalette } from "./docu-tokens";
-import { HaTTabLutDefs } from "./HaTTabLut";
 import { DocuTitleCard } from "./DocuTitleCard";
 import { DocuSplitCard } from "./DocuSplitCard";
 import { DocuContextBar } from "./DocuContextBar";
@@ -30,11 +29,9 @@ const BGRoll = ({
   blurPx?: number;
 }) => {
   const colors = PALETTE_MAP[palette];
-  // palette accent → HaTTab LUT → blur (order: left-to-right in CSS filter chain)
-  const filterChain = `${colors.filter} url(#${HATTAB_LUT_ID})${blurPx ? ` blur(${blurPx}px)` : ""}`;
+  const filterChain = `${colors.filter}${blurPx ? ` blur(${blurPx}px)` : ""}`;
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      <HaTTabLutDefs />
       <DocuKenBurns durationInFrames={SEGMENT_FRAMES} shotIndex={0}>
         <Img
           src={staticFile(`${IMG_DIR}/${imageFile}`)}
