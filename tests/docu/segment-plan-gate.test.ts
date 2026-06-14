@@ -235,6 +235,10 @@ type SceneInput = {
     arcRoleSequenceDetail: "First scene must be 'hook'",
     caseStudyAnchorUnknown: false,
     missingWarmReal: true,
+    segmentWithoutAnchor: false,
+    segmentWithoutAnchorIndices: [],
+    anchorPoolUnderutilized: false,
+    anchorPoolAssignPct: 0,
   });
   assert(feedback.includes("anc-001"), "feedback: includes duplicate anchor ID");
   assert(feedback.includes("anc-999"), "feedback: includes unknown anchor ID");
@@ -254,6 +258,10 @@ type SceneInput = {
     arcRoleSequenceDetail: "",
     caseStudyAnchorUnknown: false,
     missingWarmReal: false,
+    segmentWithoutAnchor: false,
+    segmentWithoutAnchorIndices: [],
+    anchorPoolUnderutilized: false,
+    anchorPoolAssignPct: 0,
   });
   assert(feedback === "", "feedback: empty for no violations");
 }

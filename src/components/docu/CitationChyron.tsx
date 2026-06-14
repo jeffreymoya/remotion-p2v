@@ -1,7 +1,8 @@
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
-import { BLOOMBERG_ORANGE, TRACKING, WEIGHT } from "./docu-tokens";
+import { BLOOMBERG_ORANGE, TRACKING, WEIGHT, OVERLAY_TEXT_PALETTE, paletteToTextMode } from "./docu-tokens";
+import type { DocuPalette } from "./docu-tokens";
 
 loadFont();
 
@@ -9,6 +10,7 @@ interface CitationChyronProps {
   name?: string;
   sourceLabel?: string;
   durationInFrames: number;
+  palette?: DocuPalette;
 }
 
 const RAMP = 10;
@@ -17,8 +19,11 @@ export const CitationChyron: React.FC<CitationChyronProps> = ({
   name,
   sourceLabel,
   durationInFrames,
+  palette = "cool-tech",
 }) => {
   const frame = useCurrentFrame();
+  const textMode = paletteToTextMode(palette);
+  const c = OVERLAY_TEXT_PALETTE[textMode];
   const opacity = Math.min(
     interpolate(frame, [0, RAMP], [0, 1], { extrapolateRight: "clamp" }),
     interpolate(frame, [durationInFrames - RAMP, durationInFrames], [1, 0], {
@@ -44,7 +49,7 @@ export const CitationChyron: React.FC<CitationChyronProps> = ({
           alignItems: "stretch",
           gap: 0,
           backdropFilter: "blur(4px)",
-          background: "rgba(0,0,0,0.65)",
+          background: c.bg,
           borderRadius: 2,
           overflow: "hidden",
         }}
@@ -58,11 +63,11 @@ export const CitationChyron: React.FC<CitationChyronProps> = ({
                 fontFamily: "Inter, sans-serif",
                 fontWeight: WEIGHT.bold,
                 fontSize: 22,
-                color: "#FFFFFF",
+                color: c.textPrimary,
                 letterSpacing: TRACKING.wide,
                 textTransform: "uppercase",
                 lineHeight: 1.2,
-                textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                textShadow: textMode === "dark" ? "0 1px 4px rgba(0,0,0,0.5)" : "0 2px 6px rgba(0,0,0,0.55)",
               }}
             >
               {name}
@@ -74,7 +79,7 @@ export const CitationChyron: React.FC<CitationChyronProps> = ({
                 fontFamily: "Inter, sans-serif",
                 fontWeight: WEIGHT.regular,
                 fontSize: 15,
-                color: "rgba(255,255,255,0.70)",
+                color: c.textMuted,
                 letterSpacing: TRACKING.normal,
                 marginTop: name ? 3 : 0,
                 lineHeight: 1.3,

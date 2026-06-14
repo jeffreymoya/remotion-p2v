@@ -312,7 +312,7 @@ For each scene, provide:
 - index: zero-based scene index
 - title: 3-6 word scene title
 - intent: one sentence describing what this scene achieves narratively
-- assignedAnchorIds: recruit research anchors into this scene by id. Every non-hook scene MUST have at least 1 anchor. Across all scenes, at least 50% of the verified anchor pool must be assigned. Distribute anchors evenly — no single scene should hoard anchors while others go without.
+- assignedAnchorIds: recruit research anchors into this scene by id. Every non-hook scene MUST have at least 1 anchor. Across all scenes, at least 50% of the verified anchor pool must be assigned. Distribute anchors evenly — no single scene should hoard anchors while others go without. If a verified personal_impact anchor exists (a household rate, bill, or balance), prefer anchoring the hook scene to it so the opening stake is sourced. The hook is not required to carry an anchor, but a sourced hook is strongly preferred over an unsourced one.
 - arcRole: one of hook | baseline | escalation | turn | payoff
 - scenarioPressure: the concrete pressure driving THIS scene specifically (not the whole video)
 - retentionLoop: the unanswered question that pulls the viewer to the next scene
@@ -396,10 +396,13 @@ Available lenses (use each at most twice, cover at least 6 different ones):
 - narrative_case_study: a real named individual or institution whose story illustrates the topic — dateable, quotable, verifiable
 - institutional_report: government/regulatory reports, hearing transcripts, enforcement actions, official data releases
 - expert_testimony: on-the-record statements from named subject matter experts — congressional testimony, speeches by officials, interviews with credible authorities
+- personal_impact: present-tense consequences for an ordinary household — how the topic changes the viewer's mortgage rate, savings APY, credit-card APR, monthly bills, rent, or take-home pay right now. Target queries that surface consumer-facing rates and dollar figures, not institutional aggregates.
 
 When the topic involves named authorities (central bankers, regulators, industry leaders, government officials, academic experts), include at least 2 queries that target those individuals directly by name — these surface interview footage and on-the-record statements essential for documentary B-roll.
 
 At least 2 queries MUST target extractable quantitative data — dollar amounts, percentages, growth rates, year-over-year comparisons, time-series figures, market sizes, or distribution breakdowns. These feed the financial charts and kinetic number overlays in the documentary. Queries that only surface qualitative commentary are lower value.
+
+At least 1 query MUST use the personal_impact lens, targeting a present-tense household stake (a rate, bill, or balance the viewer personally sees).
 
 Each query should be 4–10 words, written as if typed into a search engine.
 

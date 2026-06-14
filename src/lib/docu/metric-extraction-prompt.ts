@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { Anchor } from "../shared/research/research-schema";
-import type { DataItem } from "./overlays/types";
+import type { DataItem, RawDataItem } from "./overlays/types";
 import { DataItemSchema, OVERLAY_UNITS } from "./overlays/types";
 import { callStructured } from "./llm-client";
 import { LLM_METRIC } from "../config";
@@ -126,13 +126,13 @@ function buildAnchorListing(anchors: readonly Anchor[]): string {
   ).join("\n\n");
 }
 
-function assignIds(items: Array<{ kind: string; sourceAnchorId: string; [key: string]: unknown }>): DataItem[] {
+function assignIds(items: RawDataItem[]): DataItem[] {
   const counter: Record<string, number> = {};
   return items.map((item) => {
     const kind = item.kind;
     counter[kind] = (counter[kind] ?? 0) + 1;
     const id = `${kind}-${String(counter[kind]).padStart(2, "0")}`;
-    return { ...item, id } as unknown as DataItem;
+    return { ...item, id } as DataItem;
   });
 }
 

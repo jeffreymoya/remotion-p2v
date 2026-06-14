@@ -86,6 +86,20 @@ export const PROMPTABLE_REGISTRY = Object.fromEntries(
   Object.entries(OVERLAY_REGISTRY).filter(([, def]) => def.promotable),
 ) as Record<string, OverlayDef>;
 
+// Load-time invariant: any promotable overlay that consumes a DataItem
+// (`consumes !== "anchor"`) must define a `populate` function, otherwise the
+// selection pipeline emits an OverlaySpec it cannot resolve into a DocuOverlay
+// (silent runtime skip). Textual overlays (`consumes: "anchor"`) pass through
+// directly and need no populate. Fail fast at import.
+for (const [id, def] of Object.entries(OVERLAY_REGISTRY) as [string, OverlayDef][]) {
+  if (def.promotable && def.consumes !== "anchor" && !def.populate) {
+    throw new Error(
+      `Overlay "${id}" is promotable and consumes "${def.consumes}" but has no ` +
+        `populate() function; add a populate() to its OverlayDef or set promotable: false.`,
+    );
+  }
+}
+
 type Resolved<T> = T extends any
   ? Omit<T, "anchorPhrase" | "holdSec" | "leadSec"> & { startFrame: number; endFrame: number }
   : never;

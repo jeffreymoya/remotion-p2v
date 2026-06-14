@@ -58,6 +58,7 @@ const TopicDataSchema = z.object({
     index: z.number().int().min(0),
     title: z.string(),
     role: z.string().optional(),
+    arcRole: z.string().optional(),
     intent: z.string(),
     targetSentenceCount: z.number().int().positive(),
     assignedAnchorIds: z.array(z.string()),

@@ -79,6 +79,12 @@ export const ResearchBundleSchema = z.object({
       reason: z.string(),
     }),
   ),
+  blocked: z.array(
+    z.object({
+      candidate: z.string(),
+      reason: z.string(),
+    }),
+  ).optional().default([]),
 });
 
 export type ResearchBundle = z.infer<typeof ResearchBundleSchema>;

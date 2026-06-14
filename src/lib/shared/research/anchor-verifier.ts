@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { traceable } from "langsmith/traceable";
-import { llmChatJson } from "../../llm-provider";
+import { llmChatJson, LlmError } from "../../llm-provider";
 import { LLM_VERIFIER_PROMPT } from "../../prompts";
 import { CODE_GEN_TEMPERATURE, NARRATION_REASONING } from "../../config";
 import type { Anchor, RawCandidate } from "./research-schema";
@@ -169,7 +169,10 @@ Judge which hit (if any) supports this claim. Return:
         `[verify] judgment failed for "${candidate.claim.slice(0, 60)}": ${err}\n`,
       );
     }
-    return { status: "rejected", reason: `judgment-error: ${err}` };
+    const isBlocked =
+      (err instanceof LlmError && err.status === 403) ||
+      /SAFETY_CHECK/i.test(String(err));
+    return { status: "rejected", reason: `${isBlocked ? "blocked" : "judgment-error"}: ${err}` };
   }
 
   if (judgment.matchedHitIndex === null) {

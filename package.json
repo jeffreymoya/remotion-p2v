@@ -2,10 +2,14 @@
   "name": "remotion-p2v",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "studio": "remotion studio",
     "build": "remotion render",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "typecheck:scripts": "tsc --noEmit -p tsconfig.scripts.json",
     "smoke:deepseek": "tsx --env-file=.env scripts/deepseek-smoke.ts",
     "smoke:deepseek-brainstorm": "tsx --env-file=.env scripts/deepseek-brainstorm-smoke.ts",
     "test:pause-injector": "tsx tests/shared/tts-pause-injector.test.ts",

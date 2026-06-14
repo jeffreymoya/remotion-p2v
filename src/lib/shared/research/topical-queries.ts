@@ -20,6 +20,7 @@ export const TopicalLensSchema = z.enum([
   "protagonist_arc",
   "institutional_report",
   "expert_testimony",
+  "personal_impact",
 ]);
 export type TopicalLens = z.infer<typeof TopicalLensSchema>;
 

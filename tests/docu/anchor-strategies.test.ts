@@ -59,6 +59,30 @@ function spec(anchorPhrase: string): OverlaySpecBase {
   assert(startFrame === 30, "spoken: '9.1%' resolves against spoken TTS tokens (frame 30)", String(startFrame));
 }
 
+{
+  const wt = timings(["not", "the", "$1", "614", "your", "friend"]);
+  const { startFrame } = phraseAnchorStrategy({ spec: spec("$1,614"), wordTimings: wt, fps: FPS });
+  // "$1" is index 2 → 1.0s → frame 30
+  assert(startFrame === 30, "raw: '$1,614' resolves against split numeric TTS tokens", String(startFrame));
+}
+
+{
+  const wt = timings(["saved", "buyers", "just", "a", "month"]);
+  const { startFrame } = phraseAnchorStrategy({
+    spec: spec("$40"),
+    wordTimings: wt,
+    fps: FPS,
+    sentenceAnchors: [
+      {
+        text: "Yet in 2025, a rate drop to 6.35% saved buyers just $40 a month.",
+        startSeconds: 8,
+        endSeconds: 10,
+      },
+    ],
+  });
+  assert(startFrame === 240, "fallback: '$40' resolves from sentence text when TTS drops the number", String(startFrame));
+}
+
 // ── Edit-distance ≤1 fallback resolves without prefix truncation ────────
 
 {
@@ -134,6 +158,7 @@ function spec(anchorPhrase: string): OverlaySpecBase {
     palette: "cool-tech",
     text: "BREAKING NEWS",
     source: "anonymous",
+    sourceAnchorId: "anc-headline",
   };
   let threw = false;
   try {

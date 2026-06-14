@@ -17,6 +17,7 @@ import {
   countUpValue,
   typewriterChars,
 } from "../../src/lib/docu/overlays/overlay-animations";
+import type { StyleTransitionFn } from "../../src/lib/docu/overlays/overlay-animations";
 
 let passed = 0;
 function assert(condition: boolean, label: string, detail?: string): void {
@@ -61,28 +62,28 @@ assert(threw, "getEnterPreset throws on unknown key");
 
 const f0 = fadeUp(0, 0, 0, 10);
 assert(typeof f0.opacity === "number", "fadeUp start: has opacity");
-assert(f0.opacity <= 0.01, "fadeUp start: opacity near 0", `got ${f0.opacity}`);
+assert((f0.opacity as number) <= 0.01, "fadeUp start: opacity near 0", `got ${f0.opacity}`);
 assert(typeof f0.transform === "string", "fadeUp start: has transform");
 
 const fMid = fadeUp(5, 0, 0, 10);
-assert(fMid.opacity > 0.7, "fadeUp mid: opacity > 0.7 (ease curve is fast-out)", `got ${fMid.opacity}`);
+assert((fMid.opacity as number) > 0.7, "fadeUp mid: opacity > 0.7 (ease curve is fast-out)", `got ${fMid.opacity}`);
 
 const fEnd = fadeUp(10, 0, 0, 10);
-assert(fEnd.opacity >= 0.99, "fadeUp end: opacity near 1", `got ${fEnd.opacity}`);
+assert((fEnd.opacity as number) >= 0.99, "fadeUp end: opacity near 1", `got ${fEnd.opacity}`);
 
 // ── fadeIn output ────────────────────────────────────────────────────────
 
 const fi0 = fadeIn(0, 0, 0, 8);
-assert(fi0.opacity! <= 0.01, "fadeIn start: opacity near 0");
+assert((fi0.opacity as number) <= 0.01, "fadeIn start: opacity near 0");
 const fiEnd = fadeIn(8, 0, 0, 8);
-assert(fiEnd.opacity! >= 0.99, "fadeIn end: opacity near 1");
+assert((fiEnd.opacity as number) >= 0.99, "fadeIn end: opacity near 1");
 
 // ── popIn output shape ───────────────────────────────────────────────────
 
 const pi = popIn(5, 0, 0, 10, 100, 200);
 assert(typeof pi.transform === "string", "popIn: has transform");
 assert(pi.transform!.includes("scale"), "popIn: transform includes scale");
-assert(pi.transformOrigin!.includes("100px 200px"), "popIn: origin set", `got ${pi.transformOrigin}`);
+assert((pi.transformOrigin as string).includes("100px 200px"), "popIn: origin set", `got ${pi.transformOrigin}`);
 
 // ── slideUp with custom translateY ───────────────────────────────────────
 
@@ -118,7 +119,7 @@ assert(tw >= 0 && tw <= 100, "typewriter in [0, target]");
 
 const none = PRESET_REGISTRY.none!;
 assert(none.channel === "style", "none is style channel");
-const noneStyle = none.fn(5, 0, 0, 10);
+const noneStyle = (none.fn as StyleTransitionFn)(5, 0, 0, 10);
 assert(Object.keys(noneStyle).length === 0, "none returns empty object", `got ${JSON.stringify(noneStyle)}`);
 
 // ── Channel correctness ──────────────────────────────────────────────────

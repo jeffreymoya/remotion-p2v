@@ -69,6 +69,7 @@ import type { DocuScript } from "../components/docu/DocumentaryComposition";
 // Discovers all topics from prompts/docu/*.json automatically.
 export const docuScripts: DocuScript[] = ${JSON.stringify(allScripts, null, 2)};
 `;
+  fs.mkdirSync(path.dirname(SCRIPTS_PATH), { recursive: true });
   fs.writeFileSync(SCRIPTS_PATH, fileContent);
   console.log(`[docu:codegen] ${allScripts.length} topic(s) → src/generated/docu-scripts.ts`);
 }

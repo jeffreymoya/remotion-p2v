@@ -53,6 +53,8 @@ function trustScope(lens: TopicalLens): string[] | undefined {
     case "historical_context":
     case "statistics_or_distribution":
       return [...TRUSTED_DOMAINS.journalism, ...TRUSTED_DOMAINS.encyclopedia];
+    case "personal_impact":
+      return [...TRUSTED_DOMAINS.journalism, ...TRUSTED_DOMAINS.encyclopedia];
     case "definition_or_mechanism":
       return [...TRUSTED_DOMAINS.encyclopedia];
     default:

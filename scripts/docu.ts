@@ -59,6 +59,7 @@ import {
   pacingProfile,
   presetForArc,
   ARC_AXES,
+  VOICE_POOL,
   type ArcAxis,
   type VarietyAssignment,
 } from "../src/lib/docu/variety-controller";
@@ -335,7 +336,13 @@ async function runFullPipeline_impl(
   }
 
   // 5. Overlay resolution
-  const overlays = resolveOverlays(overlaySpecs, wordTimings, FPS);
+  const overlays = resolveOverlays(overlaySpecs, wordTimings, FPS, {
+    sentenceAnchors: sentenceData.map((sd, i) => ({
+      text: sentences[i].text,
+      startSeconds: sd.startSeconds,
+      endSeconds: sd.endSeconds,
+    })),
+  });
 
   // 6. Build segment metas
   let segmentMetas: DocuSegmentMeta[] | undefined;
@@ -346,7 +353,7 @@ async function runFullPipeline_impl(
       const meta: DocuSegmentMeta = {
         index: plan.index,
         title: plan.title,
-        role: "arcRole" in plan ? plan.arcRole : plan.role as ArcRole,
+        role: "arcRole" in plan ? (plan as { arcRole: ArcRole }).arcRole : (plan.role as ArcRole),
         firstSentenceIndex,
         lastSentenceIndex: firstSentenceIndex + plan.targetSentenceCount - 1,
         startFrame: frameRanges[i].startFrame,
@@ -407,6 +414,12 @@ async function runFullPipeline_impl(
                 captionWords: ms.captionWords,
               };
             }
+            const iq = finalImageQueries.find((q) => q.slot === ms.originalIndex);
+            const queryStr = iq ? iq.query.toLowerCase() : "";
+            const isHighlightSafe = [
+              "document", "letter", "calculator", "paper", "isolated object", "white background", "white-background"
+            ].some((term) => queryStr.includes(term));
+
             return {
               imagePath: `images/docu/${slug}/img-${String(ms.originalIndex!).padStart(2, "0")}.jpg`,
               mediaType: "image" as const,
@@ -414,6 +427,7 @@ async function runFullPipeline_impl(
               startFrame: ms.startFrame,
               endFrame: ms.endFrame,
               palette: ms.palette,
+              gradeMode: isHighlightSafe ? "highlight-safe" : "full",
             };
           }),
       },
@@ -503,7 +517,7 @@ function parseArgs(args: string[]) {
 
   const onlyIdx = args.indexOf("--only");
   const only = onlyIdx >= 0 && onlyIdx + 1 < args.length
-    ? args[onlyIdx + 1] as "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen" | "publish-manifest"
+    ? args[onlyIdx + 1] as "variety" | "plan" | "narration" | "overlays" | "youtube" | "tts" | "images" | "codegen" | "publish-manifest"
     : undefined;
 
   const allowYoutubeClips = args.includes("--allow-youtube-clips");
@@ -581,6 +595,18 @@ function resolveVarietyAssignment(
 ): VarietyAssignment {
   const cached = loadCachedAssignment(slug);
   if (cached && varietyFlag === undefined) {
+    if (!VOICE_POOL.includes(cached.voice)) {
+      const healed = {
+        ...cached,
+        voice: VOICE_POOL[0],
+      };
+      saveCachedAssignment(slug, healed);
+      console.log(
+        `[docu] variety: cached voice ${cached.voice} is no longer supported; ` +
+        `rewriting cache to ${healed.voice}`,
+      );
+      return healed;
+    }
     console.log(`[docu] variety: reusing cached assignment (arc=${cached.arc}, voice=${cached.voice})`);
     return cached;
   }
@@ -682,7 +708,7 @@ async function runDocuCli_impl(args: ParsedDocuArgs): Promise<void> {
     topicData = await generateSegmentedTopicData(topicArg, slug, 5, minutes, {
       verbose: true,
       from: from === "tts" ? "overlays" : from as "plan" | "narration" | "overlays" | "youtube",
-      only: isLlmsOnly ? only : undefined,
+      only: isLlmsOnly ? (only as "plan" | "narration" | "overlays" | "youtube") : undefined,
       variety: varietyAssignment,
     });
     if (!isLlmsOnly) saveTopicData(topicData);

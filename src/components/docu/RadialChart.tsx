@@ -3,7 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { loadFont as loadSourceSerif4 } from "@remotion/google-fonts/SourceSerif4";
 import { loadFont as loadIBMPlexSans } from "@remotion/google-fonts/IBMPlexSans";
 import { loadFont as loadIBMPlexMono } from "@remotion/google-fonts/IBMPlexMono";
-import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTextMode } from "./docu-tokens";
+import { CHART_RAMP_DEFAULT, CHART_TYPOGRAPHY, OVERLAY_TEXT_PALETTE, paletteToTextMode, PALETTE_MAP } from "./docu-tokens";
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import { fadeIn, fadeUp, countUpValue } from "./chart-animations";
@@ -58,8 +58,8 @@ export const RadialChart: React.FC<RadialChartProps> = ({
   const ramp = CHART_RAMP_DEFAULT;
   const textMode = paletteToTextMode(paletteName);
   const c = OVERLAY_TEXT_PALETTE[textMode];
-  const accent = textMode === "light" ? "#5fb3d4" : ramp[1];
-  const secondaryText = textMode === "light" ? "rgba(255,255,255,0.58)" : "rgba(0,0,0,0.58)";
+  const accent = PALETTE_MAP[paletteName].accentColor;
+  const secondaryText = c.textMuted;
 
   if (points.length < 2) {
     return (

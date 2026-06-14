@@ -222,6 +222,7 @@ async function runResearchPhaseImpl(
 
   const allVerified: Anchor[] = [];
   const allRejected: Array<{ candidate: string; reason: string }> = [];
+  const allBlocked: Array<{ candidate: string; reason: string }> = [];
   let totalCandidates = 0;
 
   for (let round = 1; round <= RESEARCH_MAX_BRAINSTORM_ROUNDS; round++) {
@@ -270,10 +271,18 @@ async function runResearchPhaseImpl(
     for (let i = 0; i < results.length; i++) {
       const result: VerifyResult = results[i];
       if ("status" in result && result.status === "rejected" && !("citation" in result)) {
-        allRejected.push({
-          candidate: dedupedCandidates[i].claim,
-          reason: (result as { status: "rejected"; reason: string }).reason,
-        });
+        const reason = (result as { status: "rejected"; reason: string }).reason;
+        if (reason.startsWith("blocked:")) {
+          allBlocked.push({
+            candidate: dedupedCandidates[i].claim,
+            reason,
+          });
+        } else {
+          allRejected.push({
+            candidate: dedupedCandidates[i].claim,
+            reason,
+          });
+        }
       } else {
         const anchor = result as Anchor;
         // Only include "verified" anchors in the usable pool (not "needs_review")
@@ -286,7 +295,7 @@ async function runResearchPhaseImpl(
     }
 
     console.log(
-      `  [research] round ${round}: ${allVerified.length} verified, ${allRejected.length} rejected`,
+      `  [research] round ${round}: ${allVerified.length} verified, ${allRejected.length} rejected, ${allBlocked.length} blocked`,
     );
   }
 
@@ -311,6 +320,7 @@ async function runResearchPhaseImpl(
     candidatesGenerated: totalCandidates,
     anchors: allVerified,
     rejected: allRejected,
+    blocked: allBlocked,
   };
 
   return bundle;

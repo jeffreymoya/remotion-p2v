@@ -5,15 +5,42 @@ export function normalizeToken(w: string): string {
   return w.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+function isDigitsOnly(token: string): boolean {
+  return /^\d+$/.test(token);
+}
+
 function findConsecutiveMatch(
   phraseTokens: string[],
   normalized: string[],
 ): number {
   const len = phraseTokens.length;
   for (let i = 0; i <= normalized.length - len; i++) {
+    let cursor = i;
     let j = 0;
     for (; j < len; j++) {
-      if (normalized[i + j] !== phraseTokens[j]) break;
+      const phraseToken = phraseTokens[j];
+      if (cursor >= normalized.length) break;
+      if (normalized[cursor] === phraseToken) {
+        cursor++;
+        continue;
+      }
+
+      if (!isDigitsOnly(phraseToken)) break;
+
+      let combined = "";
+      let end = cursor;
+      let matchedChunk = false;
+      while (end < normalized.length && isDigitsOnly(normalized[end])) {
+        combined += normalized[end];
+        if (combined === phraseToken) {
+          cursor = end + 1;
+          matchedChunk = true;
+          break;
+        }
+        if (!phraseToken.startsWith(combined)) break;
+        end++;
+      }
+      if (!matchedChunk) break;
     }
     if (j === len) return i;
   }
@@ -72,46 +99,49 @@ function findFuzzyConsecutiveMatch(
  * shorter prefixes when full-phrase match fails (e.g. TTS merged tokens).
  */
 export const phraseAnchorStrategy: AnchorStrategy = (ctx) => {
-  const { spec, wordTimings, fps } = ctx;
+  const { spec, wordTimings, fps, sentenceAnchors } = ctx;
 
   const normalized = wordTimings.map((w) => normalizeToken(w.word));
 
-  // Spoken-form the anchorPhrase only: TTS word timings are already spelled-out
-  // spoken words, so expanding "$2.5T" → "two point five trillion dollars" on
-  // the phrase side lets it align to the spoken token stream. Expanding the
-  // word-timing side instead would break the 1:1 index→frame mapping.
-  const fullTokens = toSpokenForm(spec.anchorPhrase)
+  const rawTokens = spec.anchorPhrase
     .split(/\s+/)
     .map(normalizeToken)
     .filter(Boolean);
+  const spokenTokens = toSpokenForm(spec.anchorPhrase)
+    .split(/\s+/)
+    .map(normalizeToken)
+    .filter(Boolean);
+  const tokenVariants = [rawTokens, spokenTokens].filter(
+    (tokens, index, variants) =>
+      tokens.length > 0 && variants.findIndex((other) => other.join(" ") === tokens.join(" ")) === index,
+  );
 
-  if (fullTokens.length === 0) {
+  if (tokenVariants.length === 0) {
     throw new Error(
       `overlay-resolver: anchorPhrase "${spec.anchorPhrase}" normalizes to empty tokens`,
     );
   }
 
-  let matchIdx = findConsecutiveMatch(fullTokens, normalized);
+  let matchIdx = -1;
+  let activeTokens = tokenVariants[0];
 
-  // Edit-distance fallback (≤1 per token) before degrading to prefix truncation.
-  if (matchIdx === -1) {
-    matchIdx = findFuzzyConsecutiveMatch(fullTokens, normalized);
+  for (const tokens of tokenVariants) {
+    matchIdx = findConsecutiveMatch(tokens, normalized);
     if (matchIdx !== -1) {
-      console.warn(
-        `overlay-resolver: fuzzy-matched anchorPhrase "${spec.anchorPhrase}" ` +
-        `(edit-distance ≤1 per token against TTS word timings)`,
-      );
+      activeTokens = tokens;
+      break;
     }
   }
 
+  // Edit-distance fallback (≤1 per token) before degrading to prefix truncation.
   if (matchIdx === -1) {
-    for (let keep = fullTokens.length - 1; keep >= 1; keep--) {
-      const prefix = fullTokens.slice(0, keep);
-      matchIdx = findConsecutiveMatch(prefix, normalized);
+    for (const tokens of tokenVariants) {
+      matchIdx = findFuzzyConsecutiveMatch(tokens, normalized);
       if (matchIdx !== -1) {
+        activeTokens = tokens;
         console.warn(
-          `overlay-resolver: truncated anchorPhrase "${spec.anchorPhrase}" → "${spec.anchorPhrase.split(/\s+/).slice(0, keep).join(" ")}" ` +
-          `(trailing tokens not found in TTS word timings)`,
+          `overlay-resolver: fuzzy-matched anchorPhrase "${spec.anchorPhrase}" ` +
+          `(edit-distance ≤1 per token against TTS word timings)`,
         );
         break;
       }
@@ -119,13 +149,58 @@ export const phraseAnchorStrategy: AnchorStrategy = (ctx) => {
   }
 
   if (matchIdx === -1) {
+    for (const tokens of tokenVariants) {
+      for (let keep = tokens.length - 1; keep >= 1; keep--) {
+        const prefix = tokens.slice(0, keep);
+        matchIdx = findConsecutiveMatch(prefix, normalized);
+        if (matchIdx !== -1) {
+          activeTokens = prefix;
+          console.warn(
+            `overlay-resolver: truncated anchorPhrase "${spec.anchorPhrase}" ` +
+            `(trailing tokens not found in TTS word timings)`,
+          );
+          break;
+        }
+      }
+      if (matchIdx !== -1) break;
+    }
+  }
+
+  if (matchIdx === -1 && sentenceAnchors) {
+    for (const sentence of sentenceAnchors) {
+      const rawSentenceTokens = sentence.text
+        .split(/\s+/)
+        .map(normalizeToken)
+        .filter(Boolean);
+      const spokenSentenceTokens = toSpokenForm(sentence.text)
+        .split(/\s+/)
+        .map(normalizeToken)
+        .filter(Boolean);
+      const sentenceVariants = [rawSentenceTokens, spokenSentenceTokens];
+      for (const sentenceTokens of sentenceVariants) {
+        const found = tokenVariants.some((tokens) => findConsecutiveMatch(tokens, sentenceTokens) !== -1);
+        if (found) {
+          const lead = spec.leadSec ?? 0;
+          const startFrame = Math.floor((sentence.startSeconds + lead) * fps);
+          const endFrame = Math.ceil((sentence.startSeconds + lead + spec.holdSec) * fps);
+          console.warn(
+            `overlay-resolver: fell back to sentence anchor for "${spec.anchorPhrase}" ` +
+            `(TTS tokens drifted from narration text)`,
+          );
+          return { startFrame, endFrame };
+        }
+      }
+    }
+  }
+
+  if (matchIdx === -1) {
     const nearby = normalized
-      .filter((w) => w.includes(fullTokens[0]))
+      .filter((w) => w.includes(activeTokens[0]))
       .slice(0, 5)
       .join(", ");
     throw new Error(
       `overlay-resolver: phrase "${spec.anchorPhrase}" not found in wordTimings. ` +
-        `Tokens containing "${fullTokens[0]}": [${nearby || "none"}]`,
+        `Tokens containing "${activeTokens[0]}": [${nearby || "none"}]`,
     );
   }
 

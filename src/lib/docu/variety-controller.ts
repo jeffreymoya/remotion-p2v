@@ -70,7 +70,7 @@ export const SKIN_AXES: readonly SkinAxis[] = [
 export const VOICE_POOL = [
   "en-US-Chirp3-HD-Charon",
   "en-US-Chirp3-HD-Fenrir",
-  "en-US-Chirp3-HD-Oberon",
+  "en-US-Chirp3-HD-Orus",
 ] as const;
 export type VoiceAxis = (typeof VOICE_POOL)[number];
 

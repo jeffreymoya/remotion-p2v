@@ -16,6 +16,21 @@ export interface StructureViolation {
   detail: string;
 }
 
+export function normalizeOptionalQuoteScene(
+  sentences: SentenceDef[],
+  spine: StorySpine,
+): StorySpine {
+  if (spine.quoteSceneIndex === null) return spine;
+  const quoteSceneViolations = checkStructureDeterministic(sentences, spine).filter(
+    (v) => v.check === "quote-scene-missing-quote",
+  );
+  if (quoteSceneViolations.length === 0) return spine;
+  return {
+    ...spine,
+    quoteSceneIndex: null,
+  };
+}
+
 export function checkStructureDeterministic(
   sentences: SentenceDef[],
   spine: StorySpine,
@@ -155,8 +170,14 @@ async function gateStoryStructure_impl(
   spine: StorySpine,
   opts?: { verbose?: boolean },
 ): Promise<{ sentences: SentenceDef[]; result: StoryStructureGateResult }> {
+  const normalizedSpine = normalizeOptionalQuoteScene(sentences, spine);
+  if (normalizedSpine !== spine && opts?.verbose) {
+    console.warn(
+      "[story-structure-gate] quoteSceneIndex had no quoted sentence; clearing optional quote scene and continuing",
+    );
+  }
   // Deterministic checks — always run
-  const deterministicViolations = checkStructureDeterministic(sentences, spine);
+  const deterministicViolations = checkStructureDeterministic(sentences, normalizedSpine);
   if (deterministicViolations.length > 0 && opts?.verbose) {
     for (const v of deterministicViolations) {
       console.warn(`[story-structure-gate/deterministic] ${v.check}: ${v.detail}`);
@@ -181,7 +202,7 @@ async function gateStoryStructure_impl(
     const result = await callStructured({
       schema: JudgeResponseSchema,
       system: buildJudgePrompt(),
-      prompt: buildJudgeUserPrompt(current, spine),
+      prompt: buildJudgeUserPrompt(current, normalizedSpine),
       runName: `docu/story-structure-gate/attempt-${attempt}`,
       verbose: opts?.verbose,
       llm: LLM_JUDGE,

@@ -34,7 +34,7 @@ export const LLM_PROVIDERS: Record<LlmProviderId, LlmProviderConfig> = {
   },
 };
 
-export const LLM_DEFAULT_PROVIDER: LlmProviderId = "grok";
+export const LLM_DEFAULT_PROVIDER: LlmProviderId = "deepseek";
 
 /** Resolve a provider config, falling back to the default. */
 export function resolveProvider(providerId?: LlmProviderId): LlmProviderConfig {

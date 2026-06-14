@@ -1,7 +1,7 @@
 import type { WordTiming } from "../audio-wav";
-import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { OverlaySpec, DocuOverlay } from "./overlays/registry";
 import { getAnchorStrategy } from "./overlays/registry";
+import type { AnchorStrategyContext } from "./overlays/types";
 
 // Re-export for backward compat — callers need no import path changes
 export type { OverlaySpec };
@@ -19,17 +19,27 @@ export { normalizeToken } from "./overlays/anchor-strategies";
  * replaced with startFrame/endFrame. Type-specific fields pass through
  * unchanged.
  */
-function resolveOverlays_impl(
+interface ResolveOverlaysOptions {
+  sentenceAnchors?: AnchorStrategyContext["sentenceAnchors"];
+}
+
+export function resolveOverlays(
   specs: OverlaySpec[],
   wordTimings: WordTiming[],
   fps: number,
+  opts?: ResolveOverlaysOptions,
 ): DocuOverlay[] {
   const resolved: DocuOverlay[] = [];
   const skippedTypes: string[] = [];
   for (const spec of specs) {
     try {
       const strategy = getAnchorStrategy(spec.type);
-      const { startFrame, endFrame } = strategy({ spec, wordTimings, fps });
+      const { startFrame, endFrame } = strategy({
+        spec,
+        wordTimings,
+        fps,
+        sentenceAnchors: opts?.sentenceAnchors,
+      });
       const { anchorPhrase, holdSec, leadSec, ...rest } = spec;
       resolved.push({ ...rest, startFrame, endFrame } as DocuOverlay);
     } catch (err) {
@@ -53,8 +63,3 @@ function resolveOverlays_impl(
 
   return resolved;
 }
-
-export const resolveOverlays = traceableChain(resolveOverlays_impl, "resolveOverlays", {
-  processInputs: (inputs) => (textOnlyAssetSummary(inputs) as Record<string, unknown>) ?? {},
-  processOutputs: (outputs) => (textOnlyAssetSummary(outputs) as Record<string, unknown>) ?? {},
-});

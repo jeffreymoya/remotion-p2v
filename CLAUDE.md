@@ -48,72 +48,95 @@ This principle applies at every pipeline stage that selects, filters, or assigns
 
 ## Current State — `feat/rpm-optimized`
 
-Phase 1 is complete. The rendering layer is built and the pipeline is wired end-to-end for one hardcoded topic ("How the Fed Controls Your Money").
+The full 9-phase LLM-driven pipeline is implemented end-to-end. The rendering layer is built, quality gates are active, and the pipeline accepts any topic in the five allowed niches.
+
+**Pipeline (9 phases):** `variety → plan → narration → overlays → youtube → tts → images → codegen → publish-manifest`
+
+All phases defined as data in `src/lib/docu/pipeline.ts`; `--from`/`--only`/`--clean` CLI flags derive from the phase graph. The LLM executor (`topic-generator.ts`) owns `plan`/`narration`/`overlays`/`youtube`; the IO pipeline owns `tts`/`images`/`codegen`/`publish-manifest`.
+
+**Default LLM provider:** Grok (via `src/lib/llm-provider.ts`). DeepSeek is also registered; switch with `LLM_DEFAULT_PROVIDER` in `config.ts`.
 
 **What's built:**
 
 | File | Purpose |
 |---|---|
 | `src/components/docu/DocumentaryComposition.tsx` | Main composition — 60-shot B-roll, two-world palette, overlay blur, narration audio |
-| `src/components/docu/HeadlineCard.tsx` | Lower-third citation/stat card — Inter 900, Bloomberg orange, slide-in animation |
-| `src/components/docu/KineticNumber.tsx` | Count-up metric — orange→yellow gradient, snap easing |
-| `src/components/docu/ArticleCard.tsx` | Article citation card — 3D parallax, Rough.js highlights, `ArticleData` driven |
-| `src/components/docu/docu-tokens.ts` | Color palette, Bloomberg brand constants, easing curves |
+| `src/components/docu/overlays/` | Overlay render registry + per-type renderers (HeadlineCard, KineticNumber, DocuChart, CitationChyron, etc.) |
+| `src/components/docu/docu-tokens.ts` | Color palette, OVERLAY_TEXT_PALETTE, chart color ramps, HaTTab LUT, typography tokens |
 | `src/components/docu/DocumentaryCaption.tsx` | Word-synced captions — built but not rendered; kept for social/accessibility cuts |
-| `src/lib/inspire/audio-postprocess.ts` | `commandingVoice()` — broadcast chain (highpass, presence boost, compression) |
-| `src/generated/docu-scripts.ts` | Auto-generated script registry (same pattern as `inspire-scripts.ts`) |
-| `scripts/docu.ts` | CLI orchestrator: TTS → images → shot schedule → overlay resolve → codegen |
+| `src/components/docu/RadialChart.tsx` | Radial progress gauge — chart render style dispatched via DocuChart |
+| `src/lib/docu/pipeline.ts` | 9-phase PIPELINE descriptor (single source of truth for CLI flag validation, clean cascade) |
+| `src/lib/docu/topic-generator.ts` | LLM executor: research → segmented narration + overlays → 4 inline gates |
+| `src/lib/docu/variety-controller.ts` | Arc-axis variety assignment (per-topic structure + pacing rotation) |
+| `src/lib/docu/youtube-pipeline.ts` | YouTube interview clip extraction (yt-dlp) with attribution gate |
+| `src/lib/docu/publish-manifest.ts` | Final-phase provenance + readiness aggregation; feeds upload/SEO metadata |
+| `src/lib/docu/story-structure-gate.ts` | Story arc validation (spine segments, variety constraint, structural coverage) |
+| `src/lib/docu/infotainment-voice-gate.ts` | Voice/persona audit (Bloomberg-dry, fact-first, avoidance of hype/inspirational tone) |
+| `src/lib/docu/narration-fidelity-gate.ts` | Citation-fidelity gate: verifies every narration sentence against verified research anchors |
+| `src/lib/docu/metric-extraction-prompt.ts` | Extracts `DataItem[]` from anchors with citation-fidelity and metric-fidelity verification |
+| `src/lib/shared/numeric-normalize.ts` | Deterministic metric-fidelity core: normalizes and compares numeric values in anchor text |
 | `src/lib/docu/tts-pipeline.ts` | Per-sentence TTS pipeline with audition support |
 | `src/lib/docu/image-pipeline.ts` | Pexels image download pipeline |
 | `src/lib/docu/script-codegen.ts` | Auto-generates `src/generated/docu-scripts.ts` from built DocuScripts |
 | `src/lib/docu/overlay-resolver.ts` | Anchors overlay specs to word-timing frames |
-| `src/lib/docu/article-pipeline.ts` | `ArticleData` type + pipeline; pattern for all data-driven overlays |
-| `src/lib/docu/topics/` | Per-topic data modules (sentences, overlays, image queries) |
+| `src/lib/docu/overlays/` (lib) | Overlay types, schemas, chart/data populator, animation presets |
+| `src/lib/inspire/audio-postprocess.ts` | `commandingVoice()` — broadcast chain (highpass, presence boost, compression) |
+| `src/generated/docu-scripts.ts` | Auto-generated script registry |
+| `scripts/docu.ts` | CLI orchestrator — dispatches the 9-phase pipeline |
+| `scripts/docu-channel-audit.ts` | Channel-level variety audit (quota rotation health check) |
 
 **Commands:**
 
 ```sh
-npm run docu                        # full pipeline: TTS + images + codegen
-npm run docu:audition               # TTS audition only (Charon / Fenrir / Oberon 30s clips)
-npm run studio                      # open Remotion Studio
+npm run docu "<topic>"                                     # full 9-phase pipeline
+npm run docu "<topic>" --only overlays                     # stop after overlays phase
+npm run docu "<topic>" --from tts                          # resume from TTS
+npm run docu "<topic>" --clean                              # clean artifacts then run
+npm run docu "<topic>" --allow-youtube-clips                # enable YouTube clip extraction
+npm run docu "<topic>" --publish                            # run through publish-manifest
+npm run docu "<topic>" --variety <arc>                      # pin variety arc (or "off" for baseline)
+npm run docu:audition                                       # TTS audition only (Charon / Fenrir / Oberon 30s clips)
+npm run docu:channel-audit                                  # channel-level variety health check
+npm run docu:export-description                             # export YouTube descriptions
+npm run docu:ai-disclosure                                  # generate AI disclosure text
+npm run docu:metadata-gate                                  # validate metadata against platform policies
+npm run studio                                              # open Remotion Studio
 npm run typecheck
 ```
 
 ---
 
-## Post-Spike Pipeline Plan
+## Pipeline Execution
 
-### Phase 1 — End-to-end on one topic ✅ DONE
-- Reusable `src/lib/docu/` module
-- Sequential pipeline: TTS → image download → shot schedule → overlay resolve → codegen
-- Auto-generated `docu-scripts.ts`
+### 9-Phase Pipeline ✅ IMPLEMENTED
 
-### Phase 2 — LLM narration + metric generation
-Goal: `scripts/docu.ts "any topic in the niche list"` generates the 20-sentence script, overlays, and chart data automatically.
+All 9 phases are defined as data in `src/lib/docu/pipeline.ts` and orchestrated by `scripts/docu.ts`:
 
-- `src/lib/docu/narration-prompt.ts` — Bloomberg-density prompt: 20 sentences, declarative, fact-first, citation-anchored
-- `src/lib/docu/overlay-prompt.ts` — LLM assigns HeadlineCard / KineticNumber / chart content + anchor phrases from narration
-- **`src/lib/docu/metric-extraction-prompt.ts`** — NEW: extracts `DataItem[]` from research anchors; numeric data with units, source URLs, and dataset labels. LLM places; research provides numbers. Never allow the narration LLM to fabricate metrics.
-- Reuse `src/lib/inspire/research/` as-is for the research phase (Exa/Serper, anchor verifier)
-- Shot queries generated from narration sentences (adapted from `src/lib/inspire/image-query-prompt.ts`)
+| Phase | Group | Description |
+|---|---|---|
+| `variety` | LLM | Arc-axis variety assignment (per-topic structure + pacing rotation) |
+| `plan` | LLM | Research + corpus query + topic data generation |
+| `narration` | LLM | Segmented narration generation (Bloomberg-density, citation-anchored) |
+| `overlays` | LLM | Overlay spec generation (HeadlineCard, KineticNumber, chart, citation) |
+| `youtube` | LLM | YouTube interview clip extraction (yt-dlp) with attribution gate |
+| `tts` | IO | Per-sentence TTS synthesis + word timings |
+| `images` | IO | Pexels stock image download |
+| `codegen` | IO | Auto-generate `src/generated/docu-scripts.ts` |
+| `publish-manifest` | IO | Provenance + readiness aggregation; feeds upload/SEO metadata |
 
-### Phase 3 — Quality gates
-Goal: catch bad narration and bad metrics before rendering.
+### Quality Gates ✅ IMPLEMENTED
 
-- **Citation-fidelity gate** — carry forward from `src/lib/inspire/proofread/citation-fidelity-gate.ts`; verifies cited claims against research anchors
-- **Metric-fidelity gate** — NEW (higher priority than citation gate for finance/legal content): verifies each `DataItem` value against its `source` anchor; rejects metrics that can't be traced to a research result
-- **Data-density gate** — minimum N cited facts per minute
-- **Niche allowlist gate** — reject topics outside the five allowed niches
+- **Citation-fidelity gate** — verifies every narration sentence against verified research anchors (`narration-fidelity-gate.ts`)
+- **Metric-fidelity gate** — verifies each `DataItem` value against its `source` anchor; rejects untraceable metrics (`metric-extraction-prompt.ts` + `numeric-normalize.ts`)
+- **Story-structure gate** — validates spine segments, variety constraint, structural coverage (`story-structure-gate.ts`)
+- **Infotainment-voice gate** — audits voice/persona (Bloomberg-dry, fact-first, no hype) (`infotainment-voice-gate.ts`)
+- **Niche allowlist gate** — rejects topics outside the five allowed niches (token-based matching in `scripts/docu.ts`)
 
-### Phase 4 — Cleanup
-Goal: delete the inspire pipeline after 3+ validated docu videos.
+### Pending
 
-Delete:
-- `src/lib/inspire/` — except `research/`, `pexels-image-client.ts`, `pexels-video-client.ts`, `pixabay-video-client.ts`, `vision-screener.ts`, `sentence-segmenter.ts` (reused)
-- `src/components/InspirationComposition.tsx`, `src/components/KineticCaption.tsx`
-- `src/components/captions/`
-- `scripts/inspire.ts`, `src/lib/inspire/longform-pipeline.ts`, `src/lib/inspire/inspire-pipeline.ts`
-- All narration archetypes, prosody/genre/escalation/seed-payoff gates
+- **Data-density gate** — minimum N cited facts per minute (not yet implemented)
+- **LLM-based semantic niche gate** — upgrade allowlist from token matching to LLM classification
+- **Inspire pipeline cleanup** — delete legacy inspire pipeline after 3+ validated docu videos
 
 ---
 
@@ -201,11 +224,13 @@ Shots and sentences are **decoupled**: B-roll cuts every 2–4 sec independently
 
 | Variable | Required for | Default |
 |---|---|---|
-| `DEEPSEEK_API_KEY` | LLM narration + overlay + metric extraction | — |
+| `GROK_API_KEY` | LLM narration + overlay + metric extraction (default provider) | — |
+| `DEEPSEEK_API_KEY` | LLM (alternative provider) | — |
 | `GOOGLE_CLOUD_API_KEY` | TTS (Chirp 3 HD) + Vision API screener | — |
 | `PEXELS_API_KEY` | Stock image/video download | — |
 | `EXA_API_KEY` | Research phase | — |
 | `SERPER_API_KEY` | Research fallback | — |
+| `YOUTUBE_API_KEY` | YouTube clip extraction (yt-dlp) | — |
 | `DOCU_TTS_VOICE` | Documentary voice | `en-US-Chirp3-HD-Charon` |
 | `PIXABAY_API_KEY` | Stock video (legacy inspire; kept for shared clients) | — |
 | `LANGSMITH_API_KEY` | Trace ingestion | — |

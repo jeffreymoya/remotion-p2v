@@ -7,6 +7,7 @@
 import {
   checkStructureDeterministic,
   gateStoryStructure,
+  normalizeOptionalQuoteScene,
   type StructureViolation,
 } from "../../src/lib/docu/story-structure-gate";
 import type { SentenceDef } from "../../src/lib/docu/tts-pipeline";
@@ -30,7 +31,6 @@ function makeScene(overrides: Partial<SceneSpec> & { arcRole: ArcRole }): SceneS
     intent: "Test intent",
     targetSentenceCount: 3,
     assignedAnchorIds: [],
-    arcRole: overrides.arcRole,
     scenarioPressure: "test pressure",
     retentionLoop: "what happens next?",
     visualBeat: "chart bending",
@@ -194,9 +194,28 @@ function makeSpine(segments: SceneSpec[]): StorySpine {
   assert(!violations.some((v) => v.check === "quote-scene-missing-quote"), "quote-present: not flagged");
 }
 
-// ── gateStoryStructure throws on blocking violations ─────────────────
+// ── Quote scene normalization clears optional mismatch ────────────────
 
-let pendingAsyncTests = 3;
+{
+  const scenes: SceneSpec[] = [
+    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2 }),
+    makeScene({ index: 1, arcRole: "payoff", pronoun: "they", flipFromPrior: true, targetSentenceCount: 2 }),
+  ];
+  const sentences = [
+    s("You see the number drop."),
+    s("The loss is real."),
+    s("They restructured the entire division."),
+    s("Nobody was warned."),
+  ];
+  const spine = makeSpine(scenes);
+  spine.quoteSceneIndex = 1;
+  const normalized = normalizeOptionalQuoteScene(sentences, spine);
+  assert(normalized.quoteSceneIndex === null, "quote-normalize: clears optional quote scene when narration has no quote");
+}
+
+// ── gateStoryStructure throws on remaining blocking violations ───────
+
+let pendingAsyncTests = 2;
 function asyncDone(): void {
   pendingAsyncTests--;
   if (pendingAsyncTests === 0) {
@@ -238,29 +257,6 @@ gateStoryStructure(
   () => { throw new Error("FAIL gate should have thrown for no-flip"); },
   (e: Error) => {
     assert(e.message.includes("no-flip"), "gate throws on no-flip", e.message);
-  },
-).finally(asyncDone);
-
-(() => {
-  const scenes: SceneSpec[] = [
-    makeScene({ index: 0, arcRole: "hook", pronoun: "you", targetSentenceCount: 2 }),
-    makeScene({ index: 1, arcRole: "payoff", pronoun: "they", flipFromPrior: true, targetSentenceCount: 2 }),
-  ];
-  const spine = makeSpine(scenes);
-  spine.quoteSceneIndex = 1;
-  return gateStoryStructure(
-    [
-      s("You see the number drop."),
-      s("The loss is real."),
-      s("They restructured the entire division."),
-      s("Nobody was warned."),
-    ],
-    spine,
-  );
-})().then(
-  () => { throw new Error("FAIL gate should have thrown for quote-scene-missing-quote"); },
-  (e: Error) => {
-    assert(e.message.includes("quote-scene-missing-quote"), "gate throws on quote-scene-missing-quote", e.message);
   },
 ).finally(asyncDone);
 

@@ -34,6 +34,7 @@ export interface DocuShot {
   isInterviewClip?: boolean;
   startFrom?: number;
   captionWords?: InterviewCaptionWord[];
+  gradeMode?: "full" | "neutral" | "highlight-safe";
 }
 
 export interface DocuClip {
@@ -198,11 +199,18 @@ export const DocumentaryComposition = (props: DocuScript) => {
           >
             <div
               style={{
-                filter: `${
-                  PALETTE_MAP[shot.palette].filter
-                } url(#${HATTAB_LUT_ID})${
-                  blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
-                }`,
+                filter:
+                  shot.gradeMode === "neutral"
+                    ? blurPx > 0 && !isCitationActive
+                      ? `blur(${blurPx}px)`
+                      : "none"
+                    : shot.gradeMode === "highlight-safe"
+                      ? `contrast(1.05) saturate(1.1)${
+                          blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
+                        }`
+                      : `${PALETTE_MAP[shot.palette].filter} url(#${HATTAB_LUT_ID})${
+                          blurPx > 0 && !isCitationActive ? ` blur(${blurPx}px)` : ""
+                        }`,
                 width: "100%",
                 height: "100%",
               }}
@@ -225,7 +233,16 @@ export const DocumentaryComposition = (props: DocuScript) => {
 
       {/* Palette tint — per-shot cool/warm color cast at frame top */}
       <AbsoluteFill
-        style={{ background: palette.tint, pointerEvents: "none" }}
+        style={{
+          background: palette.tint,
+          pointerEvents: "none",
+          opacity:
+            currentShot?.gradeMode === "neutral"
+              ? 0
+              : currentShot?.gradeMode === "highlight-safe"
+                ? 0.15
+                : 1,
+        }}
       />
 
       {/* Bottom scrim */}

@@ -50,6 +50,11 @@ export interface AnchorStrategyContext {
   spec: OverlaySpecBase;
   wordTimings: WordTiming[];
   fps: number;
+  sentenceAnchors?: Array<{
+    text: string;
+    startSeconds: number;
+    endSeconds: number;
+  }>;
 }
 
 export interface AnchorResult {
@@ -65,7 +70,8 @@ export type DataItemKind = typeof DATA_ITEM_KINDS[number];
 export const OVERLAY_CATEGORIES = ["card", "number", "bar", "chart"] as const;
 export type OverlayCategory = typeof OVERLAY_CATEGORIES[number];
 
-// Note: id is optional in schema because assignIds() fills it after LLM extraction.
+// Note: id is optional in the Zod schema because assignIds() fills it after LLM extraction.
+// RawDataItem is the pre-assignment type (id optional); DataItem is the post-assignment contract (id required).
 export const DataItemSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.string().optional(), kind: z.literal("scalar"), value: z.number(), unit: UnitSchema, label: z.string(), sourceAnchorId: z.string(), sourceUrl: z.string() }),
   z.object({ id: z.string().optional(), kind: z.literal("timeseries"), points: z.array(z.object({ x: z.union([z.string(), z.number()]), y: z.number() })), unit: UnitSchema, label: z.string(), sourceAnchorId: z.string(), sourceUrl: z.string() }),
@@ -73,6 +79,10 @@ export const DataItemSchema = z.discriminatedUnion("kind", [
   z.object({ id: z.string().optional(), kind: z.literal("composition"), points: z.array(z.object({ x: z.union([z.string(), z.number()]), y: z.number() })), unit: UnitSchema, label: z.string(), sourceAnchorId: z.string(), sourceUrl: z.string() }),
 ]);
 
+/** Pre-assignment type from the Zod schema — `id` may be absent before assignIds(). */
+export type RawDataItem = z.infer<typeof DataItemSchema>;
+
+/** Post-assignment contract — `id` is guaranteed after assignIds() fills it. */
 export type DataItem =
   | { id: string; kind: "scalar"; value: number; unit: OverlayUnit; label: string; sourceAnchorId: string; sourceUrl: string }
   | { id: string; kind: "timeseries"; points: Array<{ x: string | number; y: number }>; unit: OverlayUnit; label: string; sourceAnchorId: string; sourceUrl: string }

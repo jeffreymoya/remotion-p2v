@@ -15,7 +15,7 @@ import { createCanvas } from "canvas";
   },
 };
 
-import { layoutHeadline, HEADLINE_LAYOUT_OPTS } from "../../src/lib/docu/article-text-layout.ts";
+import { layoutHeadline, HEADLINE_LAYOUT_OPTS } from "../../src/lib/docu/article-text-layout";
 
 let passed = 0;
 let failed = 0;

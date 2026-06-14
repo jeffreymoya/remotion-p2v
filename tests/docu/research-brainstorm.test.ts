@@ -4,7 +4,10 @@
  * Usage:
  *   npx tsx tests/docu/research-brainstorm.test.ts
  */
-import { normalizeKind } from "../../src/lib/shared/research/research-brainstorm";
+import {
+  normalizeKind,
+  RESEARCH_BRAINSTORM_MAX_TOKENS,
+} from "../../src/lib/shared/research/research-brainstorm";
 
 let passed = 0;
 function assert(condition: boolean, label: string, detail?: string): void {
@@ -36,5 +39,13 @@ assert(normalizeKind("  Primary-Quote  ") === "primary_quote", "synonym: case+hy
   assert(!threw, "unknown: does not throw");
   assert(result === "study", "unknown: defaults to 'study'", result);
 }
+
+// ── Brainstorm request budget stays explicit ────────────────────────────
+
+assert(
+  RESEARCH_BRAINSTORM_MAX_TOKENS >= 16_000,
+  "brainstorm: explicit max token budget set high enough for large corpus prompts",
+  String(RESEARCH_BRAINSTORM_MAX_TOKENS),
+);
 
 console.log(`\n${passed} passed`);

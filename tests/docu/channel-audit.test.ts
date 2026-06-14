@@ -119,7 +119,7 @@ function input(entries: VarietyLedgerEntry[], extra: Partial<AuditInput> = {}): 
     "scenario-escalation",
     "disaster-simulation",
   ];
-  const voices = ["en-US-Chirp3-HD-Charon", "en-US-Chirp3-HD-Fenrir", "en-US-Chirp3-HD-Oberon"] as const;
+  const voices = ["en-US-Chirp3-HD-Charon", "en-US-Chirp3-HD-Fenrir", "en-US-Chirp3-HD-Orus"] as const;
   const entries = arcs.map((a, i) =>
     entry(`v-${i}`, { ...presetForArc(a), voice: voices[i % voices.length] }),
   );

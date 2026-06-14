@@ -14,6 +14,7 @@ import { enrichCurrentRun } from "../../tracing";
 
 const CORPUS_EXCERPT_LIMIT = 40;
 const CORPUS_HIGHLIGHT_PREVIEW_CHARS = 220;
+export const RESEARCH_BRAINSTORM_MAX_TOKENS = 16_000;
 
 const BrainstormCandidateSchema = z.object({
   kind: z.string(),
@@ -202,6 +203,7 @@ export async function brainstormCandidatesImpl(
     {
       verbose: opts?.verbose,
       timeoutMs: RESEARCH_BRAINSTORM_TIMEOUT_MS,
+      maxTokens: RESEARCH_BRAINSTORM_MAX_TOKENS,
       runName: "research/brainstorm",
     },
   );

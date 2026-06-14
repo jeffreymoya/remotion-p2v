@@ -53,7 +53,7 @@ const unknownOverlay = { type: "garbage-type", text: "hello", anchorPhrase: "tes
 const unknownParsed = OverlaySpecSchema.safeParse(unknownOverlay);
 assert(!unknownParsed.success, "rejects unknown overlay type");
 assert(
-  unknownParsed.error?.issues.some((i) => i.code === "invalid_union"),
+  unknownParsed.error?.issues.some((i) => i.code === "invalid_union") ?? false,
   "rejection has invalid_union code",
 );
 
@@ -111,7 +111,7 @@ function describeOverlay(o: OverlaySpec): string {
     case "chart": return `chart: ${o.chartKind}`;
     default: {
       const _exhaustive: never = o;
-      throw new Error(`unhandled overlay type: ${String(_exhaustive.type)}`);
+      throw new Error(`unhandled overlay type: ${String((_exhaustive as { type?: string }).type)}`);
     }
   }
 }

@@ -12,7 +12,8 @@ export type SearchLens =
   | "narrative_case_study"
   | "protagonist_arc"
   | "institutional_report"
-  | "expert_testimony";
+  | "expert_testimony"
+  | "personal_impact";
 
 export type SearchKind =
   | "primary_quote"

@@ -261,4 +261,36 @@ function makeScene(
   assert(targets.reduce((s, v) => s + v, 0) === 43, "targets/remainder: sum equals total");
 }
 
+// ── Hook without anchors: NOT flagged by rule 8 ──────────────────────
+
+{
+  const scenes = [
+    makeScene({ index: 0, arcRole: "hook", palette: "warm-real", assignedAnchorIds: [] }),
+    makeScene({ index: 1, arcRole: "baseline", palette: "cool-tech", assignedAnchorIds: ["a1"] }),
+    makeScene({ index: 2, arcRole: "escalation", palette: "cool-tech", flipFromPrior: true, assignedAnchorIds: ["a2"] }),
+    makeScene({ index: 3, arcRole: "turn", palette: "cool-tech", assignedAnchorIds: ["a3"] }),
+    makeScene({ index: 4, arcRole: "payoff", palette: "warm-real", assignedAnchorIds: ["a4"] }),
+  ];
+  const anchors = [anchor("a1"), anchor("a2"), anchor("a3"), anchor("a4")];
+  const v = validateSpineStructure(scenes as any, null, undefined, anchors);
+  assert(!v.segmentWithoutAnchor, "rule 8: hook without anchors → not flagged");
+  assert(v.segmentWithoutAnchorIndices.length === 0, "rule 8: no anchor-violation indices");
+}
+
+// ── Non-hook segment without anchors: flagged by rule 8 ───────────────
+
+{
+  const scenes = [
+    makeScene({ index: 0, arcRole: "hook", palette: "warm-real", assignedAnchorIds: ["a1"] }),
+    makeScene({ index: 1, arcRole: "baseline", palette: "cool-tech", assignedAnchorIds: [] }),
+    makeScene({ index: 2, arcRole: "escalation", palette: "cool-tech", flipFromPrior: true, assignedAnchorIds: ["a2"] }),
+    makeScene({ index: 3, arcRole: "turn", palette: "cool-tech", assignedAnchorIds: ["a3"] }),
+    makeScene({ index: 4, arcRole: "payoff", palette: "warm-real", assignedAnchorIds: ["a4"] }),
+  ];
+  const anchors = [anchor("a1"), anchor("a2"), anchor("a3"), anchor("a4")];
+  const v = validateSpineStructure(scenes as any, null, undefined, anchors);
+  assert(v.segmentWithoutAnchor, "rule 8: baseline without anchors → flagged");
+  assert(v.segmentWithoutAnchorIndices.includes(1), "rule 8: baseline (index 1) in violation list");
+}
+
 console.log("\nAll story-spine-gate tests passed.");
