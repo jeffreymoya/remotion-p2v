@@ -1,14 +1,16 @@
 import React from "react";
+import { AbsoluteFill } from "remotion";
 import type { DocuPalette } from "./docu-tokens";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
 import type { ChartKind } from "../../lib/docu/overlays/chart";
 import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
-import { DonutChart } from "./DonutChart";
-import { LineChart } from "./LineChart";
-import { BarChart } from "./BarChart";
-import { HorizontalBarChart } from "./HorizontalBarChart";
-import { AreaChart } from "./AreaChart";
-import { RadialChart } from "./RadialChart";
+import { DonutChart as S2vDonutChart } from "./charts/DonutChart";
+import { LineChart as S2vLineChart } from "./charts/LineChart";
+import { BarChart as S2vBarChart } from "./charts/BarChart";
+import { HorizontalBarChart as S2vHorizontalBarChart } from "./charts/HorizontalBarChart";
+import { AreaChart as S2vAreaChart } from "./charts/AreaChart";
+import { RadialChart as S2vRadialChart } from "./charts/RadialChart";
+import { paletteToTheme } from "./s2v-adapters";
 
 export interface DocuChartProps {
   chartKind: ChartKind;
@@ -23,8 +25,6 @@ export interface DocuChartProps {
   enterParams?: Record<string, number>;
 }
 
-// Shared render props passed to every chart component. Components ignore the
-// extra fields they do not use (e.g. only AreaChart reads forecastFromIndex).
 interface ChartRenderProps {
   label: string;
   points: Array<{ x: string | number; y: number }>;
@@ -37,13 +37,37 @@ interface ChartRenderProps {
   enterParams?: Record<string, number>;
 }
 
+type S2vChartComponent =
+  | typeof S2vDonutChart
+  | typeof S2vLineChart
+  | typeof S2vBarChart
+  | typeof S2vHorizontalBarChart
+  | typeof S2vAreaChart
+  | typeof S2vRadialChart;
+
+function renderChart(Component: S2vChartComponent, props: ChartRenderProps): React.ReactElement {
+  return (
+    <AbsoluteFill>
+      <Component
+        label={props.label}
+        points={props.points}
+        unit={props.unit}
+        source={props.source}
+        theme={paletteToTheme(props.palette)}
+        durationInFrames={props.durationInFrames}
+        forecastFromIndex={props.forecastFromIndex}
+      />
+    </AbsoluteFill>
+  );
+}
+
 export const CHART_REGISTRY: Record<ChartKind, React.FC<ChartRenderProps>> = {
-  composition: DonutChart,
-  timeseries: LineChart,
-  comparison: BarChart,
-  "horizontal-bar": HorizontalBarChart,
-  area: AreaChart,
-  radial: RadialChart,
+  composition: (props) => renderChart(S2vDonutChart, props),
+  timeseries: (props) => renderChart(S2vLineChart, props),
+  comparison: (props) => renderChart(S2vBarChart, props),
+  "horizontal-bar": (props) => renderChart(S2vHorizontalBarChart, props),
+  area: (props) => renderChart(S2vAreaChart, props),
+  radial: (props) => renderChart(S2vRadialChart, props),
 };
 
 export const DocuChart: React.FC<DocuChartProps> = ({ chartKind, enter, enterParams, ...rest }) => {

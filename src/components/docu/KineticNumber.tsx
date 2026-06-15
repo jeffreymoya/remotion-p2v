@@ -1,20 +1,11 @@
 import React from "react";
-import { interpolate, useCurrentFrame } from "remotion";
-import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
-import { loadFont as loadBarlowCondensed } from "@remotion/google-fonts/BarlowCondensed";
+import { AbsoluteFill } from "remotion";
+import { KineticNumber as S2vKineticNumber } from "./cards/KineticNumber";
 import type { DocuPalette, KineticNumberStyle } from "./docu-tokens";
-import {
-  DEFAULT_KINETIC_NUMBER_STYLE,
-  FONT_BODY,
-  FONT_DISPLAY,
-  TRACKING,
-} from "./docu-tokens";
-import { getEnterPreset } from "../../lib/docu/overlays/overlay-animations";
+import { PALETTE_MAP } from "./docu-tokens";
 import type { EnterPresetKey } from "../../lib/docu/overlays/overlay-animations";
 import type { OverlayUnit } from "../../lib/docu/overlays/types";
-
-loadInter();
-loadBarlowCondensed();
+import { kineticDisplay, paletteToTheme } from "./s2v-adapters";
 
 interface KineticNumberProps {
   label: string;
@@ -27,79 +18,42 @@ interface KineticNumberProps {
   enterParams?: Record<string, number>;
 }
 
-function formatValue(value: number, unit: OverlayUnit): string {
-  switch (unit) {
-    case "$":
-      return `$${Math.round(value).toLocaleString()}`;
-    case "%":
-      return `${value.toFixed(2)}%`;
-    case "x":
-      return `${value.toFixed(1)}x`;
-    case "T":
-      return `$${(value / 1000).toFixed(1)}T`;
-    case "B":
-      return `$${(value / 1000).toFixed(1)}B`;
-    case "M":
-      return `${value.toFixed(1)}M`;
-    case "K":
-      return `${Math.round(value).toLocaleString()}K`;
-  }
-}
-
 export const KineticNumber: React.FC<KineticNumberProps> = ({
   label,
   value,
   unit,
-  durationFrames,
+  durationFrames: _durationFrames,
+  palette,
   kineticStyle,
-  enter,
+  enter: _enter,
 }) => {
-  const frame = useCurrentFrame();
-
-  const s = { ...DEFAULT_KINETIC_NUMBER_STYLE, ...kineticStyle };
-
-  const currentValue: number = enter
-    ? (getEnterPreset(enter).channel === "value"
-      ? (getEnterPreset(enter).fn as (f: number, sf: number, df: number, dur: number, t: number) => number)(frame, 0, 0, durationFrames, value)
-      : interpolate(frame, [0, durationFrames], [0, value], { extrapolateRight: "clamp" }))
-    : interpolate(frame, [0, durationFrames], [0, value], { extrapolateRight: "clamp" });
-
-  const gradient = `linear-gradient(to right, ${s.gradientStart}, ${s.gradientEnd})`;
+  const theme = paletteToTheme(palette);
+  const textColor = theme === "light" ? "#14110d" : "#efe9dc";
+  const mutedColor = theme === "light" ? "rgba(20,17,13,0.55)" : "#8a847a";
+  const secondaryColor =
+    kineticStyle?.labelColor ??
+    (theme === "light" ? "rgba(20,17,13,0.68)" : "rgba(239,233,220,0.78)");
+  const accent = kineticStyle?.gradientStart ?? PALETTE_MAP[palette].accentColor;
+  const display = kineticDisplay(value, unit);
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: `${s.positionLeftPct}%`,
-        top: `${s.positionTopPct}%`,
-        transform: "translate(-50%, -50%)",
-        textAlign: "center",
-        textShadow: "0 2px 8px rgba(0,0,0,0.8)",
-        lineHeight: 1.1,
-      }}
-    >
-      <div style={{
-        fontFamily: FONT_BODY,
-        fontSize: s.labelFontSize,
-        fontWeight: s.labelFontWeight,
-        color: s.labelColor,
-        marginBottom: s.labelMarginBottom,
-        letterSpacing: TRACKING.wide,
-      }}>
-        {label}
-      </div>
-      <div style={{
-        fontFamily: FONT_DISPLAY,
-        fontSize: s.valueFontSize,
-        fontWeight: s.valueFontWeight,
-        letterSpacing: TRACKING.tight,
-        background: gradient,
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
-      }}>
-        {formatValue(currentValue, unit)}
-      </div>
-    </div>
+    <AbsoluteFill>
+      <S2vKineticNumber
+        num="03"
+        name="Kinetic Number"
+        meta="Count-Up Stat"
+        eyebrow=""
+        currency={display.currency}
+        target={display.target}
+        decimals={display.decimals}
+        unit={display.unit}
+        label={label}
+        source=""
+        accent={accent}
+        textColor={textColor}
+        secondaryColor={secondaryColor}
+        mutedColor={mutedColor}
+      />
+    </AbsoluteFill>
   );
 };

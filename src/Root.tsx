@@ -6,6 +6,11 @@ import { DocumentaryComposition } from "./components/docu/DocumentaryComposition
 import { ChartShowcase } from "./components/docu/ChartShowcase";
 import { KineticPlayground, kineticPlaygroundSchema } from "./components/docu/KineticPlayground";
 import { KineticShowcase } from "./components/docu/KineticShowcase";
+import { Showcase as S2vShowcase } from "./components/docu/Showcase";
+import {
+  DocumentaryRenderer as S2vDocumentaryRenderer,
+  DOCUMENTARY_PREVIEW_PLAN,
+} from "./components/docu/DocumentaryRenderer";
 
 const Root: React.FC = () => {
   return (
@@ -47,6 +52,23 @@ const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="s2v-docu-showcase"
+        component={S2vShowcase}
+        durationInFrames={360}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="s2v-documentary-preview"
+        component={S2vDocumentaryRenderer}
+        defaultProps={DOCUMENTARY_PREVIEW_PLAN}
+        durationInFrames={DOCUMENTARY_PREVIEW_PLAN.durationInFrames}
+        fps={DOCUMENTARY_PREVIEW_PLAN.fps}
+        width={DOCUMENTARY_PREVIEW_PLAN.width}
+        height={DOCUMENTARY_PREVIEW_PLAN.height}
       />
     </>
   );

@@ -1,0 +1,2207 @@
+{
+  "$generatedBy": "scripts/generate-registry.ts",
+  "$doNotEdit": "Run `npm run registry:build` to regenerate.",
+  "$charter": {
+    "mission": "This component library turns dense documentary narration into clear, credible, hard-to-stop-watching scenes. Components are evidence-driven visual building blocks and the renderer is a deterministic layout engine, so an LLM can compose scenes from meaning alone while the engine guarantees they never collide.",
+    "mentalModel": [
+      "A component is a placeless block, like an element dropped onto a canvas: it has NO inherent position or size. Placement is assigned per-instance by the engine, not by the component.",
+      "Two separated axes: STYLING (fonts, colours, scale) lives in the component and is fully overridable; PLACEMENT (slot, box, z-order) lives in the composition and is assigned deterministically.",
+      "The renderer hands every layer a named, non-overlapping slot box from a 12x6 grid and clips it. Non-overlapping slots + clipped boxes + components that stay inside their box make text-on-text collisions impossible by construction.",
+      "Chrome (the frame outline + label rail) is rendered ONCE per scene by the renderer, never by a component."
+    ],
+    "authoringRules": [
+      "Root every composite in <Box> from common/Box; it fills the slot and clips overflow. AbsoluteFill is forbidden in composites.",
+      "Size from the box, not the frame: read useBoxSize() and fitFont(); use percentage offsets and flex. Forbidden: viewport units (100vw/vh), position:fixed, and useVideoConfig().width/height for layout.",
+      "Every rendered visual value must be overridable via a Zod-schema'd prop. No magic numbers — pull from common/tokens or from props.",
+      "Frame-driven motion only (useCurrentFrame/interpolate/spring). CSS transitions/animations do not render in Remotion.",
+      "A composite must not import or render Chrome; num/name/meta stay in the schema as scene-chrome metadata the pipeline lifts to the scene.",
+      "Register every composite in REGISTRY_SOURCES and rebuild registry.json. An unregistered *Schema or a stale registry.json is a hard build failure."
+    ],
+    "enforcedBy": [
+      "npm run components:verify — the single deterministic gate: rebuilds the registry, checks it for drift, enforces the box-relative contract, and runs the layout/collision tests.",
+      "npm run scaffold -- <Name> [category] [dir] — generates a contract-compliant starting point.",
+      "npm run registry:check and npm run contract:check are also wired into npm run lint."
+    ],
+    "plannerBrief": [
+      "Pick components by MEANING and available evidence: match the narration and the component scriptCues, not a layout.",
+      "Never specify or worry about position, size, or overlap. The engine assigns every layer a non-overlapping slot deterministically; your job is semantic fit and variety.",
+      "Vary the visual grammar across scenes (focalOwner and component family) to avoid template fatigue."
+    ]
+  },
+  "components": [
+    {
+      "name": "TitleCard",
+      "tier": "composite",
+      "category": "title",
+      "purpose": "Episode-opener hero title with eyebrow, two display lines, and a meta rail.",
+      "whenToUse": "Open a video or major section with a bold, branded title beat.",
+      "scriptCues": [
+        "title",
+        "opener",
+        "intro",
+        "hook",
+        "headline",
+        "cold open",
+        "episode"
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/TitleCard.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "description": "Pattern index shown in the chrome label, e.g. \"01\".",
+            "default": "01"
+          },
+          "name": {
+            "type": "string",
+            "description": "Chrome label naming this card pattern.",
+            "default": "Title Card"
+          },
+          "meta": {
+            "type": "string",
+            "description": "Top-right chrome caption.",
+            "default": "Episode Opener"
+          },
+          "eyebrow": {
+            "type": "string",
+            "description": "Kicker line above the title.",
+            "default": "An Open Secrets Investigation · Episode 01"
+          },
+          "line1": {
+            "type": "string",
+            "description": "Primary display headline (uppercased).",
+            "default": "The Quiet Collapse"
+          },
+          "line2": {
+            "type": "string",
+            "description": "Secondary headline / subtitle.",
+            "default": "How three private banks erased $400 billion in seventy-two hours."
+          },
+          "metaItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Bottom meta rail items.",
+            "default": [
+              "Premieres 11.14.2025",
+              "Dir. Mira Achebe",
+              "Frontline · 90 Min."
+            ]
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(239,233,220,0.72)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          },
+          "eyebrowSize": {
+            "type": "number",
+            "description": "Eyebrow font size in px.",
+            "default": 26
+          },
+          "line2Size": {
+            "type": "number",
+            "description": "Subtitle font size in px.",
+            "default": 60
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "01",
+        "name": "Title Card",
+        "meta": "Episode Opener",
+        "eyebrow": "An Open Secrets Investigation · Episode 01",
+        "line1": "The Quiet Collapse",
+        "line2": "How three private banks erased $400 billion in seventy-two hours.",
+        "metaItems": [
+          "Premieres 11.14.2025",
+          "Dir. Mira Achebe",
+          "Frontline · 90 Min."
+        ],
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "secondaryColor": "rgba(239,233,220,0.72)",
+        "mutedColor": "#8a847a",
+        "eyebrowSize": 26,
+        "line2Size": 60
+      }
+    },
+    {
+      "name": "LowerThirdChyron",
+      "tier": "composite",
+      "category": "lower-third",
+      "purpose": "Broadcast lower-third banner naming a speaker or place.",
+      "whenToUse": "Identify who or what is on screen without covering the subject.",
+      "scriptCues": [
+        "lower third",
+        "chyron",
+        "name",
+        "speaker",
+        "identify",
+        "who is",
+        "title bar"
+      ],
+      "composes": [
+        "Box",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/LowerThirdChyron.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "02"
+          },
+          "name": {
+            "type": "string",
+            "default": "Lower-Third Chyron"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Interview Identifier"
+          },
+          "kicker": {
+            "type": "string",
+            "default": "Whistleblower · Episode 03"
+          },
+          "nameRows": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Dr. Elena",
+              "Vasquez"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "default": "Former Senior Analyst · U.S. Treasury"
+          },
+          "cite": {
+            "type": "string",
+            "default": "Filmed Manhattan · 07 Sept 2024 · Identity confirmed"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(239,233,220,0.72)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "02",
+        "name": "Lower-Third Chyron",
+        "meta": "Interview Identifier",
+        "kicker": "Whistleblower · Episode 03",
+        "nameRows": [
+          "Dr. Elena",
+          "Vasquez"
+        ],
+        "title": "Former Senior Analyst · U.S. Treasury",
+        "cite": "Filmed Manhattan · 07 Sept 2024 · Identity confirmed",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "secondaryColor": "rgba(239,233,220,0.72)",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "KineticNumber",
+      "tier": "composite",
+      "category": "data",
+      "purpose": "Large animated count-up statistic with label and unit.",
+      "whenToUse": "Land a single dramatic figure (percentage, money, multiplier).",
+      "scriptCues": [
+        "number",
+        "statistic",
+        "percent",
+        "figure",
+        "count",
+        "grew",
+        "fell",
+        "billion",
+        "trillion",
+        "%",
+        "x"
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "formatCountUp",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/KineticNumber.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "03"
+          },
+          "name": {
+            "type": "string",
+            "default": "Kinetic Number"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Count-Up Stat"
+          },
+          "eyebrow": {
+            "type": "string",
+            "default": "Between Mar 2021 — Jun 2024"
+          },
+          "currency": {
+            "type": "string",
+            "default": "$"
+          },
+          "target": {
+            "type": "number",
+            "default": 2.4
+          },
+          "decimals": {
+            "type": "number",
+            "default": 1
+          },
+          "unit": {
+            "type": "string",
+            "default": "B"
+          },
+          "label": {
+            "type": "string",
+            "default": "vanished from client trust accounts at Helix Capital Partners."
+          },
+          "source": {
+            "type": "string",
+            "default": "Source · SEC Filing 10-K · Internal Audit, Mar 2025"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(239,233,220,0.78)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "03",
+        "name": "Kinetic Number",
+        "meta": "Count-Up Stat",
+        "eyebrow": "Between Mar 2021 — Jun 2024",
+        "currency": "$",
+        "target": 2.4,
+        "decimals": 1,
+        "unit": "B",
+        "label": "vanished from client trust accounts at Helix Capital Partners.",
+        "source": "Source · SEC Filing 10-K · Internal Audit, Mar 2025",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "secondaryColor": "rgba(239,233,220,0.78)",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "RedactedReveal",
+      "tier": "composite",
+      "category": "evidence",
+      "purpose": "Redaction bars that wipe away to reveal hidden text.",
+      "whenToUse": "Stage a leak/declassified reveal or a suppressed fact.",
+      "scriptCues": [
+        "redacted",
+        "classified",
+        "reveal",
+        "censored",
+        "hidden",
+        "leak",
+        "declassified"
+      ],
+      "composes": [
+        "Box",
+        "Reveal",
+        "Stamp",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/RedactedReveal.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "04"
+          },
+          "name": {
+            "type": "string",
+            "default": "Redacted Reveal"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Document Disclosure"
+          },
+          "caption": {
+            "type": "string",
+            "default": "Internal Memo — Office of the General Counsel"
+          },
+          "stamp": {
+            "type": "string",
+            "default": "Declassified · 04.18.2025"
+          },
+          "doc": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "redacted": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "text": "The investigation determined that"
+              },
+              {
+                "text": "Reinhardt",
+                "redacted": true
+              },
+              {
+                "text": "personally authorized wire transfers totaling"
+              },
+              {
+                "text": "$1.8B",
+                "redacted": true
+              },
+              {
+                "text": "to"
+              },
+              {
+                "text": "Aegis Holdings, Cayman",
+                "redacted": true
+              },
+              {
+                "text": "— knowing the funds were client deposits."
+              }
+            ]
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "04",
+        "name": "Redacted Reveal",
+        "meta": "Document Disclosure",
+        "caption": "Internal Memo — Office of the General Counsel",
+        "stamp": "Declassified · 04.18.2025",
+        "doc": [
+          {
+            "text": "The investigation determined that"
+          },
+          {
+            "text": "Reinhardt",
+            "redacted": true
+          },
+          {
+            "text": "personally authorized wire transfers totaling"
+          },
+          {
+            "text": "$1.8B",
+            "redacted": true
+          },
+          {
+            "text": "to"
+          },
+          {
+            "text": "Aegis Holdings, Cayman",
+            "redacted": true
+          },
+          {
+            "text": "— knowing the funds were client deposits."
+          }
+        ],
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "MarkerHighlight",
+      "tier": "composite",
+      "category": "evidence",
+      "purpose": "Highlighter swipe emphasising a key phrase in a line.",
+      "whenToUse": "Direct the eye to the operative words inside a sentence.",
+      "scriptCues": [
+        "highlight",
+        "underline",
+        "key phrase",
+        "emphasis",
+        "marker",
+        "mark"
+      ],
+      "composes": [
+        "Box",
+        "Reveal",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/MarkerHighlight.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "05"
+          },
+          "name": {
+            "type": "string",
+            "default": "Marker Highlight"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Headline Scan"
+          },
+          "paper": {
+            "type": "string",
+            "default": "The Financial Record"
+          },
+          "byline": {
+            "type": "string",
+            "default": "Vol. CXLII · Tuesday, March 14, 2023 · Edition A1"
+          },
+          "headline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "highlight": {}
+              },
+              "required": [
+                "text",
+                "highlight"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "text": "Helix Capital files for"
+              },
+              {
+                "text": "bankruptcy",
+                "highlight": "mark"
+              },
+              {
+                "text": "amid probe into"
+              },
+              {
+                "text": "$2.4B",
+                "highlight": "mark"
+              },
+              {
+                "text": "in"
+              },
+              {
+                "text": "missing client funds.",
+                "highlight": "strike"
+              }
+            ]
+          },
+          "sub": {
+            "type": "string",
+            "default": "Regulators say transfers to an offshore shell predate the bank's collapse by at least nineteen months."
+          },
+          "markColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#f4c84a"
+          },
+          "strikeColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#d6362e"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#14110d"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(20,17,13,0.72)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(20,17,13,0.6)"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "05",
+        "name": "Marker Highlight",
+        "meta": "Headline Scan",
+        "paper": "The Financial Record",
+        "byline": "Vol. CXLII · Tuesday, March 14, 2023 · Edition A1",
+        "headline": [
+          {
+            "text": "Helix Capital files for"
+          },
+          {
+            "text": "bankruptcy",
+            "highlight": "mark"
+          },
+          {
+            "text": "amid probe into"
+          },
+          {
+            "text": "$2.4B",
+            "highlight": "mark"
+          },
+          {
+            "text": "in"
+          },
+          {
+            "text": "missing client funds.",
+            "highlight": "strike"
+          }
+        ],
+        "sub": "Regulators say transfers to an offshore shell predate the bank's collapse by at least nineteen months.",
+        "markColor": "#f4c84a",
+        "strikeColor": "#d6362e",
+        "textColor": "#14110d",
+        "secondaryColor": "rgba(20,17,13,0.72)",
+        "mutedColor": "rgba(20,17,13,0.6)"
+      }
+    },
+    {
+      "name": "TypewriterMemo",
+      "tier": "composite",
+      "category": "document",
+      "purpose": "Typed memo/letter revealed character by character on a document surface.",
+      "whenToUse": "Show correspondence, notes, or a paper trail being read.",
+      "scriptCues": [
+        "memo",
+        "letter",
+        "email",
+        "typed",
+        "document",
+        "note",
+        "correspondence"
+      ],
+      "composes": [
+        "Box",
+        "Typewriter",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/TypewriterMemo.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "06"
+          },
+          "name": {
+            "type": "string",
+            "default": "Typewriter Leak"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Document Reveal"
+          },
+          "from": {
+            "type": "string",
+            "default": "From: r.kade@helix-cap.com · 02:14 AM"
+          },
+          "classification": {
+            "type": "string",
+            "default": "Confidential — Do Not Forward"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "runs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "text": {
+                        "type": "string"
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "__remotion-color"
+                      },
+                      "bold": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "text"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "runs"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "runs": [
+                  {
+                    "text": "SUBJECT:  "
+                  },
+                  {
+                    "text": "Wire instructions for Tranche 7.",
+                    "bold": true
+                  }
+                ]
+              },
+              {
+                "runs": [
+                  {
+                    "text": "Marcus — clear this "
+                  },
+                  {
+                    "text": "before",
+                    "color": "#d6362e",
+                    "bold": true
+                  },
+                  {
+                    "text": " the 9 AM audit window."
+                  }
+                ]
+              },
+              {
+                "runs": [
+                  {
+                    "text": "Route through Aegis. Same vehicle as last quarter."
+                  }
+                ]
+              },
+              {
+                "runs": [
+                  {
+                    "text": "If anyone asks, it's an "
+                  },
+                  {
+                    "text": "internal liquidity adjustment.",
+                    "bold": true
+                  }
+                ]
+              },
+              {
+                "runs": [
+                  {
+                    "text": "Burn this. — R."
+                  }
+                ]
+              }
+            ]
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#14110d"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "06",
+        "name": "Typewriter Leak",
+        "meta": "Document Reveal",
+        "from": "From: r.kade@helix-cap.com · 02:14 AM",
+        "classification": "Confidential — Do Not Forward",
+        "lines": [
+          {
+            "runs": [
+              {
+                "text": "SUBJECT:  "
+              },
+              {
+                "text": "Wire instructions for Tranche 7.",
+                "bold": true
+              }
+            ]
+          },
+          {
+            "runs": [
+              {
+                "text": "Marcus — clear this "
+              },
+              {
+                "text": "before",
+                "color": "#d6362e",
+                "bold": true
+              },
+              {
+                "text": " the 9 AM audit window."
+              }
+            ]
+          },
+          {
+            "runs": [
+              {
+                "text": "Route through Aegis. Same vehicle as last quarter."
+              }
+            ]
+          },
+          {
+            "runs": [
+              {
+                "text": "If anyone asks, it's an "
+              },
+              {
+                "text": "internal liquidity adjustment.",
+                "bold": true
+              }
+            ]
+          },
+          {
+            "runs": [
+              {
+                "text": "Burn this. — R."
+              }
+            ]
+          }
+        ],
+        "textColor": "#14110d"
+      }
+    },
+    {
+      "name": "PullQuote",
+      "tier": "composite",
+      "category": "quote",
+      "purpose": "Large editorial pulled quote with attribution.",
+      "whenToUse": "Feature a spoken or written statement as a standalone beat.",
+      "scriptCues": [
+        "quote",
+        "said",
+        "statement",
+        "testimony",
+        "pull quote",
+        "remarked",
+        "\""
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/PullQuote.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "07"
+          },
+          "name": {
+            "type": "string",
+            "default": "Pull Quote"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Whistleblower"
+          },
+          "mark": {
+            "type": "string",
+            "default": "“"
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "emphasis": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "text": "I knew this would"
+              },
+              {
+                "text": "happen.",
+                "emphasis": true
+              },
+              {
+                "text": "I just didn't think it would happen"
+              },
+              {
+                "text": "this fast.",
+                "emphasis": true
+              }
+            ]
+          },
+          "attrName": {
+            "type": "string",
+            "default": "Dr. Elena Vasquez"
+          },
+          "attrRole": {
+            "type": "string",
+            "default": "Fmr. Senior Analyst · U.S. Treasury"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "07",
+        "name": "Pull Quote",
+        "meta": "Whistleblower",
+        "mark": "“",
+        "body": [
+          {
+            "text": "I knew this would"
+          },
+          {
+            "text": "happen.",
+            "emphasis": true
+          },
+          {
+            "text": "I just didn't think it would happen"
+          },
+          {
+            "text": "this fast.",
+            "emphasis": true
+          }
+        ],
+        "attrName": "Dr. Elena Vasquez",
+        "attrRole": "Fmr. Senior Analyst · U.S. Treasury",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "BreakingNews",
+      "tier": "composite",
+      "category": "headline",
+      "purpose": "Urgent breaking-news banner with ticker.",
+      "whenToUse": "Open on alarm, urgency, or a news-bulletin framing.",
+      "scriptCues": [
+        "breaking",
+        "urgent",
+        "alert",
+        "news",
+        "bulletin",
+        "alarm",
+        "just in"
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/BreakingNews.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "08"
+          },
+          "name": {
+            "type": "string",
+            "default": "Breaking News + Ticker"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Newsroom Pickup"
+          },
+          "chip": {
+            "type": "string",
+            "default": "Breaking"
+          },
+          "time": {
+            "type": "string",
+            "default": "Live · 09:42 ET · NYSE Halts Trading"
+          },
+          "headline": {
+            "type": "string",
+            "default": "Helix Capital collapses in pre-market trading"
+          },
+          "sub": {
+            "type": "string",
+            "default": "Bank's three largest counterparties suspend exposure. Federal Reserve confirms emergency liquidity facility opened at 06:00 ET."
+          },
+          "tickerTag": {
+            "type": "string",
+            "default": "Markets"
+          },
+          "ticker": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "symbol": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "change": {
+                  "type": "string"
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down"
+                  ]
+                }
+              },
+              "required": [
+                "symbol",
+                "value",
+                "change",
+                "direction"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "symbol": "HLX",
+                "value": "42.18",
+                "change": "−61.4%",
+                "direction": "down"
+              },
+              {
+                "symbol": "JPM",
+                "value": "184.22",
+                "change": "−2.8%",
+                "direction": "down"
+              },
+              {
+                "symbol": "GS",
+                "value": "411.07",
+                "change": "−3.4%",
+                "direction": "down"
+              },
+              {
+                "symbol": "BAC",
+                "value": "36.92",
+                "change": "−4.1%",
+                "direction": "down"
+              },
+              {
+                "symbol": "VIX",
+                "value": "38.74",
+                "change": "+44.7%",
+                "direction": "up"
+              },
+              {
+                "symbol": "GLD",
+                "value": "234.10",
+                "change": "+1.9%",
+                "direction": "up"
+              },
+              {
+                "symbol": "DXY",
+                "value": "104.61",
+                "change": "+0.6%",
+                "direction": "up"
+              },
+              {
+                "symbol": "10Y",
+                "value": "4.18",
+                "change": "−18bp",
+                "direction": "down"
+              }
+            ]
+          },
+          "tickerDurationFrames": {
+            "type": "number",
+            "default": 840
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#d6362e"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(239,233,220,0.66)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "08",
+        "name": "Breaking News + Ticker",
+        "meta": "Newsroom Pickup",
+        "chip": "Breaking",
+        "time": "Live · 09:42 ET · NYSE Halts Trading",
+        "headline": "Helix Capital collapses in pre-market trading",
+        "sub": "Bank's three largest counterparties suspend exposure. Federal Reserve confirms emergency liquidity facility opened at 06:00 ET.",
+        "tickerTag": "Markets",
+        "ticker": [
+          {
+            "symbol": "HLX",
+            "value": "42.18",
+            "change": "−61.4%",
+            "direction": "down"
+          },
+          {
+            "symbol": "JPM",
+            "value": "184.22",
+            "change": "−2.8%",
+            "direction": "down"
+          },
+          {
+            "symbol": "GS",
+            "value": "411.07",
+            "change": "−3.4%",
+            "direction": "down"
+          },
+          {
+            "symbol": "BAC",
+            "value": "36.92",
+            "change": "−4.1%",
+            "direction": "down"
+          },
+          {
+            "symbol": "VIX",
+            "value": "38.74",
+            "change": "+44.7%",
+            "direction": "up"
+          },
+          {
+            "symbol": "GLD",
+            "value": "234.10",
+            "change": "+1.9%",
+            "direction": "up"
+          },
+          {
+            "symbol": "DXY",
+            "value": "104.61",
+            "change": "+0.6%",
+            "direction": "up"
+          },
+          {
+            "symbol": "10Y",
+            "value": "4.18",
+            "change": "−18bp",
+            "direction": "down"
+          }
+        ],
+        "tickerDurationFrames": 840,
+        "accent": "#d6362e",
+        "textColor": "#efe9dc",
+        "secondaryColor": "rgba(239,233,220,0.66)",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "SourceAttribution",
+      "tier": "composite",
+      "category": "citation",
+      "purpose": "Citation/source-credit card grounding a claim.",
+      "whenToUse": "Attribute a statistic, study, or claim to its source.",
+      "scriptCues": [
+        "source",
+        "citation",
+        "reference",
+        "study",
+        "research",
+        "et al",
+        "journal",
+        "according to"
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/SourceAttribution.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "09"
+          },
+          "name": {
+            "type": "string",
+            "default": "Source Attribution"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Citation Card"
+          },
+          "instRows": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Bloomberg",
+              "News"
+            ]
+          },
+          "instDate": {
+            "type": "string",
+            "default": "14 March 2023 · 06:42 ET"
+          },
+          "badge": {
+            "type": "string",
+            "default": "Confirmed · Two Sources"
+          },
+          "kicker": {
+            "type": "string",
+            "default": "Exclusive · Financial Crime Desk"
+          },
+          "head": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "emphasis": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "text": "Treasury launches criminal"
+              },
+              {
+                "text": "probe",
+                "emphasis": true
+              },
+              {
+                "text": "into Helix Capital and three"
+              },
+              {
+                "text": "unnamed",
+                "emphasis": true
+              },
+              {
+                "text": "co-conspirators."
+              }
+            ]
+          },
+          "citeLabel": {
+            "type": "string",
+            "default": "Doc 24-CR-0418"
+          },
+          "cite": {
+            "type": "string",
+            "default": "U.S. District Court, S.D.N.Y. — Sealed indictment unsealed at the request of the government, accessed via PACER."
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "09",
+        "name": "Source Attribution",
+        "meta": "Citation Card",
+        "instRows": [
+          "Bloomberg",
+          "News"
+        ],
+        "instDate": "14 March 2023 · 06:42 ET",
+        "badge": "Confirmed · Two Sources",
+        "kicker": "Exclusive · Financial Crime Desk",
+        "head": [
+          {
+            "text": "Treasury launches criminal"
+          },
+          {
+            "text": "probe",
+            "emphasis": true
+          },
+          {
+            "text": "into Helix Capital and three"
+          },
+          {
+            "text": "unnamed",
+            "emphasis": true
+          },
+          {
+            "text": "co-conspirators."
+          }
+        ],
+        "citeLabel": "Doc 24-CR-0418",
+        "cite": "U.S. District Court, S.D.N.Y. — Sealed indictment unsealed at the request of the government, accessed via PACER.",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "EvidenceStamp",
+      "tier": "composite",
+      "category": "evidence",
+      "purpose": "Stamped exhibit/evidence label slammed onto the frame.",
+      "whenToUse": "Mark something as proven, verified, or filed as exhibit.",
+      "scriptCues": [
+        "evidence",
+        "exhibit",
+        "stamp",
+        "verified",
+        "fact",
+        "proof",
+        "filed"
+      ],
+      "composes": [
+        "Box",
+        "Stamp",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/EvidenceStamp.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "10"
+          },
+          "name": {
+            "type": "string",
+            "default": "Evidence Stamp"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Court Exhibit"
+          },
+          "docTitle": {
+            "type": "string",
+            "default": "UNITED STATES v. REINHARDT et al."
+          },
+          "docMeta": {
+            "type": "string",
+            "default": "Case 24-CR-0418 · S.D.N.Y. · Filed 04.18.2025"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "label": "COUNT 1.",
+                "text": "Wire fraud in violation of 18 U.S.C. § 1343, occurring between 14 March 2021 and 09 June 2024."
+              },
+              {
+                "label": "COUNT 2.",
+                "text": "Conspiracy to commit money laundering, 18 U.S.C. § 1956(h), involving funds in excess of $1.8 billion routed through Aegis Holdings (Cayman)."
+              },
+              {
+                "label": "COUNT 3.",
+                "text": "Securities fraud, 15 U.S.C. § 78j(b), via material misstatements in quarterly filings 2Q21 – 4Q23."
+              },
+              {
+                "label": "EXHIBIT A.",
+                "text": "Internal wire authorization signed by R. Kade, time-stamped 02:14 AM, 11 February 2023."
+              }
+            ]
+          },
+          "stampTitle": {
+            "type": "string",
+            "default": "Exhibit A"
+          },
+          "stampSub": {
+            "type": "string",
+            "default": "Filed Under Seal"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#d6362e"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#14110d"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(20,17,13,0.78)"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(20,17,13,0.6)"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "10",
+        "name": "Evidence Stamp",
+        "meta": "Court Exhibit",
+        "docTitle": "UNITED STATES v. REINHARDT et al.",
+        "docMeta": "Case 24-CR-0418 · S.D.N.Y. · Filed 04.18.2025",
+        "lines": [
+          {
+            "label": "COUNT 1.",
+            "text": "Wire fraud in violation of 18 U.S.C. § 1343, occurring between 14 March 2021 and 09 June 2024."
+          },
+          {
+            "label": "COUNT 2.",
+            "text": "Conspiracy to commit money laundering, 18 U.S.C. § 1956(h), involving funds in excess of $1.8 billion routed through Aegis Holdings (Cayman)."
+          },
+          {
+            "label": "COUNT 3.",
+            "text": "Securities fraud, 15 U.S.C. § 78j(b), via material misstatements in quarterly filings 2Q21 – 4Q23."
+          },
+          {
+            "label": "EXHIBIT A.",
+            "text": "Internal wire authorization signed by R. Kade, time-stamped 02:14 AM, 11 February 2023."
+          }
+        ],
+        "stampTitle": "Exhibit A",
+        "stampSub": "Filed Under Seal",
+        "accent": "#d6362e",
+        "textColor": "#14110d",
+        "secondaryColor": "rgba(20,17,13,0.78)",
+        "mutedColor": "rgba(20,17,13,0.6)"
+      }
+    },
+    {
+      "name": "SplitCard",
+      "tier": "composite",
+      "category": "comparison",
+      "purpose": "Split-screen comparison of two sides.",
+      "whenToUse": "Contrast two things side by side (versus, before/after).",
+      "scriptCues": [
+        "versus",
+        "vs",
+        "split",
+        "compare",
+        "comparison",
+        "on the other hand",
+        "contrast"
+      ],
+      "composes": [
+        "Box",
+        "KenBurns",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/scenes/SplitCard.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "imageSrc": {
+            "type": "string",
+            "default": ""
+          },
+          "institution": {
+            "type": "string",
+            "default": "Federal Reserve"
+          },
+          "headline": {
+            "type": "string",
+            "default": "Liquidity guarantees were never funded."
+          },
+          "cite": {
+            "type": "string",
+            "default": "Testimony · Senate Banking Committee, 2024"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light"
+            ],
+            "default": "dark"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "shotIndex": {
+            "type": "number",
+            "default": 0
+          },
+          "panelScrim": {
+            "type": "string",
+            "default": "linear-gradient(to right, rgba(11,11,13,0.55), rgba(11,11,13,0.35))"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "imageSrc": "",
+        "institution": "Federal Reserve",
+        "headline": "Liquidity guarantees were never funded.",
+        "cite": "Testimony · Senate Banking Committee, 2024",
+        "theme": "dark",
+        "accent": "#D97757",
+        "shotIndex": 0,
+        "panelScrim": "linear-gradient(to right, rgba(11,11,13,0.55), rgba(11,11,13,0.35))"
+      }
+    },
+    {
+      "name": "ArticleCard",
+      "tier": "composite",
+      "category": "document",
+      "purpose": "Article/newspaper macro layout.",
+      "whenToUse": "Present press coverage or a publication as evidence.",
+      "scriptCues": [
+        "article",
+        "newspaper",
+        "press",
+        "publication",
+        "clipping",
+        "report",
+        "story"
+      ],
+      "composes": [
+        "Box",
+        "Reveal",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/scenes/ArticleCard.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "imageSrc": {
+            "type": "string",
+            "default": ""
+          },
+          "category": {
+            "type": "string",
+            "default": "Investigation"
+          },
+          "headline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "emphasis": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "text": "Three banks moved"
+              },
+              {
+                "text": "$400 billion",
+                "emphasis": true
+              },
+              {
+                "text": "in seventy-two hours."
+              }
+            ]
+          },
+          "authors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Mira Achebe",
+              "R. Kade"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "default": "14 March 2023"
+          },
+          "source": {
+            "type": "string",
+            "default": "Open Secrets"
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Internal ledgers reviewed by reporters show transfers routed through three shell entities before the markets opened.",
+              "Each leg cleared in under an hour, leaving regulators a paper trail that began only after the money was gone."
+            ]
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light"
+            ],
+            "default": "dark"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "markColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#f4c84a"
+          },
+          "bgBlurPx": {
+            "type": "number",
+            "default": 24
+          },
+          "scrimStrength": {
+            "type": "number",
+            "default": 0.45
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "imageSrc": "",
+        "category": "Investigation",
+        "headline": [
+          {
+            "text": "Three banks moved"
+          },
+          {
+            "text": "$400 billion",
+            "emphasis": true
+          },
+          {
+            "text": "in seventy-two hours."
+          }
+        ],
+        "authors": [
+          "Mira Achebe",
+          "R. Kade"
+        ],
+        "date": "14 March 2023",
+        "source": "Open Secrets",
+        "body": [
+          "Internal ledgers reviewed by reporters show transfers routed through three shell entities before the markets opened.",
+          "Each leg cleared in under an hour, leaving regulators a paper trail that began only after the money was gone."
+        ],
+        "theme": "dark",
+        "accent": "#D97757",
+        "markColor": "#f4c84a",
+        "bgBlurPx": 24,
+        "scrimStrength": 0.45
+      }
+    },
+    {
+      "name": "ContextBar",
+      "tier": "composite",
+      "category": "overlay",
+      "purpose": "Persistent context/status overlay strip.",
+      "whenToUse": "Keep a running label, status, or location visible across a beat.",
+      "scriptCues": [
+        "context",
+        "status",
+        "label",
+        "overlay",
+        "banner",
+        "tag",
+        "location"
+      ],
+      "composes": [
+        "Box",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/overlays/ContextBar.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "cycleItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Source · SEC Filing 10-K",
+              "Internal Audit · Mar 2025",
+              "Senate Banking Committee"
+            ]
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "background": {
+            "type": "string",
+            "default": "rgba(17,17,17,0.87)"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "itemDurationFrames": {
+            "type": "number",
+            "default": 90
+          },
+          "height": {
+            "type": "number",
+            "default": 64
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "cycleItems": [
+          "Source · SEC Filing 10-K",
+          "Internal Audit · Mar 2025",
+          "Senate Banking Committee"
+        ],
+        "accent": "#D97757",
+        "background": "rgba(17,17,17,0.87)",
+        "textColor": "#efe9dc",
+        "itemDurationFrames": 90,
+        "height": 64
+      }
+    },
+    {
+      "name": "DocumentaryCaption",
+      "tier": "composite",
+      "category": "caption",
+      "purpose": "Documentary subtitle/caption for narration.",
+      "whenToUse": "Render spoken narration/subtitles in documentary style.",
+      "scriptCues": [
+        "caption",
+        "subtitle",
+        "narration",
+        "voiceover",
+        "says",
+        "spoken",
+        "transcript"
+      ],
+      "composes": [],
+      "canonicalExample": "src/components/docu/captions/DocumentaryCaption.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "wordTimings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "word": {
+                  "type": "string"
+                },
+                "startSeconds": {
+                  "type": "number"
+                },
+                "endSeconds": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "word",
+                "startSeconds",
+                "endSeconds"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "word": "The",
+                "startSeconds": 0,
+                "endSeconds": 0.2
+              },
+              {
+                "word": "money",
+                "startSeconds": 0.2,
+                "endSeconds": 0.5
+              },
+              {
+                "word": "moved",
+                "startSeconds": 0.5,
+                "endSeconds": 0.8
+              },
+              {
+                "word": "before",
+                "startSeconds": 0.8,
+                "endSeconds": 1.1
+              },
+              {
+                "word": "anyone",
+                "startSeconds": 1.1,
+                "endSeconds": 1.4
+              },
+              {
+                "word": "noticed.",
+                "startSeconds": 1.4,
+                "endSeconds": 1.8
+              }
+            ]
+          },
+          "sentences": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "startFrame": {
+                  "type": "number"
+                },
+                "endFrame": {
+                  "type": "number"
+                },
+                "tokenWordIndexes": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "emphasisWordIndexes": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              },
+              "required": [
+                "startFrame",
+                "endFrame",
+                "tokenWordIndexes"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "startFrame": 0,
+                "endFrame": 90,
+                "tokenWordIndexes": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "emphasisWordIndexes": [
+                  1,
+                  2
+                ]
+              }
+            ]
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#6b9cd9"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#e2e8f0"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "wordTimings": [
+          {
+            "word": "The",
+            "startSeconds": 0,
+            "endSeconds": 0.2
+          },
+          {
+            "word": "money",
+            "startSeconds": 0.2,
+            "endSeconds": 0.5
+          },
+          {
+            "word": "moved",
+            "startSeconds": 0.5,
+            "endSeconds": 0.8
+          },
+          {
+            "word": "before",
+            "startSeconds": 0.8,
+            "endSeconds": 1.1
+          },
+          {
+            "word": "anyone",
+            "startSeconds": 1.1,
+            "endSeconds": 1.4
+          },
+          {
+            "word": "noticed.",
+            "startSeconds": 1.4,
+            "endSeconds": 1.8
+          }
+        ],
+        "sentences": [
+          {
+            "startFrame": 0,
+            "endFrame": 90,
+            "tokenWordIndexes": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "emphasisWordIndexes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "accent": "#6b9cd9",
+        "textColor": "#e2e8f0"
+      }
+    },
+    {
+      "name": "Chart",
+      "tier": "composite",
+      "category": "data",
+      "purpose": "Dispatcher for line/area/bar/donut/radial charts by kind.",
+      "whenToUse": "Visualise a dataset or trend (time series, comparison, composition).",
+      "scriptCues": [
+        "chart",
+        "graph",
+        "data",
+        "trend",
+        "over time",
+        "inflation",
+        "growth",
+        "compound",
+        "index",
+        "distribution"
+      ],
+      "composes": [
+        "LineChart",
+        "AreaChart",
+        "BarChart",
+        "HorizontalBarChart",
+        "DonutChart",
+        "RadialChart"
+      ],
+      "canonicalExample": "src/components/docu/charts/Chart.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "composition",
+              "timeseries",
+              "comparison",
+              "horizontal-bar",
+              "area",
+              "radial"
+            ],
+            "default": "timeseries"
+          },
+          "label": {
+            "type": "string",
+            "default": "Client outflows"
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "y": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "x",
+                "y"
+              ],
+              "additionalProperties": false
+            },
+            "default": [
+              {
+                "x": "Q1",
+                "y": 12
+              },
+              {
+                "x": "Q2",
+                "y": 18
+              },
+              {
+                "x": "Q3",
+                "y": 9
+              },
+              {
+                "x": "Q4",
+                "y": 27
+              },
+              {
+                "x": "Q5",
+                "y": 41
+              }
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "",
+              "%",
+              "$",
+              "T",
+              "B",
+              "M",
+              "K",
+              "x"
+            ],
+            "default": "%"
+          },
+          "source": {
+            "type": "string",
+            "default": "SEC Filing 10-K · Internal Audit, Mar 2025"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light"
+            ],
+            "default": "dark"
+          },
+          "durationInFrames": {
+            "type": "number"
+          },
+          "forecastFromIndex": {
+            "type": "number"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "kind": "timeseries",
+        "label": "Client outflows",
+        "points": [
+          {
+            "x": "Q1",
+            "y": 12
+          },
+          {
+            "x": "Q2",
+            "y": 18
+          },
+          {
+            "x": "Q3",
+            "y": 9
+          },
+          {
+            "x": "Q4",
+            "y": 27
+          },
+          {
+            "x": "Q5",
+            "y": 41
+          }
+        ],
+        "unit": "%",
+        "source": "SEC Filing 10-K · Internal Audit, Mar 2025",
+        "theme": "dark"
+      }
+    }
+  ]
+}

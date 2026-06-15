@@ -1,12 +1,8 @@
 import React from "react";
-import { StaggeredMotion } from "remotion-bits";
+import { KenBurns, type KenBurnsPan } from "./anim/KenBurns";
+import { EasingPreset } from "./common/easing";
 
-interface KenBurnsDirection {
-  x: [number, number];
-  y: [number, number];
-}
-
-const DIRECTIONS: KenBurnsDirection[] = [
+const DIRECTIONS: readonly KenBurnsPan[] = [
   { x: [40, 0], y: [30, 0] },
   { x: [0, -40], y: [0, -30] },
   { x: [-40, 0], y: [30, 0] },
@@ -55,11 +51,22 @@ export const DocuKenBurns: React.FC<DocuKenBurnsProps> = ({
   shotIndex,
   children,
 }) => {
+  const motionMultiplier = getMotionMultiplier(durationInFrames);
+  const directions = DIRECTIONS.map((dir) => ({
+    x: [dir.x[0] * motionMultiplier, dir.x[1] * motionMultiplier] as [number, number],
+    y: [dir.y[0] * motionMultiplier, dir.y[1] * motionMultiplier] as [number, number],
+  }));
+
   return (
-    <StaggeredMotion
-      transition={getKenBurnsTransition(durationInFrames, shotIndex)}
+    <KenBurns
+      shotIndex={shotIndex}
+      durationInFrames={durationInFrames}
+      fromScale={1}
+      toScale={1 + BASE_ZOOM_DELTA * motionMultiplier}
+      directions={directions}
+      easing={EasingPreset.EaseInOutSine}
     >
       {children}
-    </StaggeredMotion>
+    </KenBurns>
   );
 };
