@@ -22,6 +22,7 @@ export type PhaseName =
   | "plan"
   | "narration"
   | "overlays"
+  | "scene-plan"
   | "youtube"
   | "tts"
   | "images"
@@ -103,6 +104,14 @@ export const PIPELINE: readonly PhaseDescriptor[] = [
     ],
   },
   {
+    name: "scene-plan",
+    group: "llm",
+    resumable: true,
+    stoppable: true,
+    requires: [],
+    cleanArtifacts: (slug) => [`${PROMPTS_DIR}/${slug}-scene-plan.json`],
+  },
+  {
     name: "youtube",
     group: "llm",
     resumable: true,
@@ -144,7 +153,7 @@ export const PIPELINE: readonly PhaseDescriptor[] = [
     resumable: false,
     stoppable: true,
     requires: ["images"],
-    cleanArtifacts: () => [`src/generated/docu-scripts.ts`],
+    cleanArtifacts: () => [`src/generated/docu-composition-plans.ts`],
   },
   {
     // Final phase: aggregate provenance + readiness from existing artifacts.

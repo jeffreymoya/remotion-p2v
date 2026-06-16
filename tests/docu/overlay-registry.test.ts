@@ -17,7 +17,7 @@ function assert(condition: boolean, label: string, detail?: string): void {
 // ── Registry completeness ───────────────────────────────────────────────
 
 const registryKeys = Object.keys(OVERLAY_REGISTRY);
-assert(registryKeys.length === 7, "registry has 7 entries", `got ${registryKeys.length}: ${registryKeys.join(", ")}`);
+assert(registryKeys.length === 3, "registry has 3 entries", `got ${registryKeys.length}: ${registryKeys.join(", ")}`);
 
 assert(registryKeys.includes("headline-card"), "registry includes headline-card");
 assert(registryKeys.includes("kinetic-number"), "registry includes kinetic-number");
@@ -28,10 +28,6 @@ assert(registryKeys.includes("chart"), "registry includes chart");
 const validPayloads: Record<string, Record<string, unknown>> = {
   "headline-card": { type: "headline-card", text: "Test Card", sourceAnchorId: "anchor-1", palette: "cool-tech", anchorPhrase: "test phrase", holdSec: 3.5 },
   "kinetic-number": { type: "kinetic-number", text: "Test Metric", value: 42.5, unit: "%", palette: "cool-tech", anchorPhrase: "test", holdSec: 3 },
-  "split-card": { type: "split-card", institution: "The Fed", headline: "Rate Decision", palette: "cool-tech", anchorPhrase: "rate decision", holdSec: 3 },
-  "context-bar": { type: "context-bar", cycleItems: ["Item A", "Item B"], palette: "warm-real", anchorPhrase: "context", holdSec: 3 },
-  "title-card": { type: "title-card", text: "Chapter Title", subtitle: "Episode 1", palette: "cool-tech", anchorPhrase: "chapter", holdSec: 3 },
-  "article-card": { type: "article-card", id: "art-1", category: "Finance", headline: "Market Report", authors: ["J. Smith"], date: "2024-06-01", time: "09:30", tz: "ET", source: "WSJ", palette: "cool-tech", anchorPhrase: "market report", holdSec: 3 },
   "chart": { type: "chart", chartKind: "timeseries", label: "Revenue Trend", points: [{ x: "2022", y: 100 }, { x: "2023", y: 150 }], unit: "%", palette: "cool-tech", anchorPhrase: "revenue", holdSec: 3 },
 };
 
@@ -104,10 +100,6 @@ function describeOverlay(o: OverlaySpec): string {
   switch (o.type) {
     case "headline-card": return `headline: ${o.text}`;
     case "kinetic-number": return `kinetic: ${o.value}${o.unit}`;
-    case "split-card": return `split: ${o.institution}`;
-    case "context-bar": return `context: ${o.cycleItems.length} items`;
-    case "title-card": return `title: ${o.text}`;
-    case "article-card": return `article: ${o.headline}`;
     case "chart": return `chart: ${o.chartKind}`;
     default: {
       const _exhaustive: never = o;

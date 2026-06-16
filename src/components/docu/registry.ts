@@ -12,6 +12,10 @@ import { pullQuoteSchema, pullQuoteDefaults, pullQuoteMeta } from "./cards/PullQ
 import { breakingNewsSchema, breakingNewsDefaults, breakingNewsMeta } from "./cards/BreakingNews";
 import { sourceAttributionSchema, sourceAttributionDefaults, sourceAttributionMeta } from "./cards/SourceAttribution";
 import { evidenceStampSchema, evidenceStampDefaults, evidenceStampMeta } from "./cards/EvidenceStamp";
+import { highlightedPhraseSchema, highlightedPhraseDefaults, highlightedPhraseMeta } from "./cards/HighlightedPhrase";
+import { powerWordSchema, powerWordDefaults, powerWordMeta } from "./cards/PowerWord";
+import { keyTermCalloutSchema, keyTermCalloutDefaults, keyTermCalloutMeta } from "./cards/KeyTermCallout";
+import { contrastStrikeSchema, contrastStrikeDefaults, contrastStrikeMeta } from "./cards/ContrastStrike";
 import { splitCardSchema, splitCardDefaults, splitCardMeta } from "./scenes/SplitCard";
 import { articleCardSchema, articleCardDefaults, articleCardMeta } from "./scenes/ArticleCard";
 import { contextBarSchema, contextBarDefaults, contextBarMeta } from "./overlays/ContextBar";
@@ -42,6 +46,10 @@ export const REGISTRY_SOURCES: readonly RegistrySource[] = [
   { name: "BreakingNews", schema: breakingNewsSchema, defaults: breakingNewsDefaults, meta: breakingNewsMeta },
   { name: "SourceAttribution", schema: sourceAttributionSchema, defaults: sourceAttributionDefaults, meta: sourceAttributionMeta },
   { name: "EvidenceStamp", schema: evidenceStampSchema, defaults: evidenceStampDefaults, meta: evidenceStampMeta },
+  { name: "HighlightedPhrase", schema: highlightedPhraseSchema, defaults: highlightedPhraseDefaults, meta: highlightedPhraseMeta },
+  { name: "PowerWord", schema: powerWordSchema, defaults: powerWordDefaults, meta: powerWordMeta },
+  { name: "KeyTermCallout", schema: keyTermCalloutSchema, defaults: keyTermCalloutDefaults, meta: keyTermCalloutMeta },
+  { name: "ContrastStrike", schema: contrastStrikeSchema, defaults: contrastStrikeDefaults, meta: contrastStrikeMeta },
   { name: "SplitCard", schema: splitCardSchema, defaults: splitCardDefaults, meta: splitCardMeta },
   { name: "ArticleCard", schema: articleCardSchema, defaults: articleCardDefaults, meta: articleCardMeta },
   { name: "ContextBar", schema: contextBarSchema, defaults: contextBarDefaults, meta: contextBarMeta },

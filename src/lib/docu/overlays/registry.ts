@@ -2,10 +2,6 @@ import { z } from "zod";
 import type { ZodType } from "zod";
 import { headlineCardDef } from "./headline-card";
 import { kineticNumberDef } from "./kinetic-number";
-import { splitCardDef } from "./split-card";
-import { contextBarDef } from "./context-bar";
-import { titleCardOverlayDef } from "./title-card-overlay";
-import { articleCardDef } from "./article-card";
 import { chartDef } from "./chart";
 import type { AnchorStrategy, DataItemKind, DataItem, OverlayCategory } from "./types";
 import type { EnterPresetKey, ExitPresetKey } from "./overlay-animations";
@@ -53,10 +49,6 @@ function createRegistry<T extends Record<string, OverlayDef>>(reg: T): T {
 export const OVERLAY_REGISTRY = createRegistry({
   "headline-card": headlineCardDef,
   "kinetic-number": kineticNumberDef,
-  "split-card": splitCardDef,
-  "context-bar": contextBarDef,
-  "title-card": titleCardOverlayDef,
-  "article-card": articleCardDef,
   "chart": chartDef,
 });
 
@@ -65,10 +57,6 @@ export type OverlayTypeId = keyof typeof OVERLAY_REGISTRY;
 export const OverlaySpecSchema = z.discriminatedUnion("type", [
   OVERLAY_REGISTRY["headline-card"].schema,
   OVERLAY_REGISTRY["kinetic-number"].schema,
-  OVERLAY_REGISTRY["split-card"].schema,
-  OVERLAY_REGISTRY["context-bar"].schema,
-  OVERLAY_REGISTRY["title-card"].schema,
-  OVERLAY_REGISTRY["article-card"].schema,
   OVERLAY_REGISTRY["chart"].schema,
 ]);
 

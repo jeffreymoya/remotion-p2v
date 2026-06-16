@@ -5,7 +5,9 @@ import type { Anchor } from "../shared/research/research-schema";
 import { traceableChain, textOnlyAssetSummary } from "../tracing";
 import type { SentenceDef } from "./tts-pipeline";
 
-const MAX_RETRIES = 2;
+const MAX_CORRECTION_ROUNDS = 2;
+
+type StructuredCaller = typeof callStructured;
 
 const FidelityResponseSchema = z.object({
   results: z.array(z.object({
@@ -49,7 +51,7 @@ function sentenceListing(sentences: SentenceDef[]): string {
 async function gateNarrationFidelity_impl(
   sentences: SentenceDef[],
   verifiedAnchors: readonly Anchor[],
-  opts?: { verbose?: boolean },
+  opts?: { verbose?: boolean; callStructured?: StructuredCaller },
 ): Promise<SentenceDef[]> {
   if (verifiedAnchors.length === 0) {
     throw new Error(
@@ -60,8 +62,9 @@ async function gateNarrationFidelity_impl(
 
   let current = [...sentences];
   let previousFlaggedCount = Infinity;
+  const structuredCall = opts?.callStructured ?? callStructured;
 
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+  for (let attempt = 1; attempt <= MAX_CORRECTION_ROUNDS + 1; attempt++) {
     const userPrompt = `## Verified Research Anchors
 ${anchorListing(verifiedAnchors)}
 
@@ -70,7 +73,7 @@ ${sentenceListing(current)}
 
 Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 through ${current.length - 1}).`;
 
-    const result = await callStructured({
+    const result = await structuredCall({
       schema: FidelityResponseSchema,
       system: buildVerifierSystemPrompt(),
       prompt: userPrompt,
@@ -97,8 +100,15 @@ Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 throug
 
     if (opts?.verbose) {
       console.log(
-        `[narration-fidelity] Attempt ${attempt}/${MAX_RETRIES}: ${flagged.length} sentences flagged` +
+        `[narration-fidelity] Attempt ${attempt}/${MAX_CORRECTION_ROUNDS + 1}: ${flagged.length} sentences flagged` +
         flagged.map((f) => `\n  [${f.index}] ${f.reason}`).join("")
+      );
+    }
+
+    if (attempt > MAX_CORRECTION_ROUNDS) {
+      throw new Error(
+        `[narration-fidelity] ${MAX_CORRECTION_ROUNDS} correction rounds exhausted — narration still contains ` +
+        `unsupported sentences. Fix research anchors or tighten narration prompt.`
       );
     }
 
@@ -117,10 +127,7 @@ Verify each sentence. Return a result for EVERY sentence (sentenceIndex 0 throug
     current = next;
   }
 
-  throw new Error(
-    `[narration-fidelity] ${MAX_RETRIES} attempts exhausted — narration still contains ` +
-    `unsupported sentences. Fix research anchors or tighten narration prompt.`
-  );
+  throw new Error("[narration-fidelity] unreachable retry state");
 }
 
 export const gateNarrationFidelity = traceableChain(gateNarrationFidelity_impl, "gateNarrationFidelity", {

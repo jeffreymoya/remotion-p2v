@@ -69,6 +69,25 @@ export {
   evidenceStampDefaults,
   evidenceStampMeta,
 } from "./cards/EvidenceStamp";
+export {
+  HighlightedPhrase,
+  highlightedPhraseSchema,
+  highlightedPhraseDefaults,
+  highlightedPhraseMeta,
+} from "./cards/HighlightedPhrase";
+export { PowerWord, powerWordSchema, powerWordDefaults, powerWordMeta } from "./cards/PowerWord";
+export {
+  KeyTermCallout,
+  keyTermCalloutSchema,
+  keyTermCalloutDefaults,
+  keyTermCalloutMeta,
+} from "./cards/KeyTermCallout";
+export {
+  ContrastStrike,
+  contrastStrikeSchema,
+  contrastStrikeDefaults,
+  contrastStrikeMeta,
+} from "./cards/ContrastStrike";
 
 export { SplitCard, splitCardSchema, splitCardDefaults, splitCardMeta } from "./scenes/SplitCard";
 export {

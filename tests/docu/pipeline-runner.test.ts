@@ -71,6 +71,9 @@ const LEGACY_PATTERNS: Record<PhaseName, (slug: string) => string[]> = {
     `prompts/docu/${slug}-topic.json`,
     ...SEG_OVERLAYS_FILES(slug),
   ],
+  "scene-plan": (slug) => [
+    `prompts/docu/${slug}-scene-plan.json`,
+  ],
   youtube: (slug) => [
     `prompts/docu/${slug}-topic.json`,
     `prompts/docu/${slug}-clips.json`,
@@ -85,16 +88,16 @@ const LEGACY_PATTERNS: Record<PhaseName, (slug: string) => string[]> = {
     `prompts/docu/${slug}-images.json`,
   ],
   codegen: () => [
-    `src/generated/docu-scripts.ts`,
+    `src/generated/docu-composition-plans.ts`,
   ],
   "publish-manifest": (slug) => [
     `prompts/docu/${slug}-publish-manifest.json`,
   ],
 };
 
-const LEGACY_VALID_FROM = ["variety", "plan", "narration", "overlays", "youtube", "tts"];
-const LEGACY_VALID_ONLY = ["variety", "plan", "narration", "overlays", "youtube", "tts", "images", "codegen", "publish-manifest"];
-const LEGACY_CLEAN_PHASES = ["variety", "plan", "narration", "overlays", "youtube", "tts", "images", "codegen", "publish-manifest"];
+const LEGACY_VALID_FROM = ["variety", "plan", "narration", "overlays", "scene-plan", "youtube", "tts"];
+const LEGACY_VALID_ONLY = ["variety", "plan", "narration", "overlays", "scene-plan", "youtube", "tts", "images", "codegen", "publish-manifest"];
+const LEGACY_CLEAN_PHASES = ["variety", "plan", "narration", "overlays", "scene-plan", "youtube", "tts", "images", "codegen", "publish-manifest"];
 
 // ── 1. Derivation parity ────────────────────────────────────────────────
 

@@ -28,6 +28,8 @@ import { gateInfotainmentVoice } from "./infotainment-voice-gate";
 import type { YouTubeClipSpec, ClipCandidateInfo } from "./youtube-pipeline";
 import { readCachedJson, writeCachedJson } from "./pipeline";
 import type { VarietyAssignment } from "./variety-controller";
+import { generateScenePlan } from "./scene-plan-prompt";
+import { zScenePlan, type ScenePlan } from "../pipeline/schemas";
 
 export interface TopicData {
   topic: string;
@@ -40,6 +42,7 @@ export interface TopicData {
   segmentPlans?: DocuSegmentPlan[];
   youtubeClipSpecs?: YouTubeClipSpec[];
   clipCandidateInfo?: ClipCandidateInfo[];
+  scenePlan?: ScenePlan;
 }
 
 const TopicDataSchema = z.object({
@@ -79,6 +82,7 @@ const TopicDataSchema = z.object({
     personName: z.string().optional(),
     sourceLabel: z.string().optional(),
   })).optional(),
+  scenePlan: zScenePlan.optional(),
 });
 
 const PROMPTS_DIR = "prompts/docu";
@@ -107,12 +111,24 @@ function youtubeClipCachePath(slug: string): string {
   return `${PROMPTS_DIR}/${slug}-youtube-clips.json`;
 }
 
+function scenePlanCachePath(slug: string): string {
+  return `${PROMPTS_DIR}/${slug}-scene-plan.json`;
+}
+
 function loadYoutubeClipSpecs(slug: string): YouTubeClipSpec[] | null {
   return readCachedJson<YouTubeClipSpec[]>(youtubeClipCachePath(slug));
 }
 
 function saveYoutubeClipSpecs(slug: string, specs: YouTubeClipSpec[]): void {
   writeCachedJson(youtubeClipCachePath(slug), specs);
+}
+
+export function loadCachedScenePlan(slug: string): ScenePlan | null {
+  return readCachedJson(scenePlanCachePath(slug), zScenePlan);
+}
+
+function saveCachedScenePlan(slug: string, scenePlan: ScenePlan): void {
+  writeCachedJson(scenePlanCachePath(slug), scenePlan);
 }
 
 export function loadCachedTopicData(slug: string): TopicData | null {
@@ -219,10 +235,10 @@ function recordGateOutcome(gateName: string, beforeTexts: string[], afterSentenc
 
 export interface SegmentedTopicOpts {
   verbose?: boolean;
-  /** Resume from a specific phase: "plan" | "narration" | "overlays" | "youtube" */
-  from?: "plan" | "narration" | "overlays" | "youtube";
+  /** Resume from a specific LLM phase. */
+  from?: "plan" | "narration" | "overlays" | "scene-plan" | "youtube";
   /** Stop after a specific phase and return without running later phases. */
-  only?: "plan" | "narration" | "overlays" | "youtube";
+  only?: "plan" | "narration" | "overlays" | "scene-plan" | "youtube";
   /** Variety assignment (arc forces the spine structure; opener shapes narration). */
   variety?: VarietyAssignment;
 }
@@ -471,9 +487,42 @@ export const generateSegmentedTopicData = traceable(
     });
   }
 
-  // 6. YouTube clip annotation
+  // 6. s2v scene-plan pass
+  enrichCurrentRun({ slug, topic, phase: "compose" });
+  const regenerateScenePlan = regenerateOverlays || from === "scene-plan";
+  let scenePlan: ScenePlan | undefined;
+  if (!regenerateScenePlan) {
+    scenePlan = loadCachedScenePlan(slug) ?? undefined;
+    if (scenePlan) {
+      console.log(`[topic] Using cached scene plan (${scenePlan.scenes.length} scenes)`);
+    }
+  }
+  if (!scenePlan) {
+    console.log(`[topic] ${regenerateScenePlan ? `--from ${from}: generating` : "Generating"} scene plan...`);
+    scenePlan = await generateScenePlan({
+      segments: spine.segments,
+      sentences: allSentences,
+      anchors: verifiedAnchors,
+      dataItems: allDataItems,
+      varietyTargets: { minDistinctFamilies: opts?.variety?.arc ? 5 : undefined },
+    }, { verbose: opts?.verbose });
+    saveCachedScenePlan(slug, scenePlan);
+  }
+
+  if (only === "scene-plan") {
+    console.log(`[topic] --only scene-plan: stopping after scene-plan.`);
+    return earlyReturn({
+      sentences: allSentences,
+      overlaySpecs: allOverlays,
+      dataItems: hasDataItems ? allDataItems : undefined,
+      segmentPlans: spine.segments,
+      scenePlan,
+    });
+  }
+
+  // 7. YouTube clip annotation
   enrichCurrentRun({ slug, topic, phase: "videos" });
-  const regenerateClips = regenerateOverlays || from === "youtube";
+  const regenerateClips = regenerateScenePlan || from === "youtube";
 
   const offsets: number[] = [];
   let running = 0;
@@ -523,6 +572,7 @@ export const generateSegmentedTopicData = traceable(
     dataItems: hasDataItems ? allDataItems : undefined,
     segmentCount,
     segmentPlans: spine.segments,
+    scenePlan,
     youtubeClipSpecs: youtubeClipSpecs.length > 0 ? youtubeClipSpecs : undefined,
     clipCandidateInfo: clipCandidateInfo.length > 0 ? clipCandidateInfo : undefined,
   };

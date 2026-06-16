@@ -2202,6 +2202,365 @@
         "source": "SEC Filing 10-K · Internal Audit, Mar 2025",
         "theme": "dark"
       }
+    },
+    {
+      "name": "HighlightedPhrase",
+      "tier": "composite",
+      "category": "overlay",
+      "purpose": "Directs the eye to the operative words inside a spoken line with a highlighter swipe or strike.",
+      "whenToUse": "Stress one to three key words or a short phrase the narrator is emphasising mid-sentence.",
+      "scriptCues": [
+        "emphasis",
+        "key phrase",
+        "highlight",
+        "operative words",
+        "underline",
+        "stress",
+        "mark"
+      ],
+      "composes": [
+        "Box",
+        "Reveal",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/HighlightedPhrase.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "11"
+          },
+          "name": {
+            "type": "string",
+            "default": "Highlighted Phrase"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Operative Words"
+          },
+          "line": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "highlight": {
+                  "type": "string",
+                  "enum": [
+                    "mark",
+                    "strike"
+                  ]
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "markColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#f4c84a"
+          },
+          "markTextColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#14110d"
+          },
+          "strikeColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#d6362e"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "11",
+        "name": "Highlighted Phrase",
+        "meta": "Operative Words",
+        "line": [
+          {
+            "text": "Your mortgage rate"
+          },
+          {
+            "text": "resets in 90 days",
+            "highlight": "mark"
+          },
+          {
+            "text": "— and the new payment"
+          },
+          {
+            "text": "is not optional",
+            "highlight": "strike"
+          }
+        ],
+        "markColor": "#f4c84a",
+        "markTextColor": "#14110d",
+        "strikeColor": "#d6362e",
+        "textColor": "#efe9dc"
+      }
+    },
+    {
+      "name": "PowerWord",
+      "tier": "composite",
+      "category": "overlay",
+      "purpose": "Lands one short power word or two-word phrase as a decisive emphasis beat.",
+      "whenToUse": "Punctuate the narration with a single dominant word the viewer must retain.",
+      "scriptCues": [
+        "power word",
+        "one word",
+        "single word",
+        "punch",
+        "decisive",
+        "key word",
+        "the catch"
+      ],
+      "composes": [
+        "Box",
+        "SplitText",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/PowerWord.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "12"
+          },
+          "name": {
+            "type": "string",
+            "default": "Power Word"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Single Emphasis"
+          },
+          "kicker": {
+            "type": "string",
+            "default": "The catch"
+          },
+          "word": {
+            "type": "string",
+            "default": "Compounding"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "12",
+        "name": "Power Word",
+        "meta": "Single Emphasis",
+        "kicker": "The catch",
+        "word": "Compounding",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "mutedColor": "#8a847a"
+      }
+    },
+    {
+      "name": "KeyTermCallout",
+      "tier": "composite",
+      "category": "lower-third",
+      "purpose": "Names and briefly defines a key term the narration introduces.",
+      "whenToUse": "Emphasise and gloss a piece of jargon or a concept the viewer needs to hold.",
+      "scriptCues": [
+        "key term",
+        "define",
+        "definition",
+        "term",
+        "jargon",
+        "what is",
+        "concept",
+        "callout"
+      ],
+      "composes": [
+        "Box",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/KeyTermCallout.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "13"
+          },
+          "name": {
+            "type": "string",
+            "default": "Key Term Callout"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Define The Term"
+          },
+          "kicker": {
+            "type": "string",
+            "default": "Key term"
+          },
+          "term": {
+            "type": "string",
+            "default": "Amortization"
+          },
+          "gloss": {
+            "type": "string",
+            "default": "How each payment splits between interest and the balance you actually owe."
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#6b9cd9"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "rgba(239,233,220,0.72)"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "13",
+        "name": "Key Term Callout",
+        "meta": "Define The Term",
+        "kicker": "Key term",
+        "term": "Amortization",
+        "gloss": "How each payment splits between interest and the balance you actually owe.",
+        "accent": "#6b9cd9",
+        "textColor": "#efe9dc",
+        "secondaryColor": "rgba(239,233,220,0.72)"
+      }
+    },
+    {
+      "name": "ContrastStrike",
+      "tier": "composite",
+      "category": "comparison",
+      "purpose": "Strikes a wrong or outdated framing and replaces it with the corrected emphasis word.",
+      "whenToUse": "Emphasise a correction or contrast — 'not X, but Y'.",
+      "scriptCues": [
+        "contrast",
+        "not",
+        "instead",
+        "versus",
+        "correction",
+        "myth",
+        "reality",
+        "but actually"
+      ],
+      "composes": [
+        "Box",
+        "Reveal",
+        "useFade",
+        "useLifecycle"
+      ],
+      "canonicalExample": "src/components/docu/cards/ContrastStrike.tsx",
+      "props": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "string",
+            "default": "14"
+          },
+          "name": {
+            "type": "string",
+            "default": "Contrast Strike"
+          },
+          "meta": {
+            "type": "string",
+            "default": "Myth Versus Reality"
+          },
+          "lead": {
+            "type": "string",
+            "default": "It isn't"
+          },
+          "wrong": {
+            "type": "string",
+            "default": "saving"
+          },
+          "connector": {
+            "type": "string",
+            "default": "it's"
+          },
+          "right": {
+            "type": "string",
+            "default": "insurance"
+          },
+          "strikeColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#d6362e"
+          },
+          "accent": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#D97757"
+          },
+          "textColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#efe9dc"
+          },
+          "mutedColor": {
+            "type": "string",
+            "description": "__remotion-color",
+            "default": "#8a847a"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "defaults": {
+        "num": "14",
+        "name": "Contrast Strike",
+        "meta": "Myth Versus Reality",
+        "lead": "It isn't",
+        "wrong": "saving",
+        "connector": "it's",
+        "right": "insurance",
+        "strikeColor": "#d6362e",
+        "accent": "#D97757",
+        "textColor": "#efe9dc",
+        "mutedColor": "#8a847a"
+      }
     }
   ]
 }
